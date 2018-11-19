@@ -3,7 +3,7 @@ This program is designed to demonstrate what is possible to achieve with a polyh
 The Python program creates a custom mapping layer in geojson format. 
 The mapping layer can be made up of boxes or hexagons.
 
-default options are
+default options are:
 shape - hex or box: hex
 bounding north: -8
 bounding south: -45
