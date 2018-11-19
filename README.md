@@ -4,22 +4,22 @@ The Python program creates a custom mapping layer in geojson format.
 The mapping layer can be made up of boxes or hexagons.
 
 default options are:
-shape - hex or box: hex
-bounding north: -8
-bounding south: -45
-bounding east: 168
-bounding west: 96
-radius in km: 46
-filename for output: hex_46km
+- shape - hex or box: hex
+- bounding north: -8
+- bounding south: -45
+- bounding east: 168
+- bounding west: 96
+- radius in km: 46
+- filename for output: hex_46km
 
 command line arguments are: 
-shape - hex or box 
-bounding north
-bounding south
-bounding east
-bounding west
-radius in km
-filename for output
+- shape - hex or box 
+- bounding north
+- bounding south
+- bounding east
+- bounding west
+- radius in km
+- filename for output
 
 for hexagon:
 python3 polygons.py hex -8 -45 96 168 212
