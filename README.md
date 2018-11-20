@@ -9,7 +9,7 @@ default values are:
 - bounding south: -45
 - bounding east: 168
 - bounding west: 96
-- radius in km: 46
+- radial in km: 46
 - filename for output: hex_46km
 
 at the WGS-84 Projection values for default values are:
@@ -25,7 +25,7 @@ command line arguments are:
 - bounding south
 - bounding east
 - bounding west
-- radius in km
+- radial in km
 - filename for output
 
 for hexagon:
