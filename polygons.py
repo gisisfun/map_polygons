@@ -12,7 +12,8 @@ def point_radial_distance(self,brng,radial):
     return geodesic(kilometers=radial).destination(point = self, bearing = brng)
 
 def line_intersection(line1, line2):
-    #source:: https://stackoverflow.com/questions/20677795/how-do-i-compute-the-intersection-between-two-lines-in-python
+    #source:
+    #https://stackoverflow.com/questions/20677795/how-do-i-compute-the-intersection-between-two-lines-in-python
     xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
     ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1]) 
     def det(a, b):
@@ -89,7 +90,8 @@ def vertical_lines(b_lat_min, b_lat_max, b_lon_min, b_lon_max, vert_seq,radial):
         ref_lat = offset[0]
 
     num_v = len(vert_line_list)
-    print('derived {0} latitude lines'.format(num_v))
+    max_v = (num_v)##-1)##-((num_v-1) % 4)
+    print('derived {0} latitude lines'.format(num_v))    
     return vert_line_list
 
 def intersections(hor_line_list,hor_max,vert_line_list,vert_max):
@@ -148,7 +150,9 @@ def write_vrt_file(f_name,shape,ext,ext_label):
     file = open('{0}_layer_{1}.vrt'.format(f_name,ext_label), 'w') #open file for writing geojson layer
     file.write(vrt_content) #write vrt layer to open file
     file.close() #close file 
-    #to check: (ogrinfo -ro -al box_106km_layer.vrt
+
+    #to check
+    #ogrinfo -ro -al box_106km_layer.vrt
       
 def boxes(north,south,east,west,radial,outfile):
     params('boxes',north,south,east,west,radial)
@@ -160,25 +164,30 @@ def boxes(north,south,east,west,radial,outfile):
     layer_dict={'Bounds':{'Australia':{'North': north,'South': south,'West': west,'East': east}}}
     layer_dict['Param']={}
     layer_dict['Param']['side_km'] = radial
-    layer_dict['Param']['epsg'] = 4326
+    layer_dict['Param']['epsg'] = 4823
     layer_dict['Param']['shape'] = 'box'
-    layer_dict['Boxes']={}
-    layer_dict['Boxes']['long'] = 1
-    hor_seq =[layer_dict['Boxes']['long'], layer_dict['Boxes']['long'],\
-               layer_dict['Boxes']['long'], layer_dict['Boxes']['long']]   
-    vert_seq =[layer_dict['Boxes']['long'], layer_dict['Boxes']['long'],\
-               layer_dict['Boxes']['long'], layer_dict['Boxes']['long']]
+   
     bounds_lat_min = north
     bounds_lat_max = south
     bounds_lon_max = east
     bounds_lon_min = west
-        
+    
+    layer_dict['Boxes']={}
+    layer_dict['Boxes']['long'] = 1     
+    hor_seq =[layer_dict['Boxes']['long'], layer_dict['Boxes']['long'],\
+               layer_dict['Boxes']['long'], layer_dict['Boxes']['long']]
+    
+    vert_seq =[layer_dict['Boxes']['long'], layer_dict['Boxes']['long'],\
+               layer_dict['Boxes']['long'], layer_dict['Boxes']['long']]
+    
     h_line_list = horizontal_lines(bounds_lat_min, bounds_lat_max, bounds_lon_min, bounds_lon_max, hor_seq,radial)
     num_h = len(h_line_list)
-    max_h = num_h-1    
+    max_h = num_h-1
+    
     v_line_list = vertical_lines(bounds_lat_min, bounds_lat_max, bounds_lon_min, bounds_lon_max, vert_seq,radial)    
     num_v = len(v_line_list)
-    max_v = num_v-1    
+    max_v = num_v-1
+    
     intersect_list = intersections(h_line_list,max_h,v_line_list,max_v)     
     
     print('\n4/7 deriving boxes polygons from intersection data')
@@ -200,10 +209,12 @@ def boxes(north,south,east,west,radial,outfile):
             geopoly = Feature(geometry=geopoly, properties={"p": top_left,"lat": centre_lat,"lon": centre_lon,\
                                                             "N": bounds_n,"S": bounds_s,"E": bounds_e,"W": bounds_w})
             g_array.append(geopoly) #append geojson geometry definition attributes to list
+            #tabular dataset
             tabular_line = [top_left,centre_lat,centre_lon,\
                             bounds_n,bounds_s,bounds_e,bounds_w]
             tabular_list.append(tabular_line) #array of polygon and tabular columns
-      
+
+        #increment values       
         top_left+=1
         vertex =[top_left+0,top_left+1,top_left+max_v+1,top_left+max_v]
         
@@ -234,7 +245,8 @@ def boxes(north,south,east,west,radial,outfile):
     write_vrt_file(outfile,'boxes','json','geojson')    
     to_shp_tab(outfile,'boxes')
     print('\n')
-    print('The End')# end boxes
+    print('The End')
+    ## end boxes
 
 def hexagons(north,south,east,west,radial,outfile):
     params('hexagons',north,south,east,west,radial)   
@@ -245,8 +257,9 @@ def hexagons(north,south,east,west,radial,outfile):
     layer_dict={'Bounds':{'Australia':{'North': north ,'South': south,'West': west,'East': east}}}
     layer_dict['Param']={}
     layer_dict['Param']['side_km'] = radial
-    layer_dict['Param']['epsg'] = 4326
+    layer_dict['Param']['epsg'] = 4823
     layer_dict['Param']['shape'] = 'hexagon'
+    layer_dict['Param']['epsg'] = 4823    
     layer_dict['Hexagon']={}
     layer_dict['Hexagon']['short'] = 0.707108
     layer_dict['Hexagon']['long'] = 1
@@ -264,11 +277,11 @@ def hexagons(north,south,east,west,radial,outfile):
     
     h_line_list = horizontal_lines(bounds_lat_min, bounds_lat_max, bounds_lon_min, bounds_lon_max, hor_seq,radial)
     num_h = len(h_line_list)
-    max_h = (num_h)
+    max_h = (num_h)##-1)##-((num_v-1) % 4)
     
     v_line_list = vertical_lines(bounds_lat_min, bounds_lat_max, bounds_lon_min, bounds_lon_max, vert_seq,radial)    
     num_v = len(v_line_list)
-    max_v = (num_v)
+    max_v = (num_v)##-1)##-((num_v-1) % 4)
    
     intersect_list = intersections(h_line_list,max_h,v_line_list,max_v)          
     
@@ -305,6 +318,7 @@ def hexagons(north,south,east,west,radial,outfile):
                 geopoly = Feature(geometry=geopoly, properties={"p": hexagon,"row": row, "lat": centre_lat, "lon": centre_lon, "N": bounds_n, "S": bounds_s, "E": bounds_e, "W": bounds_w})                                                                
                 if  (bounds_e>bounds_w):
                     g_array.append(geopoly)     #append geojson geometry definition attributes to list
+                    #tabular dataset
                     tabular_line = [top_left,row,centre_lat,centre_lon,\
                             bounds_n,bounds_s,bounds_e,bounds_w]
                     tabular_list.append(tabular_line) #array of polygon and tabular columns
@@ -313,20 +327,21 @@ def hexagons(north,south,east,west,radial,outfile):
 
         except IndexError:
             donothing=True
+            ##print('off the end {0} '.format(top_left))
             
         last_row = row
         last_lat_row=centre_lat
         row=int(1+int(hexagon/poly_row_count))
         if row % 2 is 0:
             if row is not last_row:
-                top_left += 2
-                top_left += rem_lat
-
+                top_left +=2
+            else:
+                 top_left += 0 
         if row & 1:
             if row is not last_row:
                 top_left = top_left -2
-                top_left += rem_lat
-
+            else:
+                top_left += 0
         top_left += lat_offset
         
     print('\n5/7 geojson dataset of {0} derived hexagon polygons'.format(len(g_array)))
@@ -353,19 +368,21 @@ def hexagons(north,south,east,west,radial,outfile):
     file = open('{0}_metadata.json'.format(outfile), 'w') #open file for writing geojson layer
     file.write(str(json.dumps(layer_dict))) #write geojson layer to open file
     file.close() #close file
+    
     write_vrt_file(outfile,'hexagons','json','geojson')
     to_shp_tab(outfile,'hexagons')
 
     print('\n')
-    print('The End')# boxes
+    print('The End')
+    ## boxes
 
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
 if len(sys.argv) is 1:
-    (shape, b_north, b_south, b_east, b_west, radial_d, f_name) = ['box', -8, -45, 168, 96, 55, 'box_55km']
-    boxes(b_north, b_south, b_east, b_west, radial_d, f_name)
-#    (shape, b_north, b_south, b_east, b_west, radial_d, f_name) = ['hex', -8, -45, 168, 96, 55, 'hex_55km']
-#    hexagons(b_north, b_south, b_east, b_west, radial_d, f_name)
+#    (shape, b_north, b_south, b_east, b_west, radial_d, f_name) = ['box', -8, -45, 168, 96, 106, 'box_106km']
+#    boxes(b_north, b_south, b_east, b_west, radial_d, f_name)
+    (shape, b_north, b_south, b_east, b_west, radial_d, f_name) = ['hex', -8, -45, 168, 96, 212, 'hex_212km']
+    hexagons(b_north, b_south, b_east, b_west, radial_d, f_name)
 else:
     if (len(sys.argv) <8 ):
         sys.exit("arguments are \nshape - hex or box \n bounding north\n bounding south \n bounding east \n bounding west \n radius in km\n filename for output\n\nfor hexagon\npython3 polygons.py hex -8 -45 96 168 212\n\nfor boxes\npython3 polygons.py box -8 -45 96 168 212\n")
@@ -380,3 +397,4 @@ else:
                 boxes(b_north,b_south,b_east,b_west,radial_d,f_name)
             else:
                 print('shape is hex or box')
+
