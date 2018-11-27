@@ -317,12 +317,12 @@ def hexagons(north,south,east,west,radial,outfile):
         row=int(1+int(hexagon/poly_row_count))
         top_left += lat_offset
         if row is not last_row:
-            if (rem_lat is 0):
+            if rem_lat is 3:
                 top_left += rem_lat
             if row % 2 is 0:
                 top_left += 2
-            else:
-                top_left = top_left -2    
+            if row & 1:
+                top_left += -2    
         
     print('\n5/7 geojson dataset of {0} derived hexagon polygons'.format(len(g_array)))
     boxes_geojson = FeatureCollection(g_array) #convert merged geojson features to geojson feature geohex_geojson 
