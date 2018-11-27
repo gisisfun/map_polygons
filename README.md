@@ -4,7 +4,7 @@ This program is designed to demonstrate what is possible to achieve with a polyh
 The Python program creates a custom mapping layer in geojson format. 
 The mapping layer can be made up of boxes or hexagons.
 
-default values are:
+for a 46 km radial hexagon values are:
 - shape: hex
 - bounding north: -8
 - bounding south: -45
