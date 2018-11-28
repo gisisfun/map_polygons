@@ -277,13 +277,25 @@ def hexagons(north,south,east,west,radial,outfile):
     layer_dict['Row_1']['lat_offset'] = lat_offset
     layer_dict['Row_1']['poly_row_count'] = poly_row_count
     layer_dict['Row_1']['remain_lat'] = rem_lat
-    
-    if rem_lat is 3 or rem_lat is 4:
-        print('first row of hexagons starting from {0}, {1} hexagons, {2} latitude line(s) remaining'.format(top_left,poly_row_count,rem_lat))
-    
+            
+    print('first row of hexagons starting from {0}, {1} hexagons, {2} latitude line(s) remaining'.format(top_left,poly_row_count,rem_lat))
+
+    inc_by_rem = True
+    inc_adj = 0
+    if rem_lat is 0 or rem_lat is 1 or rem_lat is 2 or rem_lat is 3 or rem_lat is 4 or rem_lat is 5 or rem_lat is 6 or rem_lat is 7:
+        
+        if rem_lat is 2 or rem_lat is 5 or rem_lat is 6 or rem_lat is 7:
+            inc_by_rem = True
+            inc_adj = -4
+        if rem_lat is 1 or rem_lat is 3:
+            inc_by_rem = True
+            inc_adj = 0
+        if rem_lat is 0 or rem_lat is 4:
+            inc_by_rem = False
+            inc_adj = 0
+
+
         print('\n4/7 deriving polygons from intersection data')
-        
-        
         row=1
         last_lat_row=0
         hexagon=0
@@ -298,8 +310,8 @@ def hexagons(north,south,east,west,radial,outfile):
                 if (centre_lat is not last_lat_row) or last_lat_row is 0:
                     bounds_n = intersect_list[vertex[0]][1]
                     bounds_s = intersect_list[vertex[2]][1]
-                    bounds_e = intersect_list[vertex[3]][0]
-                    bounds_w = intersect_list[vertex[0]][0]
+                    bounds_e = intersect_list[vertex[2]][0]
+                    bounds_w = intersect_list[vertex[5]][0]
                     last_lat_row=centre_lat
                     geopoly = Polygon([poly_coords])       
                     hexagon+=1
@@ -320,7 +332,8 @@ def hexagons(north,south,east,west,radial,outfile):
             row=int(1+int(hexagon/poly_row_count))
             top_left += lat_offset
             if row is not last_row:
-                if rem_lat is 3:
+                top_left += inc_adj
+                if inc_by_rem:
                     top_left += rem_lat
                 if row % 2 is 0:
                     top_left += 2
@@ -363,7 +376,7 @@ print('Argument List: {0}'.format(str(sys.argv)))
 if len(sys.argv) is 1:
 #    (shape, b_north, b_south, b_east, b_west, radial_d, f_name) = ['box', -8, -45, 168, 96, 55, 'box_55km']
 #    boxes(b_north, b_south, b_east, b_west, radial_d, f_name)
-    (shape, b_north, b_south, b_east, b_west, radial_d, f_name) = ['hex', -8, -45, 168, 96, 49, 'hex_49km']
+    (shape, b_north, b_south, b_east, b_west, radial_d, f_name) = ['hex', -8, -45, 168, 96, 55, 'hex_55km']
     hexagons(b_north, b_south, b_east, b_west, radial_d, f_name)
 else:
     if (len(sys.argv) <8 ):
