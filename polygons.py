@@ -124,16 +124,24 @@ def to_shp_tab(f_name,shape):
     except FileNotFoundError:
         print('No files processed')
 
-def write_vrt_file(f_name,shape,ext,ext_label):
-##    pnt_template = """    <OGRVRTDataSource>
-##     <OGRVRTLayer name="{0}">
-##         <SrcDataSource>{1}.csv</SrcDataSource>
-##             <GeometryType>wkbPoint</GeometryType>
-##             <LayerSRS>EPSG:4326</LayerSRS>
-##             <GeometryField encoding="PointFromColumns" x="Longitude" y="Latitude"/>
-##        </OGRVRTLayer>
-##    </OGRVRTDataSource>"""
+def write_vrt_tabular_file(f_name):
+    vrt_template = """    <OGRVRTDataSource>
+        <OGRVRTLayer name="{0}">
+            <SrcDataSource>{0}.csv</SrcDataSource>
+               <GeometryType>wkbPoint</GeometryType>
+               <LayerSRS>EPSG:4326</LayerSRS>
+               <GeometryField encoding="PointFromColumns" x="Long" y="Lat"/>
+         </OGRVRTLayer>
+    </OGRVRTDataSource>"""
+    vrt_content = vrt_template.format(f_name)
     
+    print('\n tabular definition in vrt format for csv file to written to file: {0}.vrt'.format(f_name))  
+    file = open('{0}.vrt'.format(f_name), 'w') #open file for writing geojson layer
+    file.write(vrt_content) #write vrt layer to open file
+    file.close() #close file 
+    #to check: ogrinfo -ro -al box_106km_layer.vrt
+
+def write_vrt_file(f_name,shape,ext,ext_label): 
     vrt_template = """    <OGRVRTDataSource>
         <OGRVRTLayer name="{0}">
             <SrcDataSource>{0}_layer_{1}.json</SrcDataSource>
@@ -228,6 +236,7 @@ def boxes(north,south,east,west,radial,outfile):
     layer_dict['Bounds']['Dataset']['East'] = tabular_df['E'].max()
     layer_dict['Bounds']['Dataset']['West'] = tabular_df['W'].min() 
     tabular_df.to_csv('{0}_dataset.csv'.format(outfile), sep=',')
+    write_vrt_tabular_file('{0}_dataset'.format(outfile))
 
     print('\n7/7 boxes json metadata to written to file: {0}_metadata.json'.format(outfile))  
     file = open('{0}_metadata.json'.format(outfile), 'w') #open file for writing geojson layer
@@ -359,6 +368,7 @@ def hexagons(north,south,east,west,radial,outfile):
         layer_dict['Bounds']['Dataset']['East'] = tabular_df['E'].max()
         layer_dict['Bounds']['Dataset']['West'] = tabular_df['W'].min() 
         tabular_df.to_csv('{0}_dataset.csv'.format(outfile), sep=',')
+        write_vrt_tabular_file('{0}_dataset'.format(outfile))
 
         print('\n7/7 hexagon json metadata to written to file: {0}_metadata.json'.format(outfile))  
         file = open('{0}_metadata.json'.format(outfile), 'w') #open file for writing geojson layer
