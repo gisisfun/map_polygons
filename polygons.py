@@ -6,6 +6,7 @@ from geojson import Polygon,Feature,FeatureCollection
 import pandas as pd
 import subprocess
 #1 deg longitude is about 88 km, 1 deg latitude  is about 110 km
+#http://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/1270.0.55.001July%202016?OpenDocument
 def point_radial_distance(self,brng,radial):
     return geodesic(kilometers=radial).destination(point = self, bearing = brng)
 
@@ -111,8 +112,8 @@ def to_shp_tab(f_name,shape):
     shp_fname='{0}_layer.shp'.format(f_name)
     tab_fname='{0}_layer.tab'.format(f_name)
     json_fname='{0}_layer.json'.format(f_name)
-    tab_options = ['/usr/bin/ogr2ogr','-f', 'Mapinfo file', tab_fname, json_fname]
-    shp_options = ['/usr/bin/ogr2ogr','-f', 'ESRI Shapefile', shp_fname, json_fname]
+    tab_options = ['/usr/bin/ogr2ogr','-f', 'Mapinfo file', tab_fname, '-t_srs', 'EPSG:4823', json_fname]
+    shp_options = ['/usr/bin/ogr2ogr','-f', 'ESRI Shapefile',shp_fname, '-t_srs', 'EPSG:4823', json_fname]
     try:
         # record the output!
         print('\nwriting {0} shapefile {1}_layer.shp'.format(shape,f_name))
@@ -125,13 +126,13 @@ def to_shp_tab(f_name,shape):
         print('No files processed')
 
 def write_vrt_tabular_file(f_name):
-    vrt_template = """    <OGRVRTDataSource>
-        <OGRVRTLayer name="{0}">
-            <SrcDataSource>{0}.csv</SrcDataSource>
-               <GeometryType>wkbPoint</GeometryType>
-               <LayerSRS>EPSG:4326</LayerSRS>
-               <GeometryField encoding="PointFromColumns" x="Long" y="Lat"/>
-         </OGRVRTLayer>
+    vrt_template = """<OGRVRTDataSource>
+    <OGRVRTLayer name="{0}">
+        <SrcDataSource>{0}.csv</SrcDataSource>
+            <GeometryType>wkbPoint</GeometryType>
+            <LayerSRS>EPSG:4823</LayerSRS>
+            <GeometryField encoding="PointFromColumns" x="Long" y="Lat"/>
+        </OGRVRTLayer>
     </OGRVRTDataSource>"""
     vrt_content = vrt_template.format(f_name)
     
@@ -140,16 +141,19 @@ def write_vrt_tabular_file(f_name):
     file.write(vrt_content) #write vrt layer to open file
     file.close() #close file 
     #to check: ogrinfo -ro -al box_106km_layer.vrt
+    #to create australia layer
+    #ogr2ogr output.shp layers_ESRI_Shapefile.vrt -dialect sqlite -sql "SELECT ST_SymDifference(hex.geometry,aust.geometry) AS geometry FROM hex AS hex, aust AS aust"
+    
 
 def write_vrt_file(f_name,shape,ext,ext_label): 
-    vrt_template = """    <OGRVRTDataSource>
-        <OGRVRTLayer name="{0}">
-            <SrcDataSource>{0}_layer_{1}.json</SrcDataSource>
-                <SrcLayer>{0}_layer</SrcLayer>
-                <GeometryType>wkbPolygon</GeometryType>
-            <LayerSRS>EPSG:4326</LayerSRS>
-        </OGRVRTLayer>
-    </OGRVRTDataSource>"""
+    vrt_template = """<OGRVRTDataSource>
+    <OGRVRTLayer name="{0}">
+        <SrcDataSource>{0}_layer.{1}</SrcDataSource>
+        <SrcLayer>{0}_layer</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+</OGRVRTDataSource>"""
     vrt_content = vrt_template.format(f_name,ext)
     
     print('\n {0} vrt for {1} file to written to file: {2}_layer_{3}.vrt'.format(shape,ext_label,f_name,ext))  
@@ -375,8 +379,8 @@ def hexagons(north,south,east,west,radial,outfile):
         file.write(str(json.dumps(layer_dict))) #write geojson layer to open file
         file.close() #close file
     
-        write_vrt_file(outfile,'hexagons','json','geojson')
-        to_shp_tab(outfile,'hexagons')
+        write_vrt_file(outfile,'boxes','json','geojson')
+        to_shp_tab(outfile,'boxes')
 
     print('\n')
     print('The End')# boxes
