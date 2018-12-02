@@ -1,1 +1,1 @@
-SELECT shapes.*,shapes.geometry FROM shapes, aust WHERE ST_Intersects(shapes.geometry,aust.geometry)
+SELECT shapes.*,ST_Area(shapes.geometry) as area, shapes.geometry FROM shapes, aust WHERE ST_Intersects(shapes.geometry,aust.geometry)
