@@ -3,6 +3,7 @@ import pandas as pd
 import json
 from geopy.distance import distance,geodesic
 from geojson import Polygon,Feature,FeatureCollection
+from math import pow,sqrt
 import pandas as pd
 import subprocess
 import urllib.request
@@ -171,7 +172,7 @@ def write_vrt_file(f_name,shape,ext,ext_label):
     file.write(vrt_content) #write vrt layer to open file
     file.close() #close file 
     #to check: ogrinfo -ro -al box_106km_layer.vrt
-    #ogr2ogr hex_aust.shp 'hex_55km_layer_ESRI Shapefile.vrt' -dialect sqlite -sql @austshape.sql
+    #ogr2ogr hex_aust.shp hex_55km_layer_ESRI_Shapefile.vrt -dialect sqlite -sql @austshape.sql
 
 def ref_files():
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -191,8 +192,7 @@ def ref_files():
         print('Unzipping ABS Australia file in Tab file format')
         Archive('1270055001_aus_2016_aust_tab.zip').extractall(dir_path)
     else:
-        print('ABS Australia file in Tab file format exists')
-     
+        print('ABS Australia file in Tab file format exists')  
 
 def boxes(north,south,east,west,radial,outfile):
     params('boxes',north,south,east,west,radial)
@@ -284,7 +284,8 @@ def boxes(north,south,east,west,radial,outfile):
     print('\n')
     print('The End')# end boxes
 
-def hexagons(north,south,east,west,radial,outfile):
+def hexagons(north,south,east,west,radial,outfile):   
+
     params('hexagons',north,south,east,west,radial)   
     #init bits
     poly_list = []
@@ -353,7 +354,7 @@ def hexagons(north,south,east,west,radial,outfile):
                 centre_lat=intersect_list[vertex[0]][1] + (intersect_list[vertex[5]][1 ] - intersect_list[vertex[0]][1])/2
                 centre_lon=intersect_list[vertex[0]][0] + (intersect_list[vertex[5]][0] - intersect_list[vertex[0]][0])/2
                 
-                if (centre_lat is not last_lat_row) or last_lat_row is 0:
+a                if (centre_lat is not last_lat_row) or last_lat_row is 0:
                     bounds_n = intersect_list[vertex[0]][1]
                     bounds_s = intersect_list[vertex[2]][1]
                     bounds_e = intersect_list[vertex[2]][0]
@@ -361,11 +362,15 @@ def hexagons(north,south,east,west,radial,outfile):
                     last_lat_row=centre_lat
                     geopoly = Polygon([poly_coords])       
                     hexagon+=1
-                    geopoly = Feature(geometry=geopoly, properties={"p": hexagon,"row": row, "lat": centre_lat, "lon": centre_lon, "N": bounds_n, "S": bounds_s, "E": bounds_e, "W": bounds_w})                                                                
+                    start=(intersect_list[vertex[0]][1],intersect_list[vertex[0]][0])
+                    end=(intersect_list[vertex[1]][1],intersect_list[vertex[1]][0])
+                    len_radial = geodesic(start,end).km
+                    est_area = ((3 * sqrt(3)/2)*pow(len_radial,2)) #estimate polygon area
+                    geopoly = Feature(geometry=geopoly, properties={"p": hexagon,"row": row, "lat": centre_lat, "lon": centre_lon, "N": bounds_n, "S": bounds_s, "E": bounds_e, "W": bounds_w, "est_area": est_area})                                                                
                     if  (bounds_e>bounds_w):
                         g_array.append(geopoly)     #append geojson geometry definition attributes to list
                         #tabular dataset
-                        tabular_line = [top_left, row, centre_lat, centre_lon, bounds_n, bounds_s, bounds_e, bounds_w]
+                        tabular_line = [top_left, row, centre_lat, centre_lon, bounds_n, bounds_s, bounds_e, bounds_w, est_area]
                         tabular_list.append(tabular_line) #array of polygon and tabular columns
                 else:
                     donothing=True
@@ -398,7 +403,7 @@ def hexagons(north,south,east,west,radial,outfile):
         print('\n6/7 tabular dataset of {0} lines of hexagon polygon data'.format(len(tabular_list)))      
         print('writing tabular dataset to file: {0}_dataset.csv'.format(outfile))
         tabular_df = pd.DataFrame(tabular_list) #convert tabular array to tabular data frame
-        tabular_df.columns = ['poly','row','lat','long','N','S','E','W']
+        tabular_df.columns = ['poly','row','lat','long','N','S','E','W','area']
         layer_dict['Bounds']['Dataset']={}#update layer_dict with dataset bounds
         layer_dict['Bounds']['Dataset']['North'] = tabular_df['N'].max()
         layer_dict['Bounds']['Dataset']['South'] = tabular_df['S'].min()
