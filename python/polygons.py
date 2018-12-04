@@ -396,7 +396,7 @@ def hexagons(north,south,east,west,radial,outfile):
         g_array=[] #release g_array - array of geojson geometry elements
 
         print('writing geojson formatted hexagon dataset to file: {0}.json'.format(outfile))
-        file = open('{0}_layer.json'.format(outfile), 'w') #open file for writing geojson layer in geojson format
+        file = open('../geojson/{0}_layer.json'.format(outfile), 'w') #open file for writing geojson layer in geojson format
         file.write(str(boxes_geojson)) #write geojson layer to open file
         file.close() #close file
         
