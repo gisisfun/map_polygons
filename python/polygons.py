@@ -114,9 +114,9 @@ def params(shape,north,south,east,west,radial):
     print('Making {0} hex shapes starting from {1},{2} to {3},{4} with a radial length of {5} km'.format(shape, north, west, south, east, radial))
 
 def to_shp_tab(f_name,shape):    
-    shp_fname='{0}_layer.shp'.format(f_name).replace(' ','_')
-    tab_fname='{0}_layer.tab'.format(f_name).replace(' ','_')
-    json_fname='{0}_layer.json'.format(f_name).replace(' ','_')
+    shp_fname='../shapefiles/{0}_layer.shp'.format(f_name).replace(' ','_')
+    tab_fname='../tabfiles/{0}_layer.tab'.format(f_name).replace(' ','_')
+    json_fname='../geojson/{0}_layer.json'.format(f_name).replace(' ','_')
     tab_options = ['/usr/bin/ogr2ogr','-f', 'Mapinfo file', tab_fname, '-t_srs', 'EPSG:4823', json_fname]
     shp_options = ['/usr/bin/ogr2ogr','-f', 'ESRI Shapefile',shp_fname, '-t_srs', 'EPSG:4823', json_fname]
     try:
@@ -142,7 +142,7 @@ def write_vrt_tabular_file(f_name):
     vrt_content = vrt_template.format(f_name).replace(' ','_')
     
     print('\n tabular definition in vrt format for csv file to written to file: {0}.vrt'.format(f_name))  
-    file = open('{0}.vrt'.format(f_name.replace(' ','_')), 'w') #open file for writing geojson layer
+    file = open('../vrt/{0}.vrt'.format(f_name.replace(' ','_')), 'w') #open file for writing geojson layer
     file.write(vrt_content) #write vrt layer to open file
     file.close() #close file 
     #to check: ogrinfo -ro -al box_106km_layer.vrt
@@ -168,7 +168,7 @@ def write_vrt_file(f_name,shape,ext,ext_label):
     vrt_content = vrt_template.format(f_name,ext)
     
     print('\n {0} vrt for {1} file to written to file: {2}_layer_{3}.vrt'.format(shape,ext_label,f_name,ext))  
-    file = open('{0}_layer_{1}.vrt'.format(f_name,ext_label.replace(' ','_')), 'w') #open file for writing geojson layer
+    file = open('../vrt/{0}_layer_{1}.vrt'.format(f_name,ext_label.replace(' ','_')), 'w') #open file for writing geojson layer
     file.write(vrt_content) #write vrt layer to open file
     file.close() #close file 
     #to check: ogrinfo -ro -al box_106km_layer.vrt
@@ -176,21 +176,21 @@ def write_vrt_file(f_name,shape,ext,ext_label):
 
 def ref_files():
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    if not os.path.isfile('AUS_2016_AUST.shp'):
+    if not os.path.isfile('../shapefiles/AUS_2016_AUST.shp'):
         print('Downloading ABS Australia file in Shape file format')
         url = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&5503B37F8055BFFECA2581640014462C&0&July%202016&24.07.2017&Latest'
-        urllib.request.urlretrieve(url, '1270055001_aus_2016_aust_shape.zip')
+        urllib.request.urlretrieve(url, '../shapefiles/1270055001_aus_2016_aust_shape.zip')
         print('Unzipping ABS Australia file in Shape file format')    
-        Archive('1270055001_aus_2016_aust_shape.zip').extractall(dir_path)
+        Archive('../shapefiles/1270055001_aus_2016_aust_shape.zip').extractall(dir_path)
     else:
         print('ABS Australia file in Shape file format exists')
     
     if not os.path.isfile('AUS_2016_AUST.tab'):
         print('Downloading ABS Australia file in Tab file format')
         url ='http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_tab.zip&1270.0.55.001&Data%20Cubes&F18065BF058615F9CA2581640014491B&0&July%202016&24.07.2017&Latest'
-        urllib.request.urlretrieve(url, '1270055001_aus_2016_aust_tab.zip') 
+        urllib.request.urlretrieve(url, './shapefiles/1270055001_aus_2016_aust_tab.zip') 
         print('Unzipping ABS Australia file in Tab file format')
-        Archive('1270055001_aus_2016_aust_tab.zip').extractall(dir_path)
+        Archive('../shapefiles/1270055001_aus_2016_aust_tab.zip').extractall(dir_path)
     else:
         print('ABS Australia file in Tab file format exists')  
 
@@ -258,7 +258,7 @@ def boxes(north,south,east,west,radial,outfile):
     g_array=[] #release g_array - array of geojson geometry elements
 
     print('writing boxes geojson formatted dataset to file: {0}.json'.format(outfile))
-    file = open('{0}_layer.json'.format(outfile), 'w') #open file for writing geojson layer in geojson format
+    file = open('../geojson/{0}_layer.json'.format(outfile), 'w') #open file for writing geojson layer in geojson format
     file.write(str(boxes_geojson)) #write geojson layer to open file
     file.close() #close file
     
@@ -271,11 +271,11 @@ def boxes(north,south,east,west,radial,outfile):
     layer_dict['Bounds']['Dataset']['South'] = tabular_df['S'].min()
     layer_dict['Bounds']['Dataset']['East'] = tabular_df['E'].max()
     layer_dict['Bounds']['Dataset']['West'] = tabular_df['W'].min() 
-    tabular_df.to_csv('{0}_dataset.csv'.format(outfile), sep=',')
+    tabular_df.to_csv('../csv/{0}_dataset.csv'.format(outfile), sep=',')
     write_vrt_tabular_file('{0}_dataset'.format(outfile))
 
     print('\n7/7 boxes json metadata to written to file: {0}_metadata.json'.format(outfile))  
-    file = open('{0}_metadata.json'.format(outfile), 'w') #open file for writing geojson layer
+    file = open('../metadata/{0}_metadata.json'.format(outfile), 'w') #open file for writing geojson layer
     file.write(str(json.dumps(layer_dict))) #write geojson layer to open file
     file.close() #close file
     write_vrt_file(outfile,'boxes','json','geojson')    
@@ -409,11 +409,11 @@ def hexagons(north,south,east,west,radial,outfile):
         layer_dict['Bounds']['Dataset']['South'] = tabular_df['S'].min()
         layer_dict['Bounds']['Dataset']['East'] = tabular_df['E'].max()
         layer_dict['Bounds']['Dataset']['West'] = tabular_df['W'].min() 
-        tabular_df.to_csv('{0}_dataset.csv'.format(outfile), sep=',')
+        tabular_df.to_csv('../csv/{0}_dataset.csv'.format(outfile), sep=',')
         write_vrt_tabular_file('{0}_dataset'.format(outfile))
 
         print('\n7/7 hexagon json metadata to written to file: {0}_metadata.json'.format(outfile))  
-        file = open('{0}_metadata.json'.format(outfile), 'w') #open file for writing geojson layer
+        file = open('../metadata/{0}_metadata.json'.format(outfile), 'w') #open file for writing geojson layer
         file.write(str(json.dumps(layer_dict))) #write geojson layer to open file
         file.close() #close file
     
