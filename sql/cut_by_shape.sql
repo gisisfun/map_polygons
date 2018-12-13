@@ -1,6 +1,6 @@
 SELECT 
- 'P' as Feat_type,
-'SA1_2016' as Feat_Source,
+ 'P' as Feat_Type,
+'SA1_2016' as Feat_Src,
 poly.SA1_MAIN16 as Feat_Code,
 '' as Feat_Name,
 shapes.p as Poly,  
