@@ -1,1 +1,1 @@
-ogr2ogr ../shapefiles/hex_57_aust.shp ../vrt/hex_57km_layer_ESRI_Shapefile.vrt -dialect sqlite -sql @austshape.sql
+ogr2ogr hex_57_aust.shp 'shape_to_aust.vrt' -dialect sqlite -sql @austshape.sql
