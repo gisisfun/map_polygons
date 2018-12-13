@@ -3,8 +3,8 @@ import csv
 import sys
 import pandas as pd
 #source: https://gis.stackexchange.com/questions/19163/convert-shapefile-to-csv-including-attributes-and-geometry
-shpfile=r'../shp/cut_sa1.shp' #sys.argv[1]
-csvfile=r'../csv/cut_sa1.csv' #sys.argv[2]
+shpfile=r'cut_sa1.shp' #sys.argv[1]
+csvfile=r'cut_sa1.csv' #sys.argv[2]
 
 #Open files
 ds=ogr.Open(shpfile)
@@ -18,7 +18,7 @@ tabular_list = []
 for i in range(nfields):
     fields.append(dfn.GetFieldDefn(i).GetName())
     print(dfn.GetFieldDefn(i).GetName())
-print(fields)
+
 
 # Write attributes and kml out to csv
 for feat in lyr:
@@ -30,11 +30,11 @@ for feat in lyr:
 
 tabular_df = pd.DataFrame(tabular_list) #convert tabular array to tabular data frame
 tabular_df.columns = fields
-tabular_df = tabular_df.dropna()
+print(tabular_df)
+#filtered_df = tabular_df.dropna()
 #or
-#filtered_df = df[df['name'].notnull()]
-
-tabular_df.to_csv('{0}'.format(csvfile), sep=',')
+filtered_df = tabular_df[tabular_df['Shp_Prop'].notnull()]
+filtered_df.to_csv('{0}'.format(csvfile), sep=',')
 #clean up
 del lyr,ds
-#csvfile.close()
+
