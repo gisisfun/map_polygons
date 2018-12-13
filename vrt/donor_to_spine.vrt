@@ -1,0 +1,12 @@
+<OGRVRTDataSource>
+    <OGRVRTLayer name="donor">
+        <SrcDataSource>B01.csv</SrcDataSource>
+        <SrcLayer>B01</SrcLayer>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="spine">
+        <SrcDataSource>cut_sa1.shp</SrcDataSource>
+        <SrcLayer>cut_sa1</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+</OGRVRTDataSource>
