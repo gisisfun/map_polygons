@@ -1,7 +1,10 @@
-SELECT poly.SA1_MAIN16 as Bdy_Code, 
-'SA1_2016' as Bdy_Type,
+SELECT 
+ 'P' as Feat_type,
+'SA1_2016' as Feat_Source,
+poly.SA1_MAIN16 as Feat_Code,
+'' as Feat_Name,
 shapes.p as Poly,  
-(ST_Area(ST_Intersection(poly.geometry,shapes.geometry))*12391.3)/(st_area(poly.geometry)*12391.3) as Bdy_Prop, 
+(ST_Area(ST_Intersection(poly.geometry,shapes.geometry))*12391.3)/(st_area(poly.geometry)*12391.3) as Feat_Prop, 
 (ST_Area(ST_Intersection(poly.geometry,shapes.geometry))*12391.3)/(st_area(shapes.geometry)*12391.3) as Shp_Prop, 
 st_area(shapes.geometry)*12391.3 as Shp_Area, 
 ST_Intersection(poly.geometry,shapes.geometry) 
