@@ -1,6 +1,7 @@
 SELECT poly.SA1_MAIN16, 
 shapes.p,  
 (ST_Area(ST_Intersection(poly.geometry,shapes.geometry))*12391.3)/(st_area(poly.geometry)*12391.3) as ref_prop, 
+(ST_Area(ST_Intersection(poly.geometry,shapes.geometry))*12391.3)/(st_area(shapes.geometry)*12391.3) as shape_prop, 
 st_area(shapes.geometry)*12391.3 as shp_area, 
 'SA1_2016',
 ST_Intersection(poly.geometry,shapes.geometry) 
