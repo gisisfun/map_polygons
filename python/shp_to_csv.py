@@ -3,7 +3,7 @@ import csv
 import sys
 import pandas as pd
 #source: https://gis.stackexchange.com/questions/19163/convert-shapefile-to-csv-including-attributes-and-geometry
-shpfile=r'../shape/cut_sa1.shp' #sys.argv[1]
+shpfile=r'../shapefiles/cut_sa1.shp' #sys.argv[1]
 csvfile=r'../csv/cut_sa1.csv' #sys.argv[2]
 
 #Open files
