@@ -1,13 +1,13 @@
 <OGRVRTDataSource>
     <OGRVRTLayer name="Feat">
-        <SrcDataSource>SA1_2016_AUST.shp</SrcDataSource>
+        <SrcDataSource>../shapefiles/SA1_2016_AUST.shp</SrcDataSource>
         <SrcLayer>SA1_2016_AUST</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shapes">
-        <SrcDataSource>hex_57km_aust.shp</SrcDataSource>
-        <SrcLayer>hex_57km_aust</SrcLayer>
+        <SrcDataSource>../shapefiles/aust_hex_shape_57km.shp</SrcDataSource>
+        <SrcLayer>aust_hex_shape_57km</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
