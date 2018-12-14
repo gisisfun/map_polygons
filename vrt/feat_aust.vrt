@@ -5,7 +5,7 @@
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
-    <OGRVRTLayer name="Shapes">
+    <OGRVRTLayer name="Aust">
         <SrcDataSource>../shapefiles/aust_hex_shape_57km.shp</SrcDataSource>
         <SrcLayer>aust_hex_shape_57km</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
