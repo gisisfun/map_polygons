@@ -6,8 +6,8 @@
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shapes">
-        <SrcDataSource>../shapefiles/hex_102km_layer.shp</SrcDataSource>
-        <SrcLayer>hex_102km_layer</SrcLayer>
+        <SrcDataSource>../shapefiles/hex_57km_layer.shp</SrcDataSource>
+        <SrcLayer>hex_57km_layer</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
