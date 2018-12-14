@@ -1,0 +1,12 @@
+<OGRVRTDataSource>
+    <OGRVRTLayer name="Donor">
+        <SrcDataSource>B01.csv</SrcDataSource>
+        <SrcLayer>B01</SrcLayer>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="Feat">
+        <SrcDataSource>feat_aust_75km_sa1.shp</SrcDataSource>
+        <SrcLayer>feat_aust_75km_sa1</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+</OGRVRTDataSource>
