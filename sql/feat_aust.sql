@@ -12,6 +12,4 @@ FROM Feat,Shapes
 WHERE ST_Intersection(Feat.geometry,Aust.geometry) or 
 ST_Intersects(Feat.geometry,Aust.geometry) or 
 ST_Contains(Feat.geometry,Aust.geometry) or 
-ST_Intersects(Feat.geometry,Aust.geometry) or 
-ST_Within(ST_Centroid(Feat.geometry),Aust.geometry) or 
 ST_Crosses(Feat.geometry,Aust.geometry)
