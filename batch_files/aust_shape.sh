@@ -1,1 +1,1 @@
-ogr2ogr hex_102km_aust.shp 'aust_shape.vrt' -dialect sqlite -sql @aust_shape.sql
+ogr2ogr hex_102km_aust.shp '../shapefiles/aust_shape.vrt' -dialect sqlite -sql @../sql/aust_shape.sql
