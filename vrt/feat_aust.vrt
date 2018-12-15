@@ -1,6 +1,6 @@
 <OGRVRTDataSource>
     <OGRVRTLayer name="Feat">
-        <SrcDataSource>../shapefiles/SA1_2016_AUST.shp</SrcDataSource>
+        <SrcDataSource>../shapefiles/SA1_2011_AUST.shp</SrcDataSource>
         <SrcLayer>SA1_2016_AUST</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
