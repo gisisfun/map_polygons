@@ -1,5 +1,5 @@
 SELECT 
- 'P' as Feat_Type,
+ 'R' as Feat_Type,
 'SA1_2011' as Feat_Src,
 Feat.SA1_7DIG11 as Feat_Code,
 '' as Feat_Name,
