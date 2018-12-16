@@ -1,5 +1,5 @@
 SELECT Feat.Poly,Feat.Feat_Src,
-Feat.SA1_7DIG11 as Feat_Code,
+Feat.Feat_Code,
 (Donor.Persons_Total_Has_need_for_assistance*Feat.Feat_Prop) as NeedAssist,
 (Donor.Persons_Total_Total*Feat.Feat_Prop) as TotP,
 Feat.geography
