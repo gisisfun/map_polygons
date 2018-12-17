@@ -1,0 +1,18 @@
+<OGRVRTDataSource>
+    <OGRVRTLayer name="Donor">
+        <SrcDataSource>../csv/2011Census_B18_AUST_SA1_long.csv</SrcDataSource>
+        <SrcLayer>2011Census_B18_AUST_SA1_long</SrcLayer>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="Feat">
+        <SrcDataSource>../shapefiles/SA1_2011_AUST.shp</SrcDataSource>
+        <SrcLayer>SA1_2011_AUST</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="Aust">
+        <SrcDataSource>../shapefiles/aust_hex_shape_57km.shp</SrcDataSource>
+        <SrcLayer>aust_hex_shape_57km</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+</OGRVRTDataSource>
