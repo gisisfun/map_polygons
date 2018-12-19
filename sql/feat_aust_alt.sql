@@ -1,0 +1,2 @@
+ALTER TABLE Feat ADD NeedAssist INTEGER, TotP INTEGER;
+
