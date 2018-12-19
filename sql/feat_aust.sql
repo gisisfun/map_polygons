@@ -4,9 +4,7 @@ SELECT
 Feat.SA1_7DIG11 as Feat_Code,
 '' as Feat_Name,
 Aust.p as Poly,  
-(ST_Area(ST_Intersection(Feat.geometry,Aust.geometry))*12391.3)/(st_area(Feat.geometry)*12391.3) as Feat_Prop, 
-(ST_Area(ST_Intersection(Feat.geometry,Aust.geometry))*12391.3)/(st_area(Aust.geometry)*12391.3) as Shp_Prop, 
-st_area(Aust.geometry)*12391.3 as Shp_Area, 
+(ST_Area(ST_Intersection(Feat.geometry,Aust.geometry))*12391.3)/(st_area(Feat.geometry)*12391.3) as Feat_Prop,  
 ST_Intersection(Feat.geometry,Aust.geometry) 
 FROM Feat,Aust 
 WHERE ST_Intersects(Feat.geometry,Aust.geometry) 
