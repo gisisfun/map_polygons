@@ -1,4 +1,4 @@
-![alt text](http://raw.githubusercontent.com/gisisfun/map_polygons/master/batch_files/processes.png "Logo Title Text 1")
+![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/batch_files/processes.png "Logo Title Text 1")
 Runs scripts in this order:
 - 1 python/polygons.py
 - 2 batch_files/aust_shape.sh
