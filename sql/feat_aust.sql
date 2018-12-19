@@ -9,7 +9,4 @@ Aust.p as Poly,
 st_area(Aust.geometry)*12391.3 as Shp_Area, 
 ST_Intersection(Feat.geometry,Aust.geometry) 
 FROM Feat,Aust 
-WHERE ST_Intersection(Feat.geometry,Aust.geometry) or 
-ST_Intersects(Feat.geometry,Aust.geometry) or 
-ST_Contains(Feat.geometry,Aust.geometry) or 
-ST_Crosses(Feat.geometry,Aust.geometry)
+WHERE ST_Intersects(Feat.geometry,Aust.geometry) 
