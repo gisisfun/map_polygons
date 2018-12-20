@@ -1,0 +1,14 @@
+<OGRVRTDataSource>
+    <OGRVRTLayer name="Shape">
+        <SrcDataSource>../shapefiles/aust_hex_shape_57km.shp</SrcDataSource>
+        <SrcLayer>aust_hex_shape_57km</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="Donor">
+        <SrcDataSource>../shapefiles/donor_feat_57km_aust.shp</SrcDataSource>
+        <SrcLayer>donor_feat_57km_aust</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+</OGRVRTDataSource>
