@@ -8,3 +8,4 @@ Aust.p as Poly,
 ST_Intersection(Feat.geometry,Aust.geometry) 
 FROM Feat,Aust 
 WHERE ST_Intersects(Feat.geometry,Aust.geometry) and Feat_Prop is not NULL
+ORDER by POLY
