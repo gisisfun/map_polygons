@@ -1,5 +1,5 @@
 # map_polygons
-![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/SA1_Need_for_assistance_2011.png)
+![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/SA1_need_for_assistance_2011.png)
 This program is designed to demonstrate what is possible to achieve with a polyhedral, equal area mapping frameworks. 
 The Python program creates a custom mapping layer in geojson format. 
 The mapping layer can be made up of boxes or hexagons.
