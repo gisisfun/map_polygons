@@ -1,0 +1,12 @@
+<OGRVRTDataSource>
+    <OGRVRTLayer name="Donor">
+        <SrcDataSource>../csv/2011Census_B18_AUST_SA1_long.csv</SrcDataSource>
+        <SrcLayer>2011Census_B18_AUST_SA1_long</SrcLayer>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="Feat">
+        <SrcDataSource>../shapefiles/feat_aust_57km_sa1_11.shp</SrcDataSource>
+        <SrcLayer>feat_aust_57km_sa1_11</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+</OGRVRTDataSource>
