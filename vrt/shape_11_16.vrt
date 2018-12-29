@@ -1,11 +1,11 @@
 <OGRVRTDataSource>
     <OGRVRTLayer name="Shape11csv">
         <SrcDataSource>../csv/shape_donor_feat_57km_aust_11.csv</SrcDataSource>
-        <SrcLayer>donor_feat_57km_aust_11</SrcLayer>
+        <SrcLayer>shape_donor_feat_57km_aust_11</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shape16csv">
         <SrcDataSource>../csv/shape_donor_feat_57km_aust_16.csv</SrcDataSource>
-        <SrcLayer>donor_feat_57km_aust_16</SrcLayer>
+        <SrcLayer>shape_donor_feat_57km_aust_16</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shape11">
         <SrcDataSource>../shapefiles/shape_donor_feat_57km_aust_11.shp</SrcDataSource>
