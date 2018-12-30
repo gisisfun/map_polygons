@@ -1,7 +1,7 @@
 SELECT Feat.Poly,Feat.Feat_Src,
 Feat.Feat_Code,
-(Donor_SA1.P_Tot_prvided_unpaid_assist*Feat.Feat_Prop) as UnpAssist,
-(Donor_SA1.P_Tot_Tot*Feat.Feat_Prop) as UnpAssTot,
+
+
 (Donor_SA1.P_Tot_Need_for_assistance*Feat.Feat_Prop) as NeedAssist,
 (Donor_SA1.P_Tot_Tot*Feat.Feat_Prop) as TotP,
 Feat.geometry
