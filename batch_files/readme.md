@@ -1,4 +1,5 @@
-Polygon shapes are given attributes from data sets with spatial references. These are processed using scripts and their SQL and vrt table to file references to translate the example spatial and tabular data content. The content is ABS SA1 2011 and 2016 shapefiles with associated demographic data sourced from the the Australian Bureau of Statistics.
+Polygon shapes are given attributes from data sets with spatial references. The polygon data is processed using scripts with their SQL and vrt file pointing to file names.  
+For this example, spatial and tabular attribute data have been selected. The content is ABS SA1 2011 and 2016 shapefiles with associated demographic data items. The data was sourced from the the Australian Bureau of Statistics (ABS).
 Run these ETL scripts in this order:
 - 1 python/polygons.py
 - 2 batch_files/aust_shape.sh
