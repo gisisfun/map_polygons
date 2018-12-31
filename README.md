@@ -57,7 +57,7 @@ Run these ETL scripts in this order:
 |                       |             | shape_sonor_16.sh | shape_donor_16.vrt | shape_donor_16.sql |
 | Merge attrib data     | batch_files | shape_11_16.sh    | shape_11_16.vrt    | shape_11_16.sql    |
 
-The SQL code has been written to pruduce the final product and a descriptive presentation of the process.
+The SQL code has been written to render the final product and a descriptive presentation of the process.
 
 ### Table of processing files and their input and output files
 
