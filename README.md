@@ -87,7 +87,7 @@ The SQL code has been written to pruduce the final product and a descriptive pre
 | ---------------------------------:|---------------:|----------:|
 | hex_57km_layer.json               | 4,051          | 2.4 MB    |
 | hex_57km_layer.shp                | 4,051          | 627 KB    |
-| AUS_2016_AUST.shp                 | 1              |           |
+| AUS_2016_AUST.shp                 | 1              | 26.6 MB   |
 | aust_hex_shape_57km.shp           | 1,262          | 627 KB    |
 | SA1_2011_AUST.shp                 | 54,806         | 174 MB    |
 | feat_aust_57km_sa1_11.shp         | 59,986         | 170 MB    |
