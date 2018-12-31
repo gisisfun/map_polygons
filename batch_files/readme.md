@@ -39,5 +39,20 @@ The SQL code has been written to pruduce the final product and a descriptive pre
 | shape_11_16.sh   |shape_donor_feat_57km_aust_11.shp | shape_75km_11_16.shp             |
 |                  |shape_donor_feat_57km_aust_16.shp |                                  |
 
+| File                              | Feature count  | File size |
+| ---------------------------------:|---------------:|----------:|
+| hex_57km_layer.json               | 4,051          | 2.4 MB    |
+| hex_57km_layer.shp                | 4,051          | 627 KB    |
+| aust_hex_shape_57km.shp           | 1,262          | 627 KB    |
+| feat_aust_57km_sa1_11.shp         | 59,986         | 170 MB    |
+| feat_aust_57km_sa1_16.shp         | 62,756         | 186.6 MB  |
+| donor_feat_57km_sa1_11.shp        | 20,017         | 15.2 MB   |
+| donor_feat_57km_sa1_16.shp        | 18,923         | 14.1 MB   |
+| shape_donor_feat_57km_aust_11.shp | 1,262          | 315 KB    |
+| shape_donor_feat_57km_aust_16.shp | 1,262          | 303 KB    |
+| shape_75km_11_16.shp              | 1,262          | 377 KB    |
+
+
+
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/batch_files/processes.png "Logo Title Text 1")
 
