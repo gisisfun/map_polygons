@@ -66,13 +66,13 @@ The SQL code has been written to pruduce the final product and a descriptive pre
 
 ### Table of data sources
 
-| File                              | Feature count  | File size |
-| ---------------------------------:|---------------:|----------:|
-| AUS_2016_AUST.shp                 | 1              |           |
-| SA1_2011_AUST.shp                 | 54,806         | 174 MB    |
-| SA1_2016_AUST.shp                 | 57,523         | 185.5 MB  |
-| 2011Census_B18_AUST_SA1_long.csv  | 54,806         | 19M       |
-| 2016Census_G18_AUS_SA1.csv        | 57,523         | 20M       |
+| File                              | Download      | Feature count  | File size |
+| ---------------------------------:|--------------:|---------------:|----------:|
+| AUS_2016_AUST.shp                 |[download link](https://www.google.com)| 1              |           |
+| SA1_2011_AUST.shp                 |[download link](https://www.google.com)| 54,806         | 174 MB    |
+| SA1_2016_AUST.shp                 |[download link](https://www.google.com)| 57,523         | 185.5 MB  |
+| 2011Census_B18_AUST_SA1_long.csv  |[download link](https://www.google.com)| 54,806         | 19M       |
+| 2016Census_G18_AUS_SA1.csv        |[download link](https://www.google.com)| 57,523         | 20M       |
 
 
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/batch_files/processes.png "Logo Title Text 1")
