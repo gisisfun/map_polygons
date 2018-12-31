@@ -33,7 +33,9 @@ The SQL code has been written to pruduce the final product and a descriptive pre
 | donor_feat_16.sh | feat_aust_57km_sa1_16.shp        | donor_feat_57km_aust_16.shp      |
 |                  | 2016Census_G18_AUS_SA1.shp       |                                  |
 | shape_donor_11.sh| donor_feat_57km_aust_11.shp      |shape_donor_feat_57km_aust_11.shp |
+|                  | aust_hex_shape_57km.shp          |                                  |
 | shape_sonor_16.sh| donor_feat_57km_aust_16.shp      |shape_donor_feat_57km_aust_16.shp |
+|                  | aust_hex_shape_57km.shp          |                                  |
 | shape_11_16.sh   |shape_donor_feat_57km_aust_11.shp | shape_75km_11_16.shp             |
 |                  |shape_donor_feat_57km_aust_16.shp |                                  |
 
