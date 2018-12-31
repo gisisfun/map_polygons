@@ -5,6 +5,8 @@ The hexagon or box shapes are created by the polygons.py python program. The fea
 
 Run these ETL scripts in this order:
 
+Table Summary of processing files and components
+
 | Process               | Path        | File              | VRT File           | SQL File           |
 | --------------------- |:-----------:| -----------------:|-------------------:|-------------------:|
 | Create hexagons/boxes | python      | polygons.py       |                    |
@@ -18,6 +20,8 @@ Run these ETL scripts in this order:
 | Merge attrib data     | batch_files | shape_11_16.sh    | shape_11_16.vrt    | shape_11_16.sql    |
 
 The SQL code has been written to pruduce the final product and a descriptive presentation of the process.
+
+Table of processing files and their input and output files
 
 | File             | Input                            | Output                           |
 | ----------------:|---------------------------------:|---------------------------------:|
@@ -38,6 +42,8 @@ The SQL code has been written to pruduce the final product and a descriptive pre
 |                  | aust_hex_shape_57km.shp          |                                  |
 | shape_11_16.sh   |shape_donor_feat_57km_aust_11.shp | shape_75km_11_16.shp             |
 |                  |shape_donor_feat_57km_aust_16.shp |                                  |
+
+Table of feature counts and File sizes
 
 | File                              | Feature count  | File size |
 | ---------------------------------:|---------------:|----------:|
