@@ -59,7 +59,7 @@ Run these ETL scripts in this order:
 
 The SQL code has been written to render the final product and a descriptive presentation of the process.
 
-### Table of processing files and their input and output files
+### Table of area weighted processing files and their input and output files
 
 | File             | Input                            | Output                           |
 | ----------------:|---------------------------------:|---------------------------------:|
@@ -81,7 +81,7 @@ The SQL code has been written to render the final product and a descriptive pres
 | shape_11_16.sh   |shape_donor_feat_57km_aust_11.shp | shape_75km_11_16.shp             |
 |                  |shape_donor_feat_57km_aust_16.shp |                                  |
 
-### Table of feature counts and file sizes
+### Table of feature data set counts and file sizes for area weighted process
 
 | File                              | Feature count  | File size |
 | ---------------------------------:|---------------:|----------:|
