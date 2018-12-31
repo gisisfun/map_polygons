@@ -21,7 +21,7 @@ The SQL code has been written to pruduce the final product and a descriptive pre
 
 | File             | Input                            | Output                           |
 | ----------------:|---------------------------------:|---------------------------------:|
-| polygons.py      |                                  | hex_57km_layer.shp               |
+| polygons.py      | hex_57km_layer.json              | hex_57km_layer.shp               |
 | aust_shape.sh    | hex_57km_layer.shp               | aust_shape.sql                   |
 |                  | AUS_2016_AUST.shp                | aust_hex_shape_57km.shp          |
 | feat_aust_11.sh  | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_11.shp        | 
