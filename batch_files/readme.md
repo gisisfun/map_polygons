@@ -1,3 +1,4 @@
+# Data Processing Files
 Polygon shapes are given attributes from data sets with spatial references. The polygon data is processed using scripts with their SQL and vrt file pointing to file names.  
 For this example, spatial and tabular attribute data have been selected. The content is ABS SA1 2011 and 2016 shapefiles with associated demographic data items. The data was sourced from the the Australian Bureau of Statistics (ABS).
 
@@ -5,7 +6,7 @@ The hexagon or box shapes are created by the polygons.py python program. The fea
 
 Run these ETL scripts in this order:
 
-Table Summary of processing files and components
+### Table Summary of processing files and components
 
 | Process               | Path        | File              | VRT File           | SQL File           |
 | --------------------- |:-----------:| -----------------:|-------------------:|-------------------:|
@@ -21,7 +22,7 @@ Table Summary of processing files and components
 
 The SQL code has been written to pruduce the final product and a descriptive presentation of the process.
 
-Table of processing files and their input and output files
+### Table of processing files and their input and output files
 
 | File             | Input                            | Output                           |
 | ----------------:|---------------------------------:|---------------------------------:|
@@ -43,7 +44,7 @@ Table of processing files and their input and output files
 | shape_11_16.sh   |shape_donor_feat_57km_aust_11.shp | shape_75km_11_16.shp             |
 |                  |shape_donor_feat_57km_aust_16.shp |                                  |
 
-Table of feature counts and File sizes
+### Table of feature counts and File sizes
 
 | File                              | Feature count  | File size |
 | ---------------------------------:|---------------:|----------:|
