@@ -68,11 +68,11 @@ The SQL code has been written to pruduce the final product and a descriptive pre
 
 | File                              | Download      | Feature count  | File size |
 | ---------------------------------:|--------------:|---------------:|----------:|
-| AUS_2016_AUST.shp                 |[download link](https://www.google.com)| 1              |           |
-| SA1_2011_AUST.shp                 |[download link](https://www.google.com)| 54,806         | 174 MB    |
-| SA1_2016_AUST.shp                 |[download link](https://www.google.com)| 57,523         | 185.5 MB  |
-| 2011Census_B18_AUST_SA1_long.csv  |[download link](https://www.google.com)| 54,806         | 19M       |
-| 2016Census_G18_AUS_SA1.csv        |[download link](https://www.google.com)| 57,523         | 20M       |
+| AUS_2016_AUST.shp                 |[download link](http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&5503B37F8055BFFECA2581640014462C&0&July%202016&24.07.2017&Latest)| 1              |           |
+| SA1_2011_AUST.shp                 |[download link](http://www.abs.gov.au/ausstats/subscriber.nsf/log?openagent&1270055001_sa1_2011_aust_shape.zip&1270.0.55.001&Data%20Cubes&24A18E7B88E716BDCA257801000D0AF1&0&July%202011&23.12.2010&Latest)| 54,806         | 174 MB    |
+| SA1_2016_AUST.shp                 |[download link](http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_sa1_2016_aust_tab.zip&1270.0.55.001&Data%20Cubes&39A556A0197D8C02CA257FED00140567&0&July%202016&12.07.2016&Latest)| 57,523         | 185.5 MB  |
+| 2011Census_B18_AUST_SA1_long.csv  |[download link](https://datapacks.censusdata.abs.gov.au/datapacks/)| 54,806         | 19M       |
+| 2016Census_G18_AUS_SA1.csv        |[download link](https://datapacks.censusdata.abs.gov.au/datapacks/)| 57,523         | 20M       |
 
 
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/batch_files/processes.png "Logo Title Text 1")
