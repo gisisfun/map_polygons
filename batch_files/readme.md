@@ -50,6 +50,7 @@ The SQL code has been written to pruduce the final product and a descriptive pre
 | ---------------------------------:|---------------:|----------:|
 | hex_57km_layer.json               | 4,051          | 2.4 MB    |
 | hex_57km_layer.shp                | 4,051          | 627 KB    |
+| AUS_2016_AUST.shp                 | 1              |           |
 | aust_hex_shape_57km.shp           | 1,262          | 627 KB    |
 | SA1_2011_AUST.shp                 | 54,806         | 174 MB    |
 | feat_aust_57km_sa1_11.shp         | 59,986         | 170 MB    |
@@ -63,6 +64,15 @@ The SQL code has been written to pruduce the final product and a descriptive pre
 | shape_donor_feat_57km_aust_16.shp | 1,262          | 303 KB    |
 | shape_75km_11_16.shp              | 1,262          | 377 KB    |
 
+### Table of data sources
+
+| File                              | Feature count  | File size |
+| ---------------------------------:|---------------:|----------:|
+| AUS_2016_AUST.shp                 | 1              |           |
+| SA1_2011_AUST.shp                 | 54,806         | 174 MB    |
+| SA1_2016_AUST.shp                 | 57,523         | 185.5 MB  |
+| 2011Census_B18_AUST_SA1_long.csv  | 54,806         | 19M       |
+| 2016Census_G18_AUS_SA1.csv        | 57,523         | 20M       |
 
 
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/batch_files/processes.png "Logo Title Text 1")
