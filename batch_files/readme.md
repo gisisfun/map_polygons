@@ -74,6 +74,5 @@ The SQL code has been written to pruduce the final product and a descriptive pre
 | 2011Census_B18_AUST_SA1_long.csv  |[download link](https://datapacks.censusdata.abs.gov.au/datapacks/)| 54,806         | 19M       |
 | 2016Census_G18_AUS_SA1.csv        |[download link](https://datapacks.censusdata.abs.gov.au/datapacks/)| 57,523         | 20M       |
 
-
-![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/batch_files/processes.png " | height=400)
+![](https://raw.githubusercontent.com/gisisfun/map_polygons/master/batch_files/processes.png | width=100)
 
