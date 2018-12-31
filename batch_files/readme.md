@@ -44,7 +44,7 @@ The SQL code has been written to pruduce the final product and a descriptive pre
 | shape_11_16.sh   |shape_donor_feat_57km_aust_11.shp | shape_75km_11_16.shp             |
 |                  |shape_donor_feat_57km_aust_16.shp |                                  |
 
-### Table of feature counts and File sizes
+### Table of feature counts and file sizes
 
 | File                              | Feature count  | File size |
 | ---------------------------------:|---------------:|----------:|
