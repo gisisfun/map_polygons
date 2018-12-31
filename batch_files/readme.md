@@ -15,7 +15,7 @@ Run these ETL scripts in this order:
 |                       |               | donor_feat_16.sh  | donor_feat_16.vrt  | donor_feat_16.sql  |
 | Agg data to shape     | batch_files   | shape_donor_11.sh | shape_donor_11.vrt | shape_donor_11.sql |
 |                       |               | shape_sonor_16.sh | shape_donor_16.vrt | shape_donor_16.sql |
-| Merge attrib data     | batch_files   | shape_11_16.sh    | shape_11_16.vrt    | shape_11_16.SQL    |
+| Merge attrib data     | batch_files   | shape_11_16.sh    | shape_11_16.vrt    | shape_11_16.sql    |
 
 The SQL code has been written to pruduce the final product and a descriptive presentation of the process.
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/batch_files/processes.png "Logo Title Text 1")
