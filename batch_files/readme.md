@@ -25,7 +25,7 @@ The SQL code has been written to pruduce the final product and a descriptive pre
 | Filter to Coastline | batch_files| aust_shape.sh    | hex_57km_layer.shp               | aust_shape.sql                  |
 |                     |            |                  | AUS_2016_AUST.shp                | aust_hex_shape_57km.shp         |
 | Feature cut to shape| batch_files| feat_aust_11.sh  | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_11.shp       | 
-|                     |            |                  | SA1_2011_AUST.shp                |                                 |
+|                     |            |                  | SA1_2011_AUST.shp                |     
 |                     |            | feat_aust_16.sh  | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_11.shp       |
 |                     |            |                  | SA1_2016_AUST.shp                |                                 |
 | Attrib Data to shape| batch_files| donor_feat_11.sh | feat_aust_57km_sa1_11.shp        | donor_feat_57km_aust_11.shp     |
