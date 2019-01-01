@@ -1,4 +1,4 @@
-# map polygons for Data Visualisation (Hexagons and boxes)
+# Map Polygons for Data Visualisation (Hexagons and boxes)
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/SA1_need_for_assistance_2011.png)
 This program is designed to demonstrate what is possible to achieve with a polyhedral, equal area mapping frameworks. 
 The Python program creates a custom mapping layer in geojson format. 
