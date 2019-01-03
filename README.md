@@ -114,4 +114,4 @@ The SQL code has been written to render the final product and a descriptive pres
 | OSMStreetMap (Australia)          |               |                |          |
 | gis_osm_places_free_1.shp         |[download_link](https://download.geofabrik.de/australia-oceania/australia-latest-free.shp.zip)| 57,523         |          |
 | data.gov.au                       |               |                |          |
-| gis_osm_places_free_1.shp         |[download_link](https://data.gov.au/geoserver/agil-dataset/wfs?request=GetFeature&typeName=ckan_34b1c164_fbe8_44a0_84fd_467dba645aa7&outputFormat=json)| 57,523         |
+| AGIL Dataset .                    |[download_link](https://data.gov.au/geoserver/agil-dataset/wfs?request=GetFeature&typeName=ckan_34b1c164_fbe8_44a0_84fd_467dba645aa7&outputFormat=json)| 57,523         |
