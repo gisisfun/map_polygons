@@ -31,4 +31,16 @@
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
+    <OGRVRTLayer name="Shape11_16_place">
+        <SrcDataSource>../shapefiles/shape_75km_11_16_place.shp</SrcDataSource>
+        <SrcLayer>shape_75km_11_16_place</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="AGIL">
+        <SrcDataSource>../shapefiles/shape_donor_feat_57km_agil_count.shp</SrcDataSource>
+        <SrcLayer>shape_donor_feat_57km_agil_count</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
 </OGRVRTDataSource>
