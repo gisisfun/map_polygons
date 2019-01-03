@@ -19,6 +19,12 @@
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
+    <OGRVRTLayer name="Shape11_16">
+        <SrcDataSource>../shapefiles/shape_75km_11_16.shp</SrcDataSource>
+        <SrcLayer>shape_75km_11_16</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
     <OGRVRTLayer name="Place">
         <SrcDataSource>../shapefiles/shape_donor_feat_57km_place_count.shp</SrcDataSource>
         <SrcLayer>shape_donor_feat_57km_place_count</SrcLayer>
