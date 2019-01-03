@@ -45,8 +45,8 @@ Run these ETL scripts in this order:
 
 ### Table Summary of processing files and components for area weighted output
 
-| Process               | Path        | File              | VRT File           | SQL File           |
-| --------------------- |:-----------:| -----------------:|-------------------:|-------------------:|
+| Process               | Folder        | File              | VRT File           | SQL File           |
+| :-------------------- |:-----------| :-----------------|:-------------------|:-------------------|
 | Create hexagons/boxes | python      | polygons.py       |                    |
 | Filter to Coastline   | batch_files | aust_shape.sh     | aust_shape.vrt     | aust_shape.sql     |
 | Feature cut to shape  | batch_files | feat_aust_11.sh   | feat_aust_11.vrt   | feat_aust_11.sql   |
@@ -62,7 +62,7 @@ The SQL code has been written to render the final product and a descriptive pres
 ### Table of area weighted processing files and their input and output files
 
 | File             | Input                            | Output                           |
-| ----------------:|---------------------------------:|---------------------------------:|
+| :----------------|:---------------------------------|:---------------------------------|
 | polygons.py      | hex_57km_layer.json              | hex_57km_layer.shp               |
 | aust_shape.sh    | hex_57km_layer.shp               | aust_hex_shape_57km.shp          |
 |                  | AUS_2016_AUST.shp                |                                  |
@@ -84,7 +84,7 @@ The SQL code has been written to render the final product and a descriptive pres
 ### Table of feature data set counts and file sizes for area weighted output
 
 | File                              | Feature count  | File size |
-| ---------------------------------:|---------------:|----------:|
+| :---------------------------------|---------------:|----------:|
 | hex_57km_layer.json               | 4,051          | 2.4 MB    |
 | hex_57km_layer.shp                | 4,051          | 627 KB    |
 | AUS_2016_AUST.shp                 | 1              | 26.6 MB   |
@@ -104,7 +104,7 @@ The SQL code has been written to render the final product and a descriptive pres
 ### Table of data sources
 
 | File                              | Download      | Feature count  | File size |
-| ---------------------------------------------------------------------------:|--------------:|---------------:|----------:|
+| :---------------------------------------------------------------------------|--------------:|---------------:|----------:|
 | Australian Bureau of Statistics                                             |               |                |          |
 | AUS_2016_AUST.shp                                                           |[download link](http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&5503B37F8055BFFECA2581640014462C&0&July%202016&24.07.2017&Latest)| 1              |           |
 | SA1_2011_AUST.shp                                                           |[download link](http://www.abs.gov.au/ausstats/subscriber.nsf/log?openagent&1270055001_sa1_2011_aust_shape.zip&1270.0.55.001&Data%20Cubes&24A18E7B88E716BDCA257801000D0AF1&0&July%202011&23.12.2010&Latest)| 54,806         | 174 MB    |
