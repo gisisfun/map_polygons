@@ -1,0 +1,14 @@
+<OGRVRTDataSource>
+    <OGRVRTLayer name="Shape">
+        <SrcDataSource>../shapefiles/aust_hex_shape_57km.shp</SrcDataSource>
+        <SrcLayer>aust_hex_shape_57km</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="Place">
+        <SrcDataSource>../shapefiles/gis_osm_places_free_1.shp</SrcDataSource>
+        <SrcLayer>gis_osm_places_free_1</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+</OGRVRTDataSource>
