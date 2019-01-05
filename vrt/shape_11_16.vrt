@@ -26,8 +26,8 @@
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="Place">
-        <SrcDataSource>../shapefiles/shape_donor_feat_57km_place_count.shp</SrcDataSource>
-        <SrcLayer>shape_donor_feat_57km_place_count</SrcLayer>
+        <SrcDataSource>../shapefiles/shape_57km_place_count.shp</SrcDataSource>
+        <SrcLayer>shape_57km_place_count</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
@@ -38,8 +38,8 @@
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="AGIL">
-        <SrcDataSource>../shapefiles/shape_donor_feat_57km_agil_count.shp</SrcDataSource>
-        <SrcLayer>shape_donor_feat_57km_agil_count</SrcLayer>
+        <SrcDataSource>../shapefiles/shape_57km_agil_count.shp</SrcDataSource>
+        <SrcLayer>shape_57km_agil_count</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
