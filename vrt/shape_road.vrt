@@ -5,10 +5,10 @@
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
-    <OGRVRTLayer name="Place">
-        <SrcDataSource>../shapefiles/gis_osm_places_free_1.shp</SrcDataSource>
-        <SrcLayer>gis_osm_places_free_1</SrcLayer>
-        <GeometryType>wkbPoint</GeometryType>
+    <OGRVRTLayer name="Road">
+        <SrcDataSource>../shapefiles/gis_osm_roads_free_1.shp</SrcDataSource>
+        <SrcLayer>gis_osm_roads_free_1</SrcLayer>
+        <GeometryType>wkbLineString</GeometryType>
         <LayerSRS>EPSG:4326</LayerSRS>
     </OGRVRTLayer>
 </OGRVRTDataSource>
