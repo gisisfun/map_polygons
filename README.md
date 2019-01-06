@@ -119,50 +119,68 @@ The SQL code has been written to render the final product and a descriptive pres
 | **shape_11_16.sh**   |shape_donor_feat_57km_aust_11.shp | shape_75km_11_16.shp             |
 |                  |shape_donor_feat_57km_aust_16.shp |                                  |
 |                  |aust_hex_shape_57km.shp |                                  |
-| **shape_place_count.sh**   |aust_hex_shape_57km.shp  | shape_75km_place_count.shp |
+| **shape_place_count.sh**   |aust_hex_shape_57km.shp  | shape_57km_place_count.shp |
 | | gis_osm_places_free_1.shp | |
-| **shape_11_16_place.sh**   |shape_75km_11_16.shp | shape_75km_11_16_place.shp             |
+| **shape_11_16_place.sh**   |shape_57km_11_16.shp | shape_57km_11_16_place.shp             |
 | |shape_75km_place_count.shp | |
-| **shape_agil_count.sh**   |aust_hex_shape_57km.shp  | shape_75km_agil_count.shp             |
+| **shape_agil_count.sh**   |aust_hex_shape_57km.shp  | shape_57km_agil_count.shp             |
 | | AGIL.json | |
-| **shape_11_16_place_agil.sh**   |shape_75km_place_count.shp | shape_75km_11_16_place _agil.shp |
+| **shape_11_16_place_agil.sh**   |shape_57km_place_count.shp | shape_57km_11_16_place _agil.shp |
 | |shape_57km_agil_count.shp | |
-| **shape_service_count.sh** | aust_hex_shape_57km.shp  | shape_75km_service_count.shp |
+| **shape_service_count.sh** | aust_hex_shape_57km.shp  | shape_57km_service_count.shp |
 | | gis_osm_places_free_1.shp ||
-| **shape_11_16_place_agil_service.sh**   |shape_75km_service_count.shp | shape_75km_11_16_place _agil_service.shp             |
+| **shape_11_16_place_agil_service.sh**   |shape_57km_service_count.shp | shape_57km_11_16_place _agil_service.shp             |
 | |shape_57km_service_count.shp | |
 | **shape_bstation_count.sh** | aust_hex_shape_57km.shp  |shape_57km_service_bstation.shp |
 | | gis_osm_pois_free_1.shp ||
-| **shape_11_16_place _agil_service_bstation.sh** |shape_75km_11_16_place _agil_service.shp | shape_75km_11_16_place _agil_service_bstation.shp |
+| **shape_11_16_place _agil_service_bstation.sh** |shape_57km_11_16_place _agil_service.shp | shape_57km_11_16_place _agil_service_bstation.shp |
 | |shape_57km_bstation_count.shp | |
 | **shape_road_count.sh** | aust_hex_shape_57km.shp  |shape_57km_road_count.shp |
 | | gis_osm_roads_free_1.shp ||
-| **shape_11_16_place_agil _service_bstation_road.sh** | shape_75km_11_16_place _agil_service_bstation.shp |shape_75km_11_16_place _agil_service_bstation_road.shp |
+| **shape_11_16_place_agil _service_bstation_road.sh** | shape_57km_11_16_place _agil_service_bstation.shp |shape_57km_11_16_place _agil_service_bstation_road.shp |
 | |shape_57km_road_count.shp | |
 | **shape_mbsp_count.sh** | aust_hex_shape_57km.shp  |shape_57km_mbsp_count.shp |
 | | mbsp_database.csv ||
-| **shape_11_16_place_agil _service_bstation_road_mbsp.sh** | shape_75km_11_16_place _agil_service_bstation_road.shp |shape_75km_11_16_place _agil_service_bstation_road_mbsp.shp |
+| **shape_11_16_place_agil _service_bstation_road_mbsp.sh** | shape_57km_11_16_place _agil_service_bstation_road.shp |shape_57km_11_16_place _agil_service_bstation_road_mbsp.shp |
 | |shape_57km_mbsp_count.shp | |
 
 ### Table of feature data set counts and file sizes 
 
 | File                              | Feature count  | File size |
 | :---------------------------------|---------------:|----------:|
-| hex_57km_layer.json               | 4,051          | 2.4 MB    |
-| hex_57km_layer.shp                | 4,051          | 627 KB    |
-| AUS_2016_AUST.shp                 | 1              | 26.6 MB   |
-| aust_hex_shape_57km.shp           | 1,262          | 627 KB    |
-| SA1_2011_AUST.shp                 | 54,806         | 174 MB    |
-| feat_aust_57km_sa1_11.shp         | 59,986         | 170 MB    |
-| SA1_2016_AUST.shp                 | 57,523         | 185.5 MB  |
-| feat_aust_57km_sa1_16.shp         | 62,756         | 186.6 MB  |
-| 2011Census_B18_AUST_SA1_long.csv  | 54,806         | 19M       |
-| donor_feat_57km_sa1_11.shp        | 20,017         | 15.2 MB   |
-| 2016Census_G18_AUS_SA1.csv        | 57,523         | 20M       |
-| donor_feat_57km_sa1_16.shp        | 18,923         | 14.1 MB   |
-| shape_donor_feat_57km_aust_11.shp | 1,262          | 315 KB    |
-| shape_donor_feat_57km_aust_16.shp | 1,262          | 303 KB    |
-| shape_75km_11_16.shp              | 1,262          | 377 KB    |
+| **hex_57km_layer.json**               | 4,051          | 2.4 MB    |
+| **hex_57km_layer.shp**                | 4,051          | 627 KB    |
+| **AUS_2016_AUST.shp**                 | 1              | 26.6 MB   |
+| **aust_hex_shape_57km.shp**           | 1,262          | 627 KB    |
+| **SA1_2011_AUST.shp**                 | 54,806         | 174 MB    |
+| **feat_aust_57km_sa1_11.shp**         | 59,986         | 170 MB    |
+| **SA1_2016_AUST.shp**                 | 57,523         | 185.5 MB  |
+| **feat_aust_57km_sa1_16.shp**         | 62,756         | 186.6 MB  |
+| **2011Census_B18_AUST_SA1_long.csv**  | 54,806         | 19M       |
+| **donor_feat_57km_sa1_11.shp**        | 20,017         | 15.2 MB   |
+| **2016Census_G18_AUS_SA1.csv**        | 57,523         | 20M       |
+| **donor_feat_57km_sa1_16.shp**        | 18,923         | 14.1 MB   |
+| **shape_donor_feat_57km_aust_11.shp** | 1,262          | 315 KB    |
+| **shape_donor_feat_57km_aust_16.shp** | 1,262          | 303 KB    |
+| **shape_57km_11_16.shp**              | 1,262          | 377 KB    |
+| **gis_osm_places_free_1.shp**         | | |
+| **shape_place_count.shp** | 1,262          | |
+| **shape_57km_11_16_place.shp**  | 1,262          | |
+| **AGIL.json**         | | |
+| **shape_agil_count.shp** |           | |
+| **shape_57km_11_16_place_agil.shp**  | 1,262          | |
+| **gis_osm_pois_free_1.shp**         | | |
+| **shape_service_count.shp** |           | |
+| **shape_57km_11_16_place_agil_service.shp**  | 1,262          | |
+| **gis_osm_pois_free_1.shp**         | | |
+| **shape_bstation_count.shp** |           | |
+| **shape_57km_11_16_place_agil_service_bstation.shp**  | 1,262          | |
+| **gis_osm_roads_free_1.shp**         | | |
+| **shape_57km_road_count.shp** |           | |
+| **shape_57km_11_16_place_agil_service_bstation_road.shp**  | 1,262          | |
+| **mbsp_database.csv** |||
+| **shape_57km_mbsp_count.shp** |           | |
+| **shape_57km_11_16_place_agil_service_bstation_road_mbsp.shp**  | 1,262          | |
 
 ### Table of data sources
 
