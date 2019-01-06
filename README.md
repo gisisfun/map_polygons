@@ -43,7 +43,7 @@ The hexagon or box shapes are created by the polygons.py python program. The fea
 
 Run these ETL scripts in this order:
 
-### Table Summary of processing files and components for area weighted output
+### Table Summary of processing files and components
 
 | Process              | Process Type | Folder      | File |
 |:-------------|:-------------|:-----------|:--------|
@@ -97,7 +97,7 @@ Run these ETL scripts in this order:
 
 The SQL code has been written to render the final product and a descriptive presentation of the process.
 
-### Table of area weighted processing files and their input and output files
+### Table of processing files and their input and output files
 
 | File             | Input                            | Output                           |
 | :----------------|:---------------------------------|:---------------------------------|
@@ -144,7 +144,7 @@ The SQL code has been written to render the final product and a descriptive pres
 | **shape_11_16_place_agil _service_bstation_road_mbsp.sh** | shape_75km_11_16_place _agil_service_bstation_road.shp |shape_75km_11_16_place _agil_service_bstation_road_mbsp.shp |
 | |shape_57km_mbsp_count.shp | |
 
-### Table of feature data set counts and file sizes for area weighted output
+### Table of feature data set counts and file sizes 
 
 | File                              | Feature count  | File size |
 | :---------------------------------|---------------:|----------:|
