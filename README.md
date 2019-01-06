@@ -47,27 +47,27 @@ Run these ETL scripts in this order:
 
 | Process              | Process Type | Folder      | File |
 |:-------------|:-------------|:-----------|:--------|
-| Create hexagons/ boxes|              | python      | polygons.py |
-| Filter to Coastline  |Polygon Select| batch_files | aust_shape.sh |
-| Feature cut to shape | area weight  | batch_files | feat_aust_11.sh |
+| **Create hexagons/ boxes**|              | python      | polygons.py |
+| **Filter to coastline**  |Polygon Select| batch_files | aust_shape.sh |
+| **Feature cut to shape** | area weight  | batch_files | feat_aust_11.sh |
 |                      |              |             | feat_aust_16.sh |
-| Attrib Data to shape | table join   | batch_files | donor_feat_11.sh |
+| **Attrib Data to shape** | table join   | batch_files | donor_feat_11.sh |
 |                      |              |             | donor_feat_16.sh  |
-| Agg data to shape    | aggregation & table join| batch_files | shape_donor_11.sh |
+| **Agg data to shape**    | aggregation & table join| batch_files | shape_donor_11.sh |
 |                      |    |             | shape_donor_16.sh |
-| Merge attrib data    | table join   | batch_files | shape_11_16.sh    |
-| Make Towns and Cities|point in polygon| batch_files| shape_place_count.sh|
-| Add Towns and Cities | table join   | batch_files | shape_11_16_place.sh|
-| Make AGIL Counts |point in polygon| batch_files| shape_agil_count.sh|
-| Update with AGIL | table join   | batch_files | shape_11_16_place_agil.sh|
-| Make services count |point in polygon| batch_files| shape_service_count.sh|
-| Update with services | table join   | batch_files | shape_11_16_place_agil.sh|
-| Make base station count |point in polygon| batch_files| shape_bstation_count.sh|
-| Update with base stations | table join   | batch_files | shape_11_16_place_agil_bstation.sh|
-| Make road links count |line in polygon| batch_files| shape_road_count.sh|
-| Update with road links | table join   | batch_files | shape_11_16_place_agil_bstation_road.sh|
-| Make mobile black spot count |line in polygon| batch_files| shape_mbsp_count.sh|
-| Update with mobile black spots | table join   | batch_files | shape_11_16_place_agil_bstation_road_mbsp.sh|
+| **Merge attrib data**    | table join   | batch_files | shape_11_16.sh    |
+| **Make towns and cities**|point in polygon| batch_files| shape_place_count.sh|
+| **Add towns and cities** | table join   | batch_files | shape_11_16_place.sh|
+| **Make AGIL counts** |point in polygon| batch_files| shape_agil_count.sh|
+| **Update with AGIL** | table join   | batch_files | shape_11_16_place_agil.sh|
+| **Make services count** |point in polygon| batch_files| shape_service_count.sh|
+| **Update with services** | table join   | batch_files | shape_11_16_place_agil.sh|
+| **Make base station count** |point in polygon| batch_files| shape_bstation_count.sh|
+| **Update with base stations** | table join   | batch_files | shape_11_16_place_agil_bstation.sh|
+| **Make road links count** |line in polygon| batch_files| shape_road_count.sh|
+| **Update with road links** | table join   | batch_files | shape_11_16_place_agil_bstation_road.sh|
+| **Make mobile black spot count** |line in polygon| batch_files| shape_mbsp_count.sh|
+| **Update with mobile black spots** | table join   | batch_files | shape_11_16_place_agil_bstation_road_mbsp.sh|
 
 | File | VRT File | SQL File |
 |:-------------|:----------|:-------|
