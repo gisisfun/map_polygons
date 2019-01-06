@@ -127,8 +127,8 @@ The SQL code has been written to render the final product and a descriptive pres
 |                  |shape_57km_agil_count.shp |                                  |
 | shape_11_16_place_agil _service.sh   |shape_75km_11_16_place _agil.shp | shape_75km_11_16_place_agil_service.shp             |
 |                  |shape_57km_service_count.shp |    
-| shape_11_16_place_agil _service_bstation.sh | shape_75km_11_16_place _agil_service_bstation.shp             |
-|                  |shape_57km_bstation_count.shp | |
+| shape_11_16_place_agil _service_bstation.sh | shape_75km_11_16_place _agil_service.shp |shape_75km_11_16_place _agil_service_bstation.shp |
+| |shape_57km_bstation_count.shp | |
 
 ### Table of feature data set counts and file sizes for area weighted output
 
