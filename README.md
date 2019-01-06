@@ -47,7 +47,7 @@ Run these ETL scripts in this order:
 
 | Process              | Process Type | Folder      | File              | VRT File           | SQL File           |
 |:-------------|:-------------|:-----------|:------------------|:-------------------|:-------------------|
-| Create hexagons/boxes|              | python      | polygons.py       |                    |                    |
+| Create hexagons/ boxes|              | python      | polygons.py       |                    |                    |
 | Filter to Coastline  |Polygon Select| batch_files | aust_shape.sh     | aust_shape.vrt     |aust_shape.sql     |
 | Feature cut to shape | area weight  | batch_files | feat_aust_11.sh   | feat_aust_11.vrt   |feat_aust_11.sql   |
 |                      |              |             | feat_aust_16.sh   | feat_aust_16.vrt   |feat_aust_16.sql   |
