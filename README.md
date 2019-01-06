@@ -58,6 +58,8 @@ Run these ETL scripts in this order:
 | Merge attrib data    | table join   | batch_files | shape_11_16.sh    | shape_11_16.vrt    | shape_11_16.sql    |
 | Make Towns and Cities|point in polygon| batch_files| shape_11_16_place.sh|shape_11_16.vrt| shape_place.sql   |
 | Add Towns and Cities | table join   | batch_files | shape_11_16_place.sh|shape_11_16.vrt| shape_11_16_place.sql |
+| Make AGIL List |point in polygon| batch_files| shape_11_16_place_agil.sh|shape_11_16.vrt| shape_agil.sql   |
+| Add AGIL List | table join   | batch_files | shape_11_16_place_agil.sh|shape_11_16.vrt| shape_place.sql |
 
 The SQL code has been written to render the final product and a descriptive presentation of the process.
 
