@@ -45,23 +45,41 @@ Run these ETL scripts in this order:
 
 ### Table Summary of processing files and components for area weighted output
 
-| Process              | Process Type | Folder      | File              | VRT File           | SQL File           |
+| Process              | Process Type | Folder      | File              |
+|:-------------|:-------------|:-----------|:--------|
+| Create hexagons/ boxes|              | python      | polygons.py       |
+| Filter to Coastline  |Polygon Select| batch_files | aust_shape.sh     |
+| Feature cut to shape | area weight  | batch_files | feat_aust_11.sh   |
+|                      |              |             | feat_aust_16.sh   |
+| Attrib Data to shape | table join   | batch_files | donor_feat_11.sh  |
+|                      |              |             | donor_feat_16.sh  |
+| Agg data to shape    | aggregation & table join| batch_files | shape_donor_11.sh |
+|                      |    |             | shape_donor_16.sh |
+| Merge attrib data    | table join   | batch_files | shape_11_16.sh    |
+| Make Towns and Cities|point in polygon| batch_files| shape_11_16_place.sh|
+| Add Towns and Cities | table join   | batch_files | shape_11_16_place.sh|
+| Make AGIL Counts |point in polygon| batch_files| shape_agil_count.sh|
+| Update with AGIL | table join   | batch_files | shape_11_16_place_agil.sh|
+| Make services Count |point in polygon| batch_files| shape_11_16_place_agil.sh|
+| Update with services | table join   | batch_files | shape_11_16_place_agil.sh|
+
+| File              | VRT File           | SQL File           |
 |:-------------|:-------------|:-----------|:--------|:----------|:----------|
-| Create hexagons/ boxes|              | python      | polygons.py       |                    |                    |
-| Filter to Coastline  |Polygon Select| batch_files | aust_shape.sh     | aust_shape.vrt|aust_shape.sql     |
-| Feature cut to shape | area weight  | batch_files | feat_aust_11.sh   | feat_aust_11.vrt|feat_aust_11.sql   |
-|                      |              |             | feat_aust_16.sh   | feat_aust_16.vrt|feat_aust_16.sql   |
+| polygons.py       |                    |                    |
+| aust_shape.sh     | aust_shape.vrt|aust_shape.sql     |
+| feat_aust_11.sh   | feat_aust_11.vrt|feat_aust_11.sql   |
+| feat_aust_16.sh   | feat_aust_16.vrt|feat_aust_16.sql   |
 | Attrib Data to shape | table join   | batch_files | donor_feat_11.sh  | donor_feat_11.vrt|donor_feat_11.sql  |
-|                      |              |             | donor_feat_16.sh  | donor_feat_16.vrt|donor_feat_16.sql  |
+| donor_feat_16.sh  | donor_feat_16.vrt|donor_feat_16.sql  |
 | Agg data to shape    | aggregation & table join| batch_files | shape_donor_11.sh | shape_donor_11.vrt|shape_donor_11.sql |
-|                      |    |             | shape_donor_16.sh | shape_donor_16.vrt | shape_donor_16.sql|
-| Merge attrib data    | table join   | batch_files | shape_11_16.sh    | shape_11_16.vrt    |shape_11_16.sql|
-| Make Towns and Cities|point in polygon| batch_files| shape_11_16_place.sh|shape_11_16.vrt|shape_place_count.sql|
-| Add Towns and Cities | table join   | batch_files | shape_11_16_place.sh|shape_11_16.vrt|shape_11_16_place.sql|
-| Make AGIL Counts |point in polygon| batch_files| shape_agil_count.sh|shape_11_16.vrt|shape_agil_count.sql|
-| Update with AGIL | table join   | batch_files | shape_11_16_place_agil.sh|shape_11_16.vrt|shape_11_16_place _agil.sql |
-| Make services Count |point in polygon| batch_files| shape_11_16_place_agil.sh|shape_11_16.vrt|shape_service_count.sql   |
-| Update with services | table join   | batch_files | shape_11_16_place_agil.sh|shape_11_16.vrt|shape_11_16_place_agil_services.sql |
+| shape_donor_16.sh | shape_donor_16.vrt | shape_donor_16.sql|
+| shape_11_16.sh    | shape_11_16.vrt    |shape_11_16.sql|
+| shape_11_16_place.sh|shape_11_16.vrt|shape_place_count.sql|
+| shape_11_16_place.sh|shape_11_16.vrt|shape_11_16_place.sql|
+| shape_agil_count.sh|shape_11_16.vrt|shape_agil_count.sql|
+|| shape_11_16_place_agil.sh|shape_11_16.vrt|shape_11_16_place_agil.sql |
+| shape_11_16_place_agil.sh|shape_11_16.vrt|shape_service_count.sql   |
+| shape_11_16_place_agil.sh|shape_11_16.vrt|shape_11_16_place_agil_services.sql |
 
 The SQL code has been written to render the final product and a descriptive presentation of the process.
 
