@@ -45,19 +45,20 @@ Run these ETL scripts in this order:
 
 ### Table Summary of processing files and components for area weighted output
 
-| Process               | Process Type | Folder      | File              | VRT File           | SQL File           |
-| :-------------------- |:--------- ---| :-----------|:------------------|:-------------------|:-------------------|
-| Create hexagons/boxes |              | python      | polygons.py       |                    |                    |
-| Filter to Coastline   |Polygon Select| batch_files | aust_shape.sh     | aust_shape.vrt     | aust_shape.sql     |
-| Feature cut to shape  | area weight  | batch_files | feat_aust_11.sh   | feat_aust_11.vrt   | feat_aust_11.sql   |
-|                       |              |             | feat_aust_16.sh   | feat_aust_16.vrt   | feat_aust_16.sql   |
-| Attrib Data to shape  | table join   | batch_files | donor_feat_11.sh  | donor_feat_11.vrt  | donor_feat_11.sql  |
-|                       |              |             | donor_feat_16.sh  | donor_feat_16.vrt  | donor_feat_16.sql  |
-| Agg data to shape     | aggregation &| batch_files | shape_donor_11.sh | shape_donor_11.vrt | shape_donor_11.sql |
-|                       | table join   |             | shape_sonor_16.sh | shape_donor_16.vrt | shape_donor_16.sql |
-| Merge attrib data     | table join   | batch_files | shape_11_16.sh    | shape_11_16.vrt    | shape_11_16.sql    |
-| Make Towns and Cities | point in polygon | batch_files | shape_11_16_place.sh | shape_11_16.vrt    | shape_place.sql    |
-| Add Towns and Cities  | table join   | batch_files | shape_11_16_place.sh    | shape_11_16.vrt    | shape_11_16_place.sql    |
+| Process              | Process Type | Folder      | File              | VRT File           | SQL File           |
+| :--------------------|:--------- ---| :-----------|:------------------|:-------------------|:-------------------|
+| Create hexagons/boxes|              | python      | polygons.py       |                    |                    |
+| Filter to Coastline  |Polygon Select| batch_files | aust_shape.sh     | aust_shape.vrt     | aust_shape.sql     |
+| Feature cut to shape | area weight  | batch_files | feat_aust_11.sh   | feat_aust_11.vrt   | feat_aust_11.sql   |
+|                      |              |             | feat_aust_16.sh   | feat_aust_16.vrt   | feat_aust_16.sql   |
+| Attrib Data to shape | table join   | batch_files | donor_feat_11.sh  | donor_feat_11.vrt  | donor_feat_11.sql  |
+|                      |              |             | donor_feat_16.sh  | donor_feat_16.vrt  | donor_feat_16.sql  |
+| Agg data to shape    | aggregation &| batch_files | shape_donor_11.sh | shape_donor_11.vrt | shape_donor_11.sql |
+|                      | table join   |             | shape_sonor_16.sh | shape_donor_16.vrt | shape_donor_16.sql |
+| Merge attrib data    | table join   | batch_files | shape_11_16.sh    | shape_11_16.vrt    | shape_11_16.sql    |
+| Make Towns and Cities|point in polygon| batch_files| shape_11_16_place.sh|shape_11_16.vrt| shape_place.sql   |
+| Add Towns and Cities | table join   | batch_files | shape_11_16_place.sh|shape_11_16.vrt| shape_11_16_place.sql |
+
 The SQL code has been written to render the final product and a descriptive presentation of the process.
 
 ### Table of area weighted processing files and their input and output files
