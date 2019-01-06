@@ -131,8 +131,7 @@ The SQL code has been written to render the final product and a descriptive pres
 | | gis_osm_places_free_1.shp ||
 | shape_11_16_place_agil_service.sh   |shape_75km_service_count.shp | shape_75km_11_16_place _agil_service.shp             |
 | |shape_57km_service_count.shp | |
-
-| shape_11_16_place _agil_service.sh   |shape_75km_11_16_place _agil_service.shp | shape_75km_11_16_place _agil_service.shp             |
+| shape_11_16_place _agil_service.sh |shape_75km_11_16_place _agil_service.shp | shape_75km_11_16_place _agil_service.shp |
 | shape_bstation_count.sh | aust_hex_shape_57km.shp  |shape_57km_service_bstation.shp |
 | | gis_osm_pois_free_1.shp ||
 | shape_11_16_place_agil_service_bstation.sh   |shape_75km_11_16_place _agil_service.shp | shape_75km_11_16_place _agil_service_bstation.shp             |
