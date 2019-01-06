@@ -56,12 +56,14 @@ Run these ETL scripts in this order:
 | Agg data to shape    | aggregation & table join| batch_files | shape_donor_11.sh |
 |                      |    |             | shape_donor_16.sh |
 | Merge attrib data    | table join   | batch_files | shape_11_16.sh    |
-| Make Towns and Cities|point in polygon| batch_files| shape_11_16_place.sh|
+| Make Towns and Cities|point in polygon| batch_files| shape_place_count.sh|
 | Add Towns and Cities | table join   | batch_files | shape_11_16_place.sh|
 | Make AGIL Counts |point in polygon| batch_files| shape_agil_count.sh|
 | Update with AGIL | table join   | batch_files | shape_11_16_place_agil.sh|
-| Make services Count |point in polygon| batch_files| shape_11_16_place_agil.sh|
+| Make services Count |point in polygon| batch_files| shape_service_count.sh|
 | Update with services | table join   | batch_files | shape_11_16_place_agil.sh|
+| Make base station Count |point in polygon| batch_files| shape_bstation_count.sh|
+| Update with base stations | table join   | batch_files | shape_11_16_place_agil_bstation.sh|
 
 | File              | VRT File           | SQL File           |
 |:-------------|:-------------|:-----------|
@@ -77,9 +79,14 @@ Run these ETL scripts in this order:
 | shape_11_16_place.sh|shape_11_16.vrt|shape_place_count.sql|
 | shape_11_16_place.sh|shape_11_16.vrt|shape_11_16_place.sql|
 | shape_agil_count.sh|shape_11_16.vrt|shape_agil_count.sql|
-|| shape_11_16_place_agil.sh|shape_11_16.vrt|shape_11_16_place_agil.sql |
-| shape_11_16_place_agil.sh|shape_11_16.vrt|shape_service_count.sql   |
+| shape_11_16_place_agil.sh|shape_11_16.vrt|shape_11_16_place_agil.sql |
+| shape_service_count.sh|shape_11_16.vrt|shape_service_count.sql   |
 | shape_11_16_place_agil.sh|shape_11_16.vrt|shape_11_16_place_agil_services.sql |
+| shape_service_count.sh|shape_11_16.vrt|shape_service_count.sql   |
+| shape_11_16_place_agil.sh|shape_11_16.vrt|shape_11_16_place_agil_services.sql |
+| shape_bstation_count.sh|shape_11_16.vrt|shape_service_count.sql   |
+| shape_11_16_place_agil_bstation.sh|shape_11_16.vrt|shape_11_16_place_agil_services_bstation.sql |
+
 
 The SQL code has been written to render the final product and a descriptive presentation of the process.
 
