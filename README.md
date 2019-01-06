@@ -71,29 +71,29 @@ Run these ETL scripts in this order:
 
 | File | VRT File | SQL File |
 |:-------------|:----------|:-------|
-| polygons.py       |                    |                    |
-| aust_shape.sh     |aust_shape.vrt|aust_shape.sql |
-| feat_aust_11.sh   |feat_aust_11.vrt|feat_aust_11.sql |
-| feat_aust_16.sh   |feat_aust_16.vrt|feat_aust_16.sql |
-| donor_feat_11.sh  |donor_feat_11.vrt|donor_feat_11.sql |
-| donor_feat_16.sh  |donor_feat_16.vrt|donor_feat_16.sql |
-| shape_donor_11.sh |shape_donor_11.vrt|shape_donor_11.sql |
-| shape_donor_16.sh |shape_donor_16.vrt| shape_donor_16.sql|
-| shape_11_16.sh    |shape_11_16.vrt|shape_11_16.sql|
-| shape_11_16_place.sh|shape_11_16.vrt|shape_place_count.sql|
-| shape_11_16_place.sh|shape_11_16.vrt|shape_11_16_place.sql|
-| shape_agil_count.sh|shape_11_16.vrt|shape_agil_count.sql|
-| shape_11_16_place_agil.sh|shape_11_16.vrt|shape_11_16_place_agil.sql |
-| shape_service_count.sh|shape_11_16.vrt|shape_service_count.sql |
-| shape_11_16_place_agil.sh|shape_11_16.vrt|shape_11_16_place_agil_services.sql |
-| shape_service_count.sh|shape_11_16.vrt|shape_service_count.sql |
-| shape_11_16_place_agil.sh|shape_11_16.vrt|shape_11_16_place_agil_services.sql|
-| shape_bstation_count.sh|shape_11_16.vrt|shape_service_count.sql|
-| shape_11_16_place_agil_bstation.sh|shape_11_16.vrt|shape_11_16_place_agil_services_ bstation.sql|
-| shape_road_count.sh|shape_11_16.vrt|shape_road_count.sql|
-| shape_11_16_place_agil_bstation_road.sh|shape_11_16.vrt|shape_11_16_place_agil_services_ bstation_road.sql|
-| shape_mbsp_count.sh|shape_11_16.vrt|shape_mbsp_count.sql|
-| shape_11_16_place_agil_bstation_road_mbsp.sh|shape_11_16.vrt|shape_11_16_place_agil_services_ bstation_road_mbsp.sql|
+| **polygons.py**       |                    |                    |
+| **aust_shape.sh**     |aust_shape.vrt|aust_shape.sql |
+| **feat_aust_11.sh**   |feat_aust_11.vrt|feat_aust_11.sql |
+| **feat_aust_16.sh**   |feat_aust_16.vrt|feat_aust_16.sql |
+| **donor_feat_11.sh**  |donor_feat_11.vrt|donor_feat_11.sql |
+| **donor_feat_16.sh**  |donor_feat_16.vrt|donor_feat_16.sql |
+| **shape_donor_11.sh** |shape_donor_11.vrt|shape_donor_11.sql |
+| **shape_donor_16.sh** |shape_donor_16.vrt| shape_donor_16.sql|
+| **shape_11_16.sh**    |shape_11_16.vrt|shape_11_16.sql|
+| **shape_11_16_place.sh**|shape_11_16.vrt|shape_place_count.sql|
+| **shape_11_16_place.sh**|shape_11_16.vrt|shape_11_16_place.sql|
+| **shape_agil_count.sh**|shape_11_16.vrt|shape_agil_count.sql|
+| **shape_11_16_place_agil.sh**|shape_11_16.vrt|shape_11_16_place_agil.sql |
+| **shape_service_count.sh**|shape_11_16.vrt|shape_service_count.sql |
+| **shape_11_16_place_agil.sh**|shape_11_16.vrt|shape_11_16_place_agil_services.sql |
+| **shape_service_count.sh**|shape_11_16.vrt|shape_service_count.sql |
+| **shape_11_16_place_agil.sh**|shape_11_16.vrt|shape_11_16_place_agil_services.sql|
+| **shape_bstation_count.sh**|shape_11_16.vrt|shape_service_count.sql|
+| **shape_11_16_place_agil_bstation.sh**|shape_11_16.vrt|shape_11_16_place_agil_services_ bstation.sql|
+| **shape_road_count.sh**|shape_11_16.vrt|shape_road_count.sql|
+| **shape_11_16_place_agil_bstation_road.sh**|shape_11_16.vrt|shape_11_16_place_agil_services_ bstation_road.sql|
+| **shape_mbsp_count.sh**|shape_11_16.vrt|shape_mbsp_count.sql|
+| **shape_11_16_place_agil_bstation_road_mbsp.sh**|shape_11_16.vrt|shape_11_16_place_agil_services_ bstation_road_mbsp.sql|
 
 The SQL code has been written to render the final product and a descriptive presentation of the process.
 
@@ -101,47 +101,47 @@ The SQL code has been written to render the final product and a descriptive pres
 
 | File             | Input                            | Output                           |
 | :----------------|:---------------------------------|:---------------------------------|
-| polygons.py      | hex_57km_layer.json              | hex_57km_layer.shp               |
-| aust_shape.sh    | hex_57km_layer.shp               | aust_hex_shape_57km.shp          |
+| **polygons.py**      | hex_57km_layer.json              | hex_57km_layer.shp               |
+| **aust_shape.sh**    | hex_57km_layer.shp               | aust_hex_shape_57km.shp          |
 |                  | AUS_2016_AUST.shp                |                                  |
-| feat_aust_11.sh  | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_11.shp        | 
+| **feat_aust_11.sh**  | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_11.shp        | 
 |                  | SA1_2011_AUST.shp                |                                  | 
-| feat_aust_16.sh  | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_11.shp        |
+| **feat_aust_16.sh**  | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_11.shp        |
 |                  | SA1_2016_AUST.shp                |                                  |
-| donor_feat_11.sh | feat_aust_57km_sa1_11.shp        | donor_feat_57km_aust_11.shp      |
+| **donor_feat_11.sh** | feat_aust_57km_sa1_11.shp        | donor_feat_57km_aust_11.shp      |
 |                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
-| donor_feat_16.sh | feat_aust_57km_sa1_16.shp        | donor_feat_57km_aust_16.shp      |
+| **donor_feat_16.sh** | feat_aust_57km_sa1_16.shp        | donor_feat_57km_aust_16.shp      |
 |                  | 2016Census_G18_AUS_SA1.shp       |                                  |
-| shape_donor_11.sh| donor_feat_57km_aust_11.shp      |shape_donor_feat_57km_aust_11.shp |
+| **shape_donor_11.sh**| donor_feat_57km_aust_11.shp      |shape_donor_feat_57km_aust_11.shp |
 |                  | aust_hex_shape_57km.shp          |                                  |
-| shape_sonor_16.sh| donor_feat_57km_aust_16.shp      |shape_donor_feat_57km_aust_16.shp |
+| **shape_sonor_16.sh**| donor_feat_57km_aust_16.shp      |shape_donor_feat_57km_aust_16.shp |
 |                  | aust_hex_shape_57km.shp          |                                  |
-| shape_11_16.sh   |shape_donor_feat_57km_aust_11.shp | shape_75km_11_16.shp             |
+| **shape_11_16.sh**   |shape_donor_feat_57km_aust_11.shp | shape_75km_11_16.shp             |
 |                  |shape_donor_feat_57km_aust_16.shp |                                  |
 |                  |aust_hex_shape_57km.shp |                                  |
-| shape_place_count.sh   |aust_hex_shape_57km.shp  | shape_75km_place_count.shp |
+| **shape_place_count.sh**   |aust_hex_shape_57km.shp  | shape_75km_place_count.shp |
 | | gis_osm_places_free_1.shp | |
-| shape_11_16_place.sh   |shape_75km_11_16.shp | shape_75km_11_16_place.shp             |
+| **shape_11_16_place.sh**   |shape_75km_11_16.shp | shape_75km_11_16_place.shp             |
 | |shape_75km_place_count.shp | |
-| shape_agil_count.sh   |aust_hex_shape_57km.shp  | shape_75km_agil_count.shp             |
+| **shape_agil_count.sh**   |aust_hex_shape_57km.shp  | shape_75km_agil_count.shp             |
 | | AGIL.json | |
-| shape_11_16_place_agil.sh   |shape_75km_place_count.shp | shape_75km_11_16_place _agil.shp |
+| **shape_11_16_place_agil.sh**   |shape_75km_place_count.shp | shape_75km_11_16_place _agil.shp |
 | |shape_57km_agil_count.shp | |
-| shape_service_count.sh | aust_hex_shape_57km.shp  | shape_75km_service_count.shp |
+| **shape_service_count.sh** | aust_hex_shape_57km.shp  | shape_75km_service_count.shp |
 | | gis_osm_places_free_1.shp ||
-| shape_11_16_place_agil_service.sh   |shape_75km_service_count.shp | shape_75km_11_16_place _agil_service.shp             |
+| **shape_11_16_place_agil_service.sh**   |shape_75km_service_count.shp | shape_75km_11_16_place _agil_service.shp             |
 | |shape_57km_service_count.shp | |
-| shape_bstation_count.sh | aust_hex_shape_57km.shp  |shape_57km_service_bstation.shp |
+| **shape_bstation_count.sh** | aust_hex_shape_57km.shp  |shape_57km_service_bstation.shp |
 | | gis_osm_pois_free_1.shp ||
-| shape_11_16_place _agil_service_bstation.sh |shape_75km_11_16_place _agil_service.shp | shape_75km_11_16_place _agil_service_bstation.shp |
+| **shape_11_16_place _agil_service_bstation.sh** |shape_75km_11_16_place _agil_service.shp | shape_75km_11_16_place _agil_service_bstation.shp |
 | |shape_57km_bstation_count.shp | |
-| shape_road_count.sh | aust_hex_shape_57km.shp  |shape_57km_road_count.shp |
+| **shape_road_count.sh** | aust_hex_shape_57km.shp  |shape_57km_road_count.shp |
 | | gis_osm_roads_free_1.shp ||
-| shape_11_16_place_agil _service_bstation_road.sh | shape_75km_11_16_place _agil_service_bstation.shp |shape_75km_11_16_place _agil_service_bstation_road.shp |
+| **shape_11_16_place_agil _service_bstation_road.sh** | shape_75km_11_16_place _agil_service_bstation.shp |shape_75km_11_16_place _agil_service_bstation_road.shp |
 | |shape_57km_road_count.shp | |
-| shape_mbsp_count.sh | aust_hex_shape_57km.shp  |shape_57km_mbsp_count.shp |
+| **shape_mbsp_count.sh** | aust_hex_shape_57km.shp  |shape_57km_mbsp_count.shp |
 | | mbsp_database.csv ||
-| shape_11_16_place_agil _service_bstation_road_mbsp.sh | shape_75km_11_16_place _agil_service_bstation_road.shp |shape_75km_11_16_place _agil_service_bstation_road_mbsp.shp |
+| **shape_11_16_place_agil _service_bstation_road_mbsp.sh** | shape_75km_11_16_place _agil_service_bstation_road.shp |shape_75km_11_16_place _agil_service_bstation_road_mbsp.shp |
 | |shape_57km_mbsp_count.shp | |
 
 ### Table of feature data set counts and file sizes for area weighted output
