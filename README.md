@@ -120,16 +120,23 @@ The SQL code has been written to render the final product and a descriptive pres
 |                  |shape_donor_feat_57km_aust_16.shp |                                  |
 |                  |aust_hex_shape_57km.shp |                                  |
 | shape_place_count.sh   |aust_hex_shape_57km.shp  | shape_75km_place_count.shp             |
-| | AGIL.json ||
-|                  |shape_donor_feat_57km_aust_16.shp |                                  |
-| shape_11_16_place.sh   |shape_donor_feat_57km_aust_11.shp | shape_75km_11_16.shp             |
-|                  |shape_donor_feat_57km_aust_16.shp |                                  |
+| | gis_osm_places_free_1.shp ||
 | shape_11_16_place.sh   |shape_75km_11_16.shp | shape_75km_11_16_place.shp             |
-|                  |shape_57km_road_count.shp |                                  |
-| shape_11_16_place _agil.sh   |shape_75km_11_16_place.shp | shape_75km_11_16_place _agil.shp             |
-|                  |shape_57km_agil_count.shp |                                  |
-| shape_11_16_place_agil_service.sh   |shape_75km_11_16_place _agil.shp | shape_75km_11_16_place _agil_service.shp             |
-|                  |shape_57km_service_count.shp |    
+| |shape_75km_place_count.shp | |
+| shape_agil_count.sh   |aust_hex_shape_57km.shp  | shape_75km_agil_count.shp             |
+| | AGIL.json ||
+| shape_11_16_place_agil.sh   |shape_75km_place_count.shp | shape_75km_11_16_place _agil.shp             |
+| |shape_57km_agil_count.shp | |
+| shape_service_count.sh   |aust_hex_shape_57km.shp  | shape_75km_service_count.shp             |
+| | gis_osm_places_free_1.shp ||
+| shape_11_16_place_agil_service.sh   |shape_75km_service_count.shp | shape_75km_11_16_place _agil_service.shp             |
+| |shape_57km_service_count.shp | |
+
+| shape_11_16_place _agil_service.sh   |shape_75km_11_16_place _agil_service.shp | shape_75km_11_16_place _agil_service.shp             |
+| shape_bstation_count.sh | aust_hex_shape_57km.shp  |shape_57km_service_bstation.shp |
+| | gis_osm_pois_free_1.shp ||
+| shape_11_16_place_agil_service_bstation.sh   |shape_75km_11_16_place _agil_service.shp | shape_75km_11_16_place _agil_service_bstation.shp             |
+|                  |shape_57km_bstation_count.shp |    
 | shape_11_16_place_agil _service_bstation.sh | shape_75km_11_16_place _agil_service.shp |shape_75km_11_16_place _agil_service_bstation.shp |
 | |shape_57km_bstation_count.shp | |
 | shape_11_16_place_agil _service_bstation_road.sh | shape_75km_11_16_place _agil_service_bstation.shp |shape_75km_11_16_place _agil_service_bstation_road.shp |
