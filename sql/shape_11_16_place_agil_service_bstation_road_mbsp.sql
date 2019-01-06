@@ -1,0 +1,17 @@
+SELECT Shape11_16_place_agil_service_bstation_road.Poly,
+Shape11_16_place_agil_service_bstation_road.NeedA11,
+Shape11_16_place_agil_service_bstation_road.ToTP11,
+Shape11_16_place_agil_service_bstation_road.NeedA16,
+Shape11_16_place_agil_service_bstation_road.ToTP16,
+Shape11_16_place_agil_service_bstation_road.est_area,
+Shape11_16_place_agil_service_bstation_road.places,
+Shape11_16_place_agil_service_bstation_road.AGILplaces,
+Shape11_16_place_agil_service_bstation_road.services,
+Shape11_16_place_agil_service_bstation_road.bstations,
+Shape11_16_place_agil_service_bstation_road.roads,
+MBSP.MBSPplaces,
+Shape11_16_place_agil_service_bstation_road.geometry
+FROM Shape11_16_place_agil_service_bstation_road LEFT JOIN MBSP 
+ON Shape11_16_place_agil_service_bstation_road.Poly = MBSP.Poly
+
+

@@ -1,0 +1,16 @@
+SELECT Shape11_16_place_agil_service_bstation.Poly,
+Shape11_16_place_agil_service_bstation.NeedA11,
+Shape11_16_place_agil_service_bstation.ToTP11,
+Shape11_16_place_agil_service_bstation.NeedA16,
+Shape11_16_place_agil_service_bstation.ToTP16,
+Shape11_16_place_agil_service_bstation.est_area,
+Shape11_16_place_agil_service_bstation.places,
+Shape11_16_place_agil_service_bstation.AGILplaces,
+Shape11_16_place_agil_service_bstation.services,
+Shape11_16_place_agil_service_bstation.bstations,
+road.roads,
+Shape11_16_place_agil_service_bstation.geometry
+FROM Shape11_16_place_agil_service_bstation LEFT JOIN road 
+ON Shape11_16_place_agil_service_bstation.Poly = road.Poly
+
+
