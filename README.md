@@ -60,10 +60,12 @@ Run these ETL scripts in this order:
 | Add Towns and Cities | table join   | batch_files | shape_11_16_place.sh|
 | Make AGIL Counts |point in polygon| batch_files| shape_agil_count.sh|
 | Update with AGIL | table join   | batch_files | shape_11_16_place_agil.sh|
-| Make services Count |point in polygon| batch_files| shape_service_count.sh|
+| Make services count |point in polygon| batch_files| shape_service_count.sh|
 | Update with services | table join   | batch_files | shape_11_16_place_agil.sh|
-| Make base station Count |point in polygon| batch_files| shape_bstation_count.sh|
+| Make base station count |point in polygon| batch_files| shape_bstation_count.sh|
 | Update with base stations | table join   | batch_files | shape_11_16_place_agil_bstation.sh|
+| Make road links count |line in polygon| batch_files| shape_road_count.sh|
+| Update with road links | table join   | batch_files | shape_11_16_place_agil_bstation_road.sh|
 
 | File              | VRT File           | SQL File           |
 |:-------------|:-------------|:-----------|
@@ -71,9 +73,9 @@ Run these ETL scripts in this order:
 | aust_shape.sh     | aust_shape.vrt|aust_shape.sql     |
 | feat_aust_11.sh   | feat_aust_11.vrt|feat_aust_11.sql   |
 | feat_aust_16.sh   | feat_aust_16.vrt|feat_aust_16.sql   |
-| Attrib Data to shape | table join   | batch_files | donor_feat_11.sh  | donor_feat_11.vrt|donor_feat_11.sql  |
+| donor_feat_11.sh  | donor_feat_11.vrt|donor_feat_11.sql  |
 | donor_feat_16.sh  | donor_feat_16.vrt|donor_feat_16.sql  |
-| Agg data to shape    | aggregation & table join| batch_files | shape_donor_11.sh | shape_donor_11.vrt|shape_donor_11.sql |
+| shape_donor_11.sh | shape_donor_11.vrt|shape_donor_11.sql |
 | shape_donor_16.sh | shape_donor_16.vrt | shape_donor_16.sql|
 | shape_11_16.sh    | shape_11_16.vrt    |shape_11_16.sql|
 | shape_11_16_place.sh|shape_11_16.vrt|shape_place_count.sql|
@@ -86,7 +88,8 @@ Run these ETL scripts in this order:
 | shape_11_16_place_agil.sh|shape_11_16.vrt|shape_11_16_place_agil_services.sql |
 | shape_bstation_count.sh|shape_11_16.vrt|shape_service_count.sql   |
 | shape_11_16_place_agil_bstation.sh|shape_11_16.vrt|shape_11_16_place_agil_services_bstation.sql |
-
+| shape_road_count.sh|shape_11_16.vrt|shape_road_count.sql   |
+| shape_11_16_place_agil_bstation_road.sh|shape_11_16.vrt|shape_11_16_place_agil_services_bstation_road.sql |
 
 The SQL code has been written to render the final product and a descriptive presentation of the process.
 
