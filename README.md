@@ -69,24 +69,24 @@ Run these ETL scripts in this order:
 | Make mobile black spot count |line in polygon| batch_files| shape_mbsp_count.sh|
 | Update with mobile black spots | table join   | batch_files | shape_11_16_place_agil_bstation_road_mbsp.sh|
 
-| File              | VRT File           | SQL File           |
-|:-------------|:-------------|:-----------|
+| File | VRT File | SQL File |
+|:-------------|:----------|:-------|
 | polygons.py       |                    |                    |
-| aust_shape.sh     |aust_shape.vrt|aust_shape.sql     |
-| feat_aust_11.sh   |feat_aust_11.vrt|feat_aust_11.sql   |
-| feat_aust_16.sh   |feat_aust_16.vrt|feat_aust_16.sql   |
-| donor_feat_11.sh  |donor_feat_11.vrt|donor_feat_11.sql  |
-| donor_feat_16.sh  |donor_feat_16.vrt|donor_feat_16.sql  |
+| aust_shape.sh     |aust_shape.vrt|aust_shape.sql |
+| feat_aust_11.sh   |feat_aust_11.vrt|feat_aust_11.sql |
+| feat_aust_16.sh   |feat_aust_16.vrt|feat_aust_16.sql |
+| donor_feat_11.sh  |donor_feat_11.vrt|donor_feat_11.sql |
+| donor_feat_16.sh  |donor_feat_16.vrt|donor_feat_16.sql |
 | shape_donor_11.sh |shape_donor_11.vrt|shape_donor_11.sql |
-| shape_donor_16.sh |shape_donor_16.vrt | shape_donor_16.sql|
-| shape_11_16.sh    |shape_11_16.vrt    |shape_11_16.sql|
+| shape_donor_16.sh |shape_donor_16.vrt| shape_donor_16.sql|
+| shape_11_16.sh    |shape_11_16.vrt|shape_11_16.sql|
 | shape_11_16_place.sh|shape_11_16.vrt|shape_place_count.sql|
 | shape_11_16_place.sh|shape_11_16.vrt|shape_11_16_place.sql|
 | shape_agil_count.sh|shape_11_16.vrt|shape_agil_count.sql|
 | shape_11_16_place_agil.sh|shape_11_16.vrt|shape_11_16_place_agil.sql |
-| shape_service_count.sh|shape_11_16.vrt|shape_service_count.sql   |
+| shape_service_count.sh|shape_11_16.vrt|shape_service_count.sql |
 | shape_11_16_place_agil.sh|shape_11_16.vrt|shape_11_16_place_agil_services.sql |
-| shape_service_count.sh|shape_11_16.vrt|shape_service_count.sql   |
+| shape_service_count.sh|shape_11_16.vrt|shape_service_count.sql |
 | shape_11_16_place_agil.sh|shape_11_16.vrt|shape_11_16_place_agil_services.sql |
 | shape_bstation_count.sh|shape_11_16.vrt|shape_service_count.sql   |
 | shape_11_16_place_agil_bstation.sh|shape_11_16.vrt|shape_11_16_place_agil_services_bstation.sql |
