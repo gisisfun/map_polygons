@@ -164,16 +164,16 @@ The SQL code has been written to render the final product and a descriptive pres
 | **shape_donor_feat_57km_aust_16.shp** | 1,262          | 303 KB    |
 | **shape_57km_11_16.shp**              | 1,262          | 377 KB    |
 | **gis_osm_places_free_1.shp**         | | |
-| **shape_place_count.shp** | 1,262          | |
+| **shape_57km_place_count.shp** | 1,262          | |
 | **shape_57km_11_16_place.shp**  | 1,262          | |
 | **AGIL.json**         | | |
-| **shape_agil_count.shp** |           | |
+| **shape_57km_agil_count.shp** |           | |
 | **shape_57km_11_16_place_agil.shp**  | 1,262          | |
 | **gis_osm_pois_free_1.shp**         | | |
-| **shape_service_count.shp** |           | |
+| **shape_57km_service_count.shp** |           | |
 | **shape_57km_11_16_place_agil_service.shp**  | 1,262          | |
 | **gis_osm_pois_free_1.shp**         | | |
-| **shape_bstation_count.shp** |           | |
+| **shape_57km_bstation_count.shp** |           | |
 | **shape_57km_11_16_place_agil_service_bstation.shp**  | 1,262          | |
 | **gis_osm_roads_free_1.shp**         | | |
 | **shape_57km_road_count.shp** |           | |
