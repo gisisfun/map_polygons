@@ -64,7 +64,7 @@ Run these ETL scripts in this order:
 | Update with services | table join   | batch_files | shape_11_16_place_agil.sh|
 
 | File              | VRT File           | SQL File           |
-|:-------------|:-------------|:-----------|:--------|:----------|:----------|
+|:-------------|:-------------|:-----------|
 | polygons.py       |                    |                    |
 | aust_shape.sh     | aust_shape.vrt|aust_shape.sql     |
 | feat_aust_11.sh   | feat_aust_11.vrt|feat_aust_11.sql   |
