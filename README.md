@@ -91,9 +91,9 @@ Run these ETL scripts in this order:
 | shape_bstation_count.sh|shape_11_16.vrt|shape_service_count.sql|
 | shape_11_16_place_agil _bstation.sh|shape_11_16.vrt|shape_11_16_place_agil_services_ bstation.sql|
 | shape_road_count.sh|shape_11_16.vrt|shape_road_count.sql|
-| shape_11_16_place_agil _bstation_road.sh|shape_11_16.vrt|shape_11_16_place_agil_services_ bstation_road.sql|
+| shape_11_16_place_agil_bstation_road.sh|shape_11_16.vrt|shape_11_16_place_agil_services_ bstation_road.sql|
 | shape_mbsp_count.sh|shape_11_16.vrt|shape_mbsp_count.sql|
-| shape_11_16_place_agil_bstation _road_mbsp.sh|shape_11_16.vrt|shape_11_16_place_agil_services_ bstation_road_mbsp.sql|
+| shape_11_16_place_agil_bstation_road_mbsp.sh|shape_11_16.vrt|shape_11_16_place_agil_services_ bstation_road_mbsp.sql|
 
 The SQL code has been written to render the final product and a descriptive presentation of the process.
 
