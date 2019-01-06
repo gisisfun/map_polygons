@@ -35,7 +35,7 @@ python3 polygons.py hex -8 -45 96 168 212
 for boxes:
 python3 polygons.py box -8 -45 96 168 212
 
-## Data Processing Files for area weighted output
+## Data Processing Files 
 Polygon shapes are given attributes from data sets with spatial references. The polygon data is processed using scripts with their SQL and vrt file pointing to file names.  
 For this example, spatial and tabular attribute data have been selected. The content is ABS SA1 2011 and 2016 shapefiles with associated demographic data items. The data was sourced from the the Australian Bureau of Statistics (ABS).
 
@@ -45,18 +45,19 @@ Run these ETL scripts in this order:
 
 ### Table Summary of processing files and components for area weighted output
 
-| Process               | Folder        | File              | VRT File           | SQL File           |
-| :-------------------- |:-----------| :-----------------|:-------------------|:-------------------|
-| Create hexagons/boxes | python      | polygons.py       |                    |
-| Filter to Coastline   | batch_files | aust_shape.sh     | aust_shape.vrt     | aust_shape.sql     |
-| Feature cut to shape  | batch_files | feat_aust_11.sh   | feat_aust_11.vrt   | feat_aust_11.sql   |
-|                       |             | feat_aust_16.sh   | feat_aust_16.vrt   | feat_aust_16.sql   |
-| Attrib Data to shape  | batch_files | donor_feat_11.sh  | donor_feat_11.vrt  | donor_feat_11.sql  |
-|                       |             | donor_feat_16.sh  | donor_feat_16.vrt  | donor_feat_16.sql  |
-| Agg data to shape     | batch_files | shape_donor_11.sh | shape_donor_11.vrt | shape_donor_11.sql |
-|                       |             | shape_sonor_16.sh | shape_donor_16.vrt | shape_donor_16.sql |
-| Merge attrib data     | batch_files | shape_11_16.sh    | shape_11_16.vrt    | shape_11_16.sql    |
-
+| Process               | Process Type | Folder      | File              | VRT File           | SQL File           |
+| :-------------------- |:--------- ---| :-----------|:------------------|:-------------------|:-------------------|
+| Create hexagons/boxes |              | python      | polygons.py       |                    |
+| Filter to Coastline   |Polygon Select| batch_files | aust_shape.sh     | aust_shape.vrt     | aust_shape.sql     |
+| Feature cut to shape  | area weight  | batch_files | feat_aust_11.sh   | feat_aust_11.vrt   | feat_aust_11.sql   |
+|                       |              |             | feat_aust_16.sh   | feat_aust_16.vrt   | feat_aust_16.sql   |
+| Attrib Data to shape  | table join   | batch_files | donor_feat_11.sh  | donor_feat_11.vrt  | donor_feat_11.sql  |
+|                       |              |             | donor_feat_16.sh  | donor_feat_16.vrt  | donor_feat_16.sql  |
+| Agg data to shape     | aggregation &| batch_files | shape_donor_11.sh | shape_donor_11.vrt | shape_donor_11.sql |
+|                       | table join   |             | shape_sonor_16.sh | shape_donor_16.vrt | shape_donor_16.sql |
+| Merge attrib data     | table join   | batch_files | shape_11_16.sh    | shape_11_16.vrt    | shape_11_16.sql    |
+| Make Towns and Cities | point in polygon | batch_files | shape_11_16_place.sh    | shape_11_16.vrt    | shape_place.sql    |
+| Add Towns and Cities  | table join   | batch_files | shape_11_16_place.sh    | shape_11_16.vrt    | shape_11_16_place.sql    |
 The SQL code has been written to render the final product and a descriptive presentation of the process.
 
 ### Table of area weighted processing files and their input and output files
