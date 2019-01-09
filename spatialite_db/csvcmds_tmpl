@@ -1,3 +1,5 @@
 
-.mode csv
-.import ../csv/changeme.csv changeme
+ogr2ogr -f "SQLite" ../spatialite_db/temp.sqlite ../csv/changeme.csv
+echo ".dump changeme" | spatialite ../spatialite_db/temp.sqlite > ../spatialite_db/out.sql
+echo "DROP TABLE changeme;" | spatialite ../spatialite_db/db.sqlite
+echo ".read ../spatialite_db/out.sql utf-8" | spatialite ../spatialite_db/db.sqlite
