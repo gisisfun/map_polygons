@@ -5,9 +5,15 @@
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
-    <OGRVRTLayer name="Donor">
-        <SrcDataSource>../shapefiles/donor_feat_57km_aust_16.shp</SrcDataSource>
-        <SrcLayer>donor_feat_57km_aust_16</SrcLayer>
+    <OGRVRTLayer name="Donor_Feat_G18">
+        <SrcDataSource>../shapefiles/donor_feat_57km_aust_16_G18.shp</SrcDataSource>
+        <SrcLayer>donor_feat_57km_aust_16_G18</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="Donor_Feat_G21">
+        <SrcDataSource>../shapefiles/donor_feat_57km_aust_16_G21.shp</SrcDataSource>
+        <SrcLayer>donor_feat_57km_aust_16_G21</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
