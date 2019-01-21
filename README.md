@@ -221,6 +221,7 @@ Categories:
 |2|Does not have need for assistance with core activities|
 |&|Not stated|
 |V|Overseas visitor|
+
 Number of categories: 4
 
 ### UNCAREP Unpaid Assistance to a Person with a Disability June release
@@ -238,6 +239,7 @@ Categories:
 |&|Not stated|
 |@|Not applicable|
 |V|Overseas visitor|
+
 Number of categories: 5
 Not applicable (@) category comprises:
  Persons aged under 15 years
@@ -257,6 +259,7 @@ Categories:
 |&|Not stated|
 |@|Not applicable|
 |V|Overseas visitor|
+
 Number of categories: 7
 Not applicable (@) category comprises:
  Persons aged under 15 years
