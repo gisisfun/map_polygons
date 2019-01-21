@@ -216,7 +216,7 @@ Metadata
 |:---|:-----------|:---------|:-----------------------|:-------------------------------------|:----------|:------|
 |2011|B18|B18|P_Tot_Need_for_assistance|Persons_Total_Has_need_for_assistance|Need for assistance|PERSONS|
 | | | |P_Tot_No_need_for_assistance|Persons_Total_Does_not_have_need_for_assistance|No need for assistance|PERSONS|
-| | | |P_Tot_Need_for_assistance_ns	Persons_Total_Need_for_assistance_not_stated|Need for assistance not stated|PERSONS|
+| | | |P_Tot_Need_for_assistance_ns|Persons_Total_Need_for_assistance_not_stated|Need for assistance not stated|PERSONS|
 | | | |P_Tot_Tot|Persons_Total_Total|Total|PERSONS|
 | |B21|B21|P_Tot_prvided_unpaid_assist|Persons_Total_Provided_unpaid_assistance|Provided unpaid assistance|PERSONS|
 | | | |P_Tot_No_unpaid_asst_prvided|Persons_Total_No_unpaid_assistance_provided|No unpaid assistance provided|PERSONS|
