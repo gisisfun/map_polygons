@@ -207,5 +207,5 @@ The SQL code has been written to render the final product and a descriptive pres
 |2016|P_Tot_Need_for_assistance|Persons_Total_Has_need_for_assistance|G18|G18|Need for assistance|PERSONS|
 | |P_Tot_No_need_for_assistance	Persons_Total_Does_not_have_need_for_assistance|G18|G18|No need for assistance|PERSONS|
 | |P_Tot_Need_for_assistance_ns	Persons_Total_Need_for_assistance_not_stated	G18	G18	Need for assistance not stated|PERSONS|
-| |P_Tot_Tot|Persons_Total_Total|G18|G18|Total|PERSONS
+| |P_Tot_Tot|Persons_Total_Total|G18|G18|Total|PERSONS|
 
