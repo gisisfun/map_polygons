@@ -203,8 +203,9 @@ The SQL code has been written to render the final product and a descriptive pres
 | | Mobile Black Spot Program Round 4 | [download_link](https://data.gov.au/dataset/7be6e3ee-043a-4c47-a6eb-a97702419ccd/resource/c6b211ad-3aa2-4f53-8427-01b52a6433a7/download/mbsp_database.csv)|   |  |
 
 ### Disability, Need for Assistance and Carers (Census Data Dictionary)
-ASSNP Core Activity Need for Assistance
-UNCAREP Unpaid Assistance to a Person with a Disability
+- ASSNP Core Activity Need for Assistance
+- UNCAREP Unpaid Assistance to a Person with a Disability
+- CHCAREP Unpaid Child Care
 
 ### ASSNP Core Activity Need for Assistance June release
 Measures the number of people with a profound or severe disability.
