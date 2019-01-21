@@ -202,8 +202,8 @@ The SQL code has been written to render the final product and a descriptive pres
 | *data.gov.au* | Australian Government Indigenous Programs & Policy Locations (AGIL) dataset |[download_link](https://data.gov.au/geoserver/agil-dataset/wfs?request=GetFeature&typeName=ckan_34b1c164_fbe8_44a0_84fd_467dba645aa7&outputFormat=json)|          |
 | | Mobile Black Spot Program Round 4 | [download_link](https://data.gov.au/dataset/7be6e3ee-043a-4c47-a6eb-a97702419ccd/resource/c6b211ad-3aa2-4f53-8427-01b52a6433a7/download/mbsp_database.csv)|   |  |
 
-|Year|Short|Long|DataPack file|Profile table|Column heading description in profile|
-|:----|:-----|:---------|:-----------------------|:-------------------------------------|:----------|
+|Year|Short       |Long      |DataPack file           |Profile table|Column heading description in profile|
+|:---|:-----------|:---------|:-----------------------|:-------------------------------------|:----------|
 |2016|P_Tot_Need_for_assistance|Persons_Total_Has_need_for_assistance|G18|G18|Need for assistance|PERSONS|
 | |P_Tot_No_need_for_assistance	Persons_Total_Does_not_have_need_for_assistance|G18|G18|No need for assistance|PERSONS|
 | |P_Tot_Need_for_assistance_ns	Persons_Total_Need_for_assistance_not_stated	G18	G18	Need for assistance not stated|PERSONS|
