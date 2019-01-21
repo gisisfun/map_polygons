@@ -243,7 +243,7 @@ Categories:
 
 - Number of categories: 5
 - Not applicable (@) category comprises:
--  Persons aged under 15 years
+- Persons aged under 15 years
 
 ### CHCAREP Unpaid Child Care June release
 Records people, who in the two weeks prior to Census night, spent time caring for a child/children
@@ -263,7 +263,7 @@ Categories:
 
 - Number of categories: 7
 - Not applicable (@) category comprises:
--  Persons aged under 15 years
+- Persons aged under 15 years
 
 ### Disability, Need For Assistance and Carers Census Data Pack Tables with Output Column Names
 
