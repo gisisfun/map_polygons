@@ -204,11 +204,11 @@ The SQL code has been written to render the final product and a descriptive pres
 
 ### Disability, Need For Assistance and Carers Census Data Pack Tables
 
-|2011|2016|Table Name |
-|:---|:----|:-------------------------------------------------------------|
-|B18|G18|Core Activity Need for Assistance by Age by Sex|
-|B21|G21|Unpaid Assistance to a Person with a Disability by Age by Sex|
-|B22B|G22B|Unpaid Child Care by Age by Sex|
+|2011|2016|Table Name | count | count 11 | count 16 |total | total 11 | total 16 |
+|:---|:----|:-------------------------------------------------------------|:----|:----|
+|B18|G18|Core Activity Need for Assistance by Age by Sex|NeedAssist|NeedA11|NeedA16|TotP|TotP11|TotP16|
+|B21|G21|Unpaid Assistance to a Person with a Disability by Age by Sex|UPunPAssist|UPunP11|UPunP16|TotP|TotP11|TotP16|
+|B22B|G22B|Unpaid Child Care by Age by Sex|UPunPCC|UPCC11|UPCC16|TotP|TotP11|TotP16|
 
 ### Census Data Pack Metadata
 
