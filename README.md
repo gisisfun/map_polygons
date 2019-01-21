@@ -218,7 +218,7 @@ mobility and communication, because of a disability, long-term health condition
 Applicable to: All persons
 Categories: 
 
-|Code|Description:|
+|Code|Description|
 |:--|:--------------------------|
 |1|Has need for assistance with core activities|
 |2|Does not have need for assistance with core activities|
@@ -235,7 +235,7 @@ Payment. It does not include work done through a voluntary organisation or group
 Applicable to: Persons aged 15 years and over
 Categories: 
 
-|Code|Description:|
+|Code|Description|
 |:--|:--------------------------|
 |1|No unpaid assistance provided|
 |2|Provided unpaid assistance|
@@ -253,7 +253,7 @@ Records people, who in the two weeks prior to Census night, spent time caring fo
 Applicable to: Persons aged 15 years and over
 Categories: 
 
-|Code|Description:|
+|Code|Description|
 |:--|:--------------------------|
 |1| Did not provide child care|
 |2|Cared for own child/children|
