@@ -220,8 +220,8 @@ Metadata
 | | | |P_Tot_Tot|Persons_Total_Total|Total|PERSONS|
 | |B21|B21|P_Tot_prvided_unpaid_assist|Persons_Total_Provided_unpaid_assistance|Provided unpaid assistance|PERSONS|
 | | | |P_Tot_No_unpaid_asst_prvided|Persons_Total_No_unpaid_assistance_provided|No unpaid assistance provided|PERSONS|
-| | | |P_Tot_Unpaid_assist_ns	Persons_Total_Unpaid_assistance_not_stated|Unpaid assistance not stated|PERSONS
-| | | |P_Tot_Tot	Persons_Total_Total	B21	B21	Total|PERSONS|
+| | | |P_Tot_Unpaid_assist_ns|Persons_Total_Unpaid_assistance_not_stated|Unpaid assistance not stated|PERSONS
+| | | |P_Tot_Tot|Persons_Total_Total|Total|PERSONS|
 | |B22B|B22|P_Tot_CF_Total	Persons_Total_Cared_for_Total|Cared for: Total|PERSONS|
 | | | |P_Tot_DNPCC|Persons_Total_Did_not_provide_child_care|Did not provide child care|PERSONS|
 | | | |P_Tot_UCC_NS|Persons_Total_Unpaid_child_care_not_stated|Unpaid child care not stated|PERSONS|
