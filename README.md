@@ -202,7 +202,7 @@ The SQL code has been written to render the final product and a descriptive pres
 | *data.gov.au* | Australian Government Indigenous Programs & Policy Locations (AGIL) dataset |[download_link](https://data.gov.au/geoserver/agil-dataset/wfs?request=GetFeature&typeName=ckan_34b1c164_fbe8_44a0_84fd_467dba645aa7&outputFormat=json)|          |
 | | Mobile Black Spot Program Round 4 | [download_link](https://data.gov.au/dataset/7be6e3ee-043a-4c47-a6eb-a97702419ccd/resource/c6b211ad-3aa2-4f53-8427-01b52a6433a7/download/mbsp_database.csv)|   |  |
 
-Disability, Need For Assistance and Carers	Census tables
+Disability, Need For Assistance and Carers	Census Data Pack Tables
 
 |2011|2016|Table Name |
 |:---|:----|:-------------------------------------------------------------|
@@ -212,7 +212,7 @@ Disability, Need For Assistance and Carers	Census tables
 
 Metadata
 
-|Year|Profile table|DataPack file|Short       |Long      |Column heading description in profile|Type|
+|Year|Profile table|Data Pack file|Short       |Long      |Column heading description in profile|Type|
 |:---|:-----------|:---------|:-----------------------|:-------------------------------------|:----------|:------|
 |2011|B18|B18|P_Tot_Need_for_assistance|Persons_Total_Has_need_for_assistance|Need for assistance|PERSONS|
 | | | |P_Tot_No_need_for_assistance|Persons_Total_Does_not_have_need_for_assistance|No need for assistance|PERSONS|
