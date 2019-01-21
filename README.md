@@ -202,6 +202,56 @@ The SQL code has been written to render the final product and a descriptive pres
 | *data.gov.au* | Australian Government Indigenous Programs & Policy Locations (AGIL) dataset |[download_link](https://data.gov.au/geoserver/agil-dataset/wfs?request=GetFeature&typeName=ckan_34b1c164_fbe8_44a0_84fd_467dba645aa7&outputFormat=json)|          |
 | | Mobile Black Spot Program Round 4 | [download_link](https://data.gov.au/dataset/7be6e3ee-043a-4c47-a6eb-a97702419ccd/resource/c6b211ad-3aa2-4f53-8427-01b52a6433a7/download/mbsp_database.csv)|   |  |
 
+### Disability, Need for Assistance and Carers (Census Data Dictionary)
+ASSNP Core Activity Need for Assistance
+UNCAREP Unpaid Assistance to a Person with a Disability
+
+### ASSNP Core Activity Need for Assistance June release
+Measures the number of people with a profound or severe disability.
+People with a profound or severe disability are defined as those people needing
+help or assistance in one or more of the three core activity areas of self-care,
+mobility and communication, because of a disability, long-term health condition
+(lasting six months or more) or old age.
+Applicable to: All persons
+Categories: 
+|1|Has need for assistance with core activities|
+|2|Does not have need for assistance with core activities|
+|&|Not stated|
+|V|Overseas visitor|
+Number of categories: 4
+
+### UNCAREP Unpaid Assistance to a Person with a Disability June release
+Records people who in the two weeks prior to Census night spent time providing unpaid care, help or
+assistance to family members or others because of a disability, a long-term health condition or
+problems related to old age. This includes people who are in receipt of a Carer Allowance or Carer
+Payment. It does not include work done through a voluntary organisation or group.
+Applicable to: Persons aged 15 years and over
+Categories: 
+|1|No unpaid assistance provided|
+|2|Provided unpaid assistance|
+|&|Not stated|
+|@|Not applicable|
+|V|Overseas visitor|
+Number of categories: 5
+Not applicable (@) category comprises:
+ Persons aged under 15 years
+
+### CHCAREP Unpaid Child Care June release
+Records people, who in the two weeks prior to Census night, spent time caring for a child/children
+(under 15 years) without pay.
+Applicable to: Persons aged 15 years and over
+Categories: 
+|1| Did not provide child care|
+|2|Cared for own child/children|
+|3|Cared for other child/children|
+|4|Cared for own child/children and other child/children|
+|&|Not stated|
+|@|Not applicable|
+|V|Overseas visitor|
+Number of categories: 7
+Not applicable (@) category comprises:
+ Persons aged under 15 years
+
 ### Disability, Need For Assistance and Carers Census Data Pack Tables with Output Column Names
 
 |2011|2016|Table Name | count | count 11 | count 16 |total | total 11 | total 16 |
