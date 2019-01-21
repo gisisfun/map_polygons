@@ -207,6 +207,8 @@ The SQL code has been written to render the final product and a descriptive pres
 - UNCAREP Unpaid Assistance to a Person with a Disability
 - CHCAREP Unpaid Child Care
 
+http://www.ausstats.abs.gov.au/ausstats/subscriber.nsf/0/4D2CE49C30755BE7CA2581BE001540A7/$File/2016%20census%20dictionary.pdf
+
 ### ASSNP Core Activity Need for Assistance June release
 Measures the number of people with a profound or severe disability.
 People with a profound or severe disability are defined as those people needing
