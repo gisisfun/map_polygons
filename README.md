@@ -205,8 +205,30 @@ The SQL code has been written to render the final product and a descriptive pres
 
 |Year|Profile table|DataPack file|Short       |Long      |Column heading description in profile|Type|
 |:---|:-----------|:---------|:-----------------------|:-------------------------------------|:----------|:------|
+|2011|B18|B18|P_Tot_Need_for_assistance|Persons_Total_Has_need_for_assistance|Need for assistance|PERSONS|
+| | | |P_Tot_No_need_for_assistance|Persons_Total_Does_not_have_need_for_assistance|No need for assistance|PERSONS|
+| | | |P_Tot_Need_for_assistance_ns	Persons_Total_Need_for_assistance_not_stated|Need for assistance not stated|PERSONS|
+| | | |P_Tot_Tot|Persons_Total_Total|Total|PERSONS|
+| |B21|B21|P_Tot_prvided_unpaid_assist|Persons_Total_Provided_unpaid_assistance|Provided unpaid assistance|PERSONS|
+| | | |P_Tot_No_unpaid_asst_prvided|Persons_Total_No_unpaid_assistance_provided|No unpaid assistance provided|PERSONS|
+| | | |P_Tot_Unpaid_assist_ns	Persons_Total_Unpaid_assistance_not_stated	B21	B21	Unpaid assistance not stated|PERSONS
+| | | |P_Tot_Tot	Persons_Total_Total	B21	B21	Total|PERSONS|
+| |B22B|B22|P_Tot_CF_Total	Persons_Total_Cared_for_Total|Cared for: Total|PERSONS|
+| | | |P_Tot_DNPCC|Persons_Total_Did_not_provide_child_care|Did not provide child care|PERSONS|
+| | | |P_Tot_UCC_NS|Persons_Total_Unpaid_child_care_not_stated|Unpaid child care not stated|PERSONS|
+| | | |P_Tot_Total|Persons_Total_Total|Total|PERSONS|
 |2016|G18|G18|P_Tot_Need_for_assistance|Persons_Total_Has_need_for_assistance|Need for assistance|PERSONS|
 | |||P_Tot_No_need_for_assistance|Persons_Total_Does_not_have_need_for_assistance|No need for assistance|PERSONS|
 | |||P_Tot_Need_for_assistance_ns|Persons_Total_Need_for_assistance_not_stated|Need for assistance not stated|PERSONS|
 | |||P_Tot_Tot|Persons_Total_Total|Total|PERSONS|
+| |G21|G21|P_Tot_prvided_unpaid_assist|Persons_Total_Provided_unpaid_assistance|Provided unpaid assistance|PERSONS|
+| |||P_Tot_No_unpaid_asst_prvided	Persons_Total_No_unpaid_assistance_provided	G21	G21	No unpaid assistance provided|PERSONS
+| |||P_Tot_Unpaid_assist_ns	Persons_Total_Unpaid_assistance_not_stated	G21	G21	Unpaid assistance not stated|PERSONS
+| |||P_Tot_Tot|Persons_Total_Total|Total|PERSONS|
+| |G22B|G22|P_Tot_CF_Total|Persons_Total_Cared_for_Total|Cared for: Total|PERSONS|
+| |||P_Tot_DNPCC|Persons_Total_Did_not_provide_child_care	G22B	G22	Did not provide child care|PERSONS|
+| |||P_Tot_UCC_NS|Persons_Total_Unpaid_child_care_not_stated	G22B	G22	Unpaid child care not stated|PERSONS|
+| |||P_Tot_Total|Persons_Total_Total|Total|PERSONS|
+
+
 
