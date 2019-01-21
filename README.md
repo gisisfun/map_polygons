@@ -226,8 +226,8 @@ The SQL code has been written to render the final product and a descriptive pres
 | |||P_Tot_Unpaid_assist_ns	Persons_Total_Unpaid_assistance_not_stated	G21	G21	Unpaid assistance not stated|PERSONS
 | |||P_Tot_Tot|Persons_Total_Total|Total|PERSONS|
 | |G22B|G22|P_Tot_CF_Total|Persons_Total_Cared_for_Total|Cared for: Total|PERSONS|
-| |||P_Tot_DNPCC|Persons_Total_Did_not_provide_child_care	G22B	G22	Did not provide child care|PERSONS|
-| |||P_Tot_UCC_NS|Persons_Total_Unpaid_child_care_not_stated	G22B	G22	Unpaid child care not stated|PERSONS|
+| |||P_Tot_DNPCC|Persons_Total_Did_not_provide_child_care|Did not provide child care|PERSONS|
+| |||P_Tot_UCC_NS|Persons_Total_Unpaid_child_care_not_stated|Unpaid child care not stated|PERSONS|
 | |||P_Tot_Total|Persons_Total_Total|Total|PERSONS|
 
 
