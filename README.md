@@ -111,11 +111,11 @@ The SQL code has been written to render the final product and a descriptive pres
 |                  | SA1_2016_AUST.shp                |                                  |
 | **donor_feat_11_B18_B21_B22_csv.sh** | feat_aust_57km_sa1_11.shp        | donor_feat_57km_11_B18_B21_B22.csv     |
 |                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
-| **donor_feat_16_B18_B21_B22_csv.sh** | feat_aust_57km_sa1_16.shp        | donor_feat_57km_16_B18_B21_B22.csv      |
+| **donor_feat_16_B18_B21_B22_csv.sh** | feat_aust_57km_sa1_16.shp        | donor_feat_57km_16_G18_G21_G22.csv      |
 |                  | 2016Census_G18_AUS_SA1.shp       |                                  |
-| **shape_donor_11.sh**| donor_feat_57km_aust_11.shp      |shape_donor_feat_57km_aust_11.shp |
+| **shape_donor_11.sh**| donor_feat_57km_11_B18_B21_B22.csv     |shape_donor_feat_57km_aust_11.shp |
 |                  | aust_hex_shape_57km.shp          |                                  |
-| **shape_donor_16.sh**| donor_feat_57km_aust_16.shp      |shape_donor_feat_57km_aust_16.shp |
+| **shape_donor_16.sh**| donor_feat_57km_16_G18_G21_G22.csv       |shape_donor_feat_57km_aust_16.shp |
 |                  | aust_hex_shape_57km.shp          |                                  |
 | **shape_11_16.sh**   |shape_donor_feat_57km_aust_11.shp | shape_75km_11_16.shp             |
 |                  |shape_donor_feat_57km_aust_16.shp |                                  |
