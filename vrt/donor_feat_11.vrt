@@ -20,10 +20,8 @@
         <SrcLayer>donor_feat_57km_sa2_16</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="Feat">
-        <SrcDataSource>../shapefiles/feat_aust_57km_sa1_11.shp</SrcDataSource>
+        <SrcDataSource>../csv/feat_aust_57km_sa1_11.csv</SrcDataSource>
         <SrcLayer>feat_aust_57km_sa1_11</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="Src">
         <SrcDataSource>../shapefiles/SA1_2011_AUST.shp</SrcDataSource>
