@@ -7,8 +7,11 @@ round(sum(Donor_G21.P_Tot_Tot*Feat.Feat_Prop),1) as PUnPAT16,
 round(sum(Donor_G22.P_Tot_CF_Total*Feat.Feat_Prop),1) as PUnPCC11,
 round(sum(Donor_G22.P_Tot_Total*Feat.Feat_Prop),1) as PUnPCCT11
 FROM [feat_aust_57km_sa1_16] as Feat 
-INNER JOIN [2016Census_G18_AUS_SA1] as Donor_G18 ON Donor_G18.region_id=Feat.Feat_Code  
-INNER JOIN [2016Census_G21_AUS_SA1] as Donor_G21 ON Donor_G21.region_id=Feat.Feat_Code 
-INNER JOIN [2016Census_G22_AUS_SA1] as Donor_G22 ON Donor_G22.region_id=Feat.Feat_Code 
+INNER JOIN [2016Census_G18_AUS_SA1] as Donor_G18 
+ON Donor_G18.SA1_7DIGITCODE_2016=Feat.Feat_Code  
+INNER JOIN [2016Census_G21_AUS_SA1] as Donor_G21 
+ON Donor_G21.SA1_7DIGITCODE_2016=Feat.Feat_Code 
+INNER JOIN [2016Census_G22_AUS_SA1] as Donor_G22 
+ON Donor_G22.SA1_7DIGITCODE_2016=Feat.Feat_Code 
 GROUP BY Feat.Poly
 ORDER BY Feat.Poly
