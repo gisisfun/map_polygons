@@ -273,7 +273,7 @@ Categories:
 |:---|:----|:-------------------------------------------------------------|:----|:----|:----|:----|
 |B18|G18|Core Activity Need for Assistance by Age by Sex|NeedA11|NeedA16|NeedAT11|TNeedAT16|
 |B21|G21|Unpaid Assistance to a Person with a Disability by Age by Sex|UPunPA11|UPunP16|UPunPT11|UPunPT16|
-|B22B|G22B|Unpaid Child Care by Age by Sex|PUPCC11|PUPCC16|PUPCCT11|PUPCCT16|
+|B22B|G22B|Unpaid Child Care by Age by Sex|PUnPCC11|PUnPCC16|PUnPCCT11|PUnPCCT16|
 
 ### Census Data Pack Metadata
 
