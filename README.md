@@ -52,8 +52,8 @@ Run these ETL scripts in this order:
 | **Filter to coastline**  |Polygon Select| batch_files | aust_shape.sh |
 | **Feature cut to shape** | area weight  | batch_files | feat_aust_11.sh |
 |                      |              |             | feat_aust_16.sh |
-| **Attrib Data to shape** | table join   | batch_files | donor_feat_11.sh |
-|                      |              |             | donor_feat_16.sh  |
+| **Attrib Data to shape** | table join   | batch_files | donor_feat_11_B18_B21_B22_csv.sh |
+|                      |              |             | donor_feat_16_G18_G21_G22_csv.sh  |
 | **Agg data to shape**    | aggregation & table join| batch_files | shape_donor_11.sh |
 |                      |    |             | shape_donor_16.sh |
 | **Merge attrib data**    | table join   | batch_files | shape_11_16.sh    |
@@ -76,8 +76,8 @@ Run these ETL scripts in this order:
 | **aust_shape.sh**     |aust_shape.vrt|aust_shape.sql |
 | **feat_aust_11.sh**   |feat_aust_11.vrt|feat_aust_11.sql |
 | **feat_aust_16.sh**   |feat_aust_16.vrt|feat_aust_16.sql |
-| **donor_feat_11.sh**  |donor_feat_11.vrt|donor_feat_11.sql |
-| **donor_feat_16.sh**  |donor_feat_16.vrt|donor_feat_16.sql |
+| **donor_feat_11_B18_B21_B22_csv.sh**  |donor_feat_11.vrt|donor_feat_11_B18_B21_B22.sql |
+| **donor_feat_16_G18_G21_G22_csv.sh**  |donor_feat_16.vrt|donor_feat_16_G18_G21_G22_csv.sql |
 | **shape_donor_11.sh** |shape_donor_11.vrt|shape_donor_11.sql |
 | **shape_donor_16.sh** |shape_donor_16.vrt| shape_donor_16.sql|
 | **shape_11_16.sh**    |shape_11_16.vrt|shape_11_16.sql|
