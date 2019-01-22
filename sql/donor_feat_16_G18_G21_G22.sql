@@ -8,6 +8,6 @@ round(sum(Donor_G22.P_Tot_Total*Feat.Feat_Prop),1) as PUnPCCT11
 FROM Feat 
 LEFT JOIN Donor_G18 ON Donor_G18.SA1_7DIGITCODE_2016=Feat.Feat_Code  
 LEFT JOIN Donor_G21 ON Donor_G21.SA1_7DIGITCODE_2016=Feat.Feat_Code 
-LEFT JOIN Donor_G22 ON Donor_G22.SA1_7DIGITCODE=Feat.Feat_Code 
+LEFT JOIN Donor_G22 ON Donor_G22.SA1_7DIGITCODE_2016=Feat.Feat_Code 
 GROUP BY Feat.Poly
 ORDER BY Feat.Poly
