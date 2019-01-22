@@ -12,9 +12,7 @@
         <SrcLayer>2016Census_G22B_AUS_SA1</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="Feat">
-        <SrcDataSource>../shapefiles/feat_aust_57km_sa1_16.shp</SrcDataSource>
+        <SrcDataSource>../csv/feat_aust_57km_sa1_16.csv</SrcDataSource>
         <SrcLayer>feat_aust_57km_sa1_16</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
 </OGRVRTDataSource>
