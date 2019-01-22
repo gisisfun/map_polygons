@@ -1,5 +1,4 @@
-SELECT Feat.Poly,Feat.Feat_Src,
-Feat.Feat_Code,
+SELECT Feat.Poly,
 round(sum(Donor_G18.P_Tot_Need_for_assistance*Feat.Feat_Prop),1) as NeedA16,
 round(sum(Donor_G18.P_Tot_Tot*Feat.Feat_Prop),1) as NeedAT16,
 round(sum(Donor_G21.P_Tot_prvided_unpaid_assist*Feat.Feat_Prop),1) as PUnPA16,
