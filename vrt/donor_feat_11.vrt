@@ -7,6 +7,10 @@
         <SrcDataSource>../csv/2011Census_B21_AUST_SA1_long.csv</SrcDataSource>
         <SrcLayer>2011Census_B21_AUST_SA1_long</SrcLayer>
     </OGRVRTLayer>
+    <OGRVRTLayer name="Donor_B22">
+        <SrcDataSource>../csv/2011Census_B22B_AUST_SA1_long.csv</SrcDataSource>
+        <SrcLayer>2011Census_B22B_AUST_SA1_long</SrcLayer>
+    </OGRVRTLayer>
     <OGRVRTLayer name="Donor_SA1">
         <SrcDataSource>../csv/donor_feat_57km_sa1_16.csv</SrcDataSource>
         <SrcLayer>donor_feat_57km_sa1_16</SrcLayer>
