@@ -78,8 +78,6 @@ Run these ETL scripts in this order:
 | **feat_aust_16.sh**   |feat_aust_16.vrt|feat_aust_16.sql |
 | **donor_feat_11_B18_B21_B22_csv.sh**  |donor_feat_11.vrt|donor_feat_11_B18_B21_B22.sql |
 | **donor_feat_16_G18_G21_G22_csv.sh**  |donor_feat_16.vrt|donor_feat_16_G18_G21_G22_csv.sql |
-| **shape_donor_11.sh** |shape_donor_11.vrt|shape_donor_11.sql |
-| **shape_donor_16.sh** |shape_donor_16.vrt| shape_donor_16.sql|
 | **shape_11_16.sh**    |shape_11_16.vrt|shape_11_16.sql|
 | **shape_11_16_place.sh**|shape_11_16.vrt|shape_place_count.sql|
 | **shape_11_16_place.sh**|shape_11_16.vrt|shape_11_16_place.sql|
@@ -113,12 +111,8 @@ The SQL code has been written to render the final product and a descriptive pres
 |                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
 | **donor_feat_16_B18_B21_B22_csv.sh** | feat_aust_57km_sa1_16.shp        | donor_feat_57km_16_G18_G21_G22.csv      |
 |                  | 2016Census_G18_AUS_SA1.shp       |                                  |
-| **shape_donor_11.sh**| donor_feat_57km_11_B18_B21_B22.csv     |shape_donor_feat_57km_aust_11.shp |
-|                  | aust_hex_shape_57km.shp          |                                  |
-| **shape_donor_16.sh**| donor_feat_57km_16_G18_G21_G22.csv       |shape_donor_feat_57km_aust_16.shp |
-|                  | aust_hex_shape_57km.shp          |                                  |
-| **shape_11_16.sh**   |shape_donor_feat_57km_aust_11.shp | shape_75km_11_16.shp             |
-|                  |shape_donor_feat_57km_aust_16.shp |                                  |
+| **shape_11_16.sh**   |donor_feat_57km_11_B18_B21_B22.csv  | shape_75km_11_16.shp             |
+|                  |donor_feat_57km_16_G18_G21_G22.csv |                                  |
 |                  |aust_hex_shape_57km.shp |                                  |
 | **shape_place_count.sh**   |aust_hex_shape_57km.shp  | shape_57km_place_count.shp |
 | | gis_osm_places_free_1.shp | |
@@ -154,15 +148,19 @@ The SQL code has been written to render the final product and a descriptive pres
 | **AUS_2016_AUST.shp**                 | 1              | 26.6 MB   | 4283 |
 | **aust_hex_shape_57km.shp**           | 1,262          | 627 KB    | 4283 |
 | **SA1_2011_AUST.shp**                 | 54,806         | 174 MB    | 4283 |
-| **feat_aust_57km_sa1_11.shp**         | 59,986         | 170 MB    | 4283 |
+| **feat_aust_57km_sa1_11.csv**         | 59,986         |    |  |
 | **SA1_2016_AUST.shp**                 | 57,523         | 185.5 MB  | 4283 |
-| **feat_aust_57km_sa1_16.shp**         | 62,756         | 186.6 MB  | 4283 |
-| **2011Census_B18_AUST_SA1_long.csv**  | 54,806         | 19M       | |
-| **donor_feat_57km_sa1_11.shp**        | 20,017         | 15.2 MB   | 4283 |
-| **2016Census_G18_AUS_SA1.csv**        | 57,523         | 20M       | |
+| **feat_aust_57km_sa1_11.csv**         | 62,756         |  |  |
+| **2011Census_B18_AUST_SA1_long.csv**  | 54,806         |        | |
+| **2011Census_B21_AUST_SA1_long.csv**  | 54,806         |      | |
+| **2011Census_B22B_AUST_SA1_long.csv**  | 54,806         |      | |
+| **donor_feat_57km_sa1_16.csv**        | 20,017         |    |  |
+| **2016Census_G18_AUS_SA1.csv**        | 57,523         |       | |
+| **2016Census_G21_AUS_SA1.csv**        | 57,523         |       | |
+| **2016Census_G22B_AUS_SA1.csv**        | 57,523         |       | |
 | **donor_feat_57km_sa1_16.shp**        | 18,923         | 14.1 MB   | 4283 |
-| **shape_donor_feat_57km_aust_11.shp** | 1,262          | 315 KB    | 4283 |
-| **shape_donor_feat_57km_aust_16.shp** | 1,262          | 303 KB    | 4283 |
+| **donor_feat_11_B18_B21_B22.csv** | 1,262          |    |  |
+| **donor_feat_16_G18_G21_G22.csv** | 1,262          |    | |
 | **shape_57km_11_16.shp**              | 1,262          | 377 KB    | 4283 |
 | **gis_osm_places_free_1.shp**         | | | 4326 |
 | **shape_57km_place_count.shp** | 1,262          | | 4283 |
