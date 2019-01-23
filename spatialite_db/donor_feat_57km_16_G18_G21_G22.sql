@@ -14,4 +14,4 @@ ON Donor_G21.SA1_7DIGITCODE_2016=Feat.Feat_Code
 INNER JOIN [2016Census_G22B_AUS_SA1] as Donor_G22 
 ON Donor_G22.SA1_7DIGITCODE_2016=Feat.Feat_Code 
 GROUP BY Feat.Poly
-ORDER BY Feat.Poly
+ORDER BY Feat.Poly;
