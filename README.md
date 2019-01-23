@@ -158,7 +158,6 @@ The SQL code has been written to render the final product and a descriptive pres
 | **2016Census_G18_AUS_SA1.csv**        | 57,523         |       | |
 | **2016Census_G21_AUS_SA1.csv**        | 57,523         |       | |
 | **2016Census_G22B_AUS_SA1.csv**        | 57,523         |       | |
-| **donor_feat_57km_sa1_16.shp**        | 18,923         | 14.1 MB   | 4283 |
 | **donor_feat_11_B18_B21_B22.csv** | 1,262          |    |  |
 | **donor_feat_16_G18_G21_G22.csv** | 1,262          |    | |
 | **shape_57km_11_16.shp**              | 1,262          | 377 KB    | 4283 |
