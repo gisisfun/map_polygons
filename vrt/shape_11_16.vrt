@@ -5,25 +5,13 @@
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
-    <OGRVRTLayer name="Shape11csv">
-        <SrcDataSource>../csv/shape_donor_feat_57km_aust_11.csv</SrcDataSource>
-        <SrcLayer>shape_donor_feat_57km_aust_11</SrcLayer>
-    </OGRVRTLayer>
-    <OGRVRTLayer name="Shape16csv">
-        <SrcDataSource>../csv/shape_donor_feat_57km_aust_16.csv</SrcDataSource>
-        <SrcLayer>shape_donor_feat_57km_aust_16</SrcLayer>
-    </OGRVRTLayer>
     <OGRVRTLayer name="Shape11">
-        <SrcDataSource>../shapefiles/shape_donor_feat_57km_aust_11.shp</SrcDataSource>
-        <SrcLayer>shape_donor_feat_57km_aust_11</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
+        <SrcDataSource>../csv/donor_feat_57km_11_B18_B21_B22.csv</SrcDataSource>
+        <SrcLayer>donor_feat_57km_11_B18_B21_B22</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shape16">
-        <SrcDataSource>../shapefiles/shape_donor_feat_57km_aust_16.shp</SrcDataSource>
-        <SrcLayer>shape_donor_feat_57km_aust_16</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
+        <SrcDataSource>../csv/donor_feat_57km_16_G18_G21_G22.csv</SrcDataSource>
+        <SrcLayer>donor_feat_57km_16_G18_G21_G22</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shape11_16">
         <SrcDataSource>../shapefiles/shape_75km_11_16.shp</SrcDataSource>
