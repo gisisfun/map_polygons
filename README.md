@@ -54,8 +54,6 @@ Run these ETL scripts in this order:
 |                      |              |             | feat_aust_16.sh |
 | **Attrib Data to shape** | table join   | batch_files | donor_feat_11_B18_B21_B22_csv.sh |
 |                      |  & aggregate     |             | donor_feat_16_G18_G21_G22_csv.sh  |
-| **Agg data to shape**    | aggregation & table join| batch_files | shape_donor_11.sh |
-|                      |    |             | shape_donor_16.sh |
 | **Merge attrib data**    | table join   | batch_files | shape_11_16.sh    |
 | **Make towns and cities**|point in polygon| batch_files| shape_place_count.sh|
 | **Add towns and cities** | table join   | batch_files | shape_11_16_place.sh|
