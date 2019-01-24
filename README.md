@@ -53,7 +53,7 @@ Run these ETL scripts in this order:
 | **Feature cut to shape** | area weight  | batch_files | feat_aust_11.sh |
 |                      |              |             | feat_aust_16.sh |
 | **Attrib Data to shape** | table join   | batch_files | donor_feat_11_B18_B21_B22_csv.sh |
-|                      |              |             | donor_feat_16_G18_G21_G22_csv.sh  |
+|                      |  & aggregate     |             | donor_feat_16_G18_G21_G22_csv.sh  |
 | **Agg data to shape**    | aggregation & table join| batch_files | shape_donor_11.sh |
 |                      |    |             | shape_donor_16.sh |
 | **Merge attrib data**    | table join   | batch_files | shape_11_16.sh    |
