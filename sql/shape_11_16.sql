@@ -17,6 +17,7 @@ service.services,
 bstation.bstations,
 road.roads,
 MBSP.MBSPplaces,
+Shape.est_area,
 Shape.geometry
 FROM Shape 
 LEFT JOIN Shape11
