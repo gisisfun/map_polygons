@@ -18,8 +18,8 @@ INNER JOIN [2016Census_G21_AUS_SA1] as Donor_G21
 ON Donor_G21.SA1_7DIGITCODE_2016=Feat.Feat_Code 
 INNER JOIN [2016Census_G22B_AUS_SA1] as Donor_G22 
 ON Donor_G22.SA1_7DIGITCODE_2016=Feat.Feat_Code 
-GROUP BY Feat.Poly
-ORDER BY Feat.Poly;
+GROUP BY Poly
+ORDER BY Poly;
 
 .output ../csv/donor_feat_57km_16_G18_G21_G22.csv
 
