@@ -1,4 +1,4 @@
-SELECT Feat.Poly,
+SELECT Feat.Poly as Poly,
 round(sum(Donor_G18.P_Tot_Need_for_assistance*Feat.Feat_Prop),1) as NeedA16,
 round(sum(Donor_G18.P_Tot_Tot*Feat.Feat_Prop),1) as NeedAT16,
 round(sum(Donor_G21.P_Tot_prvided_unpaid_assist*Feat.Feat_Prop),1) as PUnPA16,
@@ -9,5 +9,5 @@ FROM Feat
 LEFT JOIN Donor_G18 ON Donor_G18.SA1_7DIGITCODE_2016=Feat.Feat_Code  
 LEFT JOIN Donor_G21 ON Donor_G21.SA1_7DIGITCODE_2016=Feat.Feat_Code 
 LEFT JOIN Donor_G22 ON Donor_G22.SA1_7DIGITCODE_2016=Feat.Feat_Code 
-GROUP BY Feat.Poly
-ORDER BY Feat.Poly
+GROUP BY Poly
+ORDER BY Poly
