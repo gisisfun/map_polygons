@@ -106,10 +106,13 @@ Run these ETL scripts in this order:
 | | gis_osm_roads_free_1.shp ||
 | **shape_mbsp_count.sh** | aust_hex_shape_57km.shp  |shape_57km_mbsp_count.shp |
 | | mbsp_database.csv ||
-| **shape_11_16.sh**   |donor_feat_57km_11_B18_B21_B22.csv  | shape_75km_11_16.shp             |
-|                  |donor_feat_57km_16_G18_G21_G22.csv |                                  |
-|                  |aust_hex_shape_57km.shp |   
-
+| **shape_11_16.sh**   | donor_feat_57km_11_B18_B21_B22.csv  | shape_75km_11_16.shp             |
+|                  | donor_feat_57km_16_G18_G21_G22.csv |    |
+|                  | shape_57km_place_count.shp | |
+|                  | shape_57km_agil_count.shp | |
+|                  | shape_57km_mbsp_count.shp |  |
+|                  | shape_57km_road_count.shp |  |
+|                  | aust_hex_shape_57km.shp |   |
 
 ### Table of feature data set counts and file sizes 
 
