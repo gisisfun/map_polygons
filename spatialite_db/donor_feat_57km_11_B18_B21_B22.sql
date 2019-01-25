@@ -10,5 +10,5 @@ FROM [feat_aust_57km_sa1_11] as Feat
 INNER JOIN [2011Census_B18_AUST_SA1_long] as Donor_B18 ON Donor_B18.region_id=Feat.Feat_Code  
 INNER JOIN [2011Census_B21_AUST_SA1_long] as Donor_B21 ON Donor_B21.region_id=Feat.Feat_Code 
 INNER JOIN [2011Census_B22B_AUST_SA1_long] as Donor_B22 ON Donor_B22.region_id=Feat.Feat_Code 
-GROUP BY Feat.Poly
-ORDER BY Feat.Poly;
+GROUP BY Poly
+ORDER BY Poly;
