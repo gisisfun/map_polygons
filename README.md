@@ -69,8 +69,8 @@ Run these ETL scripts in this order:
 | **aust_shape.sh**     |aust_shape.vrt|aust_shape.sql |
 | **feat_aust_11.sh**   |feat_aust_11.vrt|feat_aust_11.sql |
 | **feat_aust_16.sh**   |feat_aust_16.vrt|feat_aust_16.sql |
-| **donor_feat_11_B18_B21_B22_csv.sh**  |donor_feat_11.vrt|donor_feat_11_B18_B21_B22.sql |
-| **donor_feat_16_G18_G21_G22_csv.sh**  |donor_feat_16.vrt|donor_feat_16_G18_G21_G22_csv.sql |
+| **donor_feat_11_B18_B21_B22_csv.sh**  |donor_feat_11.vrt|donor_feat_11_B18_B21_B22_csv.txt |
+| **donor_feat_16_G18_G21_G22_csv.sh**  |donor_feat_16.vrt|donor_feat_16_G18_G21_G22_csv.txt |
 | **shape_agil_count.sh**|shape_11_16.vrt|shape_agil_count.sql|
 | **shape_service_count.sh**|shape_11_16.vrt|shape_service_count.sql |
 | **shape_place_count.sh**|shape_11_16.vrt|shape_place_count.sql |
@@ -109,6 +109,7 @@ Run these ETL scripts in this order:
 | **shape_11_16.sh**   | donor_feat_57km_11_B18_B21_B22.csv  | shape_75km_11_16.shp             |
 |                  | donor_feat_57km_16_G18_G21_G22.csv |    |
 |                  | shape_57km_place_count.shp | |
+|                  | shape_57km_service_count.shp   |   |
 |                  | shape_57km_agil_count.shp | |
 |                  | shape_57km_mbsp_count.shp |  |
 |                  | shape_57km_road_count.shp |  |
