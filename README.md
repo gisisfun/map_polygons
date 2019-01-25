@@ -52,6 +52,7 @@ Run these ETL scripts in this order:
 | **Filter to coastline**  |Polygon Select| batch_files | aust_shape.sh |
 | **Feature cut to shape** | area wt calc  | batch_files | feat_aust_11.sh |
 |                      | Feat Intersect |             | feat_aust_16.sh |
+| ***TBA Population Weight *** |  |    |
 | **Attrib Data to shape** | table join   | batch_files | donor_feat_11_B18_B21_B22_csv.sh |
 |                      |  & aggregate     |             | donor_feat_16_G18_G21_G22_csv.sh  |
 | **Make towns and cities**|point in polygon| batch_files| shape_place_count.sh|
