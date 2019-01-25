@@ -1,5 +1,5 @@
 CREATE TABLE donor_feat_57km_16_G18_G21_G22 AS
-SELECT Feat.Poly,
+SELECT Feat.Poly as Poly,
 round(sum(Donor_G18.P_Tot_Need_for_assistance*Feat.Feat_Prop),1) as NeedA16,
 round(sum(Donor_G18.P_Tot_Tot*Feat.Feat_Prop),1) as NeedAT16,
 round(sum(Donor_G21.P_Tot_prvided_unpaid_assist*Feat.Feat_Prop),1) as PUnPA16,
