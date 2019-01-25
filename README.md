@@ -84,9 +84,6 @@ Run these ETL scripts in this order:
 | **shape_mbsp_count.sh**|shape_11_16.vrt|shape_mbsp_count.sql|
 | **shape_11_16.sh**    |shape_11_16.vrt|shape_11_16.sql|
 
-
-The SQL code has been written to render the final product and a descriptive presentation of the process.
-
 ### Table of processing files and their input and output files
 
 | File             | Input                            | Output                           |
