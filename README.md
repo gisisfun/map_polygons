@@ -54,7 +54,6 @@ Run these ETL scripts in this order:
 |                      |              |             | feat_aust_16.sh |
 | **Attrib Data to shape** | table join   | batch_files | donor_feat_11_B18_B21_B22_csv.sh |
 |                      |  & aggregate     |             | donor_feat_16_G18_G21_G22_csv.sh  |
-| **Merge attrib data**    | table join   | batch_files | shape_11_16.sh    |
 | **Make towns and cities**|point in polygon| batch_files| shape_place_count.sh|
 | **Add towns and cities** | table join   | batch_files | shape_11_16_place.sh|
 | **Make AGIL counts** |point in polygon| batch_files| shape_agil_count.sh|
@@ -67,6 +66,7 @@ Run these ETL scripts in this order:
 | **Update with road links** | table join   | batch_files | shape_11_16_place_agil_bstation_road.sh|
 | **Make mobile black spot count** |line in polygon| batch_files| shape_mbsp_count.sh|
 | **Update with mobile black spots** | table join   | batch_files | shape_11_16_place_agil_bstation_road_mbsp.sh|
+| **Merge attrib data**    | table join   | batch_files | shape_11_16.sh    |
 
 | File | VRT File | SQL File |
 |:-------------|:----------|:-------|
