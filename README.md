@@ -55,17 +55,11 @@ Run these ETL scripts in this order:
 | **Attrib Data to shape** | table join   | batch_files | donor_feat_11_B18_B21_B22_csv.sh |
 |                      |  & aggregate     |             | donor_feat_16_G18_G21_G22_csv.sh  |
 | **Make towns and cities**|point in polygon| batch_files| shape_place_count.sh|
-| **Add towns and cities** | table join   | batch_files | shape_11_16_place.sh|
 | **Make AGIL counts** |point in polygon| batch_files| shape_agil_count.sh|
-| **Update with AGIL** | table join   | batch_files | shape_11_16_place_agil.sh|
 | **Make services count** |point in polygon| batch_files| shape_service_count.sh|
-| **Update with services** | table join   | batch_files | shape_11_16_place_agil.sh|
 | **Make base station count** |point in polygon| batch_files| shape_bstation_count.sh|
-| **Update with base stations** | table join   | batch_files | shape_11_16_place_agil_bstation.sh|
 | **Make road links count** |line in polygon| batch_files| shape_road_count.sh|
-| **Update with road links** | table join   | batch_files | shape_11_16_place_agil_bstation_road.sh|
 | **Make mobile black spot count** |line in polygon| batch_files| shape_mbsp_count.sh|
-| **Update with mobile black spots** | table join   | batch_files | shape_11_16_place_agil_bstation_road_mbsp.sh|
 | **Merge attrib data**    | table join   | batch_files | shape_11_16.sh    |
 
 | File | VRT File | SQL File |
