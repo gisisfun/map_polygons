@@ -1,5 +1,6 @@
-
-SELECT Feat_Aust.Poly as Poly,Feat_Aust.Feat_Cide as Feat_Code, Count(*) as Places.places,
+SELECT Feat_Aust.Poly as Poly,
+Feat_Aust.Feat_Code as Feat_Code, 
+Count(*) as places,
 Feat_Aust.geometry
 FROM Feat_Aust 
 INNER JOIN Places
