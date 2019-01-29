@@ -6,10 +6,11 @@ DROP TABLE IF EXISTS "donor_feat_57km_place_11";
 CREATE TABLE donor_feat_57km_place_11 AS
 SELECT Feat.Poly as Poly,
 Feat.Feat_Code as Feat_Code,
+(CAST(Feat.places AS FLOAT) as places,
 (CAST(Feat.places AS FLOAT)/CAST(Place_Count.places AS FLOAT)) as Place_Prop
 FROM [feat_57km_11_place_count] as Feat 
 INNER JOIN [shape_57km_place_count] as Place_Count
-ON Place_Count.Poly=Feat.Poly;
+ON ST_WITHIN(Place_Count.Poly,Feat.Poly);
 
 .output ../csv/donor_feat_57km_place_11.csv
 
