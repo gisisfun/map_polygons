@@ -8,7 +8,7 @@
     <OGRVRTLayer name="AGIL">
         <SrcDataSource>../geojson/AGIL.json</SrcDataSource>
         <SrcLayer>AGIL</SrcLayer>
-        <GeometryType>wkbPoint</GeometryType>
+        <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4326</LayerSRS>
     </OGRVRTLayer>
 </OGRVRTDataSource>
