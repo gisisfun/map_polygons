@@ -10,7 +10,7 @@ Feat.Feat_Code as Feat_Code,
 (CAST(Feat.places AS FLOAT)/CAST(Place_Count.places AS FLOAT)) as Place_Prop
 FROM [feat_57km_11_place_count] as Feat 
 INNER JOIN [shape_57km_place_count] as Place_Count
-ON ST_WITHIN(Place_Count.Poly,Feat.Poly);
+ON Place_Count.Poly=Feat.Poly;
 
 .output ../csv/donor_feat_57km_place_11.csv
 
