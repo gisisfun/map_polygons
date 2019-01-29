@@ -5,15 +5,15 @@ DROP TABLE IF EXISTS "donor_feat_57km_place_16_B18_B21_B22";
 
 CREATE TABLE donor_feat_57km_place_16_G18_G21_G22 AS
 SELECT Feat.Poly as Poly,
-round(sum(Donor_G18.P_Tot_Need_for_assistance*Feat_Place.Place_Prop),1) as NeedA11,
-round(sum(Donor_G18.P_Tot_Tot*Feat_Place.Place_Prop),1) as NeedAT11,
-round(sum(Donor_G21.P_Tot_prvided_unpaid_assist*Feat_Place.Place_Prop),1) as PUnPA11,
-round(sum(Donor_G21.P_Tot_Tot*Feat_Place.Place_Prop),1) as PUnPAT11,
-round(sum(Donor_G22.P_Tot_CF_Total*Feat_Place.Place_Prop),1) as PUnPCC11,
-round(sum(Donor_G22.P_Tot_Total*Feat_Place.Place_Prop),1) as PUnPCCT11
+round(sum(Donor_G18.P_Tot_Need_for_assistance*Place_Wt.Place_Prop),1) as NeedA11,
+round(sum(Donor_G18.P_Tot_Tot*Place_Wt.Place_Prop),1) as NeedAT11,
+round(sum(Donor_G21.P_Tot_prvided_unpaid_assist*Place_Wt.Place_Prop),1) as PUnPA11,
+round(sum(Donor_G21.P_Tot_Tot*Place_Wt.Place_Prop),1) as PUnPAT11,
+round(sum(Donor_G22.P_Tot_CF_Total*Place_Wt.Place_Prop),1) as PUnPCC11,
+round(sum(Donor_G22.P_Tot_Total*Place_Wt.Place_Prop),1) as PUnPCCT11
 FROM [feat_57km_11_place_count] as Feat 
-INNER JOIN [shape_57km_place_16] as Feat_Place
-ON Feat_Place.Poly=Feat.Poly
+INNER JOIN [donor_feat_57km_place_16] as Place_Wt
+ON Place_Count.Poly=Feat.Poly
 INNER JOIN [2016Census_G18_AUST_SA1] as Donor_G18 
 ON Donor_G18.SA1_7DIGITCODE_2016=Feat.Feat_Code  
 INNER JOIN [2016Census_G21_AUST_SA1] as Donor_G21 
@@ -25,6 +25,6 @@ ORDER BY Poly;
 
 .output ../csv/donor_feat_57km_16_G18_G21_G22.csv
 
-select * from donor_feat_57km_11_G18_G21_G22;
+select * from donor_feat_57km_16_G18_G21_G22;
 
 .quit
