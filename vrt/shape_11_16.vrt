@@ -25,21 +25,9 @@
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
-    <OGRVRTLayer name="Shape11_16_place">
-        <SrcDataSource>../shapefiles/shape_75km_11_16_place.shp</SrcDataSource>
-        <SrcLayer>shape_75km_11_16_place</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
-    </OGRVRTLayer>
     <OGRVRTLayer name="AGIL">
         <SrcDataSource>../shapefiles/shape_57km_agil_count.shp</SrcDataSource>
         <SrcLayer>shape_57km_agil_count</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
-    </OGRVRTLayer>
-    <OGRVRTLayer name="Shape11_16_place_agil">
-        <SrcDataSource>../shapefiles/shape_75km_11_16_place_agil.shp</SrcDataSource>
-        <SrcLayer>shape_75km_11_16_place_agil</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
@@ -49,33 +37,15 @@
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
-    <OGRVRTLayer name="Shape11_16_place_agil_service">
-        <SrcDataSource>../shapefiles/shape_75km_11_16_place_agil_service.shp</SrcDataSource>
-        <SrcLayer>shape_75km_11_16_place_agil_service</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
-    </OGRVRTLayer>
     <OGRVRTLayer name="bstation">
         <SrcDataSource>../shapefiles/shape_57km_bstation_count.shp</SrcDataSource>
         <SrcLayer>shape_57km_bstation_count</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
-    <OGRVRTLayer name="Shape11_16_place_agil_service_bstation">
-        <SrcDataSource>../shapefiles/shape_75km_11_16_place_agil_service_bstation.shp</SrcDataSource>
-        <SrcLayer>shape_75km_11_16_place_agil_service_bstation</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
-    </OGRVRTLayer>
     <OGRVRTLayer name="road">
         <SrcDataSource>../shapefiles/shape_57km_road_count.shp</SrcDataSource>
         <SrcLayer>shape_57km_road_count</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
-    </OGRVRTLayer>
-    <OGRVRTLayer name="Shape11_16_place_agil_service_bstation_road">
-        <SrcDataSource>../shapefiles/shape_75km_11_16_place_agil_service_bstation_road.shp</SrcDataSource>
-        <SrcLayer>shape_75km_11_16_place_agil_service_bstation_road</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
