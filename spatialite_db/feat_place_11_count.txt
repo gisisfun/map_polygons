@@ -10,7 +10,6 @@ Count(*) as PlacesN
 FROM [feat_aust_57km_sa1_11] as Feat_Aust 
 LEFT JOIN [gis_osm_places_free_1] as Place
 ON ST_Within(Place.geometry,Feat_Aust.geometry) 
-LEFT JOIN [shape_57km_place_count] as Total
 GROUP BY P,Feat_Code;
 
 .output ../csv/feat_57km_11_placeN_count.csv
