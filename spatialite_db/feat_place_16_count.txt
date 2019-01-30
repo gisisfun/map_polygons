@@ -4,15 +4,17 @@
 DROP TABLE IF EXISTS "feat_57km_16_place_count";
 
 CREATE TABLE feat_57km_16_place_count AS
-SELECT Feat_Aust.Poly as Poly,
+SELECT Feat_Aust.Poly as P,
 Feat_Aust.Feat_Code as Feat_Code,
-Feat_Aust.Feat_Prop as Feat_PropA,
-Count(*) as places,
-Feat_Aust.geometry
+Feat_Aust.Feat_Prop as Area_Wt,
+Count(*) as Places,
+Total.places as Total_Places
 FROM [feat_aust_57km_sa1_16] as Feat_Aust 
 LEFT JOIN [gis_osm_places_free_1] as Place
 ON ST_Within(Place.geometry,Feat_Aust.geometry) 
-GROUP BY Poly,Feat_Code;
+LEFT JOIN [shape_57km_place_count] as Total
+ON Feat_Aust.Poly=Total.Poly
+GROUP BY P,Feat_Code,Area_Wt,Total_Places;
 
 .output ../csv/feat_57km_16_place_count.csv
 
