@@ -10,9 +10,9 @@ Feat_Aust.Feat_Prop as Area_Wt,
 Count(*) as Places,
 Total.places as Total_Places
 FROM [feat_aust_57km_sa1_11] as Feat_Aust 
-INNER JOIN [gis_osm_places_free_1] as Place
+LEFT JOIN [gis_osm_places_free_1] as Place
 ON ST_Within(Place.geometry,Feat_Aust.geometry) 
-INNER JOIN [shape_57km_place_count] as Total
+LEFT JOIN [shape_57km_place_count] as Total
 ON Feat_Aust.Poly=Total.Poly
 GROUP BY P,Feat_Code,Area_Wt,Total_Places;
 
