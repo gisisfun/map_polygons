@@ -3,7 +3,7 @@
 
 DROP TABLE IF EXISTS "feat_57km_11_place_count";
 
-CREATE TABLE feat_57km_16_place_count AS
+CREATE TABLE feat_57km_11_place_count AS
 SELECT Feat_Aust.Poly as P,
 Feat_Aust.Feat_Code as Feat_Code,
 Feat_Aust.Feat_Prop as Area_Wt,
