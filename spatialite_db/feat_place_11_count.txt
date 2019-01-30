@@ -1,23 +1,32 @@
 .mode csv
 .headers on
 
-DROP TABLE IF EXISTS "feat_57km_11_place_count";
+DROP TABLE IF EXISTS "feat_57km_11_placeN_count";
 
-CREATE TABLE feat_57km_11_place_count AS
-SELECT Feat_Aust.Poly as P,
+CREATE TABLE feat_57km_11_placeN_count AS
+SELECT Feat_Aust.Poly as Poly,
 Feat_Aust.Feat_Code as Feat_Code,
-Feat_Aust.Feat_Prop as Area_Wt,
-Count(*) as Places,
-Total.places as Total_Places
+Count(*) as PlacesN
 FROM [feat_aust_57km_sa1_11] as Feat_Aust 
 LEFT JOIN [gis_osm_places_free_1] as Place
 ON ST_Within(Place.geometry,Feat_Aust.geometry) 
 LEFT JOIN [shape_57km_place_count] as Total
-ON Feat_Aust.Poly=Total.Poly
-GROUP BY P,Feat_Code,Area_Wt,Total_Places;
+GROUP BY Poly,Feat_Code;
 
-.output ../csv/feat_57km_11_place_count.csv
+.output ../csv/feat_57km_11_placeN_count.csv
 
-select * from feat_57km_11_place_count;
+select * from feat_57km_11_placeN_count;
+
+DROP TABLE IF EXISTS "feat_57km_11_placeD_count";
+
+CREATE TABLE feat_57km_11_placeD_count AS
+SELECT PlaceN.Feat_Code as Feat_Code,
+Sum(PlaceN.PlacesN) as PlacesD
+FROM [feat_57km_11_placeN_count] as PlaceN
+GROUP BY Feat_Code;
+
+.output ../csv/feat_57km_11_placeD_count.csv
+
+select * from feat_57km_11_placeD_count;
 
 .quit
