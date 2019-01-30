@@ -16,8 +16,8 @@ LEFT JOIN [shape_57km_place_count] as Total
 ON Feat_Aust.Poly=Total.Poly
 GROUP BY P,Feat_Code,Area_Wt,Total_Places;
 
-.output ../csv/donor_feat_57km_place_11.csv
+.output ../csv/feat_57km_11_place_count.csv
 
-select * from donor_feat_57km_place_11;
+select * from feat_57km_11_place_count;
 
 .quit
