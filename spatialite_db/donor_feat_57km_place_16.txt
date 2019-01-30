@@ -1,15 +1,19 @@
 .mode csv
 .headers on
+DROP TABLE IF EXISTS "feat_57km_16_place_count";
 
-DROP TABLE IF EXISTS "donor_feat_57km_place_16";
-
-CREATE TABLE donor_feat_57km_place_16 AS
-SELECT Feat.Poly as Poly,
-Feat.Feat_Code as Feat_Code,
-(CAST(Feat.places AS FLOAT)/CAST(Place_Count.places AS FLOAT)) as Place_Prop
-FROM [feat_57km_11_place_count] as Feat 
-INNER JOIN [shape_57km_place_count] as Place_Count
-ON Place_Count.Poly=Feat.Poly;
+CREATE TABLE feat_57km_16_place_count AS
+SELECT Feat_Aust.Poly as P,
+Feat_Aust.Feat_Code as Feat_Code,
+Feat_Aust.Feat_Prop as Area_Wt,
+Count(*) as Places,
+Total.places as Total_Places
+FROM [feat_aust_57km_sa1_16] as Feat_Aust 
+LEFT JOIN [gis_osm_places_free_1] as Place
+ON ST_Within(Place.geometry,Feat_Aust.geometry) 
+LEFT JOIN [shape_57km_place_count] as Total
+ON Feat_Aust.Poly=Total.Poly
+GROUP BY P,Feat_Code,Total_Places;
 
 .output ../csv/donor_feat_57km_place_16.csv
 
