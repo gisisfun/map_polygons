@@ -30,7 +30,7 @@ select * from feat_57km_11_placeD_count;
 
 DROP TABLE IF EXISTS "feat_57km_11_place_count";
 
-CREATE TABLE feat_57km_11_place_count AS
+CREATE TABLE feat_57km_11_place_wt AS
 SELECT PlaceN.P as Poly
 PlaceN.Feat_Code as Feat_Code,
 (PlaceN.PlacesN/PlaceN.PlacesD) as Place_wt 
@@ -38,8 +38,8 @@ FROM [feat_57km_11_placeN_count] as PlaceN
 INNER JOIN [feat_57km_11_placeD_count] as PlaceD
 ON PlaceN.Feat_Code=PlaceD.Feat_Code;
 
-.output ../csv/feat_57km_11_place_count.csv
+.output ../csv/feat_57km_11_place_wt.csv
 
-select * from feat_57km_11_place_count;
+select * from feat_57km_11_place_wt;
 
 .quit
