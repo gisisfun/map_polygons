@@ -12,7 +12,7 @@ round(sum(Donor_G21.P_Tot_Tot*Place.Place_Wt),1) as PUnPAT11,
 round(sum(Donor_G22.P_Tot_CF_Total*Place.Place_Wt),1) as PUnPCC11,
 round(sum(Donor_G22.P_Tot_Total*Place.Place_Wt),1) as PUnPCCT11
 FROM [feat_57km_11_place_count] as Feat 
-INNER JOIN [donor_feat_57km_place_16] as Place
+INNER JOIN [feat_57km_16_place_wt] as Place
 ON Place.Poly=Feat.Poly
 INNER JOIN [2011Census_G18_AUST_SA1] as Donor_G18 
 ON Donor_G18.SA1_7DIGITCODE_2016=Feat.Feat_Code  
