@@ -1,45 +1,44 @@
 .mode csv
 .headers on
+DROP TABLE IF EXISTS "feat_57km_16_placeN_count";
 
-DROP TABLE IF EXISTS "feat_57km_11_placeN_count";
-
-CREATE TABLE feat_57km_11_placeN_count AS
+CREATE TABLE feat_57km_16_placeN_count AS
 SELECT Feat_Aust.Poly as P,
 Feat_Aust.Feat_Code as Feat_Code,
 Count(*) as PlacesN
-FROM [feat_aust_57km_sa1_11] as Feat_Aust 
+FROM [feat_aust_57km_sa1_16] as Feat_Aust 
 LEFT JOIN [gis_osm_places_free_1] as Place
-ON ST_Within(Place.geometry,Feat_Aust.geometry) 
+ON ST_Within(Place.geometry,Feat_Aust.geometry)
 GROUP BY P,Feat_Code;
 
-.output ../csv/feat_57km_11_placeN_count.csv
+.output ../csv/feat_57km_16_placeN_count.csv
 
-select * from feat_57km_11_placeN_count;
+select * from feat_57km_16_placeN_count;
 
-DROP TABLE IF EXISTS "feat_57km_11_placeD_count";
+DROP TABLE IF EXISTS "feat_57km_16_placeD_count";
 
-CREATE TABLE feat_57km_11_placeD_count AS
+CREATE TABLE feat_57km_16_placeD_count AS
 SELECT PlaceN.Feat_Code as Feat_Code,
 Sum(PlaceN.PlacesN) as PlacesD
-FROM [feat_57km_11_placeN_count] as PlaceN
+FROM [feat_57km_16_placeN_count] as PlaceN
 GROUP BY Feat_Code;
 
-.output ../csv/feat_57km_11_placeD_count.csv
+.output ../csv/feat_57km_16_placeD_count.csv
 
-select * from feat_57km_11_placeD_count;
+select * from feat_57km_16_placeD_count;
 
-DROP TABLE IF EXISTS "feat_57km_11_place_count";
+DROP TABLE IF EXISTS "feat_57km_16_place_count";
 
-CREATE TABLE feat_57km_11_place_count AS
-SELECT PlaceN.P as Poly
+CREATE TABLE feat_57km_16_place_count AS
+SELECT PlaceN.P as Poly,
 PlaceN.Feat_Code as Feat_Code,
-(PlaceN.PlacesN/PlaceN.PlacesD) as Place_wt 
+(CAST(PlaceN.PlacesN AS Float)/CAST(PlaceD.PlacesD AS Float)) as Place_Wt
 FROM [feat_57km_11_placeN_count] as PlaceN
-INNER JOIN [feat_57km_11_placeD_count] as PlaceD
+INNER JOIN [feat_57km_16_placeD_count] as PlaceD
 ON PlaceN.Feat_Code=PlaceD.Feat_Code;
 
-.output ../csv/feat_57km_11_place_count.csv
+.output ../csv/feat_57km_16_place_count.csv
 
-select * from feat_57km_11_place_count;
+select * from feat_57km_16_place_count;
 
 .quit
