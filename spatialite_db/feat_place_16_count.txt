@@ -12,7 +12,9 @@ ON ST_Within(Place.geometry,Feat_Aust.geometry)
 GROUP BY P,Feat_Code;
 
 .output ../csv/feat_57km_16_placeN_count.csv
+
 select * from feat_57km_16_placeN_count;
+
 DROP TABLE IF EXISTS "feat_57km_16_placeD_count";
 
 CREATE TABLE feat_57km_16_placeD_count AS
@@ -22,14 +24,16 @@ FROM [feat_57km_16_placeN_count] as PlaceN
 GROUP BY Feat_Code;
 
 .output ../csv/feat_57km_16_placeD_count.csv
+
 select * from feat_57km_16_placeD_count;
+
 DROP TABLE IF EXISTS "feat_57km_16_place_count";
 
 CREATE TABLE feat_57km_16_place_count AS
-SELECT PlaceN.P as Poly
+SELECT PlaceN.P as Poly,
 PlaceN.Feat_Code as Feat_Code,
-(PlaceN.PlacesN/PlaceN.PlacesD) as Place_wt 
-FROM [feat_57km_16_placeN_count] as PlaceN
+(CAST(PlaceN.PlacesN AS Float)/CAST(PlaceD.PlacesD AS Float)) as Place_Wt
+FROM [feat_57km_11_placeN_count] as PlaceN
 INNER JOIN [feat_57km_16_placeD_count] as PlaceD
 ON PlaceN.Feat_Code=PlaceD.Feat_Code;
 
@@ -38,3 +42,4 @@ ON PlaceN.Feat_Code=PlaceD.Feat_Code;
 select * from feat_57km_16_place_count;
 
 .quit
+
