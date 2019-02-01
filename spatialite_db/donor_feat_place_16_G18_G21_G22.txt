@@ -4,7 +4,7 @@
 DROP TABLE IF EXISTS "donor_feat_57km_place_16_B18_B21_B22";
 
 CREATE TABLE donor_feat_57km_place_16_G18_G21_G22 AS
-SELECT Feat.Poly as Poly,
+SELECT Place.Poly as Poly,
 round(sum(Donor_G18.P_Tot_Need_for_assistance*Place.Place_Wt),1) as NeedA11,
 round(sum(Donor_G18.P_Tot_Tot*Place.Place_Wt),1) as NeedAT11,
 round(sum(Donor_G21.P_Tot_prvided_unpaid_assist*Place.Place_Wt),1) as PUnPA11,
