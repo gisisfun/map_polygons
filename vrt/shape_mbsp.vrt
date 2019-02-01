@@ -7,7 +7,7 @@
     </OGRVRTLayer>
     <OGRVRTLayer name="MBSP">
         <SrcDataSource>../shapefiles/mbsp_database.csv</SrcDataSource>
-        <SrcLayer>AGIL</SrcLayer>
+        <SrcLayer>mbsp_database</SrcLayer>
         <GeometryType>wkbPoint</GeometryType>
         <GeometryField encoding="PointFromColumns" x="Longitude" y="Latitude"/>
         <LayerSRS>EPSG:4823</LayerSRS>
