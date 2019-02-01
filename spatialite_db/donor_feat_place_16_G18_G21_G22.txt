@@ -1,7 +1,7 @@
 .mode csv
 .headers on
 
-DROP TABLE IF EXISTS "donor_feat_57km_place_16_B18_B21_B22";
+DROP TABLE IF EXISTS "donor_feat_57km_place_16_G18_G21_G22";
 
 CREATE TABLE donor_feat_57km_place_16_G18_G21_G22 AS
 SELECT Place.Poly as Poly,
