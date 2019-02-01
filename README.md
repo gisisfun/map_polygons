@@ -35,6 +35,15 @@ python3 polygons.py hex -8 -45 96 168 212
 
 for boxes:
 python3 polygons.py box -8 -45 96 168 212
+## How does it work ##
+
+Python for list creation/management and construction of geometric shapes
+Geojson for encoding of the geometric shapes
+GDAL/ogr2ogr for shapefile conversion, simple geometry SQL queries
+PROJ for reprojection
+Sqlite3 for generation of SQL definitions for spatialite.
+Spatialite for more complex SQL queries.
+Shell - Bash and Sed for moving files to sqlite and spatialite databases.
 
 ## Data Processing Files 
 Polygon shapes are given attributes from data sets with spatial references. The polygon data is processed using scripts with their SQL and vrt file pointing to file names.  
