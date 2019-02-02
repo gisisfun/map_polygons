@@ -39,7 +39,7 @@ python3 polygons.py box -8 -45 96 168 212
 
 - **Python 3.7** for list creation/management and construction of geometric shapes.
 - **Pandas** for csv file outputs.
-- **Python3 modules** for downloading content from ABS website.
+- **Python3 modules** for downloading and unzipping content from ABS website.
 - **Geopy** for point calculations for list.
 - **GeoJSON** for encoding of the geometric shapes.
 - **GDAL/ogr2ogr** for shapefile conversion, simple geometry SQL queries.
