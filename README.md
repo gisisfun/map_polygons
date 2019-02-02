@@ -39,7 +39,7 @@ python3 polygons.py box -8 -45 96 168 212
 
 - **CPython 3.7** for list creation/management and construction of geometric shapes.
 - **Pandas** for csv file outputs.
-- **Python3 modules** for downloading and unzipping content from ABS website.
+- **Python3 modules** for downloading and unzipping content from the ABS website.
 - **Geopy** for point calculations for list.
 - **GeoJSON** for encoding of the geometric shapes.
 - **GDAL/ogr2ogr** for shapefile conversion, simple geometry SQL queries.
@@ -49,6 +49,7 @@ python3 polygons.py box -8 -45 96 168 212
 - Shell - **Bash** and **Sed** for moving files to **sqlite** and **spatialite** databases and nit to mention automation of the above. 
 - **QGIS** or your favourite GIS Package.
 - **You** can contribute or make something better
+- Have a look in the shapefiles directory for the processed shape files for area and place point of interest files.
 
 ## Data Processing Files 
 Polygon shapes are given attributes from data sets with spatial references. The polygon data is processed using scripts with their SQL and vrt file pointing to file names.  
