@@ -6,20 +6,20 @@
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shape_Area11">
-        <SrcDataSource>../csv/donor_feat_57km_area_11_B18_B21_B22.csv</SrcDataSource>
-        <SrcLayer>donor_feat_57km_area_11_B18_B21_B22</SrcLayer>
+        <SrcDataSource>../csv/donor_feat_area_57km_11_B18_B21_B22.csv</SrcDataSource>
+        <SrcLayer>donor_feat_area_57km_11_B18_B21_B22</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shape_Area16">
-        <SrcDataSource>../csv/donor_feat_57km_area_16_G18_G21_G22.csv</SrcDataSource>
-        <SrcLayer>donor_feat_57km_area_16_G18_G21_G22</SrcLayer>
+        <SrcDataSource>../csv/donor_feat_area_57km_16_G18_G21_G22.csv</SrcDataSource>
+        <SrcLayer>donor_feat_area_57km_16_G18_G21_G22</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shape_Place11">
-        <SrcDataSource>../csv/donor_feat_57km_place_11_B18_B21_B22.csv</SrcDataSource>
-        <SrcLayer>donor_feat_57km_place_11_B18_B21_B22</SrcLayer>
+        <SrcDataSource>../csv/donor_feat_place_57km_11_B18_B21_B22.csv</SrcDataSource>
+        <SrcLayer>donor_feat_place_57km_11_B18_B21_B22</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shape_Place16">
-        <SrcDataSource>../csv/donor_feat_57km_place_16_G18_G21_G22.csv</SrcDataSource>
-        <SrcLayer>donor_feat_57km_place_16_G18_G21_G22</SrcLayer>
+        <SrcDataSource>../csv/donor_feat_place_57km_16_G18_G21_G22.csv</SrcDataSource>
+        <SrcLayer>donor_feat_place_57km_16_G18_G21_G22</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shape11_16">
         <SrcDataSource>../shapefiles/shape_75km_11_16.shp</SrcDataSource>
@@ -64,4 +64,3 @@
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
 </OGRVRTDataSource>
-
