@@ -49,7 +49,7 @@ python3 polygons.py box -8 -45 96 168 212
 - Shell - **Bash** and **Sed** for moving files to **sqlite** and **spatialite** databases and nit to mention automation of the above. 
 - **QGIS** or your favourite GIS Package.
 - **You** can contribute or make something better
-- Have a look in the shapefiles directory for the processed shape files for area and place point of interest files.
+- Have a look in the shapefiles directory for the processed shape files for area weighted and place point of interest weeighted files.
 
 ## Data Processing Files 
 Polygon shapes are given attributes from data sets with spatial references. The polygon data is processed using scripts with their SQL and vrt file pointing to file names.  
