@@ -46,7 +46,7 @@ python3 polygons.py box -8 -45 96 168 212
 - PROJ for reprojection.
 - Sqlite3 for generation of SQL definitions for spatialite.
 - Spatialite for more complex SQL queries.
-- Shell - Bash and Sed for moving files to sqlite and spatialite databases.
+- Shell - Bash and Sed for moving files to sqlite and spatialite databases and nit to mention automation of the above.
 - QGIS or your favourite GIS Package.
 
 ## Data Processing Files 
