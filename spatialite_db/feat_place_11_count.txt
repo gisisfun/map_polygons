@@ -33,7 +33,7 @@ DROP TABLE IF EXISTS "feat_57km_11_place_count";
 CREATE TABLE feat_57km_11_place_wt AS
 SELECT PlaceN.P as Poly
 PlaceN.Feat_Code as Feat_Code,
-(PlaceN.PlacesN/PlaceN.PlacesD) as Place_wt 
+(PlaceN.PlacesN/PlaceN.PlacesD) as Place_Wt 
 FROM [feat_57km_11_placeN_count] as PlaceN
 INNER JOIN [feat_57km_11_placeD_count] as PlaceD
 ON PlaceN.Feat_Code=PlaceD.Feat_Code;
