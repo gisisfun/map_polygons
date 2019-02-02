@@ -1,9 +1,9 @@
 .mode csv
 .headers on
 
-DROP TABLE IF EXISTS "donor_feat_57km_place_16_G18_G21_G22";
+DROP TABLE IF EXISTS "donor_feat_place_57km_16_G18_G21_G22";
 
-CREATE TABLE donor_feat_57km_place_16_G18_G21_G22 AS
+CREATE TABLE donor_feat_place_57km_16_G18_G21_G22 AS
 SELECT Place.Poly as Poly,
 round(sum(Donor_G18.P_Tot_Need_for_assistance*Place.Place_Wt),1) as NeedA16,
 round(sum(Donor_G18.P_Tot_Tot*Place.Place_Wt),1) as NeedAT16,
@@ -21,8 +21,8 @@ ON Donor_G22.SA1_7DIGITCODE_2016=Place.Feat_Code
 GROUP BY Place.Poly
 ORDER BY Poly;
 
-.output ../csv/donor_feat_57km_place_16_G18_G21_G22.csv
+.output ../csv/donor_feat_place_57km_16_G18_G21_G22.csv
 
-select * from donor_feat_57km_place_16_G18_G21_G22;
+select * from donor_feat_place_57km_16_G18_G21_G22;
 
 .quit
