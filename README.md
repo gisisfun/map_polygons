@@ -37,7 +37,7 @@ for boxes:
 python3 polygons.py box -8 -45 96 168 212
 ## How does it work ##
 
-- **Python 3.7** for list creation/management and construction of geometric shapes.
+- **CPython 3.7** for list creation/management and construction of geometric shapes.
 - **Pandas** for csv file outputs.
 - **Python3 modules** for downloading and unzipping content from ABS website.
 - **Geopy** for point calculations for list.
