@@ -27,7 +27,7 @@ GROUP BY Feat_Code;
 
 select * from feat_57km_16_placeD_count;
 
-DROP TABLE IF EXISTS "feat_57km_16_place_count";
+DROP TABLE IF EXISTS "feat_57km_16_place_wt";
 
 CREATE TABLE feat_57km_16_place_wt AS
 SELECT PlaceN.P as Poly,
