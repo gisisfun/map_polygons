@@ -1,0 +1,26 @@
+DROP TABLE IF EXISTS "MB_2011";
+
+CREATE TABLE MB_2011 AS
+SELECT *, ST_Collect(geometry) FROM
+(SELECT *,geometry from MB_2011_ACT
+UNION ALL
+SELECT *,geometry from MB_2011_NSW
+UNION ALL
+SELECT *,geometry from MB_2011_VIC
+UNION ALL
+SELECT *,geometry from MB_2011_TAS
+UNION ALL
+SELECT *,geometry from MB_2011_SA
+UNION ALL
+SELECT *,geometry from MB_2011_NT
+UNION ALL
+SELECT *,geometry from MB_2011_OT
+UNION ALL
+SELECT *,geometry from MB_2011_WA
+UNION ALL
+SELECT *,geometry from MB_2011_QLD
+);
+
+
+
+.quit
