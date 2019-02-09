@@ -5,6 +5,60 @@
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
+    <OGRVRTLayer name="MB_NSW">
+        <SrcDataSource>../shapefiles/MB_2016_NSW.shp</SrcDataSource>
+        <SrcLayer>MB_2016_NSW</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="MB_QLD">
+        <SrcDataSource>../shapefiles/MB_2016_QLD.shp</SrcDataSource>
+        <SrcLayer>MB_2016_QLD</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="MB_SA">
+        <SrcDataSource>../shapefiles/MB_2016_SA.shp</SrcDataSource>
+        <SrcLayer>MB_2016_SA</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="MB_TAS">
+        <SrcDataSource>../shapefiles/MB_2016_TAS.shp</SrcDataSource>
+        <SrcLayer>MB_2016_TAS</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="MB_ACT">
+        <SrcDataSource>../shapefiles/MB_2016_ACT.shp</SrcDataSource>
+        <SrcLayer>MB_2016_ACT</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="MB_NT">
+        <SrcDataSource>../shapefiles/MB_2016_NT.shp</SrcDataSource>
+        <SrcLayer>MB_2016_NT</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="MB_OT">
+        <SrcDataSource>../shapefiles/MB_2016_OT.shp</SrcDataSource>
+        <SrcLayer>MB_2016_OT</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="MB_SA">
+        <SrcDataSource>../shapefiles/MB_2016_SA.shp</SrcDataSource>
+        <SrcLayer>MB_2016_SA</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="MB_WA">
+        <SrcDataSource>../shapefiles/MB_2016_WA.shp</SrcDataSource>
+        <SrcLayer>MB_2016_WA</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
     <OGRVRTLayer name="MB_Counts">
         <SrcDataSource>../csv/2016 census mesh block counts.csv</SrcDataSource>
         <SrcLayer>2016 census mesh block counts</SrcLayer>
