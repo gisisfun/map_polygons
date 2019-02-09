@@ -1,0 +1,12 @@
+<OGRVRTDataSource>
+    <OGRVRTLayer name="MB">
+        <SrcDataSource>../shapefiles/MB_2016_AUST.shp</SrcDataSource>
+        <SrcLayer>MB_2016_AUST</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="MB_Counts">
+        <SrcDataSource>../csv/2016 census mesh block counts.csv</SrcDataSource>
+        <SrcLayer>2016 census mesh block counts</SrcLayer>
+    </OGRVRTLayer>
+</OGRVRTDataSource>
