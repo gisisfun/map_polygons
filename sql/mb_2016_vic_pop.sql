@@ -1,0 +1,7 @@
+SELECT 
+MB_VIC.MB_CODE16 as MB_CODE16, 
+mb_counts.Person as Persons, 
+MB_VIC.geometry
+FROM MB_VIC
+INNER JOIN MB_Counts
+ON MB_VIC.MB_CODE16=MB_Counts.MB_CODE_2016
