@@ -1,6 +1,6 @@
 SELECT 
 MB.MB_CODE16 as MB_CODE16, 
-mb_counts.Person as Persons, 
+CAST(mb_counts.Person AS INT) as Persons, 
 MB.geometry
 FROM MB
 INNER JOIN MB_Counts
