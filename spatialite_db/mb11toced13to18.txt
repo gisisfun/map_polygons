@@ -8,7 +8,7 @@ SELECT
 MB11.MB_CODE11,
 CED13.CED_CODE13,
 CED13.CED_NAME13,
-(ST_Area(ST_Intersection(MB11.geometry,CED16.geometry))/ST_Area(MB11.geometry))*CAST(MB_Counts.Persons_Usually_Resident AS INT) as Area_Count
+(ST_Area(ST_Intersection(MB11.geometry,CED13.geometry))/ST_Area(MB11.geometry))*CAST(MB_Counts.Persons_Usually_Resident AS INT) as Area_Count
 FROM [MB_2011_AUST] as MB11 
 INNER JOIN [CED_2013_AUST] as CED13 
 ON ST_Intersects(MB11.geometry,CED13.geometry)
