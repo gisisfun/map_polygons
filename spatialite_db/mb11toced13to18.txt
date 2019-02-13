@@ -1,0 +1,43 @@
+
+DROP TABLE IF EXISTS "mb11toced13";
+
+CREATE TABLE mb11toced13 AS
+SELECT 
+MB11.MB_CODE11,
+CED13.CED_CODE13,
+CED13.CED_NAME13,
+(ST_Area(ST_Intersection(MB11.geometry,CED16.geometry))/ST_Area(MB11.geometry))*CAST(MB_Counts.Persons_Usually_Resident AS INT) as Area_Count
+FROM [MB_2011_AUST] as MB11 ,
+[CED_2013_AUST] as CED13,
+[censuscounts_mb_2011_aust] as MB_Counts 
+WHERE ST_Intersects(MB11.geometry,CED13.geometry) 
+and MB11.MB_CODE11=CED13.CED_CODE13;
+
+DROP TABLE IF EXISTS "mb11toced16";
+
+CREATE TABLE mb11toced16 AS
+SELECT 
+MB11.MB_CODE11,
+CED16.CED_CODE16,
+CED16.CED_NAME16,
+(ST_Area(ST_Intersection(MB11.geometry,CED16.geometry))/ST_Area(MB11.geometry))*CAST(MB_Counts.Persons_Usually_Resident AS INT) as Area_Count
+FROM [MB_2011_AUST] as MB11 ,
+[CED_2016_AUST] as CED16,
+[censuscounts_mb_2011_aust] as MB_Counts 
+WHERE ST_Intersects(MB11.geometry,CED16.geometry) 
+and MB11.MB_CODE11=CED16.CED_CODE16;
+
+
+DROP TABLE IF EXISTS "mb11toced18";
+
+CREATE TABLE mb11toced18 AS
+SELECT 
+MB11.MB_CODE11,
+CED18.CED_CODE18,
+CED18.CED_NAME18,
+(ST_Area(ST_Intersection(MB11.geometry,CED18.geometry))/ST_Area(MB11.geometry))*CAST(MB_Counts.Persons_Usually_Resident AS INT) as Area_Count
+FROM [MB_2011_AUST] as MB11 ,
+[CED_2018_AUST] as CED18,
+[censuscounts_mb_2011_aust] as MB_Counts 
+WHERE ST_Intersects(MB11.geometry,CED18.geometry) 
+and MB11.MB_CODE11=CED18.CED_CODE18;
