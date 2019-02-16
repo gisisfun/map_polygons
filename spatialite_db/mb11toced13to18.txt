@@ -29,10 +29,13 @@ SELECT
 MB11.MB_CODE11,
 CED16.CED_CODE16,
 CED16.CED_NAME16,
-((ST_Area(ST_Intersection(MB11.geometry,CED16.geometry))*12391.3)/MB11.MB_Area)*MB11.Persons as Area_Count
-FROM [mb_2011_aust_pop] as MB11 
-INNER JOIN [CED_2016_AUST] as CED16
-ON ST_Intersects(MB11.geometry,CED16.geometry);
+(CAST(MB11.MB_Area AS FLOAT) as MB_Area,
+((ST_Area(ST_Intersection(MB11.geometry,CED16.geometry))*12391.3)/MB_Area)*MB11.Persons as Area_Count
+FROM [mb_2011_aust_pop] as MB11,
+[CED_2016_AUST] as CED16 
+WHERE MB_Area IS NOT NULL;
+
+
 
 .output ../csv/mb11toced16.csv
 
