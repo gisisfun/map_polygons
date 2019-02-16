@@ -17,6 +17,20 @@ ON ST_Intersects(MB11.geometry,CED13.geometry);
 
 select * from "mb11toced13";
 
+DROP TABLE IF EXISTS "mbpop_ced13";
+
+CREATE TABLE mbpop_ced13 AS
+SELECT 
+MB_CED13.CED_CODE13 AS CED_CODE13,
+MB_CED13.CED_NAME13 as CED_NAME13,
+SUM(Area_Count) as Area_Total
+FROM [mb11toced13] as MB_CED13 
+GROUP BY CED_CODE13,CED_NAME13;
+
+.output ../csv/mbpop_ced13.csv
+
+select * from "mbpop_ced13";
+
 .mode csv
 .headers on
 
@@ -72,6 +86,22 @@ ON ST_Intersects(MB11.geometry,CED18.geometry);
 .output ../csv/mb11toced18.csv
 
 select * from "mb11toced18";
+
+DROP TABLE IF EXISTS "mbpop_ced13";
+
+CREATE TABLE mbpop_ced18 AS
+SELECT 
+MB_CED18.CED_CODE18 AS CED_CODE18,
+MB_CED18.CED_NAME18 as CED_NAME18,
+SUM(Area_Count) as Area_Total
+FROM [mb11toced18] as MB_CED18 
+GROUP BY CED_CODE18,CED_NAME18;
+
+.output ../csv/mbpop_ced18.csv
+
+select * from "mbpop_ced18";
+
+
 
 .quit
 
