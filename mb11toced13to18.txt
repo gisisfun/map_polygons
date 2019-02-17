@@ -1,0 +1,139 @@
+.mode csv
+.headers on
+
+DROP TABLE IF EXISTS "mb11toced13";
+
+CREATE TABLE mb11toced13 AS
+SELECT 
+MB11.MB_CODE11,
+CED13.CED_CODE13,
+CED13.CED_NAME13,
+((ST_Area(ST_Intersection(MB11.geometry,CED13.geometry))*12391.3)/MB11.MB_Area)*MB11.Persons as Area_Count
+FROM [mb_2011_aust_pop] as MB11 
+INNER JOIN [CED_2013_AUST] as CED13 
+ON ST_Intersects(MB11.geometry,CED13.geometry);
+
+.output ../csv/mb11toced13.csv
+
+select * from "mb11toced13";
+
+DROP TABLE IF EXISTS "mbpop11_ced13";
+
+CREATE TABLE mbpop11_ced13 AS
+SELECT 
+MB_CED13.CED_CODE13 AS CED_CODE13,
+MB_CED13.CED_NAME13 as CED_NAME13,
+SUM(Area_Count) as Area_Total
+FROM [mb11toced13] as MB_CED13 
+GROUP BY CED_CODE13,CED_NAME13;
+
+.output ../csv/mbpop11_ced13.csv
+
+select * from "mbpop11_ced13";
+
+.mode csv
+.headers on
+
+DROP TABLE IF EXISTS "mb11toced16";
+
+CREATE TABLE mb11toced16 AS
+SELECT 
+MB11.MB_CODE11,
+CED16.CED_CODE16,
+CED16.CED_NAME16,
+((ST_Area(ST_Intersection(MB11.geometry,CED16.geometry))*12391.3)/MB11.MB_Area)*MB11.Persons as Area_Count
+FROM [mb_2011_aust_pop] as MB11 
+INNER JOIN [CED_2016_AUST] as CED16
+ON ST_Intersects(MB11.geometry,CED16.geometry);
+
+.output ../csv/mb11toced16.csv
+
+select * from "mb11toced16";
+
+.mode csv
+.headers on
+
+DROP TABLE IF EXISTS "mb11tosa211";
+
+CREATE TABLE mb11tosa211 AS
+SELECT 
+MB11.MB_CODE11,
+SA211.SA2_MAIN11,
+SA211.SA2_NAME11,
+((ST_Area(ST_Intersection(MB11.geometry,SA211.geometry))*12391.3)/MB11.MB_Area)*MB11.Persons as Area_Count
+FROM [mb_2011_aust_pop] as MB11 
+INNER JOIN [SA2_2011_AUST] as SA211
+ON ST_Intersects(MB11.geometry,SA211.geometry);
+
+.output ../csv/mb11tosa211.csv
+select * from "mb11tosa211";
+
+DROP TABLE IF EXISTS "mbpop11_sa211";
+
+CREATE TABLE mbpop11_sa211 AS
+SELECT 
+MB_SA211.SA2_MAIN11 AS SA2_MAIN11,
+MB_SA211.SA2_NAME11 as SA2_NAME11,
+SUM(Area_Count) as Area_Total
+FROM [mb11tosa211] as MB_sa211 
+GROUP BY SA2_MAIN11,SA2_NAME11;
+
+.output ../csv/mbpop11_sa211.csv
+
+select * from "mbpop11_sa211";
+
+.mode csv
+.headers on
+
+DROP TABLE IF EXISTS "mb11toced18";
+
+CREATE TABLE mb11toced18 AS
+SELECT 
+MB11.MB_CODE11,
+CED18.CED_CODE18,
+CED18.CED_NAME18,
+((ST_Area(ST_Intersection(MB11.geometry,CED18.geometry))*12391.3)/MB11.MB_Area)*MB11.Persons as Area_Count
+FROM [mb_2011_aust_pop] as MB11 
+INNER JOIN  [CED_2018_AUST] as CED18
+ON ST_Intersects(MB11.geometry,CED18.geometry);
+
+.output ../csv/mb11toced18.csv
+
+select * from "mb11toced18";
+
+DROP TABLE IF EXISTS "mbpop_ced13";
+
+CREATE TABLE mbpop11_ced18 AS
+SELECT 
+MB_CED18.CED_CODE18 AS CED_CODE18,
+MB_CED18.CED_NAME18 as CED_NAME18,
+SUM(Area_Count) as Area_Total
+FROM [mb11toced18] as MB_CED18 
+GROUP BY CED_CODE18,CED_NAME18;
+
+.output ../csv/mbpop11_ced18.csv
+
+select * from "mbpop11_ced18";
+
+DROP TABLE IF EXISTS "sa211_ced18_mbpop11";
+
+CREATE TABLE sa211_ced18_mbpop11 AS
+SELECT
+mb11tosa211.SA2_MAIN11 as SA2_MAIN11,
+mb11tosa211.SA2_NAME11 as SA2_NAME11,
+mb11toced18.CED_CODE18 AS CED_CODE18,
+mb11toced18.CED_NAME18 AS CED_NAME18,
+CAST(SUM(mbpop11_sa211.Area_Count) AS FLOAT) as Olap_Count
+FROM mb11tosa211
+INNER JOIN mb11toced18
+ON mb11tosa211.MB_CODE11=mb11toced18.MB_CODE11
+GROUP BY SA2_MAIN11,SA2_NAME11,CED_CODE18,CED_NAME18;
+
+.output ../csv/sa211_ced18_mbpop11.csv
+
+select * from "sa211_ced18_mbpop11";
+
+
+.quit
+
+.SA2_MAIN11 
