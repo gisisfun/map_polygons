@@ -17,9 +17,9 @@ ON ST_Intersects(MB11.geometry,CED13.geometry);
 
 select * from "mb11toced13";
 
-DROP TABLE IF EXISTS "mbpop_ced13";
+DROP TABLE IF EXISTS "mbpop11_ced13";
 
-CREATE TABLE mbpop_ced13 AS
+CREATE TABLE mbpop11_ced13 AS
 SELECT 
 MB_CED13.CED_CODE13 AS CED_CODE13,
 MB_CED13.CED_NAME13 as CED_NAME13,
@@ -27,9 +27,9 @@ SUM(Area_Count) as Area_Total
 FROM [mb11toced13] as MB_CED13 
 GROUP BY CED_CODE13,CED_NAME13;
 
-.output ../csv/mbpop_ced13.csv
+.output ../csv/mbpop11_ced13.csv
 
-select * from "mbpop_ced13";
+select * from "mbpop11_ced13";
 
 .mode csv
 .headers on
@@ -68,6 +68,20 @@ ON ST_Intersects(MB11.geometry,SA211.geometry);
 .output ../csv/mb11tosa211.csv
 select * from "mb11tosa211";
 
+DROP TABLE IF EXISTS "mbpop11_sa211";
+
+CREATE TABLE mbpop11_sa211 AS
+SELECT 
+MB_SA211.SA2_MAIN11 AS SA2_MAIN11,
+MB_SA211.SA2_NAME11 as SA2_NAME11,
+SUM(Area_Count) as Area_Total
+FROM [mb11tosa211] as MB_sa211 
+GROUP BY SA2_MAIN11,SA2_NAME11;
+
+.output ../csv/mbpop11_sa211.csv
+
+select * from "mbpop11_sa211";
+
 .mode csv
 .headers on
 
@@ -89,7 +103,7 @@ select * from "mb11toced18";
 
 DROP TABLE IF EXISTS "mbpop_ced13";
 
-CREATE TABLE mbpop_ced18 AS
+CREATE TABLE mbpop11_ced18 AS
 SELECT 
 MB_CED18.CED_CODE18 AS CED_CODE18,
 MB_CED18.CED_NAME18 as CED_NAME18,
@@ -97,11 +111,29 @@ SUM(Area_Count) as Area_Total
 FROM [mb11toced18] as MB_CED18 
 GROUP BY CED_CODE18,CED_NAME18;
 
-.output ../csv/mbpop_ced18.csv
+.output ../csv/mbpop11_ced18.csv
 
-select * from "mbpop_ced18";
+select * from "mbpop11_ced18";
 
+DROP TABLE IF EXISTS "sa211_ced18_mbpop11";
+
+CREATE TABLE sa211_ced18_mbpop11 AS
+SELECT
+mbpop11_sa211.SA2_MAIN11 as SA2_MAIN11,
+mbpop11_sa211.SA2_NAME11 as SA2_NAME11,
+mbpop11_ced18.CED_CODE18 AS CED_CODE18,
+mbpop11_ced18.CED_NAME18 AS CED_NAME18,
+CAST(SUM(mbpop11_sa211.Area_Count) as Olap_Count
+FROM mbpop11_sa211
+INNER JOIN mbpop11_ced18
+ON mbpop11_SA211.MB_CODE11=mbpop11_ced18.MB_CODE11
+GROUP BY SA2_MAIN11,SA2_NAME11,CED_CODE18,CED_NAME18;
+
+.output ../csv/mbpop11_ced18.csv
+
+select * from "mbpop11_ced18";
 
 
 .quit
 
+.SA2_MAIN11 
