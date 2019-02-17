@@ -119,19 +119,19 @@ DROP TABLE IF EXISTS "sa211_ced18_mbpop11";
 
 CREATE TABLE sa211_ced18_mbpop11 AS
 SELECT
-mbpop11_sa211.SA2_MAIN11 as SA2_MAIN11,
-mbpop11_sa211.SA2_NAME11 as SA2_NAME11,
-mbpop11_ced18.CED_CODE18 AS CED_CODE18,
-mbpop11_ced18.CED_NAME18 AS CED_NAME18,
-CAST(SUM(mbpop11_sa211.Area_Count) as Olap_Count
-FROM mbpop11_sa211
-INNER JOIN mbpop11_ced18
-ON mbpop11_SA211.MB_CODE11=mbpop11_ced18.MB_CODE11
+mb11tosa211.SA2_MAIN11 as SA2_MAIN11,
+mb11tosa211.SA2_NAME11 as SA2_NAME11,
+mb11toced18.CED_CODE18 AS CED_CODE18,
+mb11toced18.CED_NAME18 AS CED_NAME18,
+CAST(SUM(mbpop11_sa211.Area_Total) AS FLOAT) as Olap_Count
+FROM mb11tosa211
+INNER JOIN mb11toced18
+ON mb11tosa211.MB_CODE11=mb11toced18.MB_CODE11
 GROUP BY SA2_MAIN11,SA2_NAME11,CED_CODE18,CED_NAME18;
 
-.output ../csv/mbpop11_ced18.csv
+.output ../csv/sa211_ced18_mbpop11.csv
 
-select * from "mbpop11_ced18";
+select * from "sa211_ced18_mbpop11";
 
 
 .quit
