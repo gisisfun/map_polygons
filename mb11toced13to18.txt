@@ -1,5 +1,7 @@
 .mode csv
 .headers on
+pragma temp_store=1;
+pragma temp_store_directory = '../spatialite_db';
 
 DROP TABLE IF EXISTS "mb11toced13";
 
@@ -33,6 +35,8 @@ select * from "mbpop11_ced13";
 
 .mode csv
 .headers on
+pragma temp_store=1;
+pragma temp_store_directory = '../spatialite_db';
 
 DROP TABLE IF EXISTS "mb11toced16";
 
@@ -52,6 +56,8 @@ select * from "mb11toced16";
 
 .mode csv
 .headers on
+pragma temp_store=1;
+pragma temp_store_directory = '../spatialite_db';
 
 DROP TABLE IF EXISTS "mb11tosa211";
 
@@ -84,6 +90,8 @@ select * from "mbpop11_sa211";
 
 .mode csv
 .headers on
+pragma temp_store=1;
+pragma temp_store_directory = '../spatialite_db';
 
 DROP TABLE IF EXISTS "mb11toced18";
 
@@ -100,6 +108,11 @@ ON ST_Intersects(MB11.geometry,CED18.geometry);
 .output ../csv/mb11toced18.csv
 
 select * from "mb11toced18";
+
+.mode csv
+.headers on
+pragma temp_store=1;
+pragma temp_store_directory = '../spatialite_db';
 
 DROP TABLE IF EXISTS "mbpop_ced13";
 
@@ -123,7 +136,7 @@ mb11tosa211.SA2_MAIN11 as SA2_MAIN11,
 mb11tosa211.SA2_NAME11 as SA2_NAME11,
 mb11toced18.CED_CODE18 AS CED_CODE18,
 mb11toced18.CED_NAME18 AS CED_NAME18,
-CAST(SUM(mbpop11_sa211.Area_Count) AS FLOAT) as Olap_Count
+CAST(SUM(mb11tosa211.Area_Count) AS FLOAT) as Olap_Count
 FROM mb11tosa211
 INNER JOIN mb11toced18
 ON mb11tosa211.MB_CODE11=mb11toced18.MB_CODE11
