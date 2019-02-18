@@ -252,10 +252,15 @@ FROM sa211_ced18_mbpop11
 INNER JOIN mbpop11_ced18
 ON sa211_ced18_mbpop11.CED_CODE18=mbpop11_ced18.CED_CODE18 and prop is not NULL;
 
-
 .output ../csv/conc_sa211_ced18_mbpop11.csv
 
 select * from "conc_sa211_ced18_mbpop11";
+
+###############################################################################################
+# Total all proportions                                                                       #
+# New Proportion is first proportion divided the first proportion total                       #
+###############################################################################################
+
 
 .quit
 
