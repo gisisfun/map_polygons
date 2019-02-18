@@ -1,5 +1,3 @@
-
-
 DROP TABLE IF EXISTS "mb_2011_aust_pop_";
 
 CREATE TABLE mb_2011_aust_pop_ AS
@@ -94,18 +92,44 @@ select * from "ced13_ced18_mbpop11";
 pragma temp_store=1;
 pragma temp_store_directory = '../spatialite_db';
 
+DROP TABLE IF EXISTS "prop_sa211_ced18_mbpop11";
+
+CREATE TABLE prop_ced13_ced18_mbpop11 AS
+SELECT
+prop_ced13_ced18_mbpop11.CED_CODE18 AS CED_CODE18,
+prop_ced13_ced18_mbpop11.CED_NAME18 AS CED_NAME18,
+CAST(SUM(prop_ced13_ced18_mbpop11.Prop) AS FLOAT) as Tot_Prop
+FROM prop_ced13_ced18_mbpop11
+GROUP BY CED_CODE18,CED_NAME18;
+
+.output ../csv/prop_ced13_ced18_mbpop11.csv
+
+select * from "prop_ced13_ced18_mbpop11";
+
+###############################################################################################
+# Total all proportions                                                                       #
+# New Proportion is first proportion divided the first proportion total                       #
+###############################################################################################
+
+.mode csv
+.headers on
+pragma temp_store=1;
+pragma temp_store_directory = '../spatialite_db';
+
 DROP TABLE IF EXISTS "conc_ced13_ced18_mbpop11";
 
 CREATE TABLE conc_ced13_ced18_mbpop11 AS
 SELECT
-ced13_ced18_mbpop11.CED_CODE13 as CED_CODE13,
-ced13_ced18_mbpop11.CED_NAME13 as CED_NAME13,
+ced13_ced18_mbpop11.CED_CODE13 AS CED_CODE13,
+ced13_ced18_mbpop11.CED_NAME13 AS CED_NAME13,
 ced13_ced18_mbpop11.CED_CODE18 AS CED_CODE18,
 ced13_ced18_mbpop11.CED_NAME18 AS CED_NAME18,
 CAST((ced13_ced18_mbpop11.Olap_Count/mbpop11_ced18.Area_Total) AS FLOAT) as Prop
 FROM ced13_ced18_mbpop11
 INNER JOIN mbpop11_ced18
-ON ced13_ced18_mbpop11.CED_CODE18=mbpop11_ced18.CED_CODE18 and Prop is not NULL;
+ON ced13_ced18_mbpop11.CED_CODE18=mbpop11_ced18.CED_CODE18 and prop is not NULL
+INNER JOIN prop_ced13_ced18_mbpop11
+ON prop_ced13_ced18_mbpop11.CED_CODE18=mbpop11_ced18.CED_CODE18 and prop is not NULL;
 
 .output ../csv/conc_ced13_ced18_mbpop11.csv
 
@@ -239,7 +263,51 @@ select * from "sa211_ced18_mbpop11";
 pragma temp_store=1;
 pragma temp_store_directory = '../spatialite_db';
 
-DROP TABLE IF EXISTS "conc_sa211_ced18_mbpop11";
+DROP TABLE IF EXISTS "prop_sa211_ced18_mbpop11";
+
+CREATE TABLE prop_sa211_ced18_mbpop11 AS
+SELECT sa211_ced18_mbpop11.CED_CODE18 AS CED_CODE18,
+sa211_ced18_mbpop11.CED_NAME18 AS CED_NAME18,
+CAST(SUM(sa211_ced18_mbpop11.Olap_Count/mbpop11_ced18.Area_Total) AS FLOAT) as Prop
+FROM sa211_ced18_mbpop11
+INNER JOIN mbpop11_ced18
+ON sa211_ced18_mbpop11.CED_CODE18=mbpop11_ced18.CED_CODE18 and prop is not NULL
+GROUP BY CED_CODE18,CED_NAME18;
+
+.output ../csv/prop_sa211_ced18_mbpop11.csv
+
+select * from "prop_sa211_ced18_mbpop11";
+
+.mode csv
+.headers on
+pragma temp_store=1;
+pragma temp_store_directory = '../spatialite_db';
+
+DROP TABLE IF EXISTS "prop_sa211_ced18_mbpop11";
+
+CREATE TABLE prop_sa211_ced18_mbpop11 AS
+SELECT
+prop_sa211_ced18_mbpop11.CED_CODE18 AS CED_CODE18,
+prop_sa211_ced18_mbpop11.CED_NAME18 AS CED_NAME18,
+CAST(SUM(prop_sa211_ced18_mbpop11.Prop) AS FLOAT) as Tot_Prop
+FROM prop_sa211_ced18_mbpop11
+GROUP BY CED_CODE18,CED_NAME18;
+
+.output ../csv/prop_ced13_ced18_mbpop11.csv
+
+select * from "prop_ced13_ced18_mbpop11";
+
+###############################################################################################
+# Total all proportions                                                                       #
+# New Proportion is first proportion divided the first proportion total                       #
+###############################################################################################
+
+.mode csv
+.headers on
+pragma temp_store=1;
+pragma temp_store_directory = '../spatialite_db';
+
+DROP TABLE IF EXISTS "conc_ced13_ced18_mbpop11";
 
 CREATE TABLE conc_sa211_ced18_mbpop11 AS
 SELECT
@@ -250,17 +318,13 @@ sa211_ced18_mbpop11.CED_NAME18 AS CED_NAME18,
 CAST((sa211_ced18_mbpop11.Olap_Count/mbpop11_ced18.Area_Total) AS FLOAT) as Prop
 FROM sa211_ced18_mbpop11
 INNER JOIN mbpop11_ced18
-ON sa211_ced18_mbpop11.CED_CODE18=mbpop11_ced18.CED_CODE18 and prop is not NULL;
+ON sa211_ced18_mbpop11.CED_CODE18=mbpop11_ced18.CED_CODE18 and prop is not NULL
+INNER JOIN prop_sa211_ced18_mbpop11
+ON prop_sa211_ced18_mbpop11.CED_CODE18=mbpop11_ced18.CED_CODE18 and prop is not NULL;
 
 .output ../csv/conc_sa211_ced18_mbpop11.csv
 
 select * from "conc_sa211_ced18_mbpop11";
-
-###############################################################################################
-# Total all proportions                                                                       #
-# New Proportion is first proportion divided the first proportion total                       #
-###############################################################################################
-
 
 .quit
 
