@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS "mb_2011_aust_pop_";
+DDROP TABLE IF EXISTS "mb_2011_aust_pop_";
 
 CREATE TABLE mb_2011_aust_pop_ AS
 SELECT CAST(MB_MB_CODE11 AS INT) MB.MB_CODE11 as MB_CODE11, 
@@ -65,6 +65,7 @@ GROUP BY CED_CODE13,CED_NAME13;
 
 select * from "mbpop11_ced13";
 
+.mode csv
 .headers on
 pragma temp_store=1;
 pragma temp_store_directory = '../spatialite_db';
@@ -92,15 +93,18 @@ select * from "ced13_ced18_mbpop11";
 pragma temp_store=1;
 pragma temp_store_directory = '../spatialite_db';
 
-DROP TABLE IF EXISTS "prop_sa211_ced18_mbpop11";
+DROP TABLE IF EXISTS "prop_ced13_ced18_mbpop11";
 
 CREATE TABLE prop_ced13_ced18_mbpop11 AS
 SELECT
-prop_ced13_ced18_mbpop11.CED_CODE18 AS CED_CODE18,
-prop_ced13_ced18_mbpop11.CED_NAME18 AS CED_NAME18,
-CAST(SUM(prop_ced13_ced18_mbpop11.Prop) AS FLOAT) as Tot_Prop
-FROM prop_ced13_ced18_mbpop11
-GROUP BY CED_CODE18,CED_NAME18;
+ced13_ced18_mbpop11.CED_CODE13 AS CED_CODE13,
+ced13_ced18_mbpop11.CED_NAME13 AS CED_NAME13,
+ced13_ced18_mbpop11.CED_CODE18 AS CED_CODE18,
+ced13_ced18_mbpop11.CED_NAME18 AS CED_NAME18,
+CAST((ced13_ced18_mbpop11.Olap_Count/mbpop11_ced18.Area_Total) AS FLOAT) as Prop
+FROM ced13_ced18_mbpop11
+INNER JOIN mbpop11_ced18
+ON ced13_ced18_mbpop11.CED_CODE18=mbpop11_ced18.CED_CODE18 and prop is not NULL;
 
 .output ../csv/prop_ced13_ced18_mbpop11.csv
 
@@ -110,6 +114,25 @@ select * from "prop_ced13_ced18_mbpop11";
 # Total all proportions                                                                       #
 # New Proportion is first proportion divided the first proportion total                       #
 ###############################################################################################
+
+.mode csv
+.headers on
+pragma temp_store=1;
+pragma temp_store_directory = '../spatialite_db';
+
+DROP TABLE IF EXISTS "propt_sa211_ced18_mbpop11";
+
+CREATE TABLE propt_ced13_ced18_mbpop11 AS
+SELECT
+prop_ced13_ced18_mbpop11.CED_CODE18 AS CED_CODE18,
+prop_ced13_ced18_mbpop11.CED_NAME18 AS CED_NAME18,
+CAST(SUM(prop_ced13_ced18_mbpop11.Prop) AS FLOAT) as Tot_Prop
+FROM prop_ced13_ced18_mbpop11
+GROUP BY CED_CODE18,CED_NAME18;
+
+.output ../csv/propt_ced13_ced18_mbpop11.csv
+
+select * from "propt_ced13_ced18_mbpop11";
 
 .mode csv
 .headers on
@@ -128,8 +151,8 @@ CAST((ced13_ced18_mbpop11.Olap_Count/mbpop11_ced18.Area_Total) AS FLOAT) as Prop
 FROM ced13_ced18_mbpop11
 INNER JOIN mbpop11_ced18
 ON ced13_ced18_mbpop11.CED_CODE18=mbpop11_ced18.CED_CODE18 and prop is not NULL
-INNER JOIN prop_ced13_ced18_mbpop11
-ON prop_ced13_ced18_mbpop11.CED_CODE18=mbpop11_ced18.CED_CODE18 and prop is not NULL;
+INNER JOIN propt_ced13_ced18_mbpop11
+ON propt_ced13_ced18_mbpop11.CED_CODE18=mbpop11_ced18.CED_CODE18 and prop is not NULL;
 
 .output ../csv/conc_ced13_ced18_mbpop11.csv
 
