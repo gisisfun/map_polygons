@@ -57,10 +57,10 @@ CED.CED_NAME13,
 ((ST_Area(ST_Intersection(MB.geometry,CED.geometry))*12391.3)/MB.MB_Area)*MB.Persons
 FROM mb_2011_aust_pop] as MB, [CED_2013_AUST] as CED
 WHERE ST_CoveredBy(CED.geometry, MB.geometry) = 1 
-  AND c.ROWID IN (
+  AND CED.ROWID IN (
     SELECT ROWID 
     FROM SpatialIndex
-    WHERE f_table_name = 'CED_2013_' 
+    WHERE f_table_name = 'CED_2013_AUST' 
         AND search_frame = MB.geometry);
 
 DROP TABLE IF EXISTS "mbpop11_ced13";
