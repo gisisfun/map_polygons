@@ -63,6 +63,13 @@ WHERE ST_CoveredBy(CED.geometry, MB.geometry) = 1
     WHERE f_table_name = 'CED_2013_AUST' 
         AND search_frame = MB.geometry);
 
+SELECT p1.nome_pro, p2.nome_pro FROM prov2011 AS p1, prov2011 AS p2
+WHERE ST_Equals(p1.geometry, p2.geometry) = 1 AND p1.ROWID IN (
+    SELECT ROWID
+    FROM SpatialIndex
+    WHERE f_table_name = 'prov2011' AND search_frame = p2.geometry
+);
+
 DROP TABLE IF EXISTS "mbpop11_ced13";
 
 CREATE TABLE mbpop11_ced13 AS
