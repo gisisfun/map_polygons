@@ -67,6 +67,26 @@ select * from "mbpop16_sa211";
 pragma temp_store=1;
 pragma temp_store_directory = '../spatialite_db';
 
+.mode csv
+.headers on
+pragma temp_store=1;
+pragma temp_store_directory = '../spatialite_db';
+
+DROP TABLE IF EXISTS "mbpop16_sa211";
+
+CREATE TABLE mbpop16_sa211 AS
+SELECT 
+MB_sa211.SA2_MAIN11 AS SA2_MAIN11,
+MB_sa211.SA2_NAME11 as SA2_NAME11,
+CAST(SUM(Area_Count) AS FLOAT) as Area_Total
+FROM [mb16tosa211] as MB_sa211 
+GROUP BY SA2_MAIN11,SA2_NAME11;
+
+.output ../csv/mbpop16_sa211.csv
+
+select * from "mbpop16_sa211";
+
+
 
 .mode csv
 .headers on

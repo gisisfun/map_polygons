@@ -1,0 +1,177 @@
+
+
+.mode csv
+.headers on
+pragma temp_store=1;
+pragma temp_store_directory = '../spatialite_db';
+
+DROP TABLE IF EXISTS "mb11toced13";
+
+CREATE TABLE mb11toced13 AS
+SELECT 
+MB11.MB_CODE11,
+CED13.CED_CODE13,
+CED13.CED_NAME13,
+((ST_Area(ST_Intersection(MB11.geometry,CED13.geometry))*12391.3)/MB11.MB_Area)*MB11.Persons as Area_Count
+FROM [mb_2011_aust_pop] as MB11 
+INNER JOIN [CED_2013_AUST] as CED13 
+ON ST_Intersects(MB11.geometry,CED13.geometry);
+
+.output ../csv/mb11toced13.csv
+
+select * from "mb11toced13";
+
+DROP TABLE IF EXISTS "mbpop11_ced13";
+
+CREATE TABLE mbpop11_ced13 AS
+SELECT 
+MB_CED13.CED_CODE13 AS CED_CODE13,
+MB_CED13.CED_NAME13 as CED_NAME13,
+CAST(SUM(Area_Count) AS FLOAT) as Area_Total
+FROM [mb11toced13] as MB_CED13 
+GROUP BY CED_CODE13,CED_NAME13;
+
+.output ../csv/mbpop11_ced13.csv
+
+select * from "mbpop11_ced13";
+
+.mode csv
+.headers on
+pragma temp_store=1;
+pragma temp_store_directory = '../spatialite_db';
+
+
+.mode csv
+.headers on
+pragma temp_store=0;
+DROP TABLE IF EXISTS "ced13_ced18_mbpop11";
+
+CREATE TABLE ced13_ced18_mbpop11 AS
+SELECT
+mb11toced13.CED_CODE13 as CED_CODE13,
+mb11toced13.CED_NAME13 as CED_NAME13,
+mb11toced18.CED_CODE18 AS CED_CODE18,
+mb11toced18.CED_NAME18 AS CED_NAME18,
+CAST(SUM(mb11toced13.Area_Count) AS FLOAT) as Olap_Count
+FROM mb11toced13
+INNER JOIN mb11toced18
+ON mb11toced13.MB_CODE11=mb11toced18.MB_CODE11
+GROUP BY CED_CODE13,CED_NAME13,CED_CODE18,CED_NAME18;
+
+.output ../csv/ced13_ced18_mbpop11.csv
+
+select * from "ced13_ced18_mbpop11";
+
+.mode csv
+.headers on
+pragma temp_store=1;
+DROP TABLE IF EXISTS "ced13_ced18_mbpop11_clean";
+
+CREATE TABLE ced13_ced18_mbpop11_clean AS
+SELECT
+ced13_ced18_mbpop11.CED_CODE13 as CED_CODE13,
+ced13_ced18_mbpop11.CED_NAME13 as CED_NAME13,
+ced13_ced18_mbpop11.CED_CODE18 AS CED_CODE18,
+ced13_ced18_mbpop11.CED_NAME18 AS CED_NAME18,
+ced13_ced18_mbpop11.Olap_Count
+FROM ced13_ced18_mbpop11
+WHERE CED_NAME18 NOT LIKE '%address%'
+ AND 
+CED_NAME18 NOT LIKE '%Migratory%' AND
+CED_NAME13 NOT LIKE '%address%' AND
+CED_NAME13 NOT LIKE '%Migratory%';
+
+.output ../csv/ced13_ced18_mbpop11_clean.csv
+
+select * from "ced13_ced18_mbpop11_clean";
+
+
+
+
+.mode csv
+.headers on
+pragma temp_store=1;
+pragma temp_store_directory = '../spatialite_db';
+
+DROP TABLE IF EXISTS "prop_ced13_ced18_mbpop11";
+
+CREATE TABLE prop_ced13_ced18_mbpop11 AS
+SELECT
+ced13_ced18_mbpop11_clean.CED_CODE13 AS CED_CODE13,
+ced13_ced18_mbpop11_clean.CED_NAME13 AS CED_NAME13,
+ced13_ced18_mbpop11_clean.CED_CODE18 AS CED_CODE18,
+ced13_ced18_mbpop11_clean.CED_NAME18 AS CED_NAME18,
+CAST((ced13_ced18_mbpop11_clean.Olap_Count/mbpop11_ced13.Area_Total) AS FLOAT) as Prop
+FROM ced13_ced18_mbpop11_clean
+INNER JOIN mbpop11_ced13
+ON ced13_ced18_mbpop11_clean.CED_CODE13=mbpop11_ced13.CED_CODE13 ;
+
+.output ../csv/prop_ced13_ced18_mbpop11.csv
+
+select * from "prop_ced13_ced18_mbpop11";
+
+###############################################################################################
+# Total all proportions                                                                       #
+# New Proportion is first proportion divided the first proportion total                       #
+###############################################################################################
+
+.mode csv
+.headers on
+pragma temp_store=1;
+pragma temp_store_directory = '../spatialite_db';
+
+DROP TABLE IF EXISTS "propt_ced13_ced18_mbpop11";
+
+CREATE TABLE propt_ced13_ced18_mbpop11 AS
+SELECT
+prop_ced13_ced18_mbpop11.CED_CODE13 AS CED_CODE13,
+prop_ced13_ced18_mbpop11.CED_NAME13 AS CED_NAME13,
+SUM(prop_ced13_ced18_mbpop11.Prop) as Tot_Prop
+FROM prop_ced13_ced18_mbpop11
+where CED_NAME13 NOT LIKE '%address%' AND
+CED_NAME13 NOT LIKE '%Migratory%'
+GROUP BY CED_CODE13,CED_NAME13;
+
+.output ../csv/propt_ced13_ced18_mbpop11.csv
+
+select * from "propt_ced13_ced18_mbpop11";
+
+#############################
+# Next Bit
+##########################
+
+
+.mode csv
+.headers on
+pragma temp_store=1;
+pragma temp_store_directory = '../spatialite_db';
+
+DROP TABLE IF EXISTS "conc_ced13_ced18_mbpop11";
+
+CREATE TABLE conc_ced13_ced18_mbpop11 AS
+SELECT
+ced13_ced18_mbpop11_clean.CED_CODE13 AS CED_CODE13,
+ced13_ced18_mbpop11_clean.CED_NAME13 AS CED_NAME13,
+ced13_ced18_mbpop11_clean.CED_CODE18 AS CED_CODE18,
+ced13_ced18_mbpop11_clean.CED_NAME18 AS CED_NAME18,
+CAST((ced13_ced18_mbpop11_clean.Olap_Count/mbpop11_ced13.Area_Total)/propt_ced13_ced18_mbpop11.Tot_Prop as float) as Prop
+FROM ced13_ced18_mbpop11_clean
+INNER JOIN mbpop11_ced13
+ON ced13_ced18_mbpop11_clean.CED_CODE13=mbpop11_ced13.CED_CODE13 and prop is not NULL
+INNER JOIN propt_ced13_ced18_mbpop11
+ON propt_ced13_ced18_mbpop11.CED_CODE13=mbpop11_ced13.CED_CODE13;
+
+
+.output ../csv/conc_ced13_ced18_mbpop11.csv
+
+select * from "conc_ced13_ced18_mbpop11";
+
+
+
+.mode csv
+.headers on
+pragma temp_store=1;
+pragma temp_store_directory = '../spatialite_db';
+
+
+.quit
