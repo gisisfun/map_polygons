@@ -4,7 +4,7 @@ import pandas
 import sqlite3
 
 def sql_to_db (sqlfile,db):
-    file  = open("../spatialite_db/test.txt", "r")
+    file  = open("../spatialite_db/{file}.txt".format(file=sqlfile), "r")
     sqltext = file.read()
     file.close()
     with sqlite3.connect("../spatialite_db/{db}.sqlite".format(db='db')) as conn:
@@ -12,7 +12,6 @@ def sql_to_db (sqlfile,db):
         c = conn.cursor()
         c.execute("SELECT load_extension('mod_spatialite')")
         #c.execute("SELECT InitSpatialMetaData(1)")
-        sql_statement="""DROP TABLE IF EXISTS "{table}";""".format(table=tblname)
         c.execute(sqltext)
         conn.commit()
 
@@ -43,23 +42,24 @@ def csv_to_db (filename, db, tblname):
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
 if len(sys.argv) is 1:
-    (fytpe,filename, db, tblname,srid,sqltext) = ['shp','hex_57km_layer', 'db', 'hex_57km_layer',4283,'']
+    (fytpe,filename, db, tblname,srid) = ['csv','test', 'db', 'test',-1,]
     #csv_to_db(fytpe,filename, db, tblname)
-    shp_to_db(filename, db, tblname,srid)
-    
+    #(fytpe,filename, db, tblname,srid,sqltext) = ['shp','hex_57km_layer', 'db', 'hex_57km_layer',4283]
+    #shp_to_db(filename, db, tblname,srid)
+    (fytpe,filename, db, tblname,srid) = ['sql','test', 'db', 'test',-1]
+    sql_to_db(filename, db)
 else:
     if (len(sys.argv) <7 ):
-        sys.exit("arguments are \nftype \n filename\n db \n tblname \n srid \n sqlfile \n")
+        sys.exit("arguments are \nftype \n filename\n db \n tblname \n srid ")
     else:
         (blah,filename, db, tblname,srid,sqlfile) = sys.argv
         if ftype == "csv":
             csv_to_db(filename, db, tblname)
         else:
-            if shape == "shp":
+            if ftype == "shp":
                 shp_to_db(filename, db, tblname,srid)
             else:
-                if shape == "sql":
-                sql_to_db(sqlfile, db)
-                    else:
-                        print('ftype is csv ,shp or sql')
-
+                if ftype == "sql":
+                    sql_to_db(filename, db)
+                else:
+                    print('ftype is csv ,shp or sql')
