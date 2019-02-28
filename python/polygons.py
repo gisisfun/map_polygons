@@ -424,6 +424,15 @@ def hexagons(north,south,east,west,radial,outfile):
     print('\n')
     print('The End')# boxes
     
+def sql_to_ogr (sqlfile,vrtfile,shapefile):    
+    shp_options = ['/usr/bin/ogr2ogr','-f', 'ESRI Shapefile',shapefile, "'../vrt/{vrtfile}.vrt'".format(vrtfile=vrtfile), '-dialect','sqlite','-sql', '@../sql/{sqlfile}.sql'.format(sqlfile=sqlfile)]
+    try:
+        # record the output!
+        print('\nrunning query')
+        subprocess.check_call(shp_options)
+    except FileNotFoundError:
+        print('No files processed')
+    
 def sql_to_db (sqlfile,db):
     file  = open("../spatialite_db/test.txt", "r")
     sqltext = file.read()
