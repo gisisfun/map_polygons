@@ -3,6 +3,15 @@ import os
 import pandas
 import sqlite3
 
+def sql_to_ogr (sqlfile,vrtfile,shapefile):    
+    shp_options = ['/usr/bin/ogr2ogr','-f', 'ESRI Shapefile',shapefile, "'../vrt/{vrtfile}.vrt'".format(vrtfile=vrtfile), '-dialect','sqlite','-sql', '@../sql/{sqlfile}.sql'.format(sqlfile=sqlfile)]
+    try:
+        # record the output!
+        print('\nrunning query')
+        subprocess.check_call(shp_options)
+    except FileNotFoundError:
+        print('No files processed')
+
 def sql_to_db (sqlfile,db):
     file  = open("../spatialite_db/{file}.txt".format(file=sqlfile), "r")
     sqltext = file.read()
