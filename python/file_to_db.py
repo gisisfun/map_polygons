@@ -2,6 +2,7 @@ import sys
 import os
 import pandas
 import sqlite3
+import subprocess
 
 def sql_to_ogr (sqlfile,vrtfile,shapefile):    
     shp_options = ['/usr/bin/ogr2ogr','-f', 'ESRI Shapefile',shapefile, "'../vrt/{vrtfile}.vrt'".format(vrtfile=vrtfile), '-dialect','sqlite','-sql', '@../sql/{sqlfile}.sql'.format(sqlfile=sqlfile)]
