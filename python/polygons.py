@@ -434,7 +434,7 @@ def sql_to_ogr (sqlfile,vrtfile,shapefile):
     try:
         # record the output!        
         subprocess.check_output(shp_options)
-        print('\nrunning query')
+        print('\nquery successful')
     except FileNotFoundError:
         print('No files processed')
 
