@@ -4,12 +4,17 @@ import pandas
 import sqlite3
 import subprocess
 
-def sql_to_ogr (sqlfile,vrtfile,shapefile):    
-    shp_options = ['/usr/bin/ogr2ogr','-f', 'ESRI Shapefile',shapefile, "'../vrt/{vrtfile}.vrt'".format(vrtfile=vrtfile), '-dialect','sqlite','-sql', '@../sql/{sqlfile}.sql'.format(sqlfile=sqlfile)]
+def sql_to_ogr (sqlfile,vrtfile,shapefile):
+    print(options_text)
+    shapefiles_text = '../shapefiles/{shapefile}.shp'.format(shapefile=shapefile)
+    vrt_text = '../vrt/{vrtfile}.vrt'.format(vrtfile=vrtfile)
+    sql_text = '@../sql/{sqlfile}.sql'.format(sqlfile=sqlfile)
+    shp_options = ['/usr/bin/ogr2ogr','-f', 'ESRI Shapefile', shapefiles_text , vrt_text , '-dialect', 'sqlite','-sql', sql_text ]
+    #shp_options = [options_text]
     try:
-        # record the output!
+        # record the output!        
+        subprocess.check_output(shp_options)
         print('\nrunning query')
-        subprocess.check_call(shp_options)
     except FileNotFoundError:
         print('No files processed')
 
