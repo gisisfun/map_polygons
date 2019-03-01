@@ -67,10 +67,11 @@ Run these ETL scripts in this order:
 | **Filter to coastline**  |Polygon Select| batch_files | aust_shape.sh |
 | **Feature cut to shape** | area wt calc  | batch_files | feat_aust_11.sh |
 |                      | Feat Intersect |             | feat_aust_16.sh |
-| ***TBA Population Weight *** |  |    |
-| **Attrib Data to shape** | table join   | batch_files | donor_feat_11_B18_B21_B22_csv.sh |
-|                      |  & aggregate     |             | donor_feat_16_G18_G21_G22_csv.sh  |
-| **Make towns and cities**|point in polygon| batch_files| shape_place_count.sh|
+|| **Attrib Data to shape** | table join   | batch_files | donor_feat_11_area_B18_B21_B22_csv.sh |
+|   (Area weight)              | & aggregate|            | donor_feat_area_16_G18_G21_G22_csv.sh  |
+| **Make place count**|point in polygon| batch_files| shape_place_count.sh|
+| **Attrib Data to shape** | table join   | batch_files | donor_feat_11_place_B18_B21_B22_csv.sh |
+|   (Place weight)             | & aggregate|           | donor_feat_place_16_G18_G21_G22_csv.sh  |
 | **Make AGIL counts** |point in polygon| batch_files| shape_agil_count.sh|
 | **Make services count** |point in polygon| batch_files| shape_service_count.sh|
 | **Make base station count** |point in polygon| batch_files| shape_bstation_count.sh|
@@ -84,11 +85,13 @@ Run these ETL scripts in this order:
 | **aust_shape.sh**     |aust_shape.vrt|aust_shape.sql |
 | **feat_aust_11.sh**   |feat_aust_11.vrt|feat_aust_11.sql |
 | **feat_aust_16.sh**   |feat_aust_16.vrt|feat_aust_16.sql |
-| **donor_feat_11_B18_B21_B22_csv.sh**  |donor_feat_11.vrt|donor_feat_11_B18_B21_B22_csv.txt |
-| **donor_feat_16_G18_G21_G22_csv.sh**  |donor_feat_16.vrt|donor_feat_16_G18_G21_G22_csv.txt |
+| **donor_feat_area_11_B18_B21_B22_csv.sh**  |donor_feat_11.vrt|donor_feat_area_11_B18_B21_B22_csv.txt |
+| **donor_feat_area_16_G18_G21_G22_csv.sh**  |donor_feat_16.vrt|donor_feat_area_16_G18_G21_G22_csv.txt |
 | **shape_agil_count.sh**|shape_11_16.vrt|shape_agil_count.sql|
 | **shape_service_count.sh**|shape_11_16.vrt|shape_service_count.sql |
 | **shape_place_count.sh**|shape_11_16.vrt|shape_place_count.sql |
+| **donor_feat_place_11_B18_B21_B22_csv.sh**  |donor_feat_11.vrt|donor_feat_place_11_B18_B21_B22_csv.txt |
+| **donor_feat_place_16_G18_G21_G22_csv.sh**  |donor_feat_16.vrt|donor_feat_place_16_G18_G21_G22_csv.txt |
 | **shape_bstation_count.sh**|shape_11_16.vrt|shape_service_count.sql|
 | **shape_road_count.sh**|shape_11_16.vrt|shape_road_count.sql|
 | **shape_mbsp_count.sh**|shape_11_16.vrt|shape_mbsp_count.sql|
@@ -105,16 +108,24 @@ Run these ETL scripts in this order:
 |                  | SA1_2011_AUST.shp                |                                  | 
 | **feat_aust_16.sh**  | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_16.shp        |
 |                  | SA1_2016_AUST.shp                |                                  |
-| **donor_feat_11_B18_B21_B22_csv.sh** | feat_aust_57km_sa1_11.shp        | donor_feat_57km_11_B18_B21_B22.csv     |
+| **donor_feat_area_11_B18_B21_B22_csv.sh** | feat_aust_57km_sa1_11.shp        | donor_feat_area_57km_11_B18_B21_B22.csv     |
 |                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B21_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B22_AUST_SA1_long.csv |                                  |
-| **donor_feat_16_G18_G21_G22_csv.sh** | feat_aust_57km_sa1_16.shp        | donor_feat_57km_16_G18_G21_G22.csv      |
+| **donor_feat_area_16_G18_G21_G22_csv.sh** | feat_aust_57km_sa1_16.shp        | donor_feat_area_57km_16_G18_G21_G22.csv      |
 |                  | 2016Census_G18_AUS_SA1.shp       |                                  |                               |
 |                  | 2016Census_G21_AUS_SA1.shp       |                                  |                               |
 |                  | 2016Census_G22_AUS_SA1.shp       |                                  |                               |
 | **shape_place_count.sh**   |aust_hex_shape_57km.shp  | shape_57km_place_count.shp |
 | | gis_osm_places_free_1.shp | |
+| **donor_feat_place_11_B18_B21_B22_csv.sh** | feat_aust_57km_sa1_11.shp        | donor_feat_place_57km_11_B18_B21_B22.csv     |
+|                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
+|                  | 2011Census_B21_AUST_SA1_long.csv |                                  |
+|                  | 2011Census_B22_AUST_SA1_long.csv |                                  |
+| **donor_feat_place_16_G18_G21_G22_csv.sh** | feat_aust_57km_sa1_16.shp        | donor_feat_place_57km_16_G18_G21_G22.csv      |
+|                  | 2016Census_G18_AUS_SA1.shp       |                                  |                               |
+|                  | 2016Census_G21_AUS_SA1.shp       |                                  |                               |
+|                  | 2016Census_G22_AUS_SA1.shp       |                                  |                               |
 | **shape_agil_count.sh**   |aust_hex_shape_57km.shp  | shape_57km_agil_count.shp             |
 | | AGIL.json | |
 | **shape_service_count.sh** | aust_hex_shape_57km.shp  | shape_57km_service_count.shp |
