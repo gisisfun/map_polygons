@@ -67,10 +67,10 @@ Run these ETL scripts in this order:
 | **Filter to coastline**  |Polygon Select| batch_files | aust_shape.sh |
 | **Feature cut to shape** | area wt calc  | batch_files | feat_aust_11.sh |
 |                      | Feat Intersect |             | feat_aust_16.sh |
-| **Attrib Data to shape** | table join   | batch_files | donor_feat_11_area_B18_B21_B22_csv.sh |
+| **Attrib Data to shape** | table join   | batch_files | donor_feat_area_11_B18_B21_B22_csv.sh |
 |   (Area weight)              | & aggregate|            | donor_feat_area_16_G18_G21_G22_csv.sh  |
 | **Make place count**|point in polygon| batch_files| shape_place_count.sh|
-| **Attrib Data to shape** | table join   | batch_files | donor_feat_11_place_B18_B21_B22_csv.sh |
+| **Attrib Data to shape** | table join   | batch_files | donor_feat_place_11_B18_B21_B22_csv.sh |
 |   (Place weight)          | & aggregate|           | donor_feat_place_16_G18_G21_G22_csv.sh  |
 | **Make AGIL counts** |point in polygon| batch_files| shape_agil_count.sh|
 | **Make services count** |point in polygon| batch_files| shape_service_count.sh|
