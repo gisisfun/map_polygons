@@ -103,12 +103,16 @@ Run these ETL scripts in this order:
 |                  | AUS_2016_AUST.shp                |                                  |
 | **feat_aust_11.sh**  | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_11.shp        | 
 |                  | SA1_2011_AUST.shp                |                                  | 
-| **feat_aust_16.sh**  | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_11.shp        |
+| **feat_aust_16.sh**  | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_16.shp        |
 |                  | SA1_2016_AUST.shp                |                                  |
 | **donor_feat_11_B18_B21_B22_csv.sh** | feat_aust_57km_sa1_11.shp        | donor_feat_57km_11_B18_B21_B22.csv     |
 |                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
+|                  | 2011Census_B21_AUST_SA1_long.csv |                                  |
+|                  | 2011Census_B22_AUST_SA1_long.csv |                                  |
 | **donor_feat_16_G18_G21_G22_csv.sh** | feat_aust_57km_sa1_16.shp        | donor_feat_57km_16_G18_G21_G22.csv      |
 |                  | 2016Census_G18_AUS_SA1.shp       |                                  |                               |
+|                  | 2016Census_G21_AUS_SA1.shp       |                                  |                               |
+|                  | 2016Census_G22_AUS_SA1.shp       |                                  |                               |
 | **shape_place_count.sh**   |aust_hex_shape_57km.shp  | shape_57km_place_count.shp |
 | | gis_osm_places_free_1.shp | |
 | **shape_agil_count.sh**   |aust_hex_shape_57km.shp  | shape_57km_agil_count.shp             |
@@ -121,7 +125,7 @@ Run these ETL scripts in this order:
 | | gis_osm_roads_free_1.shp ||
 | **shape_mbsp_count.sh** | aust_hex_shape_57km.shp  |shape_57km_mbsp_count.shp |
 | | mbsp_database.csv ||
-| **shape_11_16.sh**   | donor_feat_57km_11_B18_B21_B22.csv  | shape_75km_11_16.shp             |
+| **shape_11_16_area.sh**   | donor_feat_57km_11_B18_B21_B22.csv  | shape_75km_11_16_area.shp             |
 |                  | donor_feat_57km_16_G18_G21_G22.csv |    |
 |                  | shape_57km_place_count.shp | |
 |                  | shape_57km_service_count.shp   |   |
@@ -129,6 +133,15 @@ Run these ETL scripts in this order:
 |                  | shape_57km_mbsp_count.shp |  |
 |                  | shape_57km_road_count.shp |  |
 |                  | aust_hex_shape_57km.shp |   |
+| **shape_11_16_place.sh**   | donor_feat_57km_11_B18_B21_B22.csv  | shape_75km_11_16_place.shp             |
+|                  | donor_feat_57km_16_G18_G21_G22.csv |    |
+|                  | shape_57km_place_count.shp | |
+|                  | shape_57km_service_count.shp   |   |
+|                  | shape_57km_agil_count.shp | |
+|                  | shape_57km_mbsp_count.shp |  |
+|                  | shape_57km_road_count.shp |  |
+|                  | aust_hex_shape_57km.shp |   |
+
 
 ### Table of feature data set counts and file sizes 
 
