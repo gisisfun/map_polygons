@@ -100,7 +100,8 @@ Run these ETL scripts in this order:
 | **shape_bstation_count.sh**|shape_11_16.vrt|shape_service_count.sql|
 | **shape_road_count.sh**|shape_11_16.vrt|shape_road_count.sql|
 | **shape_mbsp_count.sh**|shape_11_16.vrt|shape_mbsp_count.sql|
-| **shape_11_16.sh**    |shape_11_16.vrt|shape_11_16.sql|
+| **shape_11_16_area.sh**    |shape_11_16.vrt|shape_11_16_area.sql|
+| **shape_11_16_place.sh**    |shape_11_16.vrt|shape_11_16_place.sql|
 
 ### Table of processing files and their input and output files
 
