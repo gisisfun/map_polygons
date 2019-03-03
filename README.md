@@ -88,13 +88,15 @@ Run these ETL scripts in this order:
 | **aust_shape.sh**     |aust_shape.vrt|aust_shape.sql |
 | **feat_aust_11.sh**   |feat_aust_11.vrt|feat_aust_11.sql |
 | **feat_aust_16.sh**   |feat_aust_16.vrt|feat_aust_16.sql |
-| **donor_feat_area_11_B18_B21_B22_csv.sh**  |donor_feat_11.vrt|donor_feat_area_11_B18_B21_B22_csv.txt |
-| **donor_feat_area_16_G18_G21_G22_csv.sh**  |donor_feat_16.vrt|donor_feat_area_16_G18_G21_G22_csv.txt |
+| **donor_feat_area_11_B18_B21_B22_csv.sh**  | |donor_feat_area_11_B18_B21_B22_csv.txt |
+| **donor_feat_area_16_G18_G21_G22_csv.sh**  | |donor_feat_area_16_G18_G21_G22_csv.txt |
+| **feat_11_place_count.sh** | |feat_place_11_count.txt|
+| **feat_16_place_count.sh** | |feat_place_16_count.txt|
+| **donor_feat_place_11_B18_B21_B22_csv.sh**  |donor_feat_11.vrt|donor_feat_place_11_B18_B21_B22_csv.txt |
+| **donor_feat_place_16_G18_G21_G22_csv.sh**  |donor_feat_16.vrt|donor_feat_place_16_G18_G21_G22_csv.txt |
 | **shape_agil_count.sh**|shape_11_16.vrt|shape_agil_count.sql|
 | **shape_service_count.sh**|shape_11_16.vrt|shape_service_count.sql |
 | **shape_place_count.sh**|shape_11_16.vrt|shape_place_count.sql |
-| **donor_feat_place_11_B18_B21_B22_csv.sh**  |donor_feat_11.vrt|donor_feat_place_11_B18_B21_B22_csv.txt |
-| **donor_feat_place_16_G18_G21_G22_csv.sh**  |donor_feat_16.vrt|donor_feat_place_16_G18_G21_G22_csv.txt |
 | **shape_bstation_count.sh**|shape_11_16.vrt|shape_service_count.sql|
 | **shape_road_count.sh**|shape_11_16.vrt|shape_road_count.sql|
 | **shape_mbsp_count.sh**|shape_11_16.vrt|shape_mbsp_count.sql|
@@ -119,8 +121,10 @@ Run these ETL scripts in this order:
 |                  | 2016Census_G18_AUS_SA1.shp       |                                  |                               |
 |                  | 2016Census_G21_AUS_SA1.shp       |                                  |                               |
 |                  | 2016Census_G22_AUS_SA1.shp       |                                  |                               |
-| **shape_place_count.sh**   |aust_hex_shape_57km.shp  | shape_57km_place_count.shp |
-| | gis_osm_places_free_1.shp | |
+| **feat_11_place_count.sh** | feat_aust_57km_sa1_11| feat_57km_11_place_wt.csv |
+|                  | gis_osm_places_free_1 |   |
+| **feat_16_place_count.sh** |feat_aust_57km_sa1_16| feat_57km_16_place_wt.csv |
+|                  | gis_osm_places_free_1 |   |
 | **donor_feat_place_11_B18_B21_B22_csv.sh** | feat_aust_57km_sa1_11.shp        | donor_feat_place_57km_11_B18_B21_B22.csv     |
 |                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B21_AUST_SA1_long.csv |                                  |
@@ -129,6 +133,8 @@ Run these ETL scripts in this order:
 |                  | 2016Census_G18_AUS_SA1.shp       |                                  |                               |
 |                  | 2016Census_G21_AUS_SA1.shp       |                                  |                               |
 |                  | 2016Census_G22_AUS_SA1.shp       |                                  |                               |
+| **shape_place_count.sh**   |aust_hex_shape_57km.shp  | shape_57km_place_count.shp |
+| | gis_osm_places_free_1.shp | |
 | **shape_agil_count.sh**   |aust_hex_shape_57km.shp  | shape_57km_agil_count.shp             |
 | | AGIL.json | |
 | **shape_service_count.sh** | aust_hex_shape_57km.shp  | shape_57km_service_count.shp |
@@ -139,7 +145,7 @@ Run these ETL scripts in this order:
 | | gis_osm_roads_free_1.shp ||
 | **shape_mbsp_count.sh** | aust_hex_shape_57km.shp  |shape_57km_mbsp_count.shp |
 | | mbsp_database.csv ||
-| **shape_11_16_area.sh**   | donor_feat_57km_11_B18_B21_B22.csv  | shape_75km_11_16_area.shp             |
+| **shape_11_16_area.sh**   | donor_feat_57km_11_B18_B21_B22.csv  | shape_57km_area_11_16.shp             |
 |                  | donor_feat_57km_16_G18_G21_G22.csv |    |
 |                  | shape_57km_place_count.shp | |
 |                  | shape_57km_service_count.shp   |   |
@@ -147,7 +153,7 @@ Run these ETL scripts in this order:
 |                  | shape_57km_mbsp_count.shp |  |
 |                  | shape_57km_road_count.shp |  |
 |                  | aust_hex_shape_57km.shp |   |
-| **shape_11_16_place.sh**   | donor_feat_57km_11_B18_B21_B22.csv  | shape_75km_11_16_place.shp             |
+| **shape_11_16_place.sh**   | donor_feat_57km_11_B18_B21_B22.csv  | shape_57km_place_11_16.shp             |
 |                  | donor_feat_57km_16_G18_G21_G22.csv |    |
 |                  | shape_57km_place_count.shp | |
 |                  | shape_57km_service_count.shp   |   |
@@ -175,8 +181,12 @@ Run these ETL scripts in this order:
 | **2016Census_G18_AUS_SA1.csv**        | 57,523         |       | |
 | **2016Census_G21_AUS_SA1.csv**        | 57,523         |       | |
 | **2016Census_G22B_AUS_SA1.csv**        | 57,523         |       | |
-| **donor_feat_11_B18_B21_B22.csv** | 1,262          |    |  |
-| **donor_feat_16_G18_G21_G22.csv** | 1,262          |    | |
+| **donor_feat_11_area_B18_B21_B22.csv** | 1,262          |    |  |
+| **donor_feat_16_area_G18_G21_G22.csv** | 1,262          |    | |
+| **feat_57km_11_place_wt.csv** |  |  |  |
+| **feat_57km_16_place_wt.csv** |  |  |  |
+| **donor_feat_11_place_B18_B21_B22.csv** | 1,262          |    |  |
+| **donor_feat_16_pace_G18_G21_G22.csv** | 1,262          |    | |
 | **gis_osm_places_free_1.shp**         | | | 4326 |
 | **shape_57km_place_count.shp** | 1,262          | | 4283 |
 | **AGIL.json**         | | | 4326 |
