@@ -92,8 +92,8 @@ Run these ETL scripts in this order:
 | **donor_feat_area_16_G18_G21_G22_csv.sh**  | |donor_feat_area_16_G18_G21_G22_csv.txt |
 | **feat_11_place_count.sh** | |feat_place_11_count.txt|
 | **feat_16_place_count.sh** | |feat_place_16_count.txt|
-| **donor_feat_place_11_B18_B21_B22_csv.sh**  |donor_feat_11.vrt|donor_feat_place_11_B18_B21_B22_csv.txt |
-| **donor_feat_place_16_G18_G21_G22_csv.sh**  |donor_feat_16.vrt|donor_feat_place_16_G18_G21_G22_csv.txt |
+| **donor_feat_place_11_B18_B21_B22_csv.sh**  | |donor_feat_place_11_B18_B21_B22_csv.txt |
+| **donor_feat_place_16_G18_G21_G22_csv.sh**  | |donor_feat_place_16_G18_G21_G22_csv.txt |
 | **shape_agil_count.sh**|shape_11_16.vrt|shape_agil_count.sql|
 | **shape_service_count.sh**|shape_11_16.vrt|shape_service_count.sql |
 | **shape_place_count.sh**|shape_11_16.vrt|shape_place_count.sql |
