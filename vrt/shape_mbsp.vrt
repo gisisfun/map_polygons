@@ -6,7 +6,7 @@
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="MBSP">
-        <SrcDataSource>../shapefiles/mbsp_database.csv</SrcDataSource>
+        <SrcDataSource>../csv/mbsp_database.csv</SrcDataSource>
         <SrcLayer>mbsp_database</SrcLayer>
         <GeometryType>wkbPoint</GeometryType>
         <GeometryField encoding="PointFromColumns" x="Longitude" y="Latitude"/>
