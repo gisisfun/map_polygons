@@ -425,7 +425,7 @@ def hexagons(north,south,east,west,radial,outfile):
     print('The End')# boxes
     
 def sql_to_ogr (sqlfile,vrtfile,shapefile):
-    print(options_text)
+    #print(options_text)
     shapefiles_text = '../shapefiles/{shapefile}.shp'.format(shapefile=shapefile)
     vrt_text = '../vrt/{vrtfile}.vrt'.format(vrtfile=vrtfile)
     sql_text = '@../sql/{sqlfile}.sql'.format(sqlfile=sqlfile)
@@ -437,6 +437,19 @@ def sql_to_ogr (sqlfile,vrtfile,shapefile):
         print('\nquery successful')
     except FileNotFoundError:
         print('No files processed')
+
+def cmds_to_db (cmdfile,db):
+    #print(options_text)
+    db_text = '../db/{db}.sqlite'.format(db=db)
+    cmd_text = '../vrt/{cmdfile}.vrt'.format(cmdfile=cmdfile)
+    options = ['spatialite',  db_text ,'<', cmd_text]
+    #shp_options = [options_text]
+    try:
+        # record the output!        
+        subprocess.check_output(options)
+        print('\ncommands successful')
+    except FileNotFoundError:
+        print('No commands processed')
 
 def sql_to_db (sqlfile,db):
     file  = open("../spatialite_db/{file}.txt".format(file=sqlfile), "r")
