@@ -6,7 +6,7 @@
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="AGIL">
-        <SrcDataSource>../geojson/AGIL.json</SrcDataSource>
+        <SrcDataSource>../shapefiles/agil.shp</SrcDataSource>
         <SrcLayer>AGIL</SrcLayer>
         <GeometryType>wkbPoint</GeometryType>
         <LayerSRS>EPSG:4326</LayerSRS>
