@@ -38,9 +38,10 @@
 #ogr2ogr ../shapefiles/shape_57km_place_count.shp '../vrt/shape_place.vrt' -dialect sqlite -sql @../sql/shape_place_count.sql
 
 #shape_agil_count
-#ogr2igr -f 'ESRI Shapefile' ../shapefiles/agil_4326.shp ../geojson/agil.json
-#ogr2ogr -t_srs 'EPSG:4823' ../shapefiles/agil_4326.shp ../shapefiles/agil.shp
+#ogr2ogr -f 'ESRI Shapefile' ../shapefiles/agil_4326.shp  ../geojson/AGIL.json 
+#ogr2ogr -t_srs 'EPSG:4823' ../shapefiles/agil.shp ../shapefiles/agil_4326.shp 
 #ogr2ogr ../shapefiles/shape_donor_feat_57km_agil_count.shp '../vrt/shape_agil.vrt' -dialect sqlite -sql @../sql/shape_agil_count.sql
+
 
 #shape_pois_bstations_count (shape_bstation_count)
 #ogr2ogr ../shapefiles/shape_57km_mbsp_count.shp '../vrt/shape_mbsp.vrt' -dialect sqlite -sql @../sql/shape_mbsp_count.sql
