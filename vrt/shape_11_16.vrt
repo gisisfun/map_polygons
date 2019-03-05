@@ -28,39 +28,27 @@
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="Place">
-        <SrcDataSource>../shapefiles/shape_57km_place_count.shp</SrcDataSource>
+        <SrcDataSource>../csv/shape_57km_place_count.csv</SrcDataSource>
         <SrcLayer>shape_57km_place_count</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="AGIL">
-        <SrcDataSource>../shapefiles/shape_57km_agil_count.shp</SrcDataSource>
+        <SrcDataSource>../csv/shape_57km_agil_count.csv</SrcDataSource>
         <SrcLayer>shape_57km_agil_count</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="service">
-        <SrcDataSource>../shapefiles/shape_57km_services_count.shp</SrcDataSource>
+        <SrcDataSource>../csv/shape_57km_services_count.csv</SrcDataSource>
         <SrcLayer>shape_57km_services_count</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="bstation">
-        <SrcDataSource>../shapefiles/shape_57km_bstation_count.shp</SrcDataSource>
+        <SrcDataSource>../csv/shape_57km_bstation_count.csv</SrcDataSource>
         <SrcLayer>shape_57km_bstation_count</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="road">
-        <SrcDataSource>../shapefiles/shape_57km_road_count.shp</SrcDataSource>
+        <SrcDataSource>../csv/shape_57km_road_count.csv</SrcDataSource>
         <SrcLayer>shape_57km_road_count</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="MBSP">
-        <SrcDataSource>../shapefiles/shape_57km_mbsp_count.shp</SrcDataSource>
+        <SrcDataSource>../csv/shape_57km_mbsp_count.csv</SrcDataSource>
         <SrcLayer>shape_57km_mbsp_count</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
 </OGRVRTDataSource>
