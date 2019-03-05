@@ -82,8 +82,8 @@ FROM [aust_hex_shape_57km] as Shape,[mbsp] as MBSP
 WHERE ST_Within(MBSP.geometry,Shape.geometry) 
 GROUP BY Poly;
 
-.output ../csv/shape_57km_agil_count.csv
+.output ../csv/shape_57km_mbsp_count.csv
 
-select * from shape_57km_agil_count;
+select * from shape_57km_mbsp_count;
 
 .quit
