@@ -8,4 +8,7 @@ sh dbshpfun.sh agil 4823 db
 
 sh dbshpfun.sh aust_hex_shape_57km 4823 db
 
+ogr2ogr ../shapefiles/mbsp.shp '../vrt/shape_mbsp.vrt' -dialect sqlite -sql @../sql/shape_mbsp_shp.sql
+sh dbshpfun.sh mbsp 4823 db
+
 spatialite ../spatialite_db/db.sqlite < ../spatialite_db/shape_nonabs_counts.txt
