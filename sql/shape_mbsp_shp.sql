@@ -1,0 +1,3 @@
+SELECT *,
+MBSP.geometry
+FROM MBSP
