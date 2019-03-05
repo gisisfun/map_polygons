@@ -45,7 +45,7 @@ select * from shape_57km_road_count;
 
 CREATE TABLE if not exists shape_57km_agil_count AS
 SELECT Shape.p as Poly,
-Count(*) as agil_count
+Count(*) as agilplaces
 FROM [aust_hex_shape_57km] as Shape,[agil] as AGiL
 WHERE ST_Intersects(AGIL.geometry,Shape.geometry)
 GROUP BY Poly;
@@ -72,5 +72,18 @@ GROUP BY Poly;
 .output ../csv/shape_57km_service_count.csv
 
 select * from shape_57km_service_count;
+
+.mode csv
+.headers on
+
+CREATE TABLE if not exists "shape_57km_mbsp_count" AS
+SELECT Shape.p as Poly,Count(*) as MBSPplaces
+FROM [aust_hex_shape_57km] as Shape,[mbsp] as MBSP
+WHERE ST_Within(MBSP.geometry,Shape.geometry) 
+GROUP BY Poly;
+
+.output ../csv/shape_57km_agil_count.csv
+
+select * from shape_57km_agil_count;
 
 .quit
