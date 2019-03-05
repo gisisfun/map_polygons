@@ -1,6 +1,21 @@
 .mode csv
 .headers on
 
+DROP TABLE IF EXISTS "feat_aust_57km_sa1_16";
+
+CREATE TABLE feat_aust_57km_sa1_16 AS
+SELECT 
+ 'R' as Feat_Type,
+'SA1_2016' as Feat_Src,
+CAST(Feat.SA1_7DIG16 AS INT) as Feat_Code,
+'' as Feat_Name,
+Aust.p as Poly,  
+(ST_Area(ST_Intersection(Feat.geometry,Aust.geometry))*12391.3)/(ST_Area(Feat.geometry)*12391.3) as Feat_Prop
+FROM [SA1_2016_AUST] as Feat,[aust_hex_shape_57km] as Aust 
+WHERE ST_Intersects(Feat.geometry,Aust.geometry) 
+and Feat_Prop is not NULL
+ORDER by Feat_Code;
+
 DROP TABLE IF EXISTS "donor_feat_area_57km_16_G18_G21_G22";
 
 CREATE TABLE donor_feat_area_57km_16_G18_G21_G22 AS
