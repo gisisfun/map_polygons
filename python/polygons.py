@@ -424,6 +424,18 @@ def hexagons(north,south,east,west,radial,outfile):
     print('\n')
     print('The End')# boxes
     
+def geojson_to_shp (geojsonfile,shapefile):
+    #print(options_text)
+    shapefiles_text = '../shapefiles/{shapefile}.shp'.format(shapefile=shapefile)
+    geojson_text = '@../geojson/{geojsonfile}.json'.format(geojsonfile=geojsonfile)
+    shp_options = ['/usr/bin/ogr2ogr','-f', 'ESRI Shapefile',shapefiles_text, '-t_srs', 'EPSG:4823', geojson_text]
+    try:
+        # record the output!        
+        subprocess.check_output(shp_options)
+        print('\nquery successful')
+    except FileNotFoundError:
+        print('No files processed')
+    
 def sql_to_ogr (sqlfile,vrtfile,shapefile):
     #print(options_text)
     shapefiles_text = '../shapefiles/{shapefile}.shp'.format(shapefile=shapefile)
