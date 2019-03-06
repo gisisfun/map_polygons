@@ -423,26 +423,31 @@ def hexagons(north,south,east,west,radial,outfile):
 
     print('\n')
     print('The End')# boxes
-    
-def geojson_to_shp (geojsonfile,shapefile):
+
+def run_sh (cmdfile):
+    print(options_text)
+    shapefiles_text = '../shapefiles/{shapefile}.shp'.format(shapefile=shapefile)
+    vrt_text = '../vrt/{vrtfile}.vrt'.format(vrtfile=vrtfile)
+    cmd_text = '@../batchfiles/{cmdfile}.sh'.format(sqlfile=sqlfile)
+    cmd_options = ['sh, 'cmd_text ]
+    #shp_options = [options_text]
+    try:
+        # record the output!        
+        subprocess.check_output(cmd_options)
+        print('\ncommand successful')
+    except FileNotFoundError:
+        print('No files processed')
+
+def geojson_to_shp (geojsonfile,shapefile,srid):
     #print(options_text)
     shapefiles_text = '../shapefiles/{shapefile}.shp'.format(shapefile=shapefile)
     geojson_text = '@../geojson/{geojsonfile}.json'.format(geojsonfile=geojsonfile)
-    shp_options = ['/usr/bin/ogr2ogr','-f', 'ESRI Shapefile',shapefiles_text, '-t_srs', 'EPSG:4823', geojson_text]
-    try:
-        # record the output!        
-        subprocess.check_output(shp_options)
-        print('\nquery successful')
-    except FileNotFoundError:
-        print('No files processed')
-    
-def sql_to_ogr (sqlfile,vrtfile,shapefile):
-    #print(options_text)
-    shapefiles_text = '../shapefiles/{shapefile}.shp'.format(shapefile=shapefile)
-    vrt_text = '../vrt/{vrtfile}.vrt'.format(vrtfile=vrtfile)
-    sql_text = '@../sql/{sqlfile}.sql'.format(sqlfile=sqlfile)
-    shp_options = ['/usr/bin/ogr2ogr','-f', 'ESRI Shapefile', shapefiles_text , vrt_text , '-dialect', 'sqlite','-sql', sql_text ]
-    #shp_options = [options_text]
+    epsg_text = 'EPSG:{srid}'.format(srid=srid)
+    if os.name is 'posix':
+        cmd_text='/usr/bin/ogr2ogr'
+    else
+        cmd_text='ogr2ogr.exe'
+    shp_options = [cmd_text,'-f', 'ESRI Shapefile',shapefiles_text, '-t_srs', epsg_text, geojson_text]
     try:
         # record the output!        
         subprocess.check_output(shp_options)
@@ -450,11 +455,33 @@ def sql_to_ogr (sqlfile,vrtfile,shapefile):
     except FileNotFoundError:
         print('No files processed')
 
+def sql_to_ogr (sqlfile,vrtfile,shapefile):
+    print(options_text)
+    shapefiles_text = '../shapefiles/{shapefile}.shp'.format(shapefile=shapefile)
+    vrt_text = '../vrt/{vrtfile}.vrt'.format(vrtfile=vrtfile)
+    sql_text = '@../sql/{sqlfile}.sql'.format(sqlfile=sqlfile)
+    if os.name is 'posix':
+        cmd_text='/usr/bin/ogr2ogr'
+    else
+        cmd_text='ogr2ogr.exe'
+    shp_options = [cmd_text,'-f', 'ESRI Shapefile', shapefiles_text , vrt_text , '-dialect', 'sqlite','-sql', sql_text ]
+    #shp_options = [options_text]
+    try:
+        # record the output!        
+        subprocess.check_output(shp_options)
+        print('\nquery successful')
+    except FileNotFoundError:
+        print('No files processed')
+        
 def cmds_to_db (cmdfile,db):
     #print(options_text)
     db_text = '../db/{db}.sqlite'.format(db=db)
     cmd_text = '../vrt/{cmdfile}.vrt'.format(cmdfile=cmdfile)
-    options = ['spatialite',  db_text ,'<', cmd_text]
+    if os.name is 'posix':
+        cmd_text='spatialite'
+    else
+        cmd_text='spatialite.exe'
+    options = [cmd_text,  db_text ,'<', cmd_text]
     #shp_options = [options_text]
     try:
         # record the output!        
