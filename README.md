@@ -110,10 +110,6 @@ Run these ETL scripts in this order:
 |                  | 2016Census_G18_AUS_SA1.shp       |                                  |                               |
 |                  | 2016Census_G21_AUS_SA1.shp       |                                  |                               |
 |                  | 2016Census_G22_AUS_SA1.shp       |                                  |                               |
-| **feat_11_place_count.sh** | feat_aust_57km_sa1_11| feat_57km_11_place_wt.csv |
-|                  | gis_osm_places_free_1 |   |
-| **feat_16_place_count.sh** |feat_aust_57km_sa1_16| feat_57km_16_place_wt.csv |
-|                  | gis_osm_places_free_1 |   |
 | **donor_feat_place_11_B18_B21_B22_csv.sh** | feat_aust_57km_sa1_11.shp        | donor_feat_place_57km_11_B18_B21_B22.csv     |
 |                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B21_AUST_SA1_long.csv |                                  |
