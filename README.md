@@ -92,12 +92,7 @@ Run these ETL scripts in this order:
 | **donor_feat_area_16_G18_G21_G22_csv.sh**  | |donor_feat_area_16_G18_G21_G22_csv.txt |
 | **donor_feat_place_11_B18_B21_B22_csv.sh**  | |donor_feat_place_11_B18_B21_B22_csv.txt |
 | **donor_feat_place_16_G18_G21_G22_csv.sh**  | |donor_feat_place_16_G18_G21_G22_csv.txt |
-| **shape_agil_count.sh**|shape_11_16.vrt|shape_agil_count.sql|
-| **shape_service_count.sh**|shape_11_16.vrt|shape_service_count.sql |
-| **shape_place_count.sh**|shape_11_16.vrt|shape_place_count.sql |
-| **shape_bstation_count.sh**|shape_11_16.vrt|shape_service_count.sql|
-| **shape_road_count.sh**|shape_11_16.vrt|shape_road_count.sql|
-| **shape_mbsp_count.sh**|shape_11_16.vrt|shape_mbsp_count.sql|
+| **shape_nonabs_counts.sh**| |shape_nonabs_counts.txt|
 | **shape_11_16_area.sh**    |shape_11_16.vrt|shape_11_16_area.sql|
 | **shape_11_16_place.sh**    |shape_11_16.vrt|shape_11_16_place.sql|
 
