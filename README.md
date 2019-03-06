@@ -90,8 +90,6 @@ Run these ETL scripts in this order:
 | **feat_aust_16.sh**   |feat_aust_16.vrt|feat_aust_16.sql |
 | **donor_feat_area_11_B18_B21_B22_csv.sh**  | |donor_feat_area_11_B18_B21_B22_csv.txt |
 | **donor_feat_area_16_G18_G21_G22_csv.sh**  | |donor_feat_area_16_G18_G21_G22_csv.txt |
-| **feat_11_place_count.sh** | |feat_place_11_count.txt|
-| **feat_16_place_count.sh** | |feat_place_16_count.txt|
 | **donor_feat_place_11_B18_B21_B22_csv.sh**  | |donor_feat_place_11_B18_B21_B22_csv.txt |
 | **donor_feat_place_16_G18_G21_G22_csv.sh**  | |donor_feat_place_16_G18_G21_G22_csv.txt |
 | **shape_agil_count.sh**|shape_11_16.vrt|shape_agil_count.sql|
@@ -129,11 +127,15 @@ Run these ETL scripts in this order:
 | **donor_feat_place_11_B18_B21_B22_csv.sh** | feat_aust_57km_sa1_11.shp        | donor_feat_place_57km_11_B18_B21_B22.csv     |
 |                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B21_AUST_SA1_long.csv |                                  |
-|                  | 2011Census_B22_AUST_SA1_long.csv |                                  |
+|                  | 2011Census_B22B_AUST_SA1_long.csv |                                  |
+|                  | gis_osm_places_free_1   |                                  |
+|                  | feat_aust_57km_sa1_16 |                                  |
 | **donor_feat_place_16_G18_G21_G22_csv.sh** | feat_aust_57km_sa1_16.shp        | donor_feat_place_57km_16_G18_G21_G22.csv      |
-|                  | 2016Census_G18_AUS_SA1.shp       |                                  |                               |
-|                  | 2016Census_G21_AUS_SA1.shp       |                                  |                               |
-|                  | 2016Census_G22_AUS_SA1.shp       |                                  |                               |
+|                  | 2016Census_G18_AUS_SA1.shp       |                                  |                             
+|                  | 2016Census_G21_AUS_SA1.shp       |                                  |                              
+|                  | 2016Census_G22_AUS_SA1.shp       |                                  |        
+|                  | gis_osm_places_free_1   |                                  |
+|                  | feat_aust_57km_sa1_11 |                                  |
 | **shape_place_count.sh**   |aust_hex_shape_57km.shp  | shape_57km_place_count.shp |
 | | gis_osm_places_free_1.shp | |
 | **shape_agil_count.sh**   |aust_hex_shape_57km.shp  | shape_57km_agil_count.shp             |
