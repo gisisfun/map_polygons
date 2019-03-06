@@ -73,12 +73,7 @@ Run these ETL scripts in this order:
 |               | & aggregate|  place weight          | feat_16-place_count.sh  |
 | **Attrib Data to shape** | table join   | batch_files | donor_feat_place_11_B18_B21_B22_csv.sh |
 |             | & aggregate|           | donor_feat_place_16_G18_G21_G22_csv.sh  |
-| **Make place count**|point in polygon| batch_files| shape_place_count.sh|
-| **Make AGIL counts** |point in polygon| batch_files| shape_agil_count.sh|
-| **Make services count** |point in polygon| batch_files| shape_service_count.sh|
-| **Make base station count** |point in polygon| batch_files| shape_bstation_count.sh|
-| **Make road links count** |line in polygon| batch_files| shape_road_count.sh|
-| **Make mobile black spot count** |line in polygon| batch_files| shape_mbsp_count.sh|
+| **Make non ABS counts**| various | batch_files| shape_nonabs_counts.sh|
 | **Merge attrib data**    | table join   | batch_files | shape_11_16_area.sh    |
 |     |    |  | shape_11_16_place.sh    |
 
