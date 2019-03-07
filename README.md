@@ -2,6 +2,10 @@
 *A good visualisation is worth the wait(weight).*
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/SA1_need_for_assistance_2011.png)
 
+## See for yourself ##
+
+In the shapefiles subudirectory you wll find two shapefiles: shape_57km_area_11_16.shp and shape_57km_place_11_16.shp.
+Open one or both of these files in your preferred GIS tool of choice and have a look at the end product for yourself.
 
 ## How does it work ##
 
