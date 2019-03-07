@@ -17,9 +17,9 @@ service.services,
 bstation.bstations,
 road.roads,
 MBSP.MBSPplaces,
-Shape.est_area,
-Shape.geometry
-FROM Shape 
+Shape_Aust.est_area,
+Shape_Aust.geometry
+FROM Shape_Aust 
 LEFT JOIN Shape_Area11
 ON Shape.p=CAST(Shape_Area11.Poly as INT)
 LEFT JOIN Shape_Area16
