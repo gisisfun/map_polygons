@@ -19,7 +19,7 @@
         <SrcDataSource>../csv/donor_feat_57km_sa2_16.csv</SrcDataSource>
         <SrcLayer>donor_feat_57km_sa2_16</SrcLayer>
     </OGRVRTLayer>
-    <OGRVRTLayer name="Feat">
+    <OGRVRTLayer name="Shape_SA1_11">
         <SrcDataSource>../csv/feat_aust_57km_sa1_11.csv</SrcDataSource>
         <SrcLayer>feat_aust_57km_sa1_11</SrcLayer>
     </OGRVRTLayer>
