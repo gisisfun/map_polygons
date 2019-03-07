@@ -1,6 +1,26 @@
 # Map Polygons for Data Visualisation (Hexagons and Boxes)
 *A good visualisation is worth the wait(weight).*
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/SA1_need_for_assistance_2011.png)
+
+
+## How does it work ##
+
+- **CPython 3.7** for list creation/management and construction of geometric shapes.
+- **Pandas** for csv file outputs.
+- **Python3 modules** for downloading and unzipping content from the ABS website.
+- **Geopy** for projection based point calculations for list.
+- **GeoJSON** for encoding of the geometric shapes.
+- **GDAL/ogr2ogr** for shapefile conversion, simple geometry SQL queries.
+- **PROJ** for reprojection.
+- **Sqlite3** for generation of SQL definitions for **spatialite**.
+- **Spatialite** for more complex SQL queries.
+- Shell - **Bash** and **Sed** for moving files to **sqlite** and **spatialite** databases and nit to mention automation of the above. 
+- **QGIS** or your favourite GIS Package.
+- **You** can contribute or make something better
+- Have a look in the shapefiles directory for the processed shape files for area weighted and place point of interest weeighted files.
+
+**polygons.py**
+
 This program is designed to demonstrate what is possible to achieve with a polyhedral, equal area mapping frameworks. 
 The Python program creates a custom mapping layer in geojson format. 
 The mapping layer can be made up of boxes or hexagons.
@@ -35,21 +55,13 @@ python3 polygons.py hex -8 -45 96 168 212
 
 for boxes:
 python3 polygons.py box -8 -45 96 168 212
-## How does it work ##
 
-- **CPython 3.7** for list creation/management and construction of geometric shapes.
-- **Pandas** for csv file outputs.
-- **Python3 modules** for downloading and unzipping content from the ABS website.
-- **Geopy** for projection based point calculations for list.
-- **GeoJSON** for encoding of the geometric shapes.
-- **GDAL/ogr2ogr** for shapefile conversion, simple geometry SQL queries.
-- **PROJ** for reprojection.
-- **Sqlite3** for generation of SQL definitions for **spatialite**.
-- **Spatialite** for more complex SQL queries.
-- Shell - **Bash** and **Sed** for moving files to **sqlite** and **spatialite** databases and nit to mention automation of the above. 
-- **QGIS** or your favourite GIS Package.
-- **You** can contribute or make something better
-- Have a look in the shapefiles directory for the processed shape files for area weighted and place point of interest weeighted files.
+**file_to_db.py**
+
+To add data:
+python3.py file_todb.py or the following bash shell scripts:
+
+*tba customised to shape and size variables
 
 ## Data Processing Files 
 Polygon shapes are given attributes from data sets with spatial references. The polygon data is processed using scripts with their SQL and vrt file pointing to file names.  
