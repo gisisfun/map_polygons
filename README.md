@@ -76,20 +76,23 @@ python3 polygons.py box -8 -45 96 168 212
 | *data.gov.au* | Australian Government Indigenous Programs & Policy Locations (AGIL) dataset |[download_link](https://data.gov.au/geoserver/agil-dataset/wfs?request=GetFeature&typeName=ckan_34b1c164_fbe8_44a0_84fd_467dba645aa7&outputFormat=json)|          |
 | | Mobile Black Spot Program Round 4 | [download_link](https://data.gov.au/dataset/7be6e3ee-043a-4c47-a6eb-a97702419ccd/resource/c6b211ad-3aa2-4f53-8427-01b52a6433a7/download/mbsp_database.csv)|   |  |
 
-**file_to_db.py**
-
-After you have download the files in the table above add data using file_to_db.py:
-python3.py file_todb.py or the following bash shell scripts:
-
-*tba customised to shape and size variables
-
 ## Data Processing Files 
 Polygon shapes are given attributes from data sets with spatial references. The polygon data is processed using scripts with their SQL and vrt file pointing to file names.  
 For this example, spatial and tabular attribute data have been selected. The content is ABS SA1 2011 and 2016 shapefiles with associated demographic data items. The data was sourced from the the Australian Bureau of Statistics (ABS).
 
 The hexagon or box shapes are created by the polygons.py python program. The features can be points, lines, polygons with or with attributes to be aggrregated into the hexagon or box shapes.
 
+## Populate shapes with data (Python)
+
+After you have download the files in the table above add data using file_to_db.py:
+python3.py file_todb.py or the following bash shell scripts:
+
+(only works with hexagons of 57km at this point time)
+
+## Populate shapes with data (Bash Shell Script)
+
 Run these ETL scripts in this order:
+(only works with hexagons of 57km at this point time)
 
 ### Table Summary of processing files and components
 
