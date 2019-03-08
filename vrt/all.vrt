@@ -134,9 +134,12 @@
     <OGRVRTLayer name="MBSP_Database">
         <SrcDataSource>../csv/mbsp_database.csv</SrcDataSource>
         <SrcLayer>mbsp_database</SrcLayer>
+        <GeometryType>wkbPoint</GeometryType>
+        <GeometryField encoding="PointFromColumns" x="Longitude" y="Latitude"/>
+        <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="MBSP">
-        <SrcDataSource>../csv/shape_57km_mbsp_count.csv</SrcDataSource>
-        <SrcLayer>shape_57km_mbsp_count</SrcLayer>
+        <SrcDataSource>../shapefiles/mbsp.shp</SrcDataSource>
+        <SrcLayer>mbsp</SrcLayer>
     </OGRVRTLayer>
 </OGRVRTDataSource>
