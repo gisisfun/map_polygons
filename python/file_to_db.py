@@ -4,11 +4,30 @@ import pandas
 import sqlite3
 import subprocess
 
+def shape_and_size (dir,file,shape,size,newfile  ):
+    if (os.name is 'posix'):
+        slash='/'
+    else:
+        slash='\/'
+    infile  =  open("..{slash}{dir}{slash}{file}".format(dir=dir,file=file,slash=slash), "r")
+    infiletext = infile.read()
+    infile.close()
+    
+    outfile = open("../{dir}/{file}".format(dir=dir,file=newfile),"w")
+    outfiletext = infiletext.replace('57',size).replace('hex',shape)
+    outfile.write(outfiletext)
+    outfile.close() 
+    return outfiletext
+
 def run_sh (cmdfile):
     print(options_text)
-    shapefiles_text = '../shapefiles/{shapefile}.shp'.format(shapefile=shapefile)
-    vrt_text = '../vrt/{vrtfile}.vrt'.format(vrtfile=vrtfile)
-    cmd_text = '@../batchfiles/{cmdfile}.sh'.format(sqlfile=sqlfile)
+    if (os.name is 'posix'):
+        slash='/'
+    else:
+        slash='\/'
+    shapefiles_text = '..{slash}shapefiles{slash}{shapefile}.shp'.format(shapefile=shapefile,slash=slash)
+    vrt_text = '..{slash}vrt{slash}{vrtfile}.vrt'.format(vrtfile=vrtfile,slash=slash)
+    cmd_text = '@..{slash}batchfiles{slash}{cmdfile}.sh'.format(sqlfile=sqlfile,slash=slash)
     cmd_options = ['sh', cmd_text ]
     #shp_options = [options_text]
     try:
@@ -20,14 +39,16 @@ def run_sh (cmdfile):
         
 def geojson_to_shp (geojsonfile,shapefile,srid):
     #print(options_text)
-    shapefiles_text = '../shapefiles/{shapefile}.shp'.format(shapefile=shapefile)
-    geojson_text = '@../geojson/{geojsonfile}.json'.format(geojsonfile=geojsonfile)
-    epsg_text = 'EPSG:{srid}'.format(srid=srid)
     if (os.name is 'posix'):
         cmd_text='/usr/bin/ogr2ogr'
+        slash='/'
     else:
         cmd_text='ogr2ogr.exe'
-        
+        slash='\/'
+    
+    shapefiles_text = '..{slash}shapefiles{slash}{shapefile}.shp'.format(shapefile=shapefile,slash=slash)
+    geojson_text = '@..{slash}geojson{slash}{geojsonfile}.json'.format(geojsonfile=geojsonfile,slash=slash)
+    epsg_text = 'EPSG:{srid}'.format(srid=srid)  
     shp_options = [cmd_text,'-f', 'ESRI Shapefile',shapefiles_text, '-t_srs', epsg_text, geojson_text]
     try:
         # record the output!        
@@ -38,13 +59,16 @@ def geojson_to_shp (geojsonfile,shapefile,srid):
 
 def sql_to_ogr (sqlfile,vrtfile,shapefile):
     print('sqlfile: {0} vrt: {1} shapefile: {2}'.format(sqlfile,vrtfile,shapefile))
-    shapefiles_text = '../shapefiles/{shapefile}.shp'.format(shapefile=shapefile)
-    vrt_text = '../vrt/{vrtfile}.vrt'.format(vrtfile=vrtfile)
-    sql_text = '@../sql/{sqlfile}.sql'.format(sqlfile=sqlfile)
-    if os.name is 'posix':
+    if (os.name is 'posix'):
         cmd_text='/usr/bin/ogr2ogr'
+        slash='/'
     else:
         cmd_text='ogr2ogr.exe'
+        slash='\/'
+    shapefiles_text = '..{slash}shapefiles{slash}{shapefile}.shp'.format(shapefile=shapefile,slash=slash)
+    vrt_text = '..{slash}vrt{slash}{vrtfile}.vrt'.format(vrtfile=vrtfile,slash=slash)
+    sql_text = '@..{slash}sql{slash}{sqlfile}.sql'.format(sqlfile=sqlfile,slash=slash)
+
     shp_options = [cmd_text,'-f', 'ESRI Shapefile', shapefiles_text , vrt_text , '-dialect', 'sqlite','-sql', sql_text ]
     #shp_options = [options_text]
     try:
@@ -55,10 +79,14 @@ def sql_to_ogr (sqlfile,vrtfile,shapefile):
         print('No files processed')
 
 def sql_to_db (sqlfile,db):
-    file  = open("../spatialite_db/{file}.txt".format(file=sqlfile), "r")
+    if (os.name is 'posix'):
+        slash='/'
+    else:
+        slash='\/'
+    file  = open("..{slash}spatialite_db{slash}{file}.txt".format(file=sqlfile,slash=slash), "r")
     sqltext = file.read()
     file.close()
-    with sqlite3.connect("../spatialite_db/{db}.sqlite".format(db='db')) as conn:
+    with sqlite3.connect("..{slash}spatialite_db{slash}{db}.sqlite".format(db=db,slash=slash)) as conn:
         conn.enable_load_extension(True)
         c = conn.cursor()
         c.execute("SELECT load_extension('mod_spatialite')")
@@ -69,7 +97,11 @@ def sql_to_db (sqlfile,db):
 def shp_to_db (filename,db,tblname,srid):
     os.environ['SPATIALITE_SECURITY']='relaxed'
     charset = 'CP1252'
-    with sqlite3.connect("../spatialite_db/{db}.sqlite".format(db='db')) as conn:
+    if (os.name is 'posix'):
+        slash='/'
+    else:
+        slash='\/'
+    with sqlite3.connect("..{slash}spatialite_db{slash}{db}.sqlite".format(db='db')) as conn:
         conn.enable_load_extension(True)
         c = conn.cursor()
         c.execute("SELECT load_extension('mod_spatialite')")
@@ -77,23 +109,31 @@ def shp_to_db (filename,db,tblname,srid):
         sql_statement="""DROP TABLE IF EXISTS "{table}";""".format(table=tblname)
         c.execute(sql_statement)
         ## LOADING SHAPEFILE
-        sql_statement="""SELECT ImportSHP('../shapefiles/{filename}', '{table}', '{charset}', {srid});""".format(filename=filename, table=tblname, charset=charset, srid=srid)
+        sql_statement="""SELECT ImportSHP('..{slash}shapefiles{slash}{filename}', '{table}', '{charset}', {srid});""".format(filename=filename, table=tblname, charset=charset, srid=srid, slash=slash)
         c.execute(sql_statement)
         conn.commit()
 
 def csv_to_db (filename, db, tblname):
-    cnx = sqlite3.connect('../spatialite_db/{db}.sqlite'.format(db='db'))
-    with sqlite3.connect("../spatialite_db/{db}.sqlite".format(db='db')) as conn:
+    if (os.name is 'posix'):
+        slash='/'
+    else:
+        slash='\/'
+    cnx = sqlite3.connect('..{slash}spatialite_db{slash}{db}.sqlite'.format(db=db,slash=slash))
+    with sqlite3.connect("..{slash}spatialite_db{slash}{db}.sqlite".format(db=db,slash=slash)) as conn:
         c = conn.cursor()
         sql_statement="""DROP TABLE IF EXISTS "{table}";""".format(table=tblname)
         c.execute(sql_statement)
-        df = pandas.read_csv('../csv/{filename}.csv'.format(filename=filename))
+        df = pandas.read_csv('..{slash}csv{slash}{filename}.csv'.format(filename=filename,slash=slash))
         df.to_sql(tblname , cnx)
 
 def cmds_to_db (cmdfile,db):
     #print(options_text)
-    db_text = '../db/{db}.sqlite'.format(db=db)
-    cmd_text = '../vrt/{cmdfile}.vrt'.format(cmdfile=cmdfile)
+    if (os.name is 'posix'):
+        slash='/'
+    else:
+        slash='\/'
+    db_text = '..{slash}db{slash}{db}.sqlite'.format(db=db,slash=slash)
+    cmd_text = '..{slash}vrt{slash}{cmdfile}.vrt'.format(cmdfile=cmdfile,slash=slash)
     if os.name is 'posix':
         cmd_text='spatialite'
     else:
@@ -108,10 +148,14 @@ def cmds_to_db (cmdfile,db):
         print('No commands processed')
     
 def sql_to_db (sqlfile,db):
-    file  = open("../spatialite_db/{file}.txt".format(file=sqlfile), "r")
+    if (os.name is 'posix'):
+        slash='/'
+    else:
+        slash='\/'
+    file  = open("..{slash}spatialite_db{slash}{sqlfile}.txt".format(sqlfile=sqlfile,slash=slash), "r")
     sqltext = file.read()
     file.close()
-    with sqlite3.connect("../spatialite_db/{db}.sqlite".format(db='db')) as conn:
+    with sqlite3.connect("..{slash}spatialite_db{slash}{db}.sqlite".format(db=db,slash=slash)) as conn:
         conn.enable_load_extension(True)
         c = conn.cursor()
         c.execute("SELECT load_extension('mod_spatialite')")
@@ -119,29 +163,6 @@ def sql_to_db (sqlfile,db):
         c.execute(sqltext)
         conn.commit()
 
-def shp_to_db (filename,db,tblname,srid):
-    os.environ['SPATIALITE_SECURITY']='relaxed'
-    charset = 'CP1252'
-    with sqlite3.connect("../spatialite_db/{db}.sqlite".format(db='db')) as conn:
-        conn.enable_load_extension(True)
-        c = conn.cursor()
-        c.execute("SELECT load_extension('mod_spatialite')")
-        #c.execute("SELECT InitSpatialMetaData(1)")
-        sql_statement="""DROP TABLE IF EXISTS "{table}";""".format(table=tblname)
-        c.execute(sql_statement)
-        ## LOADING SHAPEFILE
-        sql_statement="""SELECT ImportSHP('../shapefiles/{filename}', '{table}', '{charset}', {srid});""".format(filename=filename, table=tblname, charset=charset, srid=srid)
-        c.execute(sql_statement)
-        conn.commit()
-
-def csv_to_db (filename, db, tblname):
-    cnx = sqlite3.connect('../spatialite_db/{db}.sqlite'.format(db='db'))
-    with sqlite3.connect("../spatialite_db/{db}.sqlite".format(db='db')) as conn:
-        c = conn.cursor()
-        sql_statement="""DROP TABLE IF EXISTS "{table}";""".format(table=tblname)
-        c.execute(sql_statement)
-        df = pandas.read_csv('../csv/{filename}.csv'.format(filename=filename))
-        df.to_sql(tblname , cnx)
 
 #ogr2ogr ../shapefiles/aust_hex_shape_57km.shp '../vrt/aust_shape.vrt' -dialect sqlite -sql @../sql/aust_shape.sql
 #print('aust_shape')
