@@ -93,75 +93,63 @@ python3.py file_todb.py or the following bash shell scripts:
 
 (only works with hexagons of 57km at this point time)
 
-## Populate shapes with data (Bash Shell Script)
-
-Run these ETL scripts in this order:
-(only works with hexagons of 57km at this point time)
+**Create hexagons/ boxes**
+**Filter to coastline**  
+**Feature cut to shape and area weight** 
+**Attrib Data to shape** 
+**Calculate place weight** 
+**Attrib Data to shape**
+**Make non ABS counts**
+**Merge attrib data** 
 
 ### Table Summary of processing files and components
-
-| Process              | Process Type | Folder      | File |
-|:-------------|:-------------|:-----------|:--------|
-| **Create hexagons/ boxes**|              | python      | polygons.py |
-| **Filter to coastline**  |Polygon Select| batch_files | aust_shape.sh |
-| **Feature cut to shape** | area wt calc  | batch_files | feat_aust_11.sh |
-|                      | Feat Intersect |             | feat_aust_16.sh |
-| **Attrib Data to shape** | table join   | batch_files | donor_feat_area_11_B18_B21_B22_csv.sh |
-|                | & aggregate|            | donor_feat_area_16_G18_G21_G22_csv.sh  |
-| **Calculate place weight** | feat Intersec | batch_files | feat_11_place_count.sh |
-|               | & aggregate|  place weight          | feat_16-place_count.sh  |
-| **Attrib Data to shape** | table join   | batch_files | donor_feat_place_11_B18_B21_B22_csv.sh |
-|             | & aggregate|           | donor_feat_place_16_G18_G21_G22_csv.sh  |
-| **Make non ABS counts**| various | batch_files| shape_nonabs_counts.sh|
-| **Merge attrib data**    | table join   | batch_files | shape_11_16_area.sh    |
-|     |    |  | shape_11_16_place.sh    |
 
 | File | VRT File | SQL File |
 |:-------------|:----------|:-------|
 | **polygons.py**       |                    |                    |
-| **aust_shape.sh**     |aust_shape.vrt|aust_shape.sql |
-| **feat_aust_11.sh**   |feat_aust_11.vrt|feat_aust_11.sql |
-| **feat_aust_16.sh**   |feat_aust_16.vrt|feat_aust_16.sql |
-| **donor_feat_area_11_B18_B21_B22_csv.sh**  | |donor_feat_area_11_B18_B21_B22_csv.txt |
-| **donor_feat_area_16_G18_G21_G22_csv.sh**  | |donor_feat_area_16_G18_G21_G22_csv.txt |
-| **donor_feat_place_11_B18_B21_B22_csv.sh**  | |donor_feat_place_11_B18_B21_B22_csv.txt |
-| **donor_feat_place_16_G18_G21_G22_csv.sh**  | |donor_feat_place_16_G18_G21_G22_csv.txt |
-| **shape_nonabs_counts.sh**| |shape_nonabs_counts.txt|
-| **shape_11_16_area.sh**    |shape_11_16.vrt|shape_11_16_area.sql|
-| **shape_11_16_place.sh**    |shape_11_16.vrt|shape_11_16_place.sql|
+| **file_to_db.py**     |all.vrt|aust_shape.sql |
+|  |all.vrt|feat_aust_11.sql |
+|   |all.vrt|feat_aust_16.sql |
+|   | |donor_feat_area_11_B18_B21_B22_csv.txt |
+|   | |donor_feat_area_16_G18_G21_G22_csv.txt |
+|  | |donor_feat_place_11_B18_B21_B22_csv.txt |
+|  | |donor_feat_place_16_G18_G21_G22_csv.txt |
+| | |shape_nonabs_counts.txt|
+|    |shape_11_16.vrt|shape_11_16_area.sql|
+|  |shape_11_16.vrt|shape_11_16_place.sql|
 
 ### Table of processing files and their input and output files
 
 | File             | Input                            | Output                           |
 | :----------------|:---------------------------------|:---------------------------------|
 | **polygons.py**      | hex_57km_layer.json              | hex_57km_layer.shp               |
-| **aust_shape.sh**    | hex_57km_layer.shp               | aust_hex_shape_57km.shp          |
+| **file_to_db.py**     | hex_57km_layer.shp               | aust_hex_shape_57km.shp          |
 |                  | AUS_2016_AUST.shp                |                                  |
-| **feat_aust_11.sh**  | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_11.shp        | 
+|  | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_11.shp        | 
 |                  | SA1_2011_AUST.shp                |                                  | 
-| **feat_aust_16.sh**  | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_16.shp        |
+|   | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_16.shp        |
 |                  | SA1_2016_AUST.shp                |                                  |
-| **donor_feat_area_11_B18_B21_B22_csv.sh** | feat_aust_57km_sa1_11.shp        | donor_feat_area_57km_11_B18_B21_B22.csv     |
+|  | feat_aust_57km_sa1_11.shp        | donor_feat_area_57km_11_B18_B21_B22.csv     |
 |                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B21_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B22_AUST_SA1_long.csv |                                  |
-| **donor_feat_area_16_G18_G21_G22_csv.sh** | feat_aust_57km_sa1_16.shp        | donor_feat_area_57km_16_G18_G21_G22.csv      |
+|  | feat_aust_57km_sa1_16.shp        | donor_feat_area_57km_16_G18_G21_G22.csv      |
 |                  | 2016Census_G18_AUS_SA1.shp       |                                  |                               |
 |                  | 2016Census_G21_AUS_SA1.shp       |                                  |                               |
 |                  | 2016Census_G22_AUS_SA1.shp       |                                  |                               |
-| **donor_feat_place_11_B18_B21_B22_csv.sh** | feat_aust_57km_sa1_11.shp        | donor_feat_place_57km_11_B18_B21_B22.csv     |
+|  | feat_aust_57km_sa1_11.shp        | donor_feat_place_57km_11_B18_B21_B22.csv     |
 |                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B21_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B22B_AUST_SA1_long.csv |                                  |
 |                  | gis_osm_places_free_1   |                                  |
 |                  | feat_aust_57km_sa1_16 |                                  |
-| **donor_feat_place_16_G18_G21_G22_csv.sh** | feat_aust_57km_sa1_16.shp        | donor_feat_place_57km_16_G18_G21_G22.csv      |
+|  | feat_aust_57km_sa1_16.shp        | donor_feat_place_57km_16_G18_G21_G22.csv      |
 |                  | 2016Census_G18_AUS_SA1.shp       |                                  |                             
 |                  | 2016Census_G21_AUS_SA1.shp       |                                  |                              
 |                  | 2016Census_G22_AUS_SA1.shp       |                                  |        
 |                  | gis_osm_places_free_1   |                                  |
 |                  | feat_aust_57km_sa1_11 |                                  |
-| **shape_nonabs_counts.sh**   |aust_hex_shape_57km.shp  | shape_57km_place_count.shp |
+|  |aust_hex_shape_57km.shp  | shape_57km_place_count.shp |
 | | gis_osm_places_free_1.shp | |
 |   |aust_hex_shape_57km.shp  | shape_57km_agil_count.shp             |
 | | agil.shp | |
@@ -170,7 +158,7 @@ Run these ETL scripts in this order:
 |  | gis_osm_roads_free_1.shp  |shape_57km_road_count.shp |
 |  | mbsp_database.csv  |shape_57km_mbsp_count.shp |
 | | mbsp.shp ||
-| **shape_11_16_area.sh**   | donor_feat_57km_11_B18_B21_B22.csv  | shape_57km_area_11_16.shp             |
+|   | donor_feat_57km_11_B18_B21_B22.csv  | shape_57km_area_11_16.shp             |
 |                  | donor_feat_57km_16_G18_G21_G22.csv |    |
 |                  | shape_57km_place_count.shp | |
 |                  | shape_57km_service_count.shp   |   |
@@ -178,7 +166,7 @@ Run these ETL scripts in this order:
 |                  | shape_57km_mbsp_count.shp |  |
 |                  | shape_57km_road_count.shp |  |
 |                  | aust_hex_shape_57km.shp |   |
-| **shape_11_16_place.sh**   | donor_feat_57km_11_B18_B21_B22.csv  | shape_57km_place_11_16.shp             |
+|   | donor_feat_57km_11_B18_B21_B22.csv  | shape_57km_place_11_16.shp             |
 |                  | donor_feat_57km_16_G18_G21_G22.csv |    |
 |                  | shape_57km_place_count.shp | |
 |                  | shape_57km_service_count.shp   |   |
