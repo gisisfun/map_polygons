@@ -1,11 +1,11 @@
 <OGRVRTDataSource>
-    <OGRVRTLayer name="Shape">
+    <OGRVRTLayer name="Shape_Aust">
         <SrcDataSource>../shapefiles/aust_hex_shape_57km.shp</SrcDataSource>
         <SrcLayer>aust_hex_shape_57km</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
-    <OGRVRTLayer name="MBSP">
+    <OGRVRTLayer name="MBSP_Database">
         <SrcDataSource>../csv/mbsp_database.csv</SrcDataSource>
         <SrcLayer>mbsp_database</SrcLayer>
         <GeometryType>wkbPoint</GeometryType>
