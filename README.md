@@ -115,8 +115,8 @@ python3.py file_todb.py or the following bash shell scripts:
 |  | |donor_feat_place_11_B18_B21_B22_csv.txt |
 |  | |donor_feat_place_16_G18_G21_G22_csv.txt |
 | | |shape_nonabs_counts.txt|
-|    |shape_11_16.vrt|shape_11_16_area.sql|
-|  |shape_11_16.vrt|shape_11_16_place.sql|
+|    |all.vrt|shape_11_16_area.sql|
+|  |all.vrt|shape_11_16_place.sql|
 
 ### Table of processing files and their input and output files
 
