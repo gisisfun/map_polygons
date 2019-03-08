@@ -86,21 +86,21 @@ For this example, spatial and tabular attribute data have been selected. The con
 
 The hexagon or box shapes are created by the polygons.py python program. The features can be points, lines, polygons with or with attributes to be aggrregated into the hexagon or box shapes.
 
-## Populate shapes with data (Python)
+## Populate shapes with data 
 
 After you have download the files in the table above add data using file_to_db.py:
-python3.py file_todb.py or the following bash shell scripts:
+python3.py file_to_db.py or the following bash shell scripts:
 
 (only works with hexagons of 57km at this point time)
+Performs the functions:
 
-**Create hexagons/ boxes**
-**Filter to coastline**  
-**Feature cut to shape and area weight** 
-**Attrib Data to shape** 
-**Calculate place weight** 
-**Attrib Data to shape**
-**Make non ABS counts**
-**Merge attrib data** 
+- Filter to coastline
+- Feature cut to shape and calculate area weight
+- Attrib Data to shape and apply area weight
+- Calculate place weights 
+- Attrib Data to shape and apply place weights
+- Make non ABS counts for each shape
+- Merge attrib data to area and place weighted shapes
 
 ### Table Summary of processing files and components
 
