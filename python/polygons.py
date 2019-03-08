@@ -113,12 +113,19 @@ def intersections(hor_line_list,hor_max,vert_line_list,vert_max):
 def params(shape,north,south,east,west,radial):
     print('Making {0} hex shapes starting from {1},{2} to {3},{4} with a radial length of {5} km'.format(shape, north, west, south, east, radial))
 
-def to_shp_tab(f_name,shape):    
-    shp_fname='../shapefiles/{0}_layer.shp'.format(f_name).replace(' ','_')
-    tab_fname='../tabfiles/{0}_layer.tab'.format(f_name).replace(' ','_')
-    json_fname='../geojson/{0}_layer.json'.format(f_name).replace(' ','_')
-    tab_options = ['/usr/bin/ogr2ogr','-f', 'Mapinfo file', tab_fname, '-t_srs', 'EPSG:4823', json_fname]
-    shp_options = ['/usr/bin/ogr2ogr','-f', 'ESRI Shapefile',shp_fname, '-t_srs', 'EPSG:4823', json_fname]
+def to_shp_tab(f_name,shape):
+    if (os.name is 'posix'):
+        cmd_text='/usr/bin/ogr2ogr'
+        slash='/'
+    else:
+        cmd_text='ogr2ogr.exe'
+        slash='\/'
+    
+    shp_fname='..{slash}shapefiles{slash}{fname}_layer.shp'.format(fname=f_name.replace(' ','_'),slash=slash)
+    tab_fname='..{slash}tabfiles{slash}{fname}_layer.tab'.format(fname=f_name.replace(' ','_'),slash=slash)
+    json_fname='..{slash}geojson{slash}{fname}_layer.json'.format(fname=f_name.replace(' ','_'),slash=slash)
+    tab_options = [cmd_text,'-f', 'Mapinfo file', tab_fname, '-t_srs', 'EPSG:4823', json_fname]
+    shp_options = [cmd_text,'-f', 'ESRI Shapefile',shp_fname, '-t_srs', 'EPSG:4823', json_fname]
     try:
         # record the output!
         print('\nwriting {0} shapefile {1}_layer.shp'.format(shape,f_name))
@@ -131,6 +138,13 @@ def to_shp_tab(f_name,shape):
         print('No files processed')
 
 def write_vrt_tabular_file(f_name):
+    if (os.name is 'posix'):
+        cmd_text='/usr/bin/ogr2ogr'
+        slash='/'
+    else:
+        cmd_text='ogr2ogr.exe'
+        slash='\/'
+    
     vrt_template = """<OGRVRTDataSource>
     <OGRVRTLayer name="{0}">
         <SrcDataSource>{0}.csv</SrcDataSource>
@@ -142,7 +156,7 @@ def write_vrt_tabular_file(f_name):
     vrt_content = vrt_template.format(f_name).replace(' ','_')
     
     print('\n tabular definition in vrt format for csv file to written to file: {0}.vrt'.format(f_name))  
-    file = open('../vrt/{0}.vrt'.format(f_name.replace(' ','_')), 'w') #open file for writing geojson layer
+    file = open('..{slash}vrt{slash}{fname}.vrt'.format(fname=f_name.replace(' ','_'),slash=slash), 'w') #open file for writing geojson layer
     file.write(vrt_content) #write vrt layer to open file
     file.close() #close file 
     #to check: ogrinfo -ro -al box_106km_layer.vrt
@@ -151,6 +165,12 @@ def write_vrt_tabular_file(f_name):
     
 
 def write_vrt_file(f_name,shape,ext,ext_label):
+    if (os.name is 'posix'):
+        cmd_text='/usr/bin/ogr2ogr'
+        slash='/'
+    else:
+        cmd_text='ogr2ogr.exe'
+        slash='\/'
     vrt_template = """<OGRVRTDataSource>
     <OGRVRTLayer name="shapes">
         <SrcDataSource>{0}_layer.{1}</SrcDataSource>
@@ -168,7 +188,7 @@ def write_vrt_file(f_name,shape,ext,ext_label):
     vrt_content = vrt_template.format(f_name,ext)
     
     print('\n {0} vrt for {1} file to written to file: {2}_layer_{3}.vrt'.format(shape,ext_label,f_name,ext))  
-    file = open('../vrt/{0}_layer_{1}.vrt'.format(f_name,ext_label.replace(' ','_')), 'w') #open file for writing geojson layer
+    file = open('..{slash}vrt{slash}{fname}_layer_{extlabel}.vrt'.format(slash=slash,fname=f_name,extlabel=ext_label.replace(' ','_')), 'w') #open file for writing geojson layer
     file.write(vrt_content) #write vrt layer to open file
     file.close() #close file 
     #to check: ogrinfo -ro -al box_106km_layer.vrt
@@ -176,12 +196,18 @@ def write_vrt_file(f_name,shape,ext,ext_label):
 
 def ref_files():
     dir_path = os.path.dirname(os.path.realpath(__file__))
+    if (os.name is 'posix'):
+        cmd_text='/usr/bin/ogr2ogr'
+        slash='/'
+    else:
+        cmd_text='ogr2ogr.exe'
+        slash='\/'
     if not os.path.isfile('../shapefiles/AUS_2016_AUST.shp'):
         print('Downloading ABS Australia file in Shape file format')
         url = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&5503B37F8055BFFECA2581640014462C&0&July%202016&24.07.2017&Latest'
         urllib.request.urlretrieve(url, '../shapefiles/1270055001_aus_2016_aust_shape.zip')
         print('Unzipping ABS Australia file in Shape file format')    
-        Archive('../shapefiles/1270055001_aus_2016_aust_shape.zip').extractall('../shapefiles')
+        Archive('..{slash}shapefiles{slash}1270055001_aus_2016_aust_shape.zip'.format(slash=slash)).extractall('..{slash}shapefiles'.format(slash=slash))
     else:
         print('ABS Australia file in Shape file format exists')
     
@@ -190,7 +216,7 @@ def ref_files():
         url ='http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_tab.zip&1270.0.55.001&Data%20Cubes&F18065BF058615F9CA2581640014491B&0&July%202016&24.07.2017&Latest'
         urllib.request.urlretrieve(url, '../shapefiles/1270055001_aus_2016_aust_tab.zip') 
         print('Unzipping ABS Australia file in Tab file format')
-        Archive('../shapefiles/1270055001_aus_2016_aust_tab.zip').extractall('../tabfiles')
+        Archive('..{slash}shapefiles{slash}1270055001_aus_2016_aust_tab.zip'.format(slash=slash)).extractall('..{slash}tabfiles'.format(slash=slash))
     else:
         print('ABS Australia file in Tab file format exists')  
 
