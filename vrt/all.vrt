@@ -120,8 +120,8 @@
         <SrcLayer>shape_57km_agil_count</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="service">
-        <SrcDataSource>../csv/shape_57km_services_count.csv</SrcDataSource>
-        <SrcLayer>shape_57km_services_count</SrcLayer>
+        <SrcDataSource>../csv/shape_57km_service_count.csv</SrcDataSource>
+        <SrcLayer>shape_57km_service_count</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="bstation">
         <SrcDataSource>../csv/shape_57km_bstation_count.csv</SrcDataSource>
