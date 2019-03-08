@@ -9,7 +9,7 @@ def run_sh (cmdfile):
     shapefiles_text = '../shapefiles/{shapefile}.shp'.format(shapefile=shapefile)
     vrt_text = '../vrt/{vrtfile}.vrt'.format(vrtfile=vrtfile)
     cmd_text = '@../batchfiles/{cmdfile}.sh'.format(sqlfile=sqlfile)
-    cmd_options = ['sh, 'cmd_text ]
+    cmd_options = ['sh', cmd_text ]
     #shp_options = [options_text]
     try:
         # record the output!        
@@ -23,10 +23,11 @@ def geojson_to_shp (geojsonfile,shapefile,srid):
     shapefiles_text = '../shapefiles/{shapefile}.shp'.format(shapefile=shapefile)
     geojson_text = '@../geojson/{geojsonfile}.json'.format(geojsonfile=geojsonfile)
     epsg_text = 'EPSG:{srid}'.format(srid=srid)
-    if os.name is 'posix':
+    if (os.name is 'posix'):
         cmd_text='/usr/bin/ogr2ogr'
-    else
+    else:
         cmd_text='ogr2ogr.exe'
+        
     shp_options = [cmd_text,'-f', 'ESRI Shapefile',shapefiles_text, '-t_srs', epsg_text, geojson_text]
     try:
         # record the output!        
@@ -36,13 +37,13 @@ def geojson_to_shp (geojsonfile,shapefile,srid):
         print('No files processed')
 
 def sql_to_ogr (sqlfile,vrtfile,shapefile):
-    print(options_text)
+    print('sqlfile: {0} vrt: {1} shapefile: {2}'.format(sqlfile,vrtfile,shapefile))
     shapefiles_text = '../shapefiles/{shapefile}.shp'.format(shapefile=shapefile)
     vrt_text = '../vrt/{vrtfile}.vrt'.format(vrtfile=vrtfile)
     sql_text = '@../sql/{sqlfile}.sql'.format(sqlfile=sqlfile)
     if os.name is 'posix':
         cmd_text='/usr/bin/ogr2ogr'
-    else
+    else:
         cmd_text='ogr2ogr.exe'
     shp_options = [cmd_text,'-f', 'ESRI Shapefile', shapefiles_text , vrt_text , '-dialect', 'sqlite','-sql', sql_text ]
     #shp_options = [options_text]
@@ -95,7 +96,7 @@ def cmds_to_db (cmdfile,db):
     cmd_text = '../vrt/{cmdfile}.vrt'.format(cmdfile=cmdfile)
     if os.name is 'posix':
         cmd_text='spatialite'
-    else
+    else:
         cmd_text='spatialite.exe'
     options = [cmd_text,  db_text ,'<', cmd_text]
     #shp_options = [options_text]
@@ -143,64 +144,64 @@ def csv_to_db (filename, db, tblname):
         df.to_sql(tblname , cnx)
 
 #ogr2ogr ../shapefiles/aust_hex_shape_57km.shp '../vrt/aust_shape.vrt' -dialect sqlite -sql @../sql/aust_shape.sql
-print('aust_shape')
-sql_to_ogr('aust_shape','aust_shape','aust_hex_shape_57km')
-shp_to_db('aust_hex_shape_57km','db')
+#print('aust_shape')
+#sql_to_ogr('aust_shape','all','aust_hex_shape_57km')
+#shp_to_db('aust_hex_shape_57km','db','aust_hex_shape_57km',4823)
 
 print('feat_aust_11_area')
-sql_to_ogr('feat_aust_11','feat_aust_11','feat_aust_57km_sa1_11')
+sql_to_ogr('feat_aust_11','all','feat_aust_57km_sa1_11')
 shp_to_db('feat_aust_57km_sa1_11','db','feat_aust_57km_sa1_16',4823)
-
-print('feat_aust_16_area')
-sql_to_ogr('feat_aust_16','feat_aust_16','feat_aust_57km_sa1_16')
-shp_to_db('feat_aust_57km_sa1_16','db','feat_aust_57km_sa1_16',4823)
-
-print('donor_feat_area_11_B18_B21_B22')
-csv_to_db('2011Census_B18_AUST_SA1_long','db','2011Census_B18_AUST_SA1_long')
-csv_to_db('2011Census_B21_AUST_SA1_long','db','2011Census_B21_AUST_SA1_long')
-csv_to_db('2011Census_B22_AUST_SA1_long','db','2011Census_B22_AUST_SA1_long')
-shp_to_db('feat_aust_57km_sa1_11','db','feat_aust_57km_sa1_11',4823)
-sql_to_db('donor_feat_area_11_B18_B21_B22','db')
-
-print('donor_feat_area_16_G18_G21_G22_csv')
-csv_to_db('2011Census_G18_AUST_SA1','db','2011Census_G18_AUST_SA1')
-csv_to_db('2011Census_G21_AUST_SA1','db','2011Census_G21_AUST_SA1')
-csv_to_db('2011Census_G22_AUST_SA1','db','2011Census_G22_AUST_SA1')
-shp_to_db('feat_aust_57km_sa1_16','db','feat_aust_57km_sa1_16',4823)
-sql_to_db('donor_feat_area_16_G18_G21_G22','db')
-
-print('donor_feat_place_11_B18_B21_B22_csv')
-csv_to_db('2011Census_B18_AUST_SA1_long','db')
-csv_to_db('2011Census_B21_AUST_SA1_long','db')
-csv_to_db('2011Census_B22B_AUST_SA1_long','db')
-shp_to_db('feat_aust_57km_sa1_11','db','feat_aust_57km_sa1_11',4823)
-shp_to_db('gis_osm_places_free_1','db','gis_osm_places_free_1',4823)
-sql_to_db('donor_feat_place_11_B18_B21_B22','db')
-
-print('donor_feat_place_place_16_G18_G21_G22')
-csv_to_db('2016Census_G18_AUS_SA1','db')
-csv_to_db('2016Census_G21_AUS_SA1','db')
-csv_to_db('2016Census_G22B_AUS_SA1','db')
-shp_to_db('feat_aust_57km_sa1_16','db','feat_aust_57km_sa1_16',4823)
-shp_to_db('gis_osm_places_free_1','db','gis_osm_places_free_1',4823)
-sql_to_db('donor_feat_place_16_G18_G21_G22','db')
-
-print('shape_linesandpoints_counts')
-shp_to_db('gis_osm_places_free_1','db','gis_osm_places_free_1',4823)
-shp_to_db('gis_osm_roads_free_1','db','gis_osm_roads_free_1',4823)
-shp_to_db('gis_osm_pois_free_1','db','gis_osm_pois_free_1',4823)
-shp_to_db('aust_hex_shape_57km','db','aust_hex_shape_57km',4823)
-geojson_to_shp ('AGIL','agil',4823)
-shp_to_db('agil','db','agil',4823)
-sql_ogr('shape_mbsp_shp','shape_mbsp','mbsp')
-shp_to_db('mbsp','db','mbsp',4823)
-sql_to_db('shape_nonabs_counts','db')
-
-print('shape_11_16_area')
-sql_to_ogr('shape_57km_area_11_16','shape_11_16','shape_11_16_area')
-
-print('shape_11_16_place')
-sql_to_ogr('shape_57km_place_11_16','shape_11_16','place_11_16_place')
+#
+#print('feat_aust_16_area')
+#sql_to_ogr('feat_aust_16','all','feat_aust_57km_sa1_16')
+#shp_to_db('feat_aust_57km_sa1_16','db','feat_aust_57km_sa1_16',4823)
+#
+#print('donor_feat_area_11_B18_B21_B22')
+#csv_to_db('2011Census_B18_AUST_SA1_long','db','2011Census_B18_AUST_SA1_long')
+#csv_to_db('2011Census_B21_AUST_SA1_long','db','2011Census_B21_AUST_SA1_long')
+#csv_to_db('2011Census_B22_AUST_SA1_long','db','2011Census_B22_AUST_SA1_long')
+#shp_to_db('feat_aust_57km_sa1_11','db','feat_aust_57km_sa1_11',4823)
+#sql_to_db('donor_feat_area_11_B18_B21_B22','db')
+#
+#print('donor_feat_area_16_G18_G21_G22')
+#csv_to_db('2011Census_G18_AUST_SA1','db','2011Census_G18_AUST_SA1')
+#csv_to_db('2011Census_G21_AUST_SA1','db','2011Census_G21_AUST_SA1')
+#csv_to_db('2011Census_G22_AUST_SA1','db','2011Census_G22_AUST_SA1')
+#shp_to_db('feat_aust_57km_sa1_16','db','feat_aust_57km_sa1_16',4823)
+#sql_to_db('donor_feat_area_16_G18_G21_G22','db')
+#
+#print('donor_feat_place_11_B18_B21_B22')
+#csv_to_db('2011Census_B18_AUST_SA1_long','db')
+#csv_to_db('2011Census_B21_AUST_SA1_long','db')
+#csv_to_db('2011Census_B22B_AUST_SA1_long','db')
+#shp_to_db('feat_aust_57km_sa1_11','db','feat_aust_57km_sa1_11',4823)
+#shp_to_db('gis_osm_places_free_1','db','gis_osm_places_free_1',4823)
+#sql_to_db('donor_feat_place_11_B18_B21_B22','db')
+#
+#print('donor_feat_place_place_16_G18_G21_G22')
+#csv_to_db('2016Census_G18_AUS_SA1','db')
+#csv_to_db('2016Census_G21_AUS_SA1','db')
+#csv_to_db('2016Census_G22B_AUS_SA1','db')
+#shp_to_db('feat_aust_57km_sa1_16','db','feat_aust_57km_sa1_16',4823)
+#shp_to_db('gis_osm_places_free_1','db','gis_osm_places_free_1',4823)
+#sql_to_db('donor_feat_place_16_G18_G21_G22','db')
+#
+#print('shape_linesandpoints_counts')
+#shp_to_db('gis_osm_places_free_1','db','gis_osm_places_free_1',4823)
+#shp_to_db('gis_osm_roads_free_1','db','gis_osm_roads_free_1',4823)
+#shp_to_db('gis_osm_pois_free_1','db','gis_osm_pois_free_1',4823)
+#shp_to_db('aust_hex_shape_57km','db','aust_hex_shape_57km',4823)
+#geojson_to_shp ('AGIL','agil',4823)
+#shp_to_db('agil','db','agil',4823)
+#sql_ogr('shape_mbsp_shp','all','mbsp')
+#shp_to_db('mbsp','db','mbsp',4823)
+#sql_to_db('shape_nonabs_counts','db')
+#
+#print('shape_11_16_area')
+#sql_to_ogr('shape_57km_area_11_16','all','shape_11_16_area')
+#
+#print('shape_11_16_place')
+#sql_to_ogr('shape_57km_place_11_16','all','place_11_16_place')
 
 #print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 #print('Argument List: {0}'.format(str(sys.argv)))
