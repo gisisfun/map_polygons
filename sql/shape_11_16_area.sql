@@ -21,19 +21,19 @@ Shape_Aust.est_area,
 Shape_Aust.geometry
 FROM Shape_Aust 
 LEFT JOIN Shape_Area11
-ON Shape.p=CAST(Shape_Area11.Poly as INT)
+ON Shape_Aust.p=CAST(Shape_Area11.Poly as INT)
 LEFT JOIN Shape_Area16
-ON Shape.p=CAST(Shape_Area16.Poly as INT)
+ON Shape_Aust.p=CAST(Shape_Area16.Poly as INT)
 LEFT JOIN MBSP 
-ON Shape.p = CAST(MBSP.Poly as INT)
+ON Shape_Aust.p = CAST(MBSP.Poly as INT)
 LEFT JOIN bstation
-ON Shape.p = CAST(bstation.Poly as INT)
+ON Shape_Aust.p = CAST(bstation.Poly as INT)
 LEFT JOIN road
-ON Shape.p = CAST(road.Poly as INT)
+ON Shape_Aust.p = CAST(road.Poly as INT)
 LEFT JOIN service
-ON Shape.p = CAST(service.Poly as INT)
+ON Shape_Aust.p = CAST(service.Poly as INT)
 LEFT JOIN place
-ON Shape.p = CAST(place.Poly as INT)
+ON Shape_Aust.p = CAST(place.Poly as INT)
 LEFT JOIN AGIL
-ON Shape.p = CAST(AGIL.Poly as INT)
+ON Shape_Aust.p = CAST(AGIL.Poly as INT)
 
