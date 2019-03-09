@@ -451,38 +451,7 @@ def hexagons(north,south,east,west,radial,outfile):
     print('The End')# boxes
 
 
-print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
-print('Argument List: {0}'.format(str(sys.argv)))
-if len(sys.argv) is 1:
-    (fytpe,filename, db, tblname,srid) = ['csv','test', 'db', 'test',-1,]
-    #csv_to_db(fytpe,filename, db, tblname)
-    #(fytpe,filename, db, tblname,srid,sqltext) = ['shp','hex_57km_layer', 'db', 'hex_57km_layer',4283]
-    #shp_to_db(filename, db, tblname,srid)
-    (fytpe,filename, db, tblname,srid) = ['sql','test', 'db', 'test',-1]
-    sql_to_db(filename, db)
-else:
-    if (len(sys.argv) <7 ):
-        sys.exit("arguments are \nftype \n filename\n db \n tblname \n srid ")
-    else:
-        (blah,filename, db, tblname,srid,sqlfile) = sys.argv
-        if ftype == "csv":
-            csv_to_db(filename, db, tblname)
-        else:
-            if ftype == "shp":
-                shp_to_db(filename, db, tblname,srid)
-            else:
-                if ftype == "sql":
-                    sql_to_db(filename, db)
-                else:
-                    print('ftype is csv ,shp or sql')
-
-print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
-print('Argument List: {0}'.format(str(sys.argv)))
-if len(sys.argv) is 1:
-    (fytpe,filename, db, tblname,srid,sqltext) = ['shp','hex_57km_layer', 'db', 'hex_57km_layer',4283,'']
-    #csv_to_db(fytpe,filename, db, tblname)
-    shp_to_db(filename, db, tblname,srid)
-    
+   
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
 if len(sys.argv) is 1:
