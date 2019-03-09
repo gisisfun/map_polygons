@@ -195,7 +195,7 @@ def write_vrt_file(f_name,shape,ext,ext_label):
     #ogr2ogr hex_aust.shp hex_55km_layer_ESRI_Shapefile.vrt -dialect sqlite -sql @austshape.sql
 
 def ref_files():
-    dir_path = os.path.dirname(os.path.realpath(__file__))
+    #dir_path = os.path.dirname(os.path.realpath(__file__))
     if (os.name is 'posix'):
         cmd_text='/usr/bin/ogr2ogr'
         slash='/'
