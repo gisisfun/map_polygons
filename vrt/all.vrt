@@ -110,6 +110,18 @@
         <SrcLayer>shape_75km_11_16</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>  
+    <OGRVRTLayer name="POI_Source">
+        <SrcDataSource>../shapefiles/gis_osm_pois_free_1.shp</SrcDataSource>
+        <SrcLayer>gis_osm_pois_free_1</SrcLayer>
+        <GeometryType>wkbPoint</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="POI">
+        <SrcDataSource>../shapefiles/POI.shp</SrcDataSource>
+        <SrcLayer>POI</SrcLayer>
+        <GeometryType>wkbPoint</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="Place">
         <SrcDataSource>../csv/shape_57km_place_count.csv</SrcDataSource>
@@ -123,14 +135,6 @@
         <SrcDataSource>../csv/shape_57km_service_count.csv</SrcDataSource>
         <SrcLayer>shape_57km_service_count</SrcLayer>
     </OGRVRTLayer>
-    <OGRVRTLayer name="bstation">
-        <SrcDataSource>../csv/shape_57km_bstation_count.csv</SrcDataSource>
-        <SrcLayer>shape_57km_bstation_count</SrcLayer>
-    </OGRVRTLayer>
-    <OGRVRTLayer name="road">
-        <SrcDataSource>../csv/shape_57km_road_count.csv</SrcDataSource>
-        <SrcLayer>shape_57km_road_count</SrcLayer>
-    </OGRVRTLayer>
     <OGRVRTLayer name="MBSP_Database">
         <SrcDataSource>../csv/mbsp_database.csv</SrcDataSource>
         <SrcLayer>mbsp_database</SrcLayer>
@@ -138,8 +142,22 @@
         <GeometryField encoding="PointFromColumns" x="Longitude" y="Latitude"/>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
-    <OGRVRTLayer name="MBSP">
+    <OGRVRTLayer name="MBSP_Shape">
         <SrcDataSource>../shapefiles/mbsp.shp</SrcDataSource>
         <SrcLayer>mbsp</SrcLayer>
+        <GeometryType>wkbPoint</GeometryType>
+        <LayerSRS>EPSG:4823</LayerSRS>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="MBSP">
+        <SrcDataSource>../csv/shape_57km_mbsp_count.csv</SrcDataSource>
+        <SrcLayer>shape_57km_mbsp_count</SrcLayer>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="bstation">
+        <SrcDataSource>../csv/shape_57km_bstation_count.csv</SrcDataSource>
+        <SrcLayer>shape_57km_bstation_count</SrcLayer>
+    </OGRVRTLayer>
+    <OGRVRTLayer name="road">
+        <SrcDataSource>../csv/shape_57km_road_count.csv</SrcDataSource>
+        <SrcLayer>shape_57km_road_count</SrcLayer>
     </OGRVRTLayer>
 </OGRVRTDataSource>
