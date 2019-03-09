@@ -4,10 +4,14 @@
 CREATE TABLE if not exists "shape_57km_bstation_count" AS
 SELECT Shape.p as Poly,
 Count(*) as bstations
-FROM [aust_hex_shape_57km] as Shape, [gis_osm_pois_free_1] as POI
+FROM [aust_hex_shape_57km] as Shape, POI
 WHERE ST_Within(POI.geometry,Shape.geometry) 
 and (POI.fclass= 'comms_tower')
 GROUP BY Poly;
+
+.output ../csv/shape_57km_bstation_count.csv
+
+select * from shape_57km_bstation_count;
 
 .mode csv
 .headers on
@@ -44,10 +48,10 @@ select * from shape_57km_road_count;
 .headers on
 
 CREATE TABLE if not exists shape_57km_agil_count AS
-SELECT Shape.p as Poly,
-Count(*) as agilplaces
-FROM [aust_hex_shape_57km] as Shape,[agil] as AGiL
-WHERE ST_Intersects(AGIL.geometry,Shape.geometry)
+SELECT Shape_Aust.p as Poly,
+Count(*) as AGILplaces
+FROM [aust_hex_shape_57km] as Shape_Aust,[agil] as AGiL
+WHERE ST_Intersects(AGIL.geometry,Shape_Aust.geometry)
 GROUP BY Poly;
 
 .output ../csv/shape_57km_agil_count.csv
@@ -58,10 +62,10 @@ select * from shape_57km_agil_count;
 .headers on
 
 CREATE TABLE if not exists "shape_57km_service_count" AS
-SELECT Shape.p as Poly,
+SELECT Shape_Aust.p as Poly,
 Count(*) as services
-FROM [aust_hex_shape_57km] as Shape, [gis_osm_pois_free_1] as POI
-WHERE ST_Within(POI.geometry,Shape.geometry)  
+FROM [aust_hex_shape_57km] as Shape_Aust, POI
+WHERE ST_Within(POI.geometry,Shape_Aust.geometry)  
 and  (POI.fclass = 'school' 
 OR POI.fclass= 'police' 
 OR POI.fclass= 'doctors' 
@@ -77,7 +81,8 @@ select * from shape_57km_service_count;
 .headers on
 
 CREATE TABLE if not exists "shape_57km_mbsp_count" AS
-SELECT Shape.p as Poly,Count(*) as MBSPplaces
+SELECT Shape.p as Poly,
+Count(*) as MBSPplaces
 FROM [aust_hex_shape_57km] as Shape,[mbsp] as MBSP
 WHERE ST_Within(MBSP.geometry,Shape.geometry) 
 GROUP BY Poly;
