@@ -200,23 +200,23 @@ def sql_to_db (sqlfile,db):
 #shp_to_db('feat_aust_57km_sa1_16','db','feat_aust_57km_sa1_16',4823)
 #shp_to_db('gis_osm_places_free_1','db','gis_osm_places_free_1',4823)
 #do_spatialite('donor_feat_place_16_G18_G21_G22','db')
-#
-#print('shape_linesandpoints_counts')
-#shp_to_db('gis_osm_places_free_1','db','gis_osm_places_free_1',4823)
-#shp_to_db('gis_osm_roads_free_1','db','gis_osm_roads_free_1',4823)
-#shp_to_db('gis_osm_pois_free_1','db','gis_osm_pois_free_1',4823)
-#shp_to_db('aust_hex_shape_57km','db','aust_hex_shape_57km',4823)
-#geojson_to_shp ('AGIL','agil',4823)
-#shp_to_db('agil','db','agil',4823)
+# spatialite ../spatialite_db/db.sqlite "vacuum;"
+print('shape_linesandpoints_counts')
+shp_to_db('gis_osm_places_free_1','test','gis_osm_places_free_1',4823)
+shp_to_db('gis_osm_roads_free_1','test','gis_osm_roads_free_1',4823)
+shp_to_db('gis_osm_pois_free_1','test','gis_osm_pois_free_1',4823)
+shp_to_db('aust_hex_shape_57km','test','aust_hex_shape_57km',4823)
+geojson_to_shp ('AGIL','agil',4823)
+shp_to_db('agil','test','agil',4823)
 sql_to_ogr('shape_mbsp_shp','all','mbsp')
-shp_to_db('mbsp','db','mbsp',4823)
-do_spatialite('shape_nonabs_counts','db')
+shp_to_db('mbsp','test','mbsp',4823)
+do_spatialite('shape_nonabs_counts','test')
 
-print('shape_11_16_area')
-sql_to_ogr('shape_57km_area_11_16','all','shape_11_16_area')
-
-print('shape_11_16_place')
-sql_to_ogr('shape_57km_place_11_16','all','place_11_16_place')
+#print('shape_11_16_area')
+#sql_to_ogr('shape_11_16_area','all','shape_57km_area_11_16')
+#
+#print('shape_11_16_place')
+#sql_to_ogr('place_11_16_place','all','shape_57km_place_11_16')
 
 #print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 #print('Argument List: {0}'.format(str(sys.argv)))
