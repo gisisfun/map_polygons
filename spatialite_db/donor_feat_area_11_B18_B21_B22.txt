@@ -21,8 +21,7 @@ ON Donor_B22.region_id=Feat.Feat_Code
 GROUP BY Poly
 ORDER BY Poly;
 
-.output ../csv/donor_feat_area_57km_11_B18_B21_B22.csv
-
+.output csv/donor_feat_area_57km_11_B18_B21_B22.csv
 select * from donor_feat_area_57km_11_B18_B21_B22;
 
 .quit

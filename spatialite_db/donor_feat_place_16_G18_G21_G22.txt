@@ -12,7 +12,7 @@ LEFT JOIN [gis_osm_places_free_1] as Place
 ON ST_Within(Place.geometry,Feat_Aust.geometry)
 GROUP BY P,Feat_Code;
 
-.output ../csv/feat_57km_16_placeN_count.csv
+.output csv/feat_57km_16_placeN_count.csv
 select * from feat_57km_16_placeN_count;
 
 .mode csv
@@ -26,8 +26,8 @@ Sum(PlaceN.PlacesN) as PlacesD
 FROM [feat_57km_16_placeN_count] as PlaceN
 GROUP BY Feat_Code;
 
-.output ../csv/feat_57km_16_placeD_count.csv
-select * from feat_57km_16_placeD_count
+.output csv/feat_57km_16_placeD_count.csv
+select * from feat_57km_16_placeD_count;
 
 .mode csv
 .headers on
@@ -42,7 +42,7 @@ FROM [feat_57km_16_placeN_count] as PlaceN
 INNER JOIN [feat_57km_16_placeD_count] as PlaceD
 ON PlaceN.Feat_Code=PlaceD.Feat_Code;
 
-.output ../csv/feat_57km_16_place_wt.csv
+.output csv/feat_57km_16_place_wt.csv
 select * from feat_57km_16_place_wt;
 
 .mode csv
@@ -68,7 +68,7 @@ ON Donor_G22.SA1_7DIGITCODE_2016=Place.Feat_Code
 GROUP BY Place.Poly
 ORDER BY Poly;
 
-.output ../csv/donor_feat_place_57km_16_G18_G21_G22.csv
+.output csv/donor_feat_place_57km_16_G18_G21_G22.csv
 select * from donor_feat_place_57km_16_G18_G21_G22;
 
 .quit
