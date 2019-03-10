@@ -182,7 +182,9 @@ def process_sql(shape,size,db):
     csv_to_db('2011Census_B22B_AUST_SA1_long','db','2011Census_B22B_AUST_SA1_long')
     fname='feat_aust_{size}km_sa1_11'.format(shape=shape,size=size)
     shp_to_db(fname,'db',fname,4823)
-    do_spatialite('donor_feat_area_11_B18_B21_B22','db')
+    sqlname='donor_feat_area_11_B18_B21_B22_{shape}_size}km.txt'.format(shape=shape,size=size)
+    shape_and_size ('spatialite_db','donor_feat_area_11_B18_B21_B22.txt',shape,size,sqlname)
+    do_spatialite(sqlname,'db')
 
     print('donor_feat_area_16_G18_G21_G22')
     csv_to_db('2016Census_G18_AUS_SA1','db','2016Census_G18_AUS_SA1')
@@ -190,7 +192,9 @@ def process_sql(shape,size,db):
     csv_to_db('2016Census_G22B_AUS_SA1','db','2016Census_G22B_AUS_SA1')
     fname='feat_aust_{size}km_sa1_16'.format(shape=shape,size=size)
     shp_to_db(fname,'db',fname,4823)
-    do_spatialite('donor_feat_area_16_G18_G21_G22','db')
+    sqlname='donor_feat_area_16_G18_G21_B\G22_{shape}_size}km.txt'.format(shape=shape,size=size)
+    shape_and_size ('spatialite_db','donor_feat_area_16_G18_G21_G22.txt',shape,size,sqlname)
+    do_spatialite(sqlname,'db')
     
     print('donor_feat_place_11_B18_B21_B22')
     csv_to_db('2011Census_B18_AUST_SA1_long','db','2011Census_B18_AUST_SA1_long',)
@@ -199,7 +203,9 @@ def process_sql(shape,size,db):
     fname='feat_aust_{size}km_sa1_11'.format(shape=shape,size=size)
     shp_to_db(fname,'db',fname,4823)
     shp_to_db('gis_osm_places_free_1','db','gis_osm_places_free_1',4823)
-    do_spatialite('donor_feat_place_11_B18_B21_B22','db')
+    sqlname='donor_feat_place_11_B18_B21_B22_{shape}_size}km.txt'.format(shape=shape,size=size)
+    shape_and_size ('spatialite_db','donor_feat_place_11_B18_B21_B22.txt',shape,size,sqlname)
+    do_spatialite(sqlname,'db')
     
     print('donor_feat_place_place_16_G18_G21_G22')
     csv_to_db('2016Census_G18_AUS_SA1','db','2016Census_G18_AUS_SA1')
@@ -208,8 +214,11 @@ def process_sql(shape,size,db):
     fname='feat_aust_{size}km_sa1_16'.format(shape=shape,size=size)
     shp_to_db(fname,'db',fname,4823)
     shp_to_db('gis_osm_places_free_1','db','gis_osm_places_free_1',4823)
-    do_spatialite('donor_feat_place_16_G18_G21_G22','db')
+    sqlname='donor_feat_place_16_G18_G21_B\G22_{shape}_size}km.txt'.format(shape=shape,size=size)
+    shape_and_size ('spatialite_db','donor_feat_place_16_G18_G21_G22.txt',shape,size,sqlname)
+    do_spatialite(sqlname,'db')
     # spatialite ../spatialite_db/db.sqlite "vacuum;"
+    
     print('shape_linesandpoints_counts')
     shp_to_db('gis_osm_places_free_1','db','gis_osm_places_free_1',4823)
     shp_to_db('gis_osm_roads_free_1','db','gis_osm_roads_free_1',4823)
@@ -222,6 +231,9 @@ def process_sql(shape,size,db):
     sql_to_ogr('shape_mbsp_shp','all','mbsp')
     shp_to_db('mbsp','db','mbsp',4823)
     do_spatialite('shape_nonabs_counts','db')
+    sqlname='shape_nonabs_counts_{shape}_size}km.txt'.format(shape=shape,size=size)
+    shape_and_size ('spatialite_db','shape_nonabs_counts.txt',shape,size,sqlname)
+    do_spatialite(sqlname,'db')
     
     print('shape_11_16_area')
     fname='shape_{size}km_area_11_16'.format(shape=shape,size=size)
