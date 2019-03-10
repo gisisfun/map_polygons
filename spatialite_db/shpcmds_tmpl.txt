@@ -1,3 +1,0 @@
-DROP TABLE "changeme1";
-.loadshp ../shapefiles/changeme1 changeme1 utf-8 changeme2 
- 
