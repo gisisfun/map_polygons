@@ -1,5 +1,0 @@
-
-ogr2ogr -f "SQLite" ../spatialite_db/temp.sqlite ../csv/changeme1.csv
-echo ".dump changeme1" | spatialite ../spatialite_db/temp.sqlite > ../spatialite_db/out.sql
-echo 'DROP TABLE "changeme1";' | spatialite ../spatialite_db/changeme2.sqlite
-echo ".read ../spatialite_db/out.sql utf-8" | spatialite ../spatialite_db/changeme2.sqlite
