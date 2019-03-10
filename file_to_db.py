@@ -235,7 +235,7 @@ print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
 if len(sys.argv) is 1:
     (shape,size,db) = ['hex','57','db']
-    process_sq(shape,size,db)
+    process_sql(shape,size,db)
 else:
     if (len(sys.argv) <4 ):
         sys.exit("arguments are \nshape \n size (km)\n db \ndatabase \n srid ")
