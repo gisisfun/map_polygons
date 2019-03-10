@@ -1,8 +1,0 @@
-<OGRVRTDataSource>
-____<OGRVRTLayer_name="hex_57km_dataset">
-________<SrcDataSource>hex_57km_dataset.csv</SrcDataSource>
-____________<GeometryType>wkbPoint</GeometryType>
-____________<LayerSRS>EPSG:4823</LayerSRS>
-____________<GeometryField_encoding="PointFromColumns"_x="Long"_y="Lat"/>
-________</OGRVRTLayer>
-____</OGRVRTDataSource>
