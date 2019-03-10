@@ -14,6 +14,9 @@ GROUP BY P,Feat_Code;
 
 .output ../csv/feat_57km_11_placeN_count.csv
 
+.mode csv
+.headers on
+
 select * from feat_57km_11_placeN_count;
 
 DROP TABLE IF EXISTS "feat_57km_11_placeD_count";
@@ -28,6 +31,9 @@ GROUP BY Feat_Code;
 
 select * from feat_57km_11_placeD_count;
 
+.mode csv
+.headers on
+
 DROP TABLE IF EXISTS "feat_57km_11_place_wt";
 
 CREATE TABLE feat_57km_11_place_wt AS
@@ -39,6 +45,10 @@ INNER JOIN [feat_57km_11_placeD_count] as PlaceD
 ON PlaceN.Feat_Code=PlaceD.Feat_Code;
 
 .output ../csv/feat_57km_11_place_wt.csv
+select * from feat_57km_11_place_wt;
+
+.mode csv
+.headers on
 
 DROP TABLE IF EXISTS "donor_feat_place_57km_11_B18_B21_B22";
 
