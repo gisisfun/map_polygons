@@ -13,7 +13,7 @@ def shape_and_size (dir,file,shape,size,newfile):
     infiletext = infile.read()
     infile.close()
     
-    outfile = open("{dir}{slash}{file}".format(dir=dir,file=newfile),"w")
+    outfile = open("{dir}{slash}{file}".format(dir=dir,file=newfile,slash=slash),"w")
     outfiletext = infiletext.replace('57',size).replace('hex',shape).replace('/',slash)
     outfile.write(outfiletext)
     outfile.close() 
@@ -159,6 +159,7 @@ def sql_to_db (sqlfile,db):
 
 
 #ogr2ogr ../shapefiles/aust_hex_shape_57km.shp '../vrt/aust_shape.vrt' -dialect sqlite -sql @../sql/aust_shape.sql
+shape_and_size ('vrt','template.vrt','hex','57','all.vrt')
 print('aust_shape')
 sql_to_ogr('aust_shape','all','aust_hex_shape_57km')
 shp_to_db('aust_hex_shape_57km','db','aust_hex_shape_57km',4823)
