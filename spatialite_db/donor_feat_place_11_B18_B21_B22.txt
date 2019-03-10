@@ -13,11 +13,10 @@ ON ST_Within(Place.geometry,Feat_Aust.geometry)
 GROUP BY P,Feat_Code;
 
 .output ../csv/feat_57km_11_placeN_count.csv
+select * from feat_57km_11_placeN_count;
 
 .mode csv
 .headers on
-
-select * from feat_57km_11_placeN_count;
 
 DROP TABLE IF EXISTS "feat_57km_11_placeD_count";
 
@@ -28,7 +27,6 @@ FROM [feat_57km_11_placeN_count] as PlaceN
 GROUP BY Feat_Code;
 
 .output ../csv/feat_57km_11_placeD_count.csv
-
 select * from feat_57km_11_placeD_count;
 
 .mode csv
@@ -71,7 +69,6 @@ GROUP BY Place.Poly
 ORDER BY Poly;
 
 .output ../csv/donor_feat_place_57km_11_B18_B21_B22.csv
-
 select * from donor_feat_place_57km_11_B18_B21_B22;
 
 .quit
