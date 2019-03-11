@@ -173,7 +173,7 @@ def process_sql(shape,size,db):
     
     print('feat_aust_16_area')
     fname='feat_aust_{size}km_sa1_16'.format(shape=shape,size=size)
-    sql_to_ogr('feat_aust_11','all',fname)
+    sql_to_ogr('feat_aust_16','all',fname)
     shp_to_db(fname,'db',fname,4823)
     
     print('donor_feat_area_11_B18_B21_B22')   
