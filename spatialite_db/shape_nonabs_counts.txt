@@ -9,7 +9,7 @@ WHERE ST_Within(POI.geometry,Shape.geometry)
 and (POI.fclass= 'comms_tower')
 GROUP BY Poly;
 
-.output ../csv/shape_57km_bstation_count.csv
+.output csv/shape_57km_bstation_count.csv
 
 select * from shape_57km_bstation_count;
 
@@ -25,7 +25,7 @@ and (Place.fclass = 'city'
 OR Place.fclass= 'town')
 GROUP BY Poly;
 
-.output ../csv/shape_57km_place_count.csv
+.output csv/shape_57km_place_count.csv
 
 select * from shape_57km_place_count;
 
@@ -40,7 +40,7 @@ WHERE ST_Within(Road.geometry,Shape.geometry) or ST_Intersects(Road.geometry,Sha
 GROUP BY Poly;
 
 
-.output ../csv/shape_57km_road_count.csv
+.output csv/shape_57km_road_count.csv
 
 select * from shape_57km_road_count;
 
@@ -54,7 +54,7 @@ FROM [aust_hex_shape_57km] as Shape_Aust,[agil] as AGiL
 WHERE ST_Intersects(AGIL.geometry,Shape_Aust.geometry)
 GROUP BY Poly;
 
-.output ../csv/shape_57km_agil_count.csv
+.output csv/shape_57km_agil_count.csv
 
 select * from shape_57km_agil_count;
 
@@ -73,7 +73,7 @@ OR POI.fclass= 'hospital'
 OR POI.fclass= 'fire_station')
 GROUP BY Poly;
 
-.output ../csv/shape_57km_service_count.csv
+.output csv/shape_57km_service_count.csv
 
 select * from shape_57km_service_count;
 
@@ -87,7 +87,7 @@ FROM [aust_hex_shape_57km] as Shape,[mbsp] as MBSP
 WHERE ST_Within(MBSP.geometry,Shape.geometry) 
 GROUP BY Poly;
 
-.output ../csv/shape_57km_mbsp_count.csv
+.output csv/shape_57km_mbsp_count.csv
 
 select * from shape_57km_mbsp_count;
 
