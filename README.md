@@ -1,6 +1,8 @@
 # Map Polygons for Data Visualisation (Hexagons and Boxes)
+
 *A good visualisation is worth the wait(weight).*
-![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/rel_need_for_assistance.png | width=800))
+
+![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/rel_need_for_assistance.png))
 
 ## See for yourself ##
 
