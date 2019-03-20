@@ -12,13 +12,14 @@ Open one or both of these files in your preferred GIS tool of choice and have a 
 ## How does it work ##
 
 - **CPython 3.7** for list creation/management and construction of geometric shapes.
-- **Pandas** for csv file outputs.
-- **Python3 modules** for downloading and unzipping content from the ABS website.
-- **Geopy** for projection based point calculations for list.
-- **GeoJSON** for encoding of the geometric shapes.
+- **pandas** for csv file outputs.
+- **geopandas**, **numpy** and **matplotlib** for making really good maps.
+- **Ppyunpack* for downloading and unzipping content from the ABS website.
+- **geopy** for projection based point calculations for list.
+- **geojson** for encoding of the geometric shapes.
 - **GDAL/ogr2ogr** for shapefile conversion, simple geometry SQL queries.
 - **PROJ** for reprojection.
-- **Sqlite3** for generation of SQL definitions for **spatialite**.
+- **sqlite3** for accessing for **spatialite** content.
 - **Spatialite** for more complex SQL queries.
 - Shell - **Bash** and **Sed** for moving files to **sqlite** and **spatialite** databases and nit to mention automation of the above. 
 - **QGIS** or your favourite GIS Package.
