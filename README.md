@@ -63,6 +63,13 @@ python3 polygons.py hex -8 -45 96 168 212
 for boxes:
 python3 polygons.py box -8 -45 96 168 212
 
+**file_to_db.py**
+
+This program populates the shapes with demographic and POI based dataset content.
+
+**map_me.py**
+
+Make the really good map at the top of the document.
 
 ### Table of data sources
 
