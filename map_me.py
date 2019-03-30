@@ -1,5 +1,7 @@
 import geopandas as gpd
 import numpy as np
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 
 shp_path = "shapefiles/shape_57km_place_11_16.shp"
