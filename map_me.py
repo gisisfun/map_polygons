@@ -16,7 +16,7 @@ sf.plot(column='rel_need_for_assistance', scheme = 'quantiles', k=5, linewidth=0
 plt.annotate('Source: ABS Census of Population and Housing, 2016 and 2011',xy=(0.1, .08),  xycoords='figure fraction', horizontalalignment='left', verticalalignment='top', fontsize=12, color='#555555')
 plt.axis('off')
 plt.savefig('images/rel_need_for_assistance.png',bbox_inches='tight')
-plt.show()  
+#plt.show()  
 
 
 
