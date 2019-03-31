@@ -58,7 +58,7 @@ GROUP BY Feat_Code;
 
 DROP VIEW if exists "feat_57km_11_place_wt";
 
- CREATE VIEW feat_57km_11_place_wt AS
+CREATE VIEW feat_57km_11_place_wt AS
 SELECT PlaceN.P as Poly,
 PlaceN.Feat_Code as Feat_Code,
 (CAST(PlaceN.PlacesN as Float)/CAST(PlaceD.PlacesD as Float)) as Place_Wt 
@@ -200,7 +200,7 @@ GROUP BY Poly;
 .mode csv
 .headers on
 
-DROP TABLE if not exists "tabular_11_16_place";
+DROP TABLE if exists "tabular_11_16_place";
 
 CREATE TABLE "tabular_11_16_place" AS
 SELECT CAST(Shape_Place11.Poly as INT) as Poly,
