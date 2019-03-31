@@ -48,15 +48,7 @@ Sum(PlaceN.PlacesN) as PlacesD
 FROM [feat_57km_11_placeN_count] as PlaceN
 GROUP BY Feat_Code;
 
-.output csv/feat_57km_11_placeD_count.csv
-select * from feat_57km_11_placeD_count;
-
-.mode csv
-.headers on
-
-DROP VIEW IF EXISTS "feat_57km_11_place_wt";
-
-CREATE TABLE feat_57km_11_place_wt AS
+CREATE VIEW if exists  feat_57km_11_place_wt AS
 SELECT PlaceN.P as Poly,
 PlaceN.Feat_Code as Feat_Code,
 (CAST(PlaceN.PlacesN as Float)/CAST(PlaceD.PlacesD as Float)) as Place_Wt 
