@@ -1,41 +1,5 @@
 
-DROP VIEW if exists "donor_feat_area_57km_11_B18_B21_B22";
 
-CREATE VIEW "donor_feat_area_57km_11_B18_B21_B22" AS
-SELECT Feat.Poly as Poly,
-round(sum(Donor_B18.Persons_Total_Has_need_for_assistance*Feat.Feat_Prop),1) as NeedA11,
-round(sum(Donor_B18.Persons_Total_Total*Feat.Feat_Prop),1) as NeedAT11,
-round(sum(Donor_B21.Persons_Total_Provided_unpaid_assistance*Feat.Feat_Prop),1) as PUnPA11,
-round(sum(Donor_B21.Persons_Total_Total*Feat.Feat_Prop),1) as PUnPAT11,
-round(sum(Donor_B22.Persons_Total_Cared_for_Own_child_children_and_other_child_children*Feat.Feat_Prop),1) as PUnPCC11,
-round(sum(Donor_B22.Persons_Total_Total*Feat.Feat_Prop),1) as PUnPCCT11
-FROM [feat_aust_57km_sa1_11] as Feat 
-INNER JOIN [2011Census_B18_AUST_SA1_long] as Donor_B18 
-ON Donor_B18.region_id=Feat.Feat_Code  
-INNER JOIN [2011Census_B21_AUST_SA1_long] as Donor_B21 
-ON Donor_B21.region_id=Feat.Feat_Code 
-INNER JOIN [2011Census_B22B_AUST_SA1_long] as Donor_B22 
-ON Donor_B22.region_id=Feat.Feat_Code 
-GROUP BY Poly
-ORDER BY Poly;
-
-DROP VIEW if exists "donor_feat_area_57km_16_G18_G21_G22";
-
-CREATE VIEW "donor_feat_area_57km_16_G18_G21_G22" AS
-SELECT Feat.Poly as Poly,
-round(sum(Donor_G18.P_Tot_Need_for_assistance*Feat.Feat_Prop),1) as NeedA16,
-round(sum(Donor_G18.P_Tot_Tot*Feat.Feat_Prop),1) as NeedAT16,
-round(sum(Donor_G21.P_Tot_prvided_unpaid_assist*Feat.Feat_Prop),1) as PUnPA16,
-round(sum(Donor_G21.P_Tot_Tot*Feat.Feat_Prop),1) as PUnPAT16,
-round(sum(Donor_G22.P_Tot_CF_Total*Feat.Feat_Prop),1) as PUnPCC16,
-round(sum(Donor_G22.P_Tot_Total*Feat.Feat_Prop),1) as PUnPCCT16
-FROM [feat_aust_57km_sa1_16] as Feat 
-INNER JOIN [2016Census_G18_AUS_SA1] as Donor_G18 
-ON Donor_G18.SA1_7DIGITCODE_2016=Feat.Feat_Code  
-INNER JOIN [2016Census_G21_AUS_SA1] as Donor_G21 
-ON Donor_G21.SA1_7DIGITCODE_2016=Feat.Feat_Code 
-INNER JOIN [2016Census_G22B_AUS_SA1] as Donor_G22 
-ON Donor_G22.SA1_7DIGITCODE_2016=Feat.Feat_Code 
 
 DROP VIEW if exists "feat_57km_11_placeN_count";
 
@@ -68,7 +32,7 @@ ON PlaceN.Feat_Code=PlaceD.Feat_Code;
 
 DROP VIEW if exists "donor_feat_place_57km_11_B18_B21_B22";
 
- CREATE VIEW "donor_feat_place_57km_11_B18_B21_B22" AS
+CREATE VIEW "donor_feat_place_57km_11_B18_B21_B22" AS
 SELECT Place.Poly as Poly,
 round(sum(Donor_B18.Persons_Total_Has_need_for_assistance*Place.Place_Wt),1) as NeedA11,
 round(sum(Donor_B18.Persons_Total_Total*Place.Place_Wt),1) as NeedAT11,
@@ -99,7 +63,7 @@ GROUP BY P,Feat_Code;
 
 DROP VIEW if exists "feat_57km_16_placeD_count";
 
- CREATE VIEW "feat_57km_16_placeD_count" AS
+CREATE VIEW "feat_57km_16_placeD_count" AS
 SELECT PlaceN.Feat_Code as Feat_Code,
 Sum(PlaceN.PlacesN) as PlacesD
 FROM [feat_57km_16_placeN_count] as PlaceN
@@ -107,7 +71,7 @@ GROUP BY Feat_Code;
 
 DROP VIEW if exists "feat_57km_16_place_wt";
 
- CREATE VIEW "feat_57km_16_place_wt" AS
+CREATE VIEW "feat_57km_16_place_wt" AS
 SELECT PlaceN.P as Poly,
 PlaceN.Feat_Code as Feat_Code,
 (CAST(PlaceN.PlacesN AS Float)/CAST(PlaceD.PlacesD AS Float)) as Place_Wt
@@ -117,7 +81,7 @@ ON PlaceN.Feat_Code=PlaceD.Feat_Code;
 
 DROP VIEW if exists "donor_feat_place_57km_16_G18_G21_G22";
 
- CREATE VIEW "donor_feat_place_57km_16_G18_G21_G22" AS
+CREATE VIEW "donor_feat_place_57km_16_G18_G21_G22" AS
 SELECT Place.Poly as Poly,
 round(sum(Donor_G18.P_Tot_Need_for_assistance*Place.Place_Wt),1) as NeedA16,
 round(sum(Donor_G18.P_Tot_Tot*Place.Place_Wt),1) as NeedAT16,
@@ -137,7 +101,7 @@ ORDER BY Poly;
 
 DROP VIEW if exists "shape_57km_place_count";
 
- CREATE VIEW "shape_57km_place_count" AS
+CREATE VIEW "shape_57km_place_count" AS
 SELECT Shape.p as Poly,
 Count(*) as places
 FROM [aust_hex_shape_57km] as Shape, [gis_osm_places_free_1] as Place
