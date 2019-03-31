@@ -1,0 +1,216 @@
+CREATE VIEW if not exists donor_feat_area_57km_11_B18_B21_B22 AS
+SELECT Feat.Poly as Poly,
+round(sum(Donor_B18.Persons_Total_Has_need_for_assistance*Feat.Feat_Prop),1) as NeedA11,
+round(sum(Donor_B18.Persons_Total_Total*Feat.Feat_Prop),1) as NeedAT11,
+round(sum(Donor_B21.Persons_Total_Provided_unpaid_assistance*Feat.Feat_Prop),1) as PUnPA11,
+round(sum(Donor_B21.Persons_Total_Total*Feat.Feat_Prop),1) as PUnPAT11,
+round(sum(Donor_B22.Persons_Total_Cared_for_Own_child_children_and_other_child_children*Feat.Feat_Prop),1) as PUnPCC11,
+round(sum(Donor_B22.Persons_Total_Total*Feat.Feat_Prop),1) as PUnPCCT11
+FROM [feat_aust_57km_sa1_11] as Feat 
+INNER JOIN [2011Census_B18_AUST_SA1_long] as Donor_B18 
+ON Donor_B18.region_id=Feat.Feat_Code  
+INNER JOIN [2011Census_B21_AUST_SA1_long] as Donor_B21 
+ON Donor_B21.region_id=Feat.Feat_Code 
+INNER JOIN [2011Census_B22B_AUST_SA1_long] as Donor_B22 
+ON Donor_B22.region_id=Feat.Feat_Code 
+GROUP BY Poly
+ORDER BY Poly;
+
+CREATE VIEW if not exists donor_feat_area_57km_16_G18_G21_G22 AS
+SELECT Feat.Poly as Poly,
+round(sum(Donor_G18.P_Tot_Need_for_assistance*Feat.Feat_Prop),1) as NeedA16,
+round(sum(Donor_G18.P_Tot_Tot*Feat.Feat_Prop),1) as NeedAT16,
+round(sum(Donor_G21.P_Tot_prvided_unpaid_assist*Feat.Feat_Prop),1) as PUnPA16,
+round(sum(Donor_G21.P_Tot_Tot*Feat.Feat_Prop),1) as PUnPAT16,
+round(sum(Donor_G22.P_Tot_CF_Total*Feat.Feat_Prop),1) as PUnPCC16,
+round(sum(Donor_G22.P_Tot_Total*Feat.Feat_Prop),1) as PUnPCCT16
+FROM [feat_aust_57km_sa1_16] as Feat 
+INNER JOIN [2016Census_G18_AUS_SA1] as Donor_G18 
+ON Donor_G18.SA1_7DIGITCODE_2016=Feat.Feat_Code  
+INNER JOIN [2016Census_G21_AUS_SA1] as Donor_G21 
+ON Donor_G21.SA1_7DIGITCODE_2016=Feat.Feat_Code 
+INNER JOIN [2016Census_G22B_AUS_SA1] as Donor_G22 
+ON Donor_G22.SA1_7DIGITCODE_2016=Feat.Feat_Code 
+
+CREATE VIEW if not exists feat_57km_11_placeN_count AS
+SELECT Feat_Aust.Poly as P,
+Feat_Aust.Feat_Code as Feat_Code,
+Count(*) as PlacesN
+FROM [feat_aust_57km_sa1_11] as Feat_Aust 
+LEFT JOIN [gis_osm_places_free_1] as Place
+ON ST_Within(Place.geometry,Feat_Aust.geometry)
+GROUP BY P,Feat_Code;
+
+CREATE VIEW if not exists feat_57km_11_placeD_count AS
+SELECT PlaceN.Feat_Code as Feat_Code,
+Sum(PlaceN.PlacesN) as PlacesD
+FROM [feat_57km_11_placeN_count] as PlaceN
+GROUP BY Feat_Code;
+
+CREATE VIEW if not exists feat_57km_11_place_wt AS
+SELECT PlaceN.P as Poly,
+PlaceN.Feat_Code as Feat_Code,
+(CAST(PlaceN.PlacesN as Float)/CAST(PlaceD.PlacesD as Float)) as Place_Wt 
+FROM [feat_57km_11_placeN_count] as PlaceN
+INNER JOIN [feat_57km_11_placeD_count] as PlaceD
+ON PlaceN.Feat_Code=PlaceD.Feat_Code;
+
+CREATE  VIEW if not exists donor_feat_place_57km_11_B18_B21_B22 AS
+SELECT Place.Poly as Poly,
+round(sum(Donor_B18.Persons_Total_Has_need_for_assistance*Place.Place_Wt),1) as NeedA11,
+round(sum(Donor_B18.Persons_Total_Total*Place.Place_Wt),1) as NeedAT11,
+round(sum(Donor_B21.Persons_Total_Provided_unpaid_assistance*Place.Place_Wt),1) as PUnPA11,
+round(sum(Donor_B21.Persons_Total_Total*Place.Place_Wt),1) as PUnPAT11,
+round(sum(Donor_B22.Persons_Total_Cared_for_Own_child_children_and_other_child_children*Place.Place_Wt),1) as PUnPCC11,
+round(sum(Donor_B22.Persons_Total_Total*Place.Place_Wt),1) as PUnPCCT11
+FROM [feat_57km_11_place_wt] as Place 
+INNER JOIN [2011Census_B18_AUST_SA1_long] as Donor_B18 
+ON Donor_B18.region_id=Place.Feat_Code  
+INNER JOIN [2011Census_B21_AUST_SA1_long] as Donor_B21 
+ON Donor_B21.region_id=Place.Feat_Code 
+INNER JOIN [2011Census_B22B_AUST_SA1_long] as Donor_B22 
+ON Donor_B22.region_id=Place.Feat_Code
+GROUP BY Place.Poly
+ORDER BY Poly;
+
+CREATE VIEW if not exists feat_57km_16_placeN_count AS
+SELECT Feat_Aust.Poly as P,
+Feat_Aust.Feat_Code as Feat_Code,
+Count(*) as PlacesN
+FROM [feat_aust_57km_sa1_16] as Feat_Aust 
+LEFT JOIN [gis_osm_places_free_1] as Place
+ON ST_Within(Place.geometry,Feat_Aust.geometry)
+GROUP BY P,Feat_Code;
+
+CREATE VIEW if not exists feat_57km_16_placeD_count AS
+SELECT PlaceN.Feat_Code as Feat_Code,
+Sum(PlaceN.PlacesN) as PlacesD
+FROM [feat_57km_16_placeN_count] as PlaceN
+GROUP BY Feat_Code;
+
+CREATE VIEW if not exists feat_57km_16_place_wt AS
+SELECT PlaceN.P as Poly,
+PlaceN.Feat_Code as Feat_Code,
+(CAST(PlaceN.PlacesN AS Float)/CAST(PlaceD.PlacesD AS Float)) as Place_Wt
+FROM [feat_57km_16_placeN_count] as PlaceN
+INNER JOIN [feat_57km_16_placeD_count] as PlaceD
+ON PlaceN.Feat_Code=PlaceD.Feat_Code;
+
+CREATE VIEW if not exists donor_feat_place_57km_16_G18_G21_G22 AS
+SELECT Place.Poly as Poly,
+round(sum(Donor_G18.P_Tot_Need_for_assistance*Place.Place_Wt),1) as NeedA16,
+round(sum(Donor_G18.P_Tot_Tot*Place.Place_Wt),1) as NeedAT16,
+round(sum(Donor_G21.P_Tot_prvided_unpaid_assist*Place.Place_Wt),1) as PUnPA16,
+round(sum(Donor_G21.P_Tot_Tot*Place.Place_Wt),1) as PUnPAT16,
+round(sum(Donor_G22.P_Tot_CF_Total*Place.Place_Wt),1) as PUnPCC16,
+round(sum(Donor_G22.P_Tot_Total*Place.Place_Wt),1) as PUnPCCT16
+FROM [feat_57km_16_place_wt] as Place 
+INNER JOIN [2016Census_G18_AUS_SA1] as Donor_G18 
+ON Donor_G18.SA1_7DIGITCODE_2016=Place.Feat_Code  
+INNER JOIN [2016Census_G21_AUS_SA1] as Donor_G21 
+ON Donor_G21.SA1_7DIGITCODE_2016=Place.Feat_Code 
+INNER JOIN [2016Census_G22B_AUS_SA1] as Donor_G22 
+ON Donor_G22.SA1_7DIGITCODE_2016=Place.Feat_Code
+GROUP BY Place.Poly
+ORDER BY Poly;
+
+CREATE VIEW if not exists "shape_57km_place_count" AS
+SELECT Shape.p as Poly,
+Count(*) as places
+FROM [aust_hex_shape_57km] as Shape, [gis_osm_places_free_1] as Place
+WHERE ST_Within(Place.geometry,Shape.geometry) 
+and (Place.fclass = 'city' 
+OR Place.fclass= 'town')
+GROUP BY Poly;
+
+CREATE VIEW if not exists shape_57km_road_count AS
+SELECT Shape.p as Poly,
+Count(*) as roads
+FROM [aust_hex_shape_57km] as Shape,[gis_osm_roads_free_1] as Road
+WHERE ST_Within(Road.geometry,Shape.geometry) or ST_Intersects(Road.geometry,Shape.geometry)
+GROUP BY Poly;
+
+CREATE VIEW if not exists shape_57km_agil_count AS
+SELECT Shape_Aust.p as Poly,
+Count(*) as AGILplaces
+FROM [aust_hex_shape_57km] as Shape_Aust,[agil] as AGiL
+WHERE ST_Intersects(AGIL.geometry,Shape_Aust.geometry)
+GROUP BY Poly;
+
+CREATE VIEW if not exists "shape_57km_service_count" AS
+SELECT Shape_Aust.p as Poly,
+Count(*) as services
+FROM [aust_hex_shape_57km] as Shape_Aust, POI
+WHERE ST_Within(POI.geometry,Shape_Aust.geometry)  
+and  (POI.fclass = 'school' 
+OR POI.fclass= 'police' 
+OR POI.fclass= 'doctors' 
+OR POI.fclass= 'hospital' 
+OR POI.fclass= 'fire_station')
+GROUP BY Poly;
+
+CREATE VIEW if not exists "shape_57km_bstation_count" AS
+SELECT Shape_Aust.p as Poly,
+Count(*) as bstations
+FROM [aust_hex_shape_57km] as Shape_Aust, POI
+WHERE ST_Within(POI.geometry,Shape_Aust.geometry) 
+and (POI.fclass= 'comms_tower')
+GROUP BY Poly;
+
+CREATE VIEW if not exists "shape_57km_mbsp_count" AS
+SELECT Shape.p as Poly,
+Count(*) as MBSPplaces
+FROM [aust_hex_shape_57km] as Shape,[mbsp] as MBSP
+WHERE ST_Within(MBSP.geometry,Shape.geometry) 
+GROUP BY Poly;
+
+
+
+.mode csv
+.headers on
+
+DROP TABLE if not exists "tabular_11_16_place";
+
+CREATE TABLE if not exists tabular_11_16_area AS
+SELECT CAST(Shape_Area11.Poly as INT) as Poly,
+CAST(Shape_Area11.NeedA11 as FLOAT) as NeedA11,
+CAST(Shape_Area11.NeedAT11 as FLOAT) as NeedAT11,
+CAST(Shape_Area11.PUnPA11 as FLOAT) as PUnPA11,
+CAST(Shape_Area11.PUnPAT11 as FLOAT) as PUnPAT11,
+CAST(Shape_Area11.PUnPCC11 as FLOAT) as PUnPCC11,
+CAST(Shape_Area11.PUnPCCT11 as FLOAT) as PUnPCC11,
+CAST(Shape_Area16.NeedA16 as FLOAT) as NeedA16,
+CAST(Shape_Area16.NeedAT16 as FLOAT) as NeedAT16,
+CAST(Shape_Area16.PUnPA16 as FLOAT) as PUnPA16,
+CAST(Shape_Area16.PUnPAT16 as FLOAT) as PUnPAT16,
+CAST(Shape_Area16.PUnPCC16 as FLOAT) as PUnPCC16,
+CAST(Shape_Area16.PUnPCCT16 as FLOAT) as PUnPCCT16,
+place.places,
+AGIL.AGILplaces,
+service.services,
+bstation.bstations,
+road.roads,
+MBSP.MBSPplaces,
+Shape_Aust.est_area,
+Shape_Aust.geometry
+FROM [aust_hex_shape_57km] as Shape_Aust 
+LEFT JOIN [donor_feat_area_57km_11_B18_B21_B22] as Shape_Area11
+ON Shape_Aust.p=CAST(Shape_Area11.Poly as INT)
+LEFT JOIN [donor_feat_area_57km_16_G18_G21_G22] as Shape_Area16
+ON Shape_Aust.p=CAST(Shape_Area16.Poly as INT)
+LEFT JOIN [shape_57km_mbsp_count] as MBSP 
+ON Shape_Aust.p = CAST(MBSP.Poly as INT)
+LEFT JOIN [shape_57km_bstation_count] as bstation
+ON Shape_Aust.p = CAST(bstation.Poly as INT)
+LEFT JOIN [shape_57km_road_count] as road
+ON Shape_Aust.p = CAST(road.Poly as INT)
+LEFT JOIN [shape_57km_service_count] as service
+ON Shape_Aust.p = CAST(service.Poly as INT)
+LEFT JOIN [shape_57km_place_count] as place
+ON Shape_Aust.p = CAST(place.Poly as INT)
+LEFT JOIN [shape_57km_agil_count] as AGIL
+ON Shape_Aust.p = CAST(AGIL.Poly as INT);
+
+.output csv/tabular_11_16_place.csv
+select * from tabular_11_16_place;
+
