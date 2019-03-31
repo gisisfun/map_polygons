@@ -1,6 +1,7 @@
+DROP TABLE if exists "donor_feat_area_57km_11_B18_B21_B22";
 DROP VIEW if exists "donor_feat_area_57km_11_B18_B21_B22";
 
-CREATE VIEW "donor_feat_area_57km_11_B18_B21_B22" AS
+CREATE TABLE "donor_feat_area_57km_11_B18_B21_B22" AS
 SELECT Feat.Poly as Poly,
 round(sum(Donor_B18.Persons_Total_Has_need_for_assistance*Feat.Feat_Prop),1) as NeedA11,
 round(sum(Donor_B18.Persons_Total_Total*Feat.Feat_Prop),1) as NeedAT11,
@@ -18,9 +19,10 @@ ON Donor_B22.region_id=Feat.Feat_Code
 GROUP BY Poly
 ORDER BY Poly;
 
+DROP TABLE if exists "donor_feat_area_57km_16_G18_G21_G22";
 DROP VIEW if exists "donor_feat_area_57km_16_G18_G21_G22";
 
-CREATE VIEW "donor_feat_area_57km_16_G18_G21_G22" AS
+CREATE TABLE "donor_feat_area_57km_16_G18_G21_G22" AS
 SELECT Feat.Poly as Poly,
 round(sum(Donor_G18.P_Tot_Need_for_assistance*Feat.Feat_Prop),1) as NeedA16,
 round(sum(Donor_G18.P_Tot_Tot*Feat.Feat_Prop),1) as NeedAT16,
@@ -36,9 +38,10 @@ ON Donor_G21.SA1_7DIGITCODE_2016=Feat.Feat_Code
 INNER JOIN [2016Census_G22B_AUS_SA1] as Donor_G22 
 ON Donor_G22.SA1_7DIGITCODE_2016=Feat.Feat_Code;
 
+DROP TABLE if exists "shape_57km_place_count";
 DROP VIEW if exists "shape_57km_place_count";
 
-CREATE VIEW "shape_57km_place_count" AS
+CREATE TABLE "shape_57km_place_count" AS
 SELECT Shape.p as Poly,
 Count(*) as places
 FROM [aust_hex_shape_57km] as Shape, [gis_osm_places_free_1] as Place
@@ -47,27 +50,31 @@ and (Place.fclass = 'city'
 OR Place.fclass= 'town')
 GROUP BY Poly;
 
+DROP TABLE if exists "shape_57km_road_count";
 DROP VIEW if exists "shape_57km_road_count";
 
-CREATE VIEW "shape_57km_road_count" AS
+CREATE TABLE "shape_57km_road_count" AS
 SELECT Shape.p as Poly,
 Count(*) as roads
 FROM [aust_hex_shape_57km] as Shape,[gis_osm_roads_free_1] as Road
 WHERE ST_Within(Road.geometry,Shape.geometry) or ST_Intersects(Road.geometry,Shape.geometry)
 GROUP BY Poly;
 
+DROP TABLE if exists "shape_57km_agil_count";
 DROP VIEW if exists "shape_57km_agil_count";
 
-CREATE VIEW shape_57km_agil_count AS
+CREATE TABLE shape_57km_agil_count AS
 SELECT Shape_Aust.p as Poly,
 Count(*) as AGILplaces
 FROM [aust_hex_shape_57km] as Shape_Aust,[agil] as AGiL
 WHERE ST_Intersects(AGIL.geometry,Shape_Aust.geometry)
 GROUP BY Poly;
 
+DROP TABLE if exists "shape_57km_service_count";
 DROP VIEW if exists "shape_57km_service_count";
 
-CREATE VIEW "shape_57km_service_count" AS
+CREATE TABLE "shape_57km_service_count" AS
+CREATE TABLE "shape_57km_service_count" AS
 SELECT Shape_Aust.p as Poly,
 Count(*) as services
 FROM [aust_hex_shape_57km] as Shape_Aust, POI
@@ -79,9 +86,11 @@ OR POI.fclass= 'hospital'
 OR POI.fclass= 'fire_station')
 GROUP BY Poly;
 
+DROP TABLE if exists "shape_57km_bstation_count";
 DROP VIEW if exists "shape_57km_bstation_count";
 
-CREATE VIEW  "shape_57km_bstation_count" AS
+CREATE TABLE  "shape_57km_bstation_count" AS
+CREATE TABLE  "shape_57km_bstation_count" AS
 SELECT Shape_Aust.p as Poly,
 Count(*) as bstations
 FROM [aust_hex_shape_57km] as Shape_Aust, POI
@@ -89,9 +98,10 @@ WHERE ST_Within(POI.geometry,Shape_Aust.geometry)
 and (POI.fclass= 'comms_tower')
 GROUP BY Poly;
 
+DROP TABLE if exists "shape_57km_mbsp_count";
 DROP VIEW if exists "shape_57km_mbsp_count";
 
-CREATE VIEW  "shape_57km_mbsp_count" AS
+CREATE TABLE  "shape_57km_mbsp_count" AS
 SELECT Shape.p as Poly,
 Count(*) as MBSPplaces
 FROM [aust_hex_shape_57km] as Shape,[mbsp] as MBSP
@@ -145,6 +155,12 @@ ON Shape_Aust.p = CAST(place.Poly as INT)
 LEFT JOIN [shape_57km_agil_count] as AGIL
 ON Shape_Aust.p = CAST(AGIL.Poly as INT);
 
-.output csv/tabular_11_16_place.csv
-select * from tabular_11_16_place;
+.output csv/tabular_11_16_area.csv
+select * from tabular_11_16_area;
+
+.output csv/tabular_11_16_area.csv
+select * from tabular_11_16_area;
+
+.quit
+
 
