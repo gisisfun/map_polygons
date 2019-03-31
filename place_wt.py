@@ -25,7 +25,7 @@ def do_spatialite (sqlfile,dbfile):
     else:
         slash='\/'
         
-    sql_text = "spatialite_db{slash}{sqlfile}.txt".format(sqlfile=sqlfile,slash=slash)
+    sql_text = "spatialite_db{slash}{sqlfile}".format(sqlfile=sqlfile,slash=slash)
     p1 = subprocess.Popen(["cat", sql_text], stdout=subprocess.PIPE)
     db_text = 'spatialite_db{slash}{dbfile}.sqlite'.format(dbfile=dbfile,slash=slash)
     p2 = subprocess.Popen(["spatialite", db_text], stdin=p1.stdout)
@@ -160,21 +160,21 @@ def sql_to_db (sqlfile,db):
 def process_sql(shape,size,db):
 #    size='57'
 #    shape='hex'
-    shape_and_size ('vrt','template.vrt',shape,size,'all.vrt')
-    print('aust_shape')
-    fname='aust_{shape}_shape_{size}km'.format(shape=shape,size=size)
-    sql_to_ogr('aust_shape','all',fname)
-    shp_to_db(fname,'db',fname,4823)
+    #shape_and_size ('vrt','template.vrt',shape,size,'all.vrt')
+    #print('aust_shape')
+    #fname='aust_{shape}_shape_{size}km'.format(shape=shape,size=size)
+    #sql_to_ogr('aust_shape','all',fname)
+    #shp_to_db(fname,'db',fname,4823)
     
-    print('feat_aust_11_area')
-    fname='feat_aust_{size}km_sa1_11'.format(shape=shape,size=size)
-    sql_to_ogr('feat_aust_11','all',fname)
-    shp_to_db(fname,'db',fname,4823)
+    #print('feat_aust_11_area')
+    #fname='feat_aust_{size}km_sa1_11'.format(shape=shape,size=size)
+    #sql_to_ogr('feat_aust_11','all',fname)
+    #shp_to_db(fname,'db',fname,4823)
     
-    print('feat_aust_16_area')
-    fname='feat_aust_{size}km_sa1_16'.format(shape=shape,size=size)
-    sql_to_ogr('feat_aust_16','all',fname)
-    shp_to_db(fname,'db',fname,4823)
+    #print('feat_aust_16_area')
+    #fname='feat_aust_{size}km_sa1_16'.format(shape=shape,size=size)
+    #sql_to_ogr('feat_aust_16','all',fname)
+    #shp_to_db(fname,'db',fname,4823)
     
     print('tabular_place_wt')   
     csv_to_db('2011Census_B18_AUST_SA1_long','db','2011Census_B18_AUST_SA1_long')
@@ -198,7 +198,7 @@ def process_sql(shape,size,db):
     sql_to_ogr('shape_mbsp_shp','all','mbsp')
     shp_to_db('mbsp','db','mbsp',4823)
 
-    sqlname='tabular_place_wt.txt'
+    sqlname='tabular_place_wt_{shape}_{size}.txt'.format(shape=shape,size=size)
     shape_and_size ('spatialite_db','tabular_place_wt.txt',shape,size,sqlname)
     do_spatialite(sqlname,'db')
     
