@@ -109,7 +109,7 @@ and (Place.fclass = 'city'
 OR Place.fclass= 'town')
 GROUP BY Poly;
 
-DROP TABLE if exists "shape_57km_place_count";
+DROP TABLE if exists "shape_57km_road_count";
 
 CREATE TABLE "shape_57km_road_count" AS
 SELECT Shape.p as Poly,
