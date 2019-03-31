@@ -1,7 +1,0 @@
-SELECT 
-MB_TAS.MB_CODE16 as MB_CODE16, 
-mb_counts.Person as Persons, 
-MB_TAS.geometry
-FROM MB_TAS
-INNER JOIN MB_Counts
-ON MB_TAS.MB_CODE16=MB_Counts.MB_CODE_2016
