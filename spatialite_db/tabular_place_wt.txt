@@ -49,6 +49,35 @@ ON Donor_B22.region_id=Place.Feat_Code
 GROUP BY Place.Poly
 ORDER BY Poly;
 
+DROP TABLE if exists "feat_57km_16_placeN_count";
+
+CREATE TABLE "feat_57km_16_placeN_count" AS
+SELECT Feat_Aust.Poly as P,
+Feat_Aust.Feat_Code as Feat_Code,
+Count(*) as PlacesN
+FROM [feat_aust_57km_sa1_16] as Feat_Aust 
+LEFT JOIN [gis_osm_places_free_1] as Place
+ON ST_Within(Place.geometry,Feat_Aust.geometry)
+GROUP BY P,Feat_Code;
+
+DROP TABLE if exists "feat_57km_16_placeD_count";
+
+CREATE TABLE "feat_57km_16_placeD_count" AS
+SELECT PlaceN.Feat_Code as Feat_Code,
+Sum(PlaceN.PlacesN) as PlacesD
+FROM [feat_57km_16_placeN_count] as PlaceN
+GROUP BY Feat_Code;
+
+DROP TABLE if exists "feat_57km_16_place_wt";
+
+CREATE TABLE feat_57km_16_place_wt AS
+SELECT PlaceN.P as Poly,
+PlaceN.Feat_Code as Feat_Code,
+(CAST(PlaceN.PlacesN as Float)/CAST(PlaceD.PlacesD as Float)) as Place_Wt 
+FROM [feat_57km_16_placeN_count] as PlaceN
+INNER JOIN [feat_57km_16_placeD_count] as PlaceD
+ON PlaceN.Feat_Code=PlaceD.Feat_Code;
+
 DROP TABLE if exists "donor_feat_place_57km_16_G18_G21_G22";
 
 CREATE TABLE "donor_feat_place_57km_16_G18_G21_G22" AS
@@ -123,6 +152,7 @@ and (POI.fclass= 'comms_tower')
 GROUP BY Poly;
 
 DROP TABLE if exists "shape_57km_mbsp_count";
+DROP VIEW if exists "shape_57km_mbsp_count";
 
 CREATE TABLE "shape_57km_mbsp_count" AS
 SELECT Shape.p as Poly,
