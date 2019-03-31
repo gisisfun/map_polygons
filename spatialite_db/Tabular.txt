@@ -1,5 +1,5 @@
 
-CREATE TABLE donor_feat_area_57km_11_B18_B21_B22 AS
+CREATE VIEW if exists donor_feat_area_57km_11_B18_B21_B22 AS
 SELECT Feat.Poly as Poly,
 round(sum(Donor_B18.Persons_Total_Has_need_for_assistance*Feat.Feat_Prop),1) as NeedA11,
 round(sum(Donor_B18.Persons_Total_Total*Feat.Feat_Prop),1) as NeedAT11,
@@ -17,8 +17,7 @@ ON Donor_B22.region_id=Feat.Feat_Code
 GROUP BY Poly
 ORDER BY Poly;
 
-
-CREATE TABLE donor_feat_area_57km_16_G18_G21_G22 AS
+CREATE VIEW if exists donor_feat_area_57km_16_G18_G21_G22 AS
 SELECT Feat.Poly as Poly,
 round(sum(Donor_G18.P_Tot_Need_for_assistance*Feat.Feat_Prop),1) as NeedA16,
 round(sum(Donor_G18.P_Tot_Tot*Feat.Feat_Prop),1) as NeedAT16,
@@ -33,10 +32,8 @@ INNER JOIN [2016Census_G21_AUS_SA1] as Donor_G21
 ON Donor_G21.SA1_7DIGITCODE_2016=Feat.Feat_Code 
 INNER JOIN [2016Census_G22B_AUS_SA1] as Donor_G22 
 ON Donor_G22.SA1_7DIGITCODE_2016=Feat.Feat_Code 
-GROUP BY Poly
-ORDER BY Poly;
 
-CREATE TABLE feat_57km_11_placeN_count AS
+CREATE VIEW if exists  feat_57km_11_placeN_count AS
 SELECT Feat_Aust.Poly as P,
 Feat_Aust.Feat_Code as Feat_Code,
 Count(*) as PlacesN
@@ -44,5 +41,45 @@ FROM [feat_aust_57km_sa1_11] as Feat_Aust
 LEFT JOIN [gis_osm_places_free_1] as Place
 ON ST_Within(Place.geometry,Feat_Aust.geometry)
 GROUP BY P,Feat_Code;
+
+CREATE VIEW if exists  feat_57km_11_placeD_count AS
+SELECT PlaceN.Feat_Code as Feat_Code,
+Sum(PlaceN.PlacesN) as PlacesD
+FROM [feat_57km_11_placeN_count] as PlaceN
+GROUP BY Feat_Code;
+
+.output csv/feat_57km_11_placeD_count.csv
+select * from feat_57km_11_placeD_count;
+
+.mode csv
+.headers on
+
+DROP VIEW IF EXISTS "feat_57km_11_place_wt";
+
+CREATE TABLE feat_57km_11_place_wt AS
+SELECT PlaceN.P as Poly,
+PlaceN.Feat_Code as Feat_Code,
+(CAST(PlaceN.PlacesN as Float)/CAST(PlaceD.PlacesD as Float)) as Place_Wt 
+FROM [feat_57km_11_placeN_count] as PlaceN
+INNER JOIN [feat_57km_11_placeD_count] as PlaceD
+ON PlaceN.Feat_Code=PlaceD.Feat_Code;
+
+CREATE VIEW if exists donor_feat_place_57km_11_B18_B21_B22 AS
+SELECT Place.Poly as Poly,
+round(sum(Donor_B18.Persons_Total_Has_need_for_assistance*Place.Place_Wt),1) as NeedA11,
+round(sum(Donor_B18.Persons_Total_Total*Place.Place_Wt),1) as NeedAT11,
+round(sum(Donor_B21.Persons_Total_Provided_unpaid_assistance*Place.Place_Wt),1) as PUnPA11,
+round(sum(Donor_B21.Persons_Total_Total*Place.Place_Wt),1) as PUnPAT11,
+round(sum(Donor_B22.Persons_Total_Cared_for_Own_child_children_and_other_child_children*Place.Place_Wt),1) as PUnPCC11,
+round(sum(Donor_B22.Persons_Total_Total*Place.Place_Wt),1) as PUnPCCT11
+FROM [feat_57km_11_place_wt] as Place 
+INNER JOIN [2011Census_B18_AUST_SA1_long] as Donor_B18 
+ON Donor_B18.region_id=Place.Feat_Code  
+INNER JOIN [2011Census_B21_AUST_SA1_long] as Donor_B21 
+ON Donor_B21.region_id=Place.Feat_Code 
+INNER JOIN [2011Census_B22B_AUST_SA1_long] as Donor_B22 
+ON Donor_B22.region_id=Place.Feat_Code
+GROUP BY Place.Poly
+ORDER BY Poly;
 
 
