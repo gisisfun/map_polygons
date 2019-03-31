@@ -186,8 +186,7 @@ service.services,
 bstation.bstations,
 road.roads,
 MBSP.MBSPplaces,
-Shape_Aust.est_area,
-Shape_Aust.geometry
+Shape_Aust.est_area
 FROM [aust_hex_shape_57km] as Shape_Aust 
 LEFT JOIN [donor_feat_place_57km_11_B18_B21_B22] as Shape_Place11
 ON Shape_Aust.p=CAST(Shape_Place11.Poly as INT)
