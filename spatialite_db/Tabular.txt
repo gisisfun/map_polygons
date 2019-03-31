@@ -36,3 +36,13 @@ ON Donor_G22.SA1_7DIGITCODE_2016=Feat.Feat_Code
 GROUP BY Poly
 ORDER BY Poly;
 
+CREATE TABLE feat_57km_11_placeN_count AS
+SELECT Feat_Aust.Poly as P,
+Feat_Aust.Feat_Code as Feat_Code,
+Count(*) as PlacesN
+FROM [feat_aust_57km_sa1_11] as Feat_Aust 
+LEFT JOIN [gis_osm_places_free_1] as Place
+ON ST_Within(Place.geometry,Feat_Aust.geometry)
+GROUP BY P,Feat_Code;
+
+
