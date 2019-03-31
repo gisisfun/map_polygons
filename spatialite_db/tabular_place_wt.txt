@@ -1,7 +1,6 @@
 
 
 DROP TABLE if exists "feat_57km_11_placeN_count";
-DROP VIEW if exists "feat_57km_11_placeN_count";
 
 CREATE TABLE "feat_57km_11_placeN_count" AS
 SELECT Feat_Aust.Poly as P,
@@ -13,7 +12,6 @@ ON ST_Within(Place.geometry,Feat_Aust.geometry)
 GROUP BY P,Feat_Code;
 
 DROP TABLE if exists "feat_57km_11_placeD_count";
-DROP VIEW if exists "feat_57km_11_placeD_count";
 
 CREATE TABLE "feat_57km_11_placeD_count" AS
 SELECT PlaceN.Feat_Code as Feat_Code,
@@ -22,7 +20,6 @@ FROM [feat_57km_11_placeN_count] as PlaceN
 GROUP BY Feat_Code;
 
 DROP TABLE if exists "feat_57km_11_place_wt";
-DROP VIEW if exists "feat_57km_11_place_wt";
 
 CREATE TABLE feat_57km_11_place_wt AS
 SELECT PlaceN.P as Poly,
@@ -33,7 +30,6 @@ INNER JOIN [feat_57km_11_placeD_count] as PlaceD
 ON PlaceN.Feat_Code=PlaceD.Feat_Code;
 
 DROP TABLE if exists "donor_feat_place_57km_11_B18_B21_B22";
-DROP VIEW if exists "donor_feat_place_57km_11_B18_B21_B22";
 
 CREATE TABLE "donor_feat_place_57km_11_B18_B21_B22" AS
 SELECT Place.Poly as Poly,
@@ -54,7 +50,6 @@ GROUP BY Place.Poly
 ORDER BY Poly;
 
 DROP TABLE if exists "donor_feat_place_57km_16_G18_G21_G22";
-DROP VIEW if exists "donor_feat_place_57km_16_G18_G21_G22";
 
 CREATE TABLE "donor_feat_place_57km_16_G18_G21_G22" AS
 SELECT Place.Poly as Poly,
@@ -75,7 +70,6 @@ GROUP BY Place.Poly
 ORDER BY Poly;
 
 DROP TABLE if exists "shape_57km_place_count";
-DROP VIEW if exists "shape_57km_place_count";
 
 CREATE TABLE "shape_57km_place_count" AS
 SELECT Shape.p as Poly,
@@ -87,7 +81,6 @@ OR Place.fclass= 'town')
 GROUP BY Poly;
 
 DROP TABLE if exists "shape_57km_place_count";
-DROP VIEW if exists "shape_57km_road_count";
 
 CREATE TABLE "shape_57km_road_count" AS
 SELECT Shape.p as Poly,
@@ -97,7 +90,6 @@ WHERE ST_Within(Road.geometry,Shape.geometry) or ST_Intersects(Road.geometry,Sha
 GROUP BY Poly;
 
 DROP TABLE if exists "shape_57km_agil_count";
-DROP VIEW if exists "shape_57km_agil_count";
 
 CREATE TABLE "shape_57km_agil_count" AS
 SELECT Shape_Aust.p as Poly,
@@ -107,7 +99,6 @@ WHERE ST_Intersects(AGIL.geometry,Shape_Aust.geometry)
 GROUP BY Poly;
 
 DROP TABLE if exists "shape_57km_service_count";
-DROP VIEW if exists "shape_57km_service_count";
 
 CREATE TABLE "shape_57km_service_count" AS
 SELECT Shape_Aust.p as Poly,
@@ -122,7 +113,6 @@ OR POI.fclass= 'fire_station')
 GROUP BY Poly;
 
 DROP TABLE if exists "shape_57km_bstation_count";
-DROP VIEW if exists "shape_57km_bstation_count";
 
 CREATE TABLE "shape_57km_bstation_count" AS
 SELECT Shape_Aust.p as Poly,
@@ -133,7 +123,6 @@ and (POI.fclass= 'comms_tower')
 GROUP BY Poly;
 
 DROP TABLE if exists "shape_57km_mbsp_count";
-DROP VIEW if exists "shape_57km_mbsp_count";
 
 CREATE TABLE "shape_57km_mbsp_count" AS
 SELECT Shape.p as Poly,
