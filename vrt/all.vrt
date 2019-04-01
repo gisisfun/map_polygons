@@ -19,11 +19,11 @@
     </OGRVRTLayer>
     <OGRVRTLayer name="Tabular_Place_Data">
         <SrcDataSource>csv/tabular_57km_11_16_place.csv</SrcDataSource>
-        <SrcLayer>2011Census_B18_AUST_SA1_long</SrcLayer>
+        <SrcLayer>tabular_57km_11_16_place</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="Tabular_Area_Data">
         <SrcDataSource>csv/tabular_57km_11_16_area.csv</SrcDataSource>
-        <SrcLayer>2011Census_B21_AUST_SA1_long</SrcLayer>
+        <SrcLayer>tabular_57km_11_16_area</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shape_SA1_11">
         <SrcDataSource>csv/feat_aust_57km_sa1_11.csv</SrcDataSource>
