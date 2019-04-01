@@ -117,14 +117,11 @@ Performs the functions:
 | File | VRT File | SQL File |
 |:-------------|:----------|:-------|
 | **polygons.py**       |                    |                    |
-| **file_to_db.py**     |all.vrt|aust_shape.sql |
+| **place_wt.py**     ||aust_shape.sql |
 |  |all.vrt|feat_aust_11.sql |
 |   |all.vrt|feat_aust_16.sql |
-|   | |donor_feat_area_11_B18_B21_B22_csv.txt |
-|   | |donor_feat_area_16_G18_G21_G22_csv.txt |
-|  | |donor_feat_place_11_B18_B21_B22_csv.txt |
-|  | |donor_feat_place_16_G18_G21_G22_csv.txt |
-| | |shape_nonabs_counts.txt|
+|  | |tabular_place_wt.txt |
+| | |tabular_area_wt.txt|
 |    |all.vrt|shape_11_16_area.sql|
 |  |all.vrt|shape_11_16_place.sql|
 
@@ -133,7 +130,7 @@ Performs the functions:
 | File             | Input                            | Output                           |
 | :----------------|:---------------------------------|:---------------------------------|
 | **polygons.py**      | hex_57km_layer.json              | hex_57km_layer.shp               |
-| **file_to_db.py**     | hex_57km_layer.shp               | aust_hex_shape_57km.shp          |
+| **place_wt.py**     | hex_57km_layer.shp               | aust_hex_shape_57km.shp          |
 |                  | AUS_2016_AUST.shp                |                                  |
 |  | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_11.shp        | 
 |                  | SA1_2011_AUST.shp                |                                  | 
@@ -206,24 +203,18 @@ Performs the functions:
 | **2016Census_G22B_AUS_SA1.csv**        | 57,523         |       | |
 | **donor_feat_11_area_B18_B21_B22.csv** | 1,262          |    |  |
 | **donor_feat_16_area_G18_G21_G22.csv** | 1,262          |    | |
-| **feat_57km_11_place_wt.csv** |  |  |  |
-| **feat_57km_16_place_wt.csv** |  |  |  |
 | **donor_feat_11_place_B18_B21_B22.csv** | 1,262          |    |  |
 | **donor_feat_16_pace_G18_G21_G22.csv** | 1,262          |    | |
 | **gis_osm_places_free_1.shp**         | | | 4326 |
-| **shape_57km_place_count.csv** | 1,262          | | 4283 |
 | **AGIL.json**         | | | 4326 |
 | **agil.shp**         | | | 4326 |
-| **shape_57km_agil_count.shp** |           | | 4283 |
 | **gis_osm_pois_free_1.shp**         | | | 4326 |
-| **shape_57km_service_count.csv** |           | | 4283 |
 | **gis_osm_pois_free_1.shp**         | | | 4283 |
-| **shape_57km_bstation_count.csv** |           | | 4283 |
 | **gis_osm_roads_free_1.shp**         | | | 4326 |
-| **shape_57km_road_count.csv** |           | | 4283 |
 | **mbsp_database.csv** ||| |
 | **mbsp.shp** ||| |
-| **shape_57km_mbsp_count.csv** |           | | 4283 |
+| **tabular_57km_11_16_area**||| |
+| **tabular_57km_11_16_place** ||| |
 | **shape_57km_area_11_16.shp**              | 1,262          | 377 KB    | 4283 |
 | **shape_57km_place_11_16.shp**              | 1,262          | 377 KB    | 4283 |
 
