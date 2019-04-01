@@ -160,21 +160,21 @@ def sql_to_db (sqlfile,db):
 def process_sql(shape,size,db):
 #    size='57'
 #    shape='hex'
-    #shape_and_size ('vrt','template.vrt',shape,size,'all.vrt')
-    #print('aust_shape')
-    #fname='aust_{shape}_shape_{size}km'.format(shape=shape,size=size)
-    #sql_to_ogr('aust_shape','all',fname)
-    #shp_to_db(fname,'db',fname,4823)
+    shape_and_size ('vrt','template.vrt',shape,size,'all.vrt')
+    print('aust_shape')
+    fname='aust_{shape}_shape_{size}km'.format(shape=shape,size=size)
+    sql_to_ogr('aust_shape','all',fname)
+    shp_to_db(fname,'db',fname,4823)
     
-    #print('feat_aust_11_area')
-    #fname='feat_aust_{size}km_sa1_11'.format(shape=shape,size=size)
-    #sql_to_ogr('feat_aust_11','all',fname)
-    #shp_to_db(fname,'db',fname,4823)
+    print('feat_aust_11_area')
+    fname='feat_aust_{size}km_sa1_11'.format(shape=shape,size=size)
+    sql_to_ogr('feat_aust_11','all',fname)
+    shp_to_db(fname,'db',fname,4823)
     
-    #print('feat_aust_16_area')
-    #fname='feat_aust_{size}km_sa1_16'.format(shape=shape,size=size)
-    #sql_to_ogr('feat_aust_16','all',fname)
-    #shp_to_db(fname,'db',fname,4823)
+    print('feat_aust_16_area')
+    fname='feat_aust_{size}km_sa1_16'.format(shape=shape,size=size)
+    sql_to_ogr('feat_aust_16','all',fname)
+    shp_to_db(fname,'db',fname,4823)
     
     print('tabular_place_wt')   
     csv_to_db('2011Census_B18_AUST_SA1_long','db','2011Census_B18_AUST_SA1_long')
@@ -203,11 +203,6 @@ def process_sql(shape,size,db):
     do_spatialite(sqlname,'db')
     
     # spatialite ../spatialite_db/db.sqlite "vacuum;"
-    
-    
-    print('shape_11_16_area')
-    fname='shape_{size}km_area_11_16'.format(shape=shape,size=size)
-    sql_to_ogr('shape_11_16_area','all',fname)
 
     print('shape_11_16_place')
     fname='shape_{size}km_place_11_16'.format(shape=shape,size=size)
