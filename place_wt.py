@@ -205,13 +205,13 @@ def process_sql(shape,size,db):
     # spatialite ../spatialite_db/db.sqlite "vacuum;"
     
     
-    #print('shape_11_16_area')
-    #fname='shape_{size}km_area_11_16'.format(shape=shape,size=size)
-    #sql_to_ogr('shape_11_16_area','all',fname)
+    print('shape_11_16_area')
+    fname='shape_{size}km_area_11_16'.format(shape=shape,size=size)
+    sql_to_ogr('shape_11_16_area','all',fname)
 
-    #print('shape_11_16_place')
-    #fname='shape_{size}km_place_11_16'.format(shape=shape,size=size)
-    #sql_to_ogr('shape_11_16_place','all',fname)
+    print('shape_11_16_place')
+    fname='shape_{size}km_place_11_16'.format(shape=shape,size=size)
+    sql_to_ogr('shape_11_16_place','all',fname)
 
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
