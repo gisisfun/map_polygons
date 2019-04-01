@@ -63,9 +63,9 @@ python3 polygons.py hex -8 -45 96 168 212
 for boxes:
 python3 polygons.py box -8 -45 96 168 212
 
-**file_to_db.py**
+**fplace_wt.py or area_wt.py**
 
-This program populates the shapes with demographic and POI based dataset content.
+This program populate the shapes with demographic and POI based dataset content.
 
 **map_me.py**
 
