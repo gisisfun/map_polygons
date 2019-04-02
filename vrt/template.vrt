@@ -17,29 +17,13 @@
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
-    <OGRVRTLayer name="Donor_B18">
-        <SrcDataSource>csv/2011Census_B18_AUST_SA1_long.csv</SrcDataSource>
-        <SrcLayer>2011Census_B18_AUST_SA1_long</SrcLayer>
+    <OGRVRTLayer name="Tabular_Place_Data">
+        <SrcDataSource>csv/tabular_57km_11_16_place.csv</SrcDataSource>
+        <SrcLayer>tabular_57km_11_16_place</SrcLayer>
     </OGRVRTLayer>
-    <OGRVRTLayer name="Donor_B21">
-        <SrcDataSource>csv/2011Census_B21_AUST_SA1_long.csv</SrcDataSource>
-        <SrcLayer>2011Census_B21_AUST_SA1_long</SrcLayer>
-    </OGRVRTLayer>
-    <OGRVRTLayer name="Donor_B22">
-        <SrcDataSource>csv/2011Census_B22B_AUST_SA1_long.csv</SrcDataSource>
-        <SrcLayer>2011Census_B22B_AUST_SA1_long</SrcLayer>
-    </OGRVRTLayer>
-    <OGRVRTLayer name="Donor_G18">
-        <SrcDataSource>csv/2016Census_G18_AUS_SA1.csv</SrcDataSource>
-        <SrcLayer>2011Census_B18_AUST_SA1_long</SrcLayer>
-    </OGRVRTLayer>
-    <OGRVRTLayer name="Donor_G21">
-        <SrcDataSource>csv/2016Census_G21_AUS_SA1.csv</SrcDataSource>
-        <SrcLayer>2011Census_B21_AUST_SA1_long</SrcLayer>
-    </OGRVRTLayer>
-    <OGRVRTLayer name="Donor_G22">
-        <SrcDataSource>csv/2016Census_G22B_AUS_SA1.csv</SrcDataSource>
-        <SrcLayer>2011Census_B22B_AUST_SA1_long</SrcLayer>
+    <OGRVRTLayer name="Tabular_Area_Data">
+        <SrcDataSource>csv/tabular_57km_11_16_area.csv</SrcDataSource>
+        <SrcLayer>tabular_57km_11_16_area</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shape_SA1_11">
         <SrcDataSource>csv/feat_aust_57km_sa1_11.csv</SrcDataSource>
