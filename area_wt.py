@@ -157,24 +157,26 @@ def sql_to_db (sqlfile,db):
         c.execute(sqltext)
         conn.commit()
 
-def process_sql(shape,size,db):
+def process_sql(shape,size):
 #    size='57'
 #    shape='hex'
-    shape_and_size ('vrt','template.vrt',shape,size,'all.vrt')
+
+    shape_and_size ('vrt','template.vrt',shape,size,'all_{shape}_{size}.vrt'.format(shape=shape,size=size))
+    do_spatialite('table_goes_here.txt','db_{shape}_{size}'.format(shape=shape,size=size))
     print('aust_shape')
     fname='aust_{shape}_shape_{size}km'.format(shape=shape,size=size)
     sql_to_ogr('aust_shape','all',fname)
-    shp_to_db(fname,'db',fname,4823)
+    shp_to_db(fname,'db_{shape}_{size}'.format(shape=shape,size=size),fname,4823)
     
     print('feat_aust_11_area')
     fname='feat_aust_{size}km_sa1_11'.format(shape=shape,size=size)
-    sql_to_ogr('feat_aust_11','all',fname)
-    shp_to_db(fname,'db',fname,4823)
+    sql_to_ogr('feat_aust_11','all_{shape}_{size}'.format(shape=shape,size=size),fname)
+    shp_to_db(fname,'db_{shape}_{size}'.format(shape=shape,size=size),fname,4823)
     
     print('feat_aust_16_area')
     fname='feat_aust_{size}km_sa1_16'.format(shape=shape,size=size)
-    sql_to_ogr('feat_aust_16','all',fname)
-    shp_to_db(fname,'db',fname,4823)
+    sql_to_ogr('feat_aust_16','all_{shape}_{size}'.format(shape=shape,size=size),fname)
+    shp_to_db(fname,'db_{shape}_{size}'.format(shape=shape,size=size),fname,4823)
     
     print('tabular_area_wt')   
     csv_to_db('2011Census_B18_AUST_SA1_long','db','2011Census_B18_AUST_SA1_long')
@@ -184,40 +186,40 @@ def process_sql(shape,size,db):
     csv_to_db('2016Census_G21_AUS_SA1','db','2016Census_G21_AUS_SA1')
     csv_to_db('2016Census_G22B_AUS_SA1','db','2016Census_G22B_AUS_SA1')
     fname='aust_{shape}_shape_{size}km'.format(shape=shape,size=size)
-    shp_to_db(fname,'db',fname,4823)
+    shp_to_db(fname,'db_{shape}_{size}'.format(shape=shape,size=size),fname,4823)
     fname='feat_aust_{size}km_sa1_11'.format(shape=shape,size=size)
-    shp_to_db(fname,'db',fname,4823)
+    shp_to_db(fname,'db_{shape}_{size}'.format(shape=shape,size=size),fname,4823)
     fname='feat_aust_{size}km_sa1_16'.format(shape=shape,size=size)
-    shp_to_db(fname,'db',fname,4823)
+    shp_to_db(fname,'db_{shape}_{size}'.format(shape=shape,size=size),fname,4823)
     shp_to_db('gis_osm_places_free_1','db','gis_osm_places_free_1',4823)
     shp_to_db('gis_osm_roads_free_1','db','gis_osm_roads_free_1',4823)
     sql_to_ogr('shape_pois_shp','all','POI')
-    shp_to_db('POI','db','POI',4823)
+    shp_to_db('POI','db_{shape}_{size}'.format(shape=shape,size=size),'POI',4823)
     geojson_to_shp ('AGIL','agil',4823)
-    shp_to_db('agil','db','agil',4823)
+    shp_to_db('agil','db_{shape}_{size}'.format(shape=shape,size=size),'agil',4823)
     sql_to_ogr('shape_mbsp_shp','all','mbsp')
-    shp_to_db('mbsp','db','mbsp',4823)
+    shp_to_db('mbsp','db_{shape}_{size}'.format(shape=shape,size=size),'mbsp',4823)
 
     sqlname='tabular_area_wt_{shape}_{size}.txt'.format(shape=shape,size=size)
     shape_and_size ('spatialite_db','tabular_area_wt.txt',shape,size,sqlname)
-    do_spatialite(sqlname,'db')
+    do_spatialite(sqlname,'db_{shape}_{size}'.format(shape=shape,size=size))
     
     # spatialite ../spatialite_db/db.sqlite "vacuum;"
     
     
     print('shape_11_16_area')
     fname='shape_{size}km_area_11_16'.format(shape=shape,size=size)
-    sql_to_ogr('shape_11_16_area','all',fname)
+    sql_to_ogr('shape_11_16_area','all_{shape}_{size}'.format(shape=shape,size=size),fname)
 
 
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
 if len(sys.argv) is 1:
-    (shape,size,db) = ['hex','57','db']
-    process_sql(shape,size,db)
+    (shape,size) = ['hex','57']
+    process_sql(shape,size)
 else:
-    if (len(sys.argv) <4 ):
-        sys.exit("arguments are \nshape \n size (km)\n db \ndatabase \n srid ")
+    if (len(sys.argv) <3 ):
+        sys.exit("arguments are \nshape \n size (km)\n ")
     else:
-        (blah,shape,size,db) = sys.argv
-        process_sql(shape,size,db)
+        (blah,shape,size) = sys.argv
+        process_sql(shape,size)
