@@ -472,15 +472,24 @@ if len(sys.argv) is 1:
     hexagons(b_north, b_south, b_east, b_west, radial_d, f_name)
 else:
     if (len(sys.argv) <8 ):
-        sys.exit("arguments are \nshape - hex or box \n bounding north\n bounding south \n bounding east \n bounding west \n radial in km\n filename for output\n\nfor hexagon\npython3 polygons.py hex -8 -45 96 168 212\n\nfor boxes\npython3 polygons.py box -8 -45 96 168 212\n")
+        sys.exit("arguments are \nshape - hex or box \n bounding north\n bounding south \n bounding east \n bounding west \n radial in km\n filename for output\n\nfor hexagon\npython3 polygons.py hex -8 -45 168 96 212 hex_212km\n\nfor boxes\npython3 polygons.py box -8 -45 168 96 212 box_212km\n")
     else:
         (blah,shape,b_north,b_south,b_east,b_west,radial_d,f_name) = sys.argv
         shape=str(shape)
         print(shape)
         if shape == "hex":
-            hexagons(b_north,b_south,b_east,b_west,radial_d,f_name)
+
+            hexagons(float(b_north),
+            float(b_south),
+            float(b_east),
+	    float(b_west),  
+            float(radial_d),f_name)
         else:
             if shape == "box":
-                boxes(b_north,b_south,b_east,b_west,radial_d,f_name)
+                boxes(float(b_north),
+            float(b_south),
+            float(b_east),
+	    float(b_west),  
+            float(radial_d),f_name)
             else:
                 print('shape is hex or box')
