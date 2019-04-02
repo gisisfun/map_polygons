@@ -58,10 +58,10 @@ command line arguments are:
 - filename for output
 
 for hexagon:
-python3 polygons.py hex -8 -45 96 168 212
+python3 polygons.py hex -8 -45 168 96 212 hex_212km
 
 for boxes:
-python3 polygons.py box -8 -45 96 168 212
+python3 polygons.py box -8 -45 168 96 212 box_212km
 
 **place_wt.py or area_wt.py**
 
