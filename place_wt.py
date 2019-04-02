@@ -178,7 +178,7 @@ def process_sql(shape,size):
     shp_to_db(fname,'db_place_{shape}_{size}'.format(shape=shape,size=size),fname,4823)
     
     print('tabular_place_wt')   
-    csv_to_db('2011Census_B18_AUST_SA1_long','db_place_{shape}_{size}'.format(shape=shape,size=size)','2011Census_B18_AUST_SA1_long')
+    csv_to_db('2011Census_B18_AUST_SA1_long','db_place_{shape}_{size}'.format(shape=shape,size=size),'2011Census_B18_AUST_SA1_long')
     csv_to_db('2011Census_B21_AUST_SA1_long','db_place_{shape}_{size}'.format(shape=shape,size=size),'2011Census_B21_AUST_SA1_long')
     csv_to_db('2011Census_B22B_AUST_SA1_long','db_place_{shape}_{size}'.format(shape=shape,size=size),'2011Census_B22B_AUST_SA1_long')
     csv_to_db('2016Census_G18_AUS_SA1','db_place_{shape}_{size}'.format(shape=shape,size=size),'2016Census_G18_AUS_SA1')
