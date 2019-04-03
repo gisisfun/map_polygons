@@ -164,7 +164,7 @@ GROUP BY Poly;
 .mode csv
 .headers on
 
-DROP TABLE if exists "tabular_57km_11_16_place";
+DROP TABLE if exists "tabular_hex_57km_11_16_place";
 
 CREATE TABLE "tabular_hex_57km_11_16_place" AS
 SELECT CAST(Shape_Place11.Poly as INT) as Poly,
