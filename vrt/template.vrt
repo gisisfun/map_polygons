@@ -18,12 +18,12 @@
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="Tabular_Place_Data">
-        <SrcDataSource>csv/tabular_57km_11_16_place.csv</SrcDataSource>
-        <SrcLayer>tabular_57km_11_16_place</SrcLayer>
+        <SrcDataSource>csv/tabular_hex_57km_11_16_place.csv</SrcDataSource>
+        <SrcLayer>tabular_hex_57km_11_16_place</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="Tabular_Area_Data">
-        <SrcDataSource>csv/tabular_57km_11_16_area.csv</SrcDataSource>
-        <SrcLayer>tabular_57km_11_16_area</SrcLayer>
+        <SrcDataSource>csv/tabular_hex_57km_11_16_area.csv</SrcDataSource>
+        <SrcLayer>tabular_hex_57km_11_16_area</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shape_SA1_11">
         <SrcDataSource>csv/feat_aust_57km_sa1_11.csv</SrcDataSource>
