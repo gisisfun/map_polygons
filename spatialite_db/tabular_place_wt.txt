@@ -180,13 +180,13 @@ CAST(Shape_Place16.PUnPA16 AS FLOAT) as PUnPA16,
 CAST(Shape_Place16.PUnPAT16 AS FLOAT) as PUnPAT16,
 CAST(Shape_Place16.PUnPCC16 AS FLOAT) as PUnPCC16,
 CAST(Shape_Place16.PUnPCCT16 AS FLOAT) as PUnPCCT16,
-place.places,
-AGIL.AGILplaces,
-service.services,
-bstation.bstations,
-road.roads,
-MBSP.MBSPplaces,
-Shape_Aust.est_area
+CAST(place.places AS FLOAT) as places,
+CAST(AGIL.AGILplaces AS FLOAT) as AGILplaces,
+CAST(service.services AS FLOAT) as services ,
+CAST(bstation.bstations AS FLOAT) as bstations ,
+CAST(road.roads AS FLOAT) as roads,
+CAST(MBSP.MBSPplaces AS FLOAT) as MBSPplaces,
+CAST(Shape_Aust.est_area AS FLOAT) as est_area
 FROM [aust_hex_shape_57km] as Shape_Aust 
 LEFT JOIN [donor_feat_place_57km_11_B18_B21_B22] as Shape_Place11
 ON Shape_Aust.p=CAST(Shape_Place11.Poly as INT)
