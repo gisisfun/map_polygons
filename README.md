@@ -135,13 +135,6 @@ Performs the functions:
 |                  | SA1_2011_AUST.shp                |                                  | 
 |   | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_16.shp        |
 |                  | SA1_2016_AUST.shp                |                                  |
-|  | feat_aust_57km_sa1_11.shp        |   |
-|                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
-|                  | 2011Census_B21_AUST_SA1_long.csv |                                  |
-|                  | 2011Census_B22_AUST_SA1_long.csv |                                   |
-|                  | 2016Census_G18_AUS_SA1.shp       |                                  |                               |
-|                  | 2016Census_G21_AUS_SA1.shp       |                                  |                               |
-|                  | 2016Census_G22_AUS_SA1.shp       |                                  |                               |
 |  | feat_aust_57km_sa1_11.shp        |    |
 |                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B21_AUST_SA1_long.csv |                                  |
@@ -149,9 +142,9 @@ Performs the functions:
 |                  | gis_osm_places_free_1   |                                  |
 |                  | feat_aust_57km_sa1_16 |                                  |
 |  | feat_aust_57km_sa1_16.shp        | |
-|                  | 2016Census_G18_AUS_SA1.shp       |                                  |                             
-|                  | 2016Census_G21_AUS_SA1.shp       |                                  |                              
-|                  | 2016Census_G22_AUS_SA1.shp       |                                  |        
+|                  | 2016Census_G18_AUS_SA1.csv       |                                  |                             
+|                  | 2016Census_G21_AUS_SA1.csv      |                                  |                              
+|                  | 2016Census_G22_AUS_SA1.csv     |                                  |        
 |                  | gis_osm_places_free_1   |                                  |
 |                  | feat_aust_57km_sa1_11 |                                  |
 |  |aust_hex_shape_57km.shp  |  |
@@ -164,20 +157,8 @@ Performs the functions:
 |  | mbsp_database.csv  | |
 | | mbsp.shp ||
 |   | tabular_hex_57km_11_16_area.csv  | shape_57km_hex_area_11_16.shp          |
-|                  | donor_feat_57km_16_G18_G21_G22.csv |    |
-|                  | shape_57km_place_count.shp | |
-|                  | shape_57km_service_count.shp   |   |
-
-
-
-
-|   | donor_feat_57km_11_B18_B21_B22.csv  | shape_57km_place_11_16.shp             |
-|                  | donor_feat_57km_16_G18_G21_G22.csv |    |
-|                  | shape_57km_place_count.shp | |
-|                  | shape_57km_service_count.shp   |   |
-|                  | shape_57km_agil_count.shp | |
-|                  | shape_57km_mbsp_count.shp |  |
-|                  | shape_57km_road_count.shp |  |
+|                  | aust_hex_shape_57km.shp |   |
+|   | tabular_hex_57km_place.csv  | shape_hex_57km_place_11_16.shp             |
 |                  | aust_hex_shape_57km.shp |   |
 
 
