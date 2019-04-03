@@ -288,4 +288,8 @@ Categories:
 | |||***P_Tot_Total***|Persons_Total_Total|Total|PERSONS|
 
 
+### Conclusion
+If you have read down to this point in the documemtation then you can the the end result is worth the wait. But this this depends on how your data is made and how fast you want it made. If your data is like this then a traditional SQL server will do just fine, with a bit of extra work. You will have access to all of the viewing and map production software that the current generation of software going back to the 1990s will provide. 
+
+Larger volumes of data and newer SPARQL/GEOSPARQL enabled systems and and data sets provide a much better end product for the real users of this data. Not the Geospatial Anaysts, staticians but the people who benefit from quality decisiions. The LOC-I DIPA Project is a good example of the emerging technology for such end users. Until then I will have fun with this technology and look forward to the next. 
 
