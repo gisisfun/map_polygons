@@ -146,8 +146,8 @@ Performs the functions:
 |  | gis_osm_roads_free_1.shp  |  |
 |  | mbsp_database.csv  | |
 | | mbsp.shp ||
-|   | tabular_hex_57km_11_16_area.csv  | shape_hexs_57km_area_11_16.shp          |
-|   | tabular_hex_57km_place.csv  | shape_hex_57km_place_11_16.shp             |
+|   | tabular_hex_57km_11_16_area.csv  | hex_57km_area_11_16.shp          |
+|   | tabular_hex_57km_place.csv  | hex_57km_place_11_16.shp             |
 
 ### Table of feature data set counts and file sizes 
 
@@ -181,8 +181,8 @@ Performs the functions:
 | **mbsp.shp** ||| |
 | **tabular_57km_11_16_area**||| |
 | **tabular_57km_11_16_place** ||| |
-| **shape_57km_area_11_16.shp**              | 1,262          | 377 KB    | 4283 |
-| **shape_57km_place_11_16.shp**              | 1,262          | 377 KB    | 4283 |
+| **hex_57km_area_11_16.shp**              | 1,262          | 377 KB    | 4283 |
+| **hex_57km_place_11_16.shp**              | 1,262          | 377 KB    | 4283 |
 
 
 ### Disability, Need for Assistance and Carers (Census Data Dictionary)
