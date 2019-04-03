@@ -129,32 +129,25 @@ Performs the functions:
 | File             | Input                            | Output                           |
 | :----------------|:---------------------------------|:---------------------------------|
 | **polygons.py**      | hex_57km_layer.json              | hex_57km_layer.shp               |
-| **place_wt.py**     | hex_57km_layer.shp               | aust_hex_shape_57km.shp          |
+| **place_wt.py**     | hex_57km_layer.shp               |          |
 |                  | AUS_2016_AUST.shp                |                                  |
-|  | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_11.shp        | 
-|                  | SA1_2011_AUST.shp                |                                  | 
-|   | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_16.shp        |
-|                  | SA1_2016_AUST.shp                |                                  |
-|  | feat_aust_57km_sa1_11.shp        |    |
+|  |         |  aust_hex_shape_57km.shp       | 
+|  |          | feat_aust_57km_sa1_11.shp        | 
+|   |           | feat_aust_57km_sa1_16.shp        |
 |                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B21_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B22B_AUST_SA1_long.csv |                               |                           
-|  | feat_aust_57km_sa1_16.shp        | |
 |                  | 2016Census_G18_AUS_SA1.csv       |                                  |                             
 |                  | 2016Census_G21_AUS_SA1.csv      |                                  |                              
 |                  | 2016Census_G22_AUS_SA1.csv     |                                  |                                       |
-|                  | feat_aust_57km_sa1_11 |                                  |
 | | agil.shp | |
 |  | gis_osm_places_free_1.shp | |
 |  | gis_osm_pois_free_1.shp  | |
 |  | gis_osm_roads_free_1.shp  |  |
 |  | mbsp_database.csv  | |
 | | mbsp.shp ||
-|   | tabular_hex_57km_11_16_area.csv  | shape_57km_hex_area_11_16.shp          |
-|                  | aust_hex_shape_57km.shp |   |
+|   | tabular_hex_57km_11_16_area.csv  | shape_hexs_57km_area_11_16.shp          |
 |   | tabular_hex_57km_place.csv  | shape_hex_57km_place_11_16.shp             |
-|                  | aust_hex_shape_57km.shp |   |
-
 
 ### Table of feature data set counts and file sizes 
 
