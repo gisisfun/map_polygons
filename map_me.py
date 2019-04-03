@@ -5,7 +5,7 @@ mpl.use('Agg')
 import matplotlib.pyplot as plt
 
 def map_data(shape,size):
-   shp_path = "shapefiles/shape_{size}km_place_11_16.shp".format(shape=shape,size=size)
+   shp_path = "shapefiles/{shape}_{size}km_place_11_16.shp".format(shape=shape,size=size)
    sf = gpd.read_file(shp_path)
    sf['rel_need_for_assistance'] = ((sf.NeedA16-sf.NeedA11)/(sf.NeedAT16-sf.NeedAT11))*1
    sf = sf.fillna(9999)
