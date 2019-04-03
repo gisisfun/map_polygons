@@ -166,7 +166,7 @@ GROUP BY Poly;
 
 DROP TABLE if exists "tabular_57km_11_16_place";
 
-CREATE TABLE "tabular_57km_11_16_place" AS
+CREATE TABLE "tabular_hex_57km_11_16_place" AS
 SELECT CAST(Shape_Place11.Poly as INT) as Poly,
 CAST(Shape_Place11.NeedA11 AS FLOAT) as NeedA11,
 CAST(Shape_Place11.NeedAT11 AS FLOAT) as NeedAT11,
@@ -205,8 +205,8 @@ ON Shape_Aust.p = CAST(place.Poly as INT)
 LEFT JOIN [shape_57km_agil_count] as AGIL
 ON Shape_Aust.p = CAST(AGIL.Poly as INT);
 
-.output csv/tabular_57km_11_16_place.csv
-select * from tabular_57km_11_16_place;
+.output csv/tabular_hex_57km_11_16_place.csv
+select * from tabular_hex_57km_11_16_place;
 
 .quit
 
