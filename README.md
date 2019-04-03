@@ -144,12 +144,8 @@ Performs the functions:
 |  | feat_aust_57km_sa1_16.shp        | |
 |                  | 2016Census_G18_AUS_SA1.csv       |                                  |                             
 |                  | 2016Census_G21_AUS_SA1.csv      |                                  |                              
-|                  | 2016Census_G22_AUS_SA1.csv     |                                  |        
-|                  | gis_osm_places_free_1   |                                  |
+|                  | 2016Census_G22_AUS_SA1.csv     |                                  |                                       |
 |                  | feat_aust_57km_sa1_11 |                                  |
-|  |aust_hex_shape_57km.shp  |  |
-| | gis_osm_places_free_1.shp | |
-|   |aust_hex_shape_57km.shp  |             |
 | | agil.shp | |
 |  | gis_osm_places_free_1.shp | |
 |  | gis_osm_pois_free_1.shp  | |
