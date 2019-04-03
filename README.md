@@ -138,8 +138,7 @@ Performs the functions:
 |  | feat_aust_57km_sa1_11.shp        |    |
 |                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B21_AUST_SA1_long.csv |                                  |
-|                  | 2011Census_B22B_AUST_SA1_long.csv |                                  |
-|                  | gis_osm_places_free_1   |                                  |
+|                  | 2011Census_B22B_AUST_SA1_long.csv |                               |                         
 |                  | feat_aust_57km_sa1_16 |                                  |
 |  | feat_aust_57km_sa1_16.shp        | |
 |                  | 2016Census_G18_AUS_SA1.csv       |                                  |                             
