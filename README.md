@@ -23,7 +23,7 @@ Open one or both of these files in your preferred GIS tool of choice and have a 
 - **Spatialite** for more complex SQL queries.
 - **QGIS** or your favourite GIS Package.
 - **You** can contribute or make something better
-- Have a look in the shapefiles directory for the processed shape files for area weighted and place point of interest weeighted files.
+- Have a look in the shapefiles directory for the processed shape files for area weighted and place point of interest weighted files.
 
 **polygons.py**
 
@@ -45,7 +45,6 @@ at the WGS-84 Projection values for default values are:
 - At latitude of -8 latitude, radial distance is 46 km 
 - At latitude of -22.5 , radial distance is rounded to 43 km 
 - At latitude of -45 , radial distance is rounded to 33 km 
-
 
 command line arguments are: 
 - shape - hex or box 
