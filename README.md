@@ -14,14 +14,13 @@ Open one or both of these files in your preferred GIS tool of choice and have a 
 - **CPython 3.7** for list creation/management and construction of geometric shapes.
 - **pandas** for csv file outputs.
 - **geopandas**, **numpy** and **matplotlib** for making really good maps.
-- **Ppyunpack* for downloading and unzipping content from the ABS website.
+- **Ppyunpack** for downloading and unzipping content from the ABS website.
 - **geopy** for projection based point calculations for list.
 - **geojson** for encoding of the geometric shapes.
 - **GDAL/ogr2ogr** for shapefile conversion, simple geometry SQL queries.
 - **PROJ** for reprojection.
 - **sqlite3** for accessing for **spatialite** content.
 - **Spatialite** for more complex SQL queries.
-- Shell - **Bash** and **Sed** for moving files to **sqlite** and **spatialite** databases and nit to mention automation of the above. 
 - **QGIS** or your favourite GIS Package.
 - **You** can contribute or make something better
 - Have a look in the shapefiles directory for the processed shape files for area weighted and place point of interest weeighted files.
@@ -136,43 +135,42 @@ Performs the functions:
 |                  | SA1_2011_AUST.shp                |                                  | 
 |   | aust_hex_shape_57km.shp          | feat_aust_57km_sa1_16.shp        |
 |                  | SA1_2016_AUST.shp                |                                  |
-|  | feat_aust_57km_sa1_11.shp        | donor_feat_area_57km_11_B18_B21_B22.csv     |
+|  | feat_aust_57km_sa1_11.shp        |   |
 |                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B21_AUST_SA1_long.csv |                                  |
-|                  | 2011Census_B22_AUST_SA1_long.csv |                                  |
-|  | feat_aust_57km_sa1_16.shp        | donor_feat_area_57km_16_G18_G21_G22.csv      |
+|                  | 2011Census_B22_AUST_SA1_long.csv |                                   |
 |                  | 2016Census_G18_AUS_SA1.shp       |                                  |                               |
 |                  | 2016Census_G21_AUS_SA1.shp       |                                  |                               |
 |                  | 2016Census_G22_AUS_SA1.shp       |                                  |                               |
-|  | feat_aust_57km_sa1_11.shp        | donor_feat_place_57km_11_B18_B21_B22.csv     |
+|  | feat_aust_57km_sa1_11.shp        |    |
 |                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B21_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B22B_AUST_SA1_long.csv |                                  |
 |                  | gis_osm_places_free_1   |                                  |
 |                  | feat_aust_57km_sa1_16 |                                  |
-|  | feat_aust_57km_sa1_16.shp        | donor_feat_place_57km_16_G18_G21_G22.csv      |
+|  | feat_aust_57km_sa1_16.shp        | |
 |                  | 2016Census_G18_AUS_SA1.shp       |                                  |                             
 |                  | 2016Census_G21_AUS_SA1.shp       |                                  |                              
 |                  | 2016Census_G22_AUS_SA1.shp       |                                  |        
 |                  | gis_osm_places_free_1   |                                  |
 |                  | feat_aust_57km_sa1_11 |                                  |
-|  |aust_hex_shape_57km.shp  | shape_57km_place_count.shp |
+|  |aust_hex_shape_57km.shp  |  |
 | | gis_osm_places_free_1.shp | |
-|   |aust_hex_shape_57km.shp  | shape_57km_agil_count.shp             |
+|   |aust_hex_shape_57km.shp  |             |
 | | agil.shp | |
-|  | gis_osm_places_free_1.shp | shape_57km_service_count.shp |
-|  | gis_osm_pois_free_1.shp  |shape_57km_service_bstation.shp |
-|  | gis_osm_roads_free_1.shp  |shape_57km_road_count.shp |
-|  | mbsp_database.csv  |shape_57km_mbsp_count.shp |
+|  | gis_osm_places_free_1.shp | |
+|  | gis_osm_pois_free_1.shp  | |
+|  | gis_osm_roads_free_1.shp  |  |
+|  | mbsp_database.csv  | |
 | | mbsp.shp ||
-|   | donor_feat_57km_11_B18_B21_B22.csv  | shape_57km_area_11_16.shp             |
+|   | tabular_hex_57km_11_16_area.csv  | shape_57km_hex_area_11_16.shp          |
 |                  | donor_feat_57km_16_G18_G21_G22.csv |    |
 |                  | shape_57km_place_count.shp | |
 |                  | shape_57km_service_count.shp   |   |
-|                  | shape_57km_agil_count.shp | |
-|                  | shape_57km_mbsp_count.shp |  |
-|                  | shape_57km_road_count.shp |  |
-|                  | aust_hex_shape_57km.shp |   |
+
+
+
+
 |   | donor_feat_57km_11_B18_B21_B22.csv  | shape_57km_place_11_16.shp             |
 |                  | donor_feat_57km_16_G18_G21_G22.csv |    |
 |                  | shape_57km_place_count.shp | |
