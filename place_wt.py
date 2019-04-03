@@ -206,7 +206,7 @@ def process_sql(shape,size):
     # spatialite ../spatialite_db/db.sqlite "vacuum;"
 
     print('shape_11_16_place')
-    fname='shape_{size}km_place_11_16'.format(shape=shape,size=size)
+    fname='{shape}_{size}km_place_11_16'.format(shape=shape,size=size)
     sql_to_ogr('shape_11_16_place','all_{shape}_{size}'.format(shape=shape,size=size),fname)
 
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
