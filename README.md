@@ -6,7 +6,7 @@
 
 ## See for yourself ##
 
-In the *shapefiles* subdirectory you wll find two shapefiles: *hex_35km_aplace_11_16.shp* and *hex_57km_place_11_16.shp*.
+In the *shapefiles* subdirectory you wll find two shapefiles: *hex_35km_place_11_16.shp* and *hex_57km_place_11_16.shp*.
 Open one or both of these files in your preferred GIS tool of choice and have a look at the end product for yourself.
 
 ## How does it work ##
