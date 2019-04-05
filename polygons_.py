@@ -408,7 +408,7 @@ def hexagons(north,south,east,west,radial,outfile):
                     geopoly = Feature(geometry=geopoly, properties={"p": hexagon,"row": row, "lat": centre_lat, "lon": centre_lon, "N": bounds_n, "S": bounds_s, "E": bounds_e, "W": bounds_w, "est_area": est_area})                                                                
                     if  (bounds_e>bounds_w):
                         for i in range(0,5):
-                            point_list.append([hexagon,intersect_list[vertex[i]][0],intersect_list[vertex[i]][1]])
+                            point_list.append([hexagon,str(intersect_list[vertex[i]][0])+str(intersect_list[vertex[i]][1])])
                         g_array.append(geopoly)     #append geojson geometry definition attributes to list
                         #tabular dataset
                         tabular_line = [top_left, row, centre_lat, centre_lon, bounds_n, bounds_s, bounds_e, bounds_w, est_area]
@@ -444,7 +444,7 @@ def hexagons(north,south,east,west,radial,outfile):
         print('\n6/7 tabular dataset of {0} lines of hexagon polygon data'.format(len(tabular_list)))      
         print('writing tabular dataset to file: {0}_dataset.csv'.format(outfile))
         point_df=pd.DataFrame(point_list)
-        point_df.columns = ['poly','lat','long']
+        point_df.columns = ['poly','latlong']
         point_df.to_csv('csv{slash}{outfile}_points.csv'.format(outfile=outfile,slash=slash), sep=',')
         
         tabular_df = pd.DataFrame(tabular_list) #convert tabular array to tabular data frame
