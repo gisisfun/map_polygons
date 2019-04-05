@@ -1,0 +1,15 @@
+.mode csv
+.headers on
+drop table if exists "hex_57km_neighbour_list.csv"; 
+create table "hex_57km_neighbour_list.csv" as
+select tbl.poly as p, nbtbl.poly as nb, count(*) as num_nb
+from [hex_57km_points] as tbl, [hex_57km_points] as nbtbl 
+where tbl.latlong=nbtbl.latlong 
+group by p,nb
+order by p;
+
+.output csv/hex_57km_neighbour_list.csv
+select * from "hex_57km_neighbour_list.csv";
+
+.quit
+
