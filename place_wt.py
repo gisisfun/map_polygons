@@ -162,6 +162,13 @@ def process_sql(shape,size):
 #    shape='hex'
     shape_and_size ('vrt','template.vrt',shape,size,'all_{shape}_{size}.vrt'.format(shape=shape,size=size))
     do_spatialite('table_goes_here.txt','db_place_{shape}_{size}'.format(shape=shape,size=size))
+    
+    print('neighbours')
+    csv_to_db('{shape}_{size}km_points'.format(shape=shape,size=size),'db_place_{shape}_{size}'.format(shape=shape,size=size),'{shape}_{size}km_points'.format(shape=shape,size=size))
+    sqlname='neighbour_list_{shape}_{size}.txt'.format(shape=shape,size=size)
+    shape_and_size ('spatialite_db','neighbour_list.txt',shape,size,sqlname)
+    do_spatialite(sqlname,'db_place_{shape}_{size}'.format(shape=shape,size=size))
+    
     print('aust_shape')
     fname='aust_{shape}_shape_{size}km'.format(shape=shape,size=size)
     sql_to_ogr('aust_shape','all',fname)
