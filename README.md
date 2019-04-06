@@ -128,7 +128,9 @@ Performs the functions:
 | File             | Input                            | Output                           |
 | :----------------|:---------------------------------|:---------------------------------|
 | **polygons.py**      | hex_57km_layer.json              | hex_57km_layer.shp               |
+|                  |                                   | hex_57km_points.csv   |
 | **place_wt.py**     | hex_57km_layer.shp               |          |
+|                  |  hex_57km_points.csv | hex_57km_neighbours.csv  |
 |                  | AUS_2016_AUST.shp                |                                  |
 |  |         |  aust_hex_shape_57km.shp       | 
 |  |          | feat_aust_57km_sa1_11.shp        | 
