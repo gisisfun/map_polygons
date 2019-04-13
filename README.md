@@ -25,6 +25,16 @@ Open one or both of these files in your preferred GIS tool of choice and have a 
 - **You** can contribute or make something better
 - Have a look in the shapefiles directory for the processed shape files for area weighted and place point of interest weighted files.
 
+**Why not use vendor xyz software?**
+
+The processes applied to the datasets would normally be tasked to individual analysts and use software purchased for that purpose.
+There are software packages that work at a larger scale than the desktop analydis to perform more industrial scale processes. Again there is another set of personnel to achieve perform these tasks.
+Making the best use of both types of software is a challenge.
+
+The list of software is entirely open sourced. The coding was developed according to each software's ability to perform a given task  in set period of time balancing out storage and CPU access requirements.
+The data could be processed by running a single Python program (currently three) by one person. 
+
+
 **polygons.py**
 
 This program is designed to demonstrate what is possible to achieve with a polyhedral, equal area mapping frameworks. 
