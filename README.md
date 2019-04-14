@@ -25,14 +25,16 @@ Open one or both of these files in your preferred GIS tool of choice and have a 
 - **You** can contribute or make something better
 - Have a look in the shapefiles directory for the processed shape files for area weighted and place point of interest weighted files.
 
-**Why not use vendor xyz software?**
+**Why not use Vendor 'XYZ' or 'ABC' Software?**
 
 The processes applied to the datasets would normally be tasked to individual analysts and use software purchased for that purpose.
 There are software packages that work at a larger scale than the desktop analydis to perform more industrial scale processes. Again there is another set of personnel to achieve perform these tasks.
 Making the best use of both types of software is a challenge.
 
-The list of software is entirely open sourced. The coding was developed according to each software's ability to perform a given task  in set period of time balancing out storage and CPU access requirements.
-The data could be processed by running a single Python program (currently three) by one person. 
+The list of software is entirely open sourced. The coding and deployement of sub systems where chosen according to each software's ability to perform a given task in set period of time balancing out memory, storage and CPU access requirements.
+The data could be processed by running a single Python program (currently three) by one person.
+
+A process built around purchased software would deliver a dataset output like this one, but it would have to work arounf the constraints of the environment in which the software has been deployed. 
 
 
 **polygons.py**
