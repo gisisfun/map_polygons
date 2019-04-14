@@ -75,7 +75,7 @@ python3 polygons.py hex -8 -45 168 96 212 hex_212km
 for boxes:
 python3 polygons.py box -8 -45 168 96 212 box_212km
 
-** Why the Weight - Places or Regions** 
+**Why the Weight - Places or Regions** 
 
 Region data with aggregate data values is represented by summarised from an area defined by a polygon. The majority of administrative boundary data sets small areas areas for high population counts and large areas for small population counts. 
 
