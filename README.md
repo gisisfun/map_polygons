@@ -32,10 +32,13 @@ There are software packages that work at a larger scale than the desktop analydi
 Making the best use of both types of software is a challenge.
 
 The list of software is entirely open sourced. The coding and deployement of sub systems where chosen according to each software's ability to perform a given task in set period of time balancing out memory, storage and CPU access requirements.
-The data could be processed by running a single Python program (currently three) by one person.
+The data could be processed by running a single Python program (currently three) by one person. In an open source environment interoperability of automation, data format and operating system support is assumed.
 
-A process built around purchased software would deliver a dataset output like this one, but it would have to work arounf the constraints of the environment in which the software has been deployed. 
+A process built around purchased software would deliver a dataset output like this one, but it would have to work arounf the constraints of the environment in which the software has been deployed. Vendor purchased software is interoperable with other software from the same vendor at the data and automation level.
 
+Vendor operating systems such as Windows 10 now allows for an instance of the open source Linux operating system to operate on top of a Windows 10 platform. If not there are other options that are less attractive. The Windows Subsystem for Linux (WSL) once enabled allows for a choice of your preferred Linux distribution.The other option is to deploy open source software and sub systems in Windows 10 is to use the OSGeo4W resource.
+
+OSGeo4W is a binary distribution of a broad set of open source geospatial software for Win32 and Win64 environments (Windows XP, Vista, Windows 7, Windows 10). OSGeo4W includes GDAL/OGR, ​GRASS, MapServer?, ​OpenEV, ​uDig, as well as many other packages (over 150 as of December 2015). This has dependencies on Windows 10 Developer software for compiling Python libraries and and SQL server runtime software that tends the prevents installation of the software.
 
 **polygons.py**
 
