@@ -79,7 +79,7 @@ python3 polygons.py box -8 -45 168 96 212 box_212km
 
 Region data with aggregate data values is represented by summarised from an area defined by a polygon. The majority of administrative boundary data sets small areas areas for high population counts and large areas for small population counts. 
 
-For an area weighted correspondence file to a smaller polgons dataset, larger polygon areas with low population counts will mask areas of high values with the polygon. Area weighting is good for land management, associating population density with the feature count. Area weighting takes less time and computer resources, but is more relevant to regions rather than places.
+For an area weighted correspondence file to a smaller polgons dataset, larger polygon areas with low population counts will mask areas of high values within the polygon. Area weighting is good for land management, associating population density with the feature count. Area weighting takes less time and computer resources, but is more relevant to regions rather than places.
 
 For a population weighted correspondence file to a smaller polgons dataset, larger polygon areas with low population counts will be weighted to where people live within the polygon. Population weights reflect the population criteria with a smaller polygon size that better relates to discrete locations of interest. Population weighting takes more time and computer resources, but is more relevant to places rather than regions.
 
