@@ -11,24 +11,28 @@ new.point <- function(latlong,dist,angle) {
     return(newlatlong)
 }
 
-lats.list <- function(lats,longs,dist,maxlat,long_gap,short_gap) {
+lats.list <- function(latitudes,longitudes,dist,maxlat,lats_seq) {
     angle <- 90
-gap <- 
+    i <- 0
     repeat {
-        latlong <- c(tail(lats, n=1),tail(longs, n=1))
-        p <- new.point(latlong,dist,angle)
+        if (i>6){i <- 0}
+        i <- i + 1
+print(lats_seq[i])
+        latlong <- c(tail(latitudes, n=1),tail(longitudes, n=1))
+        p <- new.point(latlong,dist*lats_seq[i],angle)
+print(p)
         if (p[1] >= maxlat){
             break
          }
-        lats <- c(lats,p[1])
-        longs <- c(longs,p[2])
+        latitudes <- c(latitudes,p[1])
+        longigitudes <- c(longitudes,p[2])
         
      }
-    return(lats)
+    return(latitudes)
     }
 
 
-longs.list <- function(latitudes,longitudes,dist,maxlong,short_gap,long_gap) {
+longs.list <- function(latitudes,longitudes,dist,maxlong,short_gap) {
     angle <- 180
     longid <- 0
     gap <- short_gap
@@ -53,13 +57,17 @@ hexagons <- function() {
     maxlat <- bbox[3]
     maxlong <- bbox[2]
     lat_offset <- 4
-    
+    short_seg <- 0.7071
+    long_seg <- 1
+        
+
     print('lats')
-    latslist <- lats.list(minlat,minlong,dist,maxlat,0.7071,1)
+    lats_seq <- c(long_seg,short_seg,short_seg,long_seg,short_seg,short_seg,long_seg)
+    latslist <- lats.list(minlat,minlong,dist,maxlat,lats_seq)
     latslist
 
     print('longs')
-    longslist <- longs.list(minlat,minlong,dist,maxlong,0.7071,0.7071)
+    longslist <- longs.list(minlat,minlong,dist,maxlong,short_seg)
     longslist
 
     latslongslist <- expand.grid(latslist,longslist)
@@ -69,8 +77,8 @@ hexagons <- function() {
     top_left <- 1
     max_v <- length(latslist)
     #latslongslist[1]
-    plisttemp <- c(1,2,max_v+3,(max_v*2)+2,(max_v*2)+1,max_v)  
-    plist <- plisttemp + ((top_left+4)*2) 
+    plist <- c(1,2,max_v+3,(max_v*2)+2,(max_v*2)+1,max_v)  
+    plist <- plist + ((top_left+4)*2) 
     #vertex = [1+top_left, 2+top_left, max_v+3+top_left, (max_v*2)+2+top_left, (max_v*2)+1+top_left, max_v+top_left]
     poly_xy <- c(
     latslongslist[plist[1], 1],
