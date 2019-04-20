@@ -1,5 +1,5 @@
 library('geosphere')
-
+library('sp')
 
 #Create a function to print squares of numbers in sequence.
 
@@ -68,8 +68,56 @@ hexagons <- function() {
     top_left <- 1
     max_v <- length(longslist)
     #latslongslist[1]
-    plist <- c(top_left+1,top_left+2,top_left+max_v+3,top_left+(max_v*2)+2,top_left+(max_v*2)+1,top_left+max_v)
-    latslongslist[plist, ] 
+    plist <- c(top_left+1,top_left+2,top_left+max_v+3,top_left+(max_v*2)+2,top_left+(max_v*2)+1,top_left+max_v)  
+
+    b <- matrix(c(
+    latslongslist[plist[1], 1],
+    latslongslist[plist[1], 2], 
+    latslongslist[plist[2], 1],
+    latslongslist[plist[2], 2],
+    latslongslist[plist[3], 1],
+    latslongslist[plist[3], 2],
+    latslongslist[plist[4], 1],
+    latslongslist[plist[4], 2],
+    latslongslist[plist[5], 1],
+    latslongslist[plist[5], 2],
+    latslongslist[plist[6], 1],
+    latslongslist[plist[6], 2],
+    latslongslist[plist[1], 1],
+    latslongslist[plist[1], 2]
+    ), ncol=2, byrow=TRUE)
+
+    #area in square km
+    print(areaPolygon(b))
+
+    print(centroid(b))
+    cent <- centroid(b)
+
+    print(perimeter(b))
+    isok <- point.in.polygon(cent[1],cent[2],
+    c(latslongslist[plist[1], 1],
+    latslongslist[plist[1], 1],
+    latslongslist[plist[2], 1],
+    latslongslist[plist[3], 1],
+    latslongslist[plist[4], 1],
+    latslongslist[plist[5], 1],
+    latslongslist[plist[6], 1],
+    latslongslist[plist[1], 1]
+    ),c(latslongslist[plist[1], 2],
+    latslongslist[plist[1], 2],
+    latslongslist[plist[2], 2],
+    latslongslist[plist[3], 2],
+    latslongslist[plist[4], 2],
+    latslongslist[plist[5], 2],
+    latslongslist[plist[6], 2],
+    latslongslist[plist[1], 2]
+    ))
+    print(isok) #1 result is ok
+    print('the end')
 }
 
 hexagons()
+
+
+
+
