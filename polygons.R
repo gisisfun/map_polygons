@@ -48,9 +48,10 @@ hexagons <- function() {
 
     minlat <- c(bbox[1])
     minlong <- c(bbox[4])
-    dist <- 1000
+    dist <- 57
     maxlat <- bbox[3]
     maxlong <- bbox[2]
+    lat_offset <- 4
 
     print('lats')
     latslist <- lats.list(minlat,minlong,dist,maxlat)
@@ -113,6 +114,21 @@ hexagons <- function() {
     latslongslist[plist[1], 2]
     ))
     print(isok) #1 result is ok
+    rem_lat <- max_v%%(lat_offset+4)
+    print(rem_lat)
+
+    if (rem_lat == 2 | rem_lat == 5 | rem_lat == 6 | rem_lat == 7){
+            inc_by_rem <- 1
+            inc_adj <- -4}
+    if (rem_lat == 1 | rem_lat == 3){
+            inc_by_rem <- 1
+            inc_adj <- 0}
+     if (rem_lat == 0 | rem_lat == 4){
+            inc_by_rem <- 0
+            inc_adj <- 0}
+    print(inc_by_rem)
+    print(inc_adj)
+
     print('the end')
 }
 
