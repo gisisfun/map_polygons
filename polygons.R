@@ -43,25 +43,33 @@ longs.list <- function(lats,longs,dist,maxlong) {
      }
     return(longs)
 }
+hexagons <- function() {
+    bbox <- c(113.338953078, -43.6345972634, 153.569469029, -10.6681857235)
 
-bbox <- c(113.338953078, -43.6345972634, 153.569469029, -10.6681857235)
+    minlat <- c(bbox[1])
+    minlong <- c(bbox[4])
+    dist <- 1000
+    maxlat <- bbox[3]
+    maxlong <- bbox[2]
 
-minlat <- c(bbox[1])
-minlong <- c(bbox[4])
-dist <- 1000
-maxlat <- bbox[3]
-maxlong <- bbox[2]
+    print('lats')
+    latslist <- lats.list(minlat,minlong,dist,maxlat)
+    latslist
 
-print('lats')
-latslist <- lats.list(minlat,minlong,dist,maxlat)
-latslist
+    print('longs')
+    longslist <- longs.list(minlat,minlong,dist,maxlong)
+    longslist
 
-print('longs')
-longslist <- longs.list(minlat,minlong,dist,maxlong)
-longslist
-
-latslongslist <- expand.grid(latslist,longslist)
-colnames(latslongslist) <- c("latitude", "longitude")
-latslongslist
+    latslongslist <- expand.grid(latslist,longslist)
+    colnames(latslongslist) <- c("latitude", "longitude")
+    latslongslist
 
 
+    top_left <- 1
+    max_v <- length(longslist)
+    #latslongslist[1]
+    plist <- c(top_left+1,top_left+2,top_left+max_v+3,top_left+(max_v*2)+2,top_left+(max_v*2)+1,top_left+max_v)
+    latslongslist[plist, ] 
+}
+
+hexagons()
