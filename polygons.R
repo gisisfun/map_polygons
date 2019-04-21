@@ -17,10 +17,8 @@ lats.list <- function(latitudes,longitudes,dist,maxlat,lats_seq) {
     repeat {
         if (i>6){i <- 0}
         i <- i + 1
-print(lats_seq[i])
         latlong <- c(tail(latitudes, n=1),tail(longitudes, n=1))
         p <- new.point(latlong,dist*lats_seq[i],angle)
-print(p)
         if (p[1] >= maxlat){
             break
          }
@@ -48,32 +46,34 @@ longs.list <- function(latitudes,longitudes,dist,maxlong,short_gap) {
      }
     return(longitudes)
 }
-hexagons <- function() {
-    bbox <- c(113.338953078, -43.6345972634, 153.569469029, -10.6681857235)
 
-    minlat <- c(bbox[1])
-    minlong <- c(bbox[4])
-    dist <- 57
-    maxlat <- bbox[3]
-    maxlong <- bbox[2]
+hexagons <- function(minlat,maxlong,maxlat,minlong,dist) {
+    #bbox <- c(113.338953078, -43.6345972634, 153.569469029, -10.6681857235)
+
+    #minlat <- c(bbox[1])
+    #minlong <- c(bbox[4])
+    #dist <- 57
+    #maxlat <- bbox[3]
+    #maxlong <- bbox[2]
     lat_offset <- 4
     short_seg <- 0.7071
     long_seg <- 1
         
 
-    print('lats')
+    cat('\n1/7 deriving horizontal longitude (latitude or y axis) lines\n')
     lats_seq <- c(long_seg,short_seg,short_seg,long_seg,short_seg,short_seg,long_seg)
     latslist <- lats.list(minlat,minlong,dist,maxlat,lats_seq)
-    latslist
+    
 
-    print('longs')
+    cat('\n2/7 deriving vertical longitude (longitude or x axis) lines\n')
     longslist <- longs.list(minlat,minlong,dist,maxlong,short_seg)
-    longslist
+    
 
+    cat('\n3/7 deriving intersection point data between horizontal (latitude or y axis) and vertical (longitude or x axis) lines\n')
     latslongslist <- expand.grid(latslist,longslist)
     colnames(latslongslist) <- c("latitude", "longitude")
-    latslongslist
-
+    
+    cat('\n4/7 deriving polygons from intersection points\n')
     top_left <- 1
     max_v <- length(latslist)
     #latslongslist[1]
@@ -97,6 +97,19 @@ hexagons <- function() {
     latslongslist[plist[1], 2]
     )
     
+    rem_lat <- max_v%%(lat_offset+4)
+    if (rem_lat == 2 | rem_lat == 5 | rem_lat == 6 | rem_lat == 7){
+            inc_by_rem <- TRUE
+            inc_adj <- -4}
+    if (rem_lat == 1 | rem_lat == 3){
+            inc_by_rem <- TRUE
+            inc_adj <- 0}
+     if (rem_lat == 0 | rem_lat == 4){
+            inc_by_rem <- FALSE
+            inc_adj <- 0}
+    print(inc_by_rem)
+    print(inc_adj)
+    
     poly_points <- matrix(poly_xy, ncol=2, byrow=TRUE)
     poly_x <- poly_xy[c(TRUE, FALSE)]
     poly_y <- poly_xy[c(FALSE, TRUE)]
@@ -113,17 +126,7 @@ hexagons <- function() {
     rem_lat <- max_v%%(lat_offset+4)
     print(rem_lat)
 
-    if (rem_lat == 2 | rem_lat == 5 | rem_lat == 6 | rem_lat == 7){
-            inc_by_rem <- 1
-            inc_adj <- -4}
-    if (rem_lat == 1 | rem_lat == 3){
-            inc_by_rem <- 1
-            inc_adj <- 0}
-     if (rem_lat == 0 | rem_lat == 4){
-            inc_by_rem <- 0
-            inc_adj <- 0}
-    print(inc_by_rem)
-    print(inc_adj)
+    
 
     p = Polygon(poly_points)
     ps = Polygons(list(p),1)
@@ -132,4 +135,8 @@ hexagons <- function() {
     print('the end')
 }
 
-hexagons()
+hexagons(113.338953078, -43.6345972634, 153.569469029, -10.6681857235, 57)
+
+
+
+
