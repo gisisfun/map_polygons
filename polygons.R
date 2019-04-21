@@ -1,6 +1,6 @@
-library('geosphere')
-library('sp')
-
+library(geosphere)
+library(sp)
+library(leaflet)
 #Create a function to print squares of numbers in sequence.
 
 new.point <- function(latlong,dist,angle) {   
@@ -76,7 +76,6 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,dist) {
     cat('\n4/7 deriving polygons from intersection points\n')
     top_left <- 1
     max_v <- length(latslist)
-    #latslongslist[1]
     plist <- c(1,2,max_v+3,(max_v*2)+2,(max_v*2)+1,max_v)  
     plist <- plist + ((top_left+4)*2) 
     #vertex = [1+top_left, 2+top_left, max_v+3+top_left, (max_v*2)+2+top_left, (max_v*2)+1+top_left, max_v+top_left]
@@ -129,14 +128,24 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,dist) {
     
 
     p = Polygon(poly_points)
+    class(poly_points)
     ps = Polygons(list(p),1)
     sps = SpatialPolygons(list(ps))
     plot(sps)
+    print(class(poly_points))
+    #matrix to dataframe
+    poly_points_df <- data.frame(x = poly_x, y = poly_y)
+    print(class(poly_points_df))
+    #sp1 <- SpatialPoints(coords = poly_points_df)
+    sp1 <- Polygon(cbind(poly_x,poly_y))
+    print(class(sp1))
+    sps1 <- Polygons(list(sp1),"1")
+    print(class(sp1))
+    #dfr <- data.frame(id = "1", use = "road", cars_per_hour = 10) # note how we use the ID from above!
+    #sp_lns_dfr <- SpatialPolygonsDataFrame(sps1, dfr, match.ID = "id")
+    #str(sp_lns_dfr)
+
     print('the end')
 }
 
 hexagons(113.338953078, -43.6345972634, 153.569469029, -10.6681857235, 57)
-
-
-
-
