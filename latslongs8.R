@@ -77,9 +77,9 @@ makeHexagon <- function(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area
     return(out_hexagon)
 }
 
-is.even <- function(x) !is.odd(x)
+is.even <- function(x) {return(!is.odd(x))}
  
-is.odd <- function(x) intToBits(x)[1] == 1
+is.odd <- function(x) {return(intToBits(x)[1] == 1)}
 
 
 hexagons <- function(minlat,maxlong,maxlat,minlong,dist) {
@@ -236,5 +236,5 @@ otherbits <- function(
     #str(sp_lns_dfr)
     }
 
-print(hexagons(113.338953078, -43.6345972634, 153.569469029, -10.6681857235, 57))
+cat('\n',hexagons(113.338953078, -43.6345972634, 153.569469029, -10.6681857235, 57))
 
