@@ -93,6 +93,7 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,dist) {
     lat_offset <- 4
     short_seg <- 0.7071
     long_seg <- 1
+    gj_string <- ""
         
 
     cat('\n1/7 deriving horizontal longitude (latitude or y axis) lines\n')
@@ -185,11 +186,11 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,dist) {
     gj_prex <- '{"features": ['
     substr(orig.text,1,nchar(orig.text)-1) 
     gj_suffix <- '], "type": "FeatureCollection"}'
-    gj_string <- append(gj_suffix, substr(gj_string,1,nchar(gj_string)-2) , after = length(g_suffix))
-    gj_string <- append(gj_string, gj_suffix , after = length(g_suffix))
+    gj_string <- append(gj_suffix, substr(gj_string,1,nchar(gj_string)-2) , after = length(gj_suffix))
+    gj_string <- append(gj_string, gj_suffix , after = length(gj_suffix))
 
     print('the end')
-
+    return(gj_string)
 }
 
 otherbits <- function(
@@ -234,5 +235,5 @@ otherbits <- function(
     #str(sp_lns_dfr)
     }
 
-hexagons(113.338953078, -43.6345972634, 153.569469029, -10.6681857235, 57)
+print(hexagons(113.338953078, -43.6345972634, 153.569469029, -10.6681857235, 57))
 
