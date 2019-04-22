@@ -194,6 +194,7 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,dist) {
 }
 
 otherbits <- function(
+    {
     poly_points <- matrix(poly_coords, ncol=2, byrow=TRUE)
     poly_x <- poly_coords[c(TRUE, FALSE)]
     poly_y <- poly_coords[c(FALSE, TRUE)]
