@@ -47,6 +47,40 @@ longs.list <- function(latitudes,longitudes,dist,maxlong,short_gap) {
      }
     return(longitudes)
 }
+makeHexagon <- function(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,row) 
+{ 
+    templ_hexagon <-'{"geometry": {"coordinates": [[[x1, y1], [x2, y2], [x3, y3], [x4, y4], [x5, y5], [x6, y6], [x1, y1]]], "type": "Polygon"}, "properties": {"E": be, "N": bn, "S": bs, "W": bw, "est_area": earea, "lat": latc, "lon": lonc, "p": polyn, "row": rown}, "type": "Feature"}, '
+    out_hexagon <- gsub("x1", poly_coords[1], templ_hexagon)
+    out_hexagon <- gsub("x2", poly_coords[3], out_hexagon)   
+    out_hexagon <- gsub("x3", poly_coords[5], out_hexagon) 
+    out_hexagon <- gsub("x4", poly_coords[7], out_hexagon)
+    out_hexagon <- gsub("x5", poly_coords[9], out_hexagon)    
+    out_hexagon <- gsub("x6", poly_coords[11], out_hexagon)
+    
+    out_hexagon <- gsub("y1", poly_coords[2], out_hexagon)
+    out_hexagon <- gsub("y2", poly_coords[4], out_hexagon)   
+    out_hexagon <- gsub("y3", poly_coords[6], out_hexagon) 
+    out_hexagon <- gsub("y4", poly_coords[8], out_hexagon)
+    out_hexagon <- gsub("y5", poly_coords[10], out_hexagon)    
+    out_hexagon <- gsub("y6", poly_coords[12], out_hexagon) 
+    
+    out_hexagon <- gsub("be", bounds_e, out_hexagon)
+    out_hexagon <- gsub("bn", bounds_n, out_hexagon)   
+    out_hexagon <- gsub("bs", bounds_s, out_hexagon) 
+    out_hexagon <- gsub("bw", bounds_w, out_hexagon)
+    out_hexagon <- gsub("earea", est_area, out_hexagon)    
+    out_hexagon <- gsub("latc", centre_lat, out_hexagon)   
+    out_hexagon <- gsub("lonc", centre_lon, out_hexagon)    
+    out_hexagon <- gsub("polyn", hexagon, out_hexagon) 
+    out_hexagon <- gsub("rown", row, out_hexagon) 
+    
+    return(out_hexagon)
+}
+
+is.even <- function(x) !is.odd(x)
+ 
+is.odd <- function(x) intToBits(x)[1] == 1
+
 
 hexagons <- function(minlat,maxlong,maxlat,minlong,dist) {
     #bbox <- c(113.338953078, -43.6345972634, 153.569469029, -10.6681857235)
@@ -93,29 +127,28 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,dist) {
     hexagon <- 0
     max_v <- length(latslist)
     max_h <- length(longslist)
-    
+    vertex <- c(1,2,max_v+3,(max_v*2)+2,(max_v*2)+1,max_v) 
     while (top_left < (max_h)*(max_v))
         {
-            vertex <- c(1,2,max_v+3,(max_v*2)+2,(max_v*2)+1,max_v)  
             vertex <- vertex + top_left
             poly_coords <- c(
-            intersect_list[vertex[1], 1],
-            intersect_list[vertex[1], 2], 
-            intersect_list[vertex[2], 1],
-            intersect_list[vertex[2], 2],
-            intersect_list[vertex[3], 1],
-            intersect_list[vertex[3], 2],
-            intersect_list[vertex[4], 1],
-            intersect_list[vertex[4], 2],
-            intersect_list[vertex[5], 1],
-            intersect_list[vertex[5], 2],
-            intersect_list[vertex[6], 1],
-            intersect_list[vertex[6], 2],
-            intersect_list[vertex[1], 1],
-            intersect_list[vertex[1], 2]
+                intersect_list[vertex[1], 1],
+                intersect_list[vertex[1], 2], 
+                intersect_list[vertex[2], 1],
+                intersect_list[vertex[2], 2],
+                intersect_list[vertex[3], 1],
+                intersect_list[vertex[3], 2],
+                intersect_list[vertex[4], 1],
+                intersect_list[vertex[4], 2],
+                intersect_list[vertex[5], 1],
+                intersect_list[vertex[5], 2],
+                intersect_list[vertex[6], 1],
+                intersect_list[vertex[6], 2],
+                intersect_list[vertex[1], 1],
+                intersect_list[vertex[1], 2]
             )
             centre_lat <- intersect_list[vertex[0], 1] + (intersect_list[vertex[5], 1] - intersect_list[vertex[0], 1])/2
-            centre_lon=intersect_list[vertex[0], 0] + (intersect_list[vertex[5], 0] - intersect_list[vertex[0], 0])/2
+            centre_lon <- intersect_list[vertex[0], 0] + (intersect_list[vertex[5], 0] - intersect_list[vertex[0], 0])/2
             if ((centre_lat != last_lat_row) or (last_lat_row == 0)) 
                 {
                     bounds_n <- intersect_list[vertex[0], 1]
@@ -123,20 +156,43 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,dist) {
                     bounds_e <- intersect_list[vertex[2], 0]
                     bounds_w <- intersect_list[vertex[5], 0]
                     last_lat_row <- centre_lat
-                    geopoly = Polygon([poly_coords])       
-                    hexagon+=1
-                    start=(intersect_list[vertex[0]][1],intersect_list[vertex[0]][0])
-                    end=(intersect_list[vertex[1]][1],intersect_list[vertex[1]][0])
-##                    len_radial = geodesic(start,end).km
-                    est_area = (((3 * sqrt(3))/2)*pow(radial,2))*.945 #estimate polygon area}
-            }
-    #intersect_list[1]
-    
-    #vertex = [1+top_left, 2+top_left, max_v+3+top_left, (max_v*2)+2+top_left, (max_v*2)+1+top_left, max_v+top_left]
-    
-    
-    
-    
+
+                    start <- (intersect_list[vertex[0, 1],intersect_list[vertex[0, 0])
+                    end <- (intersect_list[vertex[1, 1],intersect_list[vertex[1, 0])
+                    est_area <- (((3 * sqrt(3))/2)*radial^2)*0.945 #estimate polygon area}
+                    #geopoly = Feature(geometry=geopoly, properties={"p": hexagon,"row": row, "lat": centre_lat, "lon": centre_lon, "N": bounds_n, "S": bounds_s, "E": bounds_e, "W": bounds_w, "est_area": est_area})
+                    geopoly <- polygon(makeHexagon(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,row))       
+                    hexagon <- hexagon + 1
+                    if (bounds_e > bounds_w) 
+                        {
+                             gj_string <- append(gj_string, geopoly, after = length(gj_string))
+                             #tabular_line = [top_left, row, centre_lat, centre_lon, bounds_n, bounds_s, bounds_e, bounds_w, est_area]
+                             #tabular_list.append(tabular_line) #array of polygon and tabular columns
+                        {
+               last_row <-  row
+               last_lat_row <- centre_lat
+               row <- round(1+round(hexagon/poly_row_count,0),0)
+               top_left <- top_left + lat_offset
+               if (row != last_row)
+                   {
+                       top_left += inc_adj
+                       if (inc_by_rem == TRUE) {top_left <-  top_left + rem_lat}
+                       if (row %% 2 is 0) {top_left <-  top_left + 2}
+                       if (is.odd(row)) {top_left <-  top_left - 2}
+                   }
+         }
+    cat('\n5/7 geojson dataset of',hexagon,' derived hexagon polygons')
+    gj_prex <- '{"features": ['
+    substr(orig.text,1,nchar(orig.text)-1) 
+    gj_suffix <- '], "type": "FeatureCollection"}'
+    gj_string <- append(gj_suffix, substr(gj_string,1,nchar(gj_string)-2) , after = length(g_suffix))
+    gj_string <- append(gj_string, gj_suffix , after = length(g_suffix))
+
+    print('the end')
+
+}
+
+otherbits <- function(
     poly_points <- matrix(poly_coords, ncol=2, byrow=TRUE)
     poly_x <- poly_coords[c(TRUE, FALSE)]
     poly_y <- poly_coords[c(FALSE, TRUE)]
@@ -176,9 +232,7 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,dist) {
     #dfr <- data.frame(id = "1", use = "road", cars_per_hour = 10) # note how we use the ID from above!
     #sp_lns_dfr <- SpatialPolygonsDataFrame(sps1, dfr, match.ID = "id")
     #str(sp_lns_dfr)
-
-    print('the end')
-
-}
+    }
 
 hexagons(113.338953078, -43.6345972634, 153.569469029, -10.6681857235, 57)
+
