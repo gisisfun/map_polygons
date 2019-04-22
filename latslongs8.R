@@ -24,12 +24,10 @@ lats.list <- function(latitudes,longitudes,dist,maxlat,lats_seq) {
             break
          }
         latitudes <- c(latitudes,p[1])
-        longigitudes <- c(longitudes,p[2])
-        
+        longitudes <- c(longitudes,p[2])
      }
     return(latitudes)
     }
-
 
 longs.list <- function(latitudes,longitudes,dist,maxlong,short_gap) {
     angle <- 180
@@ -42,8 +40,7 @@ longs.list <- function(latitudes,longitudes,dist,maxlong,short_gap) {
             break
          }
         latitudes <- c(latitudes,p[1])
-        longitudes <- c(longitudes,p[2])
-        
+        longitudes <- c(longitudes,p[2])      
      }
     return(longitudes)
 }
@@ -95,16 +92,13 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,dist) {
     long_seg <- 1
     gj_string <- ""
         
-
     cat('\n1/7 deriving horizontal longitude (latitude or y axis) lines\n')
     lats_seq <- c(long_seg,short_seg,short_seg,long_seg,short_seg,short_seg,long_seg)
     latslist <- lats.list(minlat,minlong,dist,maxlat,lats_seq)
     
-
     cat('\n2/7 deriving vertical longitude (longitude or x axis) lines\n')
     longslist <- longs.list(minlat,minlong,dist,maxlong,short_seg)
     
-
     cat('\n3/7 deriving intersection point data between horizontal (latitude or y axis) and vertical (longitude or x axis) lines\n')
     intersect_list <- expand.grid(latslist,longslist)
     colnames(intersect_list) <- c("latitude", "longitude")
