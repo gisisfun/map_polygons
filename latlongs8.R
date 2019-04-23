@@ -13,6 +13,11 @@ new.point <- function(latlong,dist,angle) {
     return(newlatlong)
 }
 
+dist.points <- function(latlong1,latlong2) {   
+    dist <- distGeo(cbind(tail(latlong1[1], n=1),tail(latlong1[2], n=1)), cbind(tail(latlong2[1], n=1),tail(latlong2[2], n=1)), a=6378137, f=1/298.257223563)
+    return(dist)
+}
+
 lats.list <- function(latitudes,longitudes,dist,maxlat,lats_seq) {
     angle <- 90
     i <- 0
@@ -92,7 +97,9 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,radial) {
     short_seg <- 0.7071
     long_seg <- 1
     gj_string <- ""
-        
+    odd_row <- TRUE
+    even_row <- FALSE
+    
     cat('\n1/7 deriving horizontal longitude (latitude or y axis) lines\n')
     lats_seq <- c(long_seg,short_seg,short_seg,long_seg,short_seg,short_seg,long_seg)
     latslist <- lats.list(minlat,minlong,radial,maxlat,lats_seq)
@@ -106,9 +113,9 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,radial) {
     
     cat('\n4/7 deriving polygons from intersection points\n')
     
-
     top_left <- 1
     row <- 1
+    intersect_len <- nrow(intersect_list)# intersect_list is a dataframe
     last_lat_row <- 0
     hexagon <- 0
     max_v <- length(latslist)
@@ -131,7 +138,7 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,radial) {
     
     while (intersect_list[vertex[2], 2] > np[2])
         {
-            cat('\ncurr long ',intersect_list[vertex[2], 2],'maxlong is:', np[2],'\n')
+            cat('\npoly:',hexagon,'curr long:',intersect_list[vertex[2], 2],'maxlong:', np[2])
             vertex <- vertex + top_left
             poly_coords <- c(intersect_list[vertex[1], 1],intersect_list[vertex[1], 2], intersect_list[vertex[2], 1],intersect_list[vertex[2], 2],
                 intersect_list[vertex[3], 1],intersect_list[vertex[3], 2],intersect_list[vertex[4], 1],intersect_list[vertex[4], 2],
@@ -141,35 +148,62 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,radial) {
             centre_lon <- intersect_list[vertex[1], 1] + (intersect_list[vertex[6], 1] - intersect_list[vertex[1], 1])/2
             if ((centre_lat != last_lat_row) | (last_lat_row == 0)) 
                 {
-                    #cat('\n centre_lat is:',centre_lat,' lat_last_row is:',last_lat_row,'\n')
+                    dist_check <- dist.points(intersect_list[vertex[1], ],intersect_list[vertex[2], ])
+
                     bounds_n <- intersect_list[vertex[1], 2]
                     bounds_s <- intersect_list[vertex[2], 2]
                     bounds_e <- intersect_list[vertex[2], 1]
                     bounds_w <- intersect_list[vertex[5], 1]
+                    poly_points <- matrix(poly_coords, ncol=2, byrow=TRUE)
+                    cat('\npoly:',hexagon,'point 1:x',intersect_list[vertex[1],1 ],',y',intersect_list[vertex[1],2],'point 2:x',intersect_list[vertex[2],1 ],',y',intersect_list[vertex[2],2])
+                    cat('\npoly:',hexagon,'row:',row,'odd_row',odd_row,'even_row',even_row)
+                    cat('\npoly:',hexagon,'top_left:',top_left,'intersect_list len:',intersect_len)
+                    cat('\npoly:',hexagon,'centre_lat:',centre_lat,' centre_lon:',centre_lon)
+                    cat('\npoly:',hexagon,'lat_last_row:',last_lat_row,'dist_check:',dist_check)
+                    cat('\npoly:',hexagon,'area:',areaPolygon(poly_points),' m^2')
+                    cat('\npoly:',hexagon,'points:',poly_coords)
+                    cat('\npoly:',hexagon,'lat 1:',intersect_list[vertex[1],1 ],'lat 3:',intersect_list[vertex[3],1 ],'lat 6:',intersect_list[vertex[6],1 ])
+                    cat('\npoly:',hexagon,'lat 1 is greater than lat 6 is',(intersect_list[vertex[1],1 ] > intersect_list[vertex[6],1 ]))
+                    cat('\npoly:',hexagon,'lat 1 is less than lat 3 is',(intersect_list[vertex[1],1 ] < intersect_list[vertex[3],1 ]),'\n')
+                    
                     last_lat_row <- centre_lat
 
                     start <- c(intersect_list[vertex[0], 1],intersect_list[vertex[0], 0])
                     end <- c(intersect_list[vertex[1], 1],intersect_list[vertex[1], 0])
                     est_area <- 0.945 * ((3 * sqrt(3))/2)*(radial^2) #estimate polygon area}
                     geopoly <- makeHexagon(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,row)      
-                    hexagon <- hexagon + 1
-                    if (bounds_e > bounds_w) {
+                    
+                    
+                    if ((intersect_list[vertex[1],1 ] > intersect_list[vertex[6],1 ]) & (intersect_list[vertex[1],1 ] < intersect_list[vertex[3],1 ])) {
                         gj_string <- paste(gj_string, geopoly,"")
+                        hexagon <- hexagon + 1
                     }
-                    last_row <- row
-                    last_lat_row <- centre_lat
-                    row <- round(1+round(hexagon/poly_row_count,0),0)
-                    top_left <- top_left + lat_offset
-                    if (row != last_row)
-                        {
-                           top_left <- top_left + inc_adj
-                           if (inc_by_rem == TRUE) {top_left <-  top_left + rem_lat}
-                           if (row %% 2 == 0) {top_left <-  top_left + 2}
-                           if (is.odd(row)) {top_left <-  top_left - 2}
-                        }
+                    
+                    
                 }#end last row check if statement
+        last_row <- row
+        last_lat_row <- centre_lat
+        row <- round(1+round(hexagon/poly_row_count,0),0)
+        top_left <- top_left + lat_offset
+        if (row != last_row)
+            {
+                top_left <- top_left + inc_adj
+                if (inc_by_rem == TRUE) {top_left <-  top_left + rem_lat}
+                if (row %% 2 == 0) 
+                    {
+                        top_left <-  top_left + 2
+                        even_row <- TRUE
+                        odd_row <- FALSE
+                }#for even row
+                else 
+                    {
+                         top_left <-  top_left - 2
+                         even_row <- FALSE
+                         odd_row <- TRUE
+                    }
+            }
     }#end while loop
-    #cat('\n5/7 geojson dataset of',hexagon,' derived hexagon polygons')
+    cat('\n5/7 geojson dataset of',hexagon,' derived hexagon polygons')
     gj_prefix <- '{"features": ['
     gj_suffix <- '], "type": "FeatureCollection"}'
     gj_string <- paste(gj_prefix, substr(gj_string,1,nchar(gj_string)-3),"")
@@ -198,7 +232,7 @@ otherbits <- function()
 
     cat('\npoly_x is:',poly_x,'\n')
     cat('\npoly_y is:',poly_y,'\n')
-    cat('\narea is of hexagon is:',areaPolygon(poly_points),' meters squared \n')
+    
     cat('\ncentroid is of hexagon is:',centroid(poly_points),'\n')
     cat('\nperimeter is of hexagon is:',perimeter(poly_points),'\n')
 
