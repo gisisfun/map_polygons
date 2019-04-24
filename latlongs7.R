@@ -99,7 +99,7 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,radial) {
     gj_string <- ""
     odd_row <- TRUE
     even_row <- FALSE
-    do_log <- FALSE
+    do_log <- TRUE
     cat('\n1/7 deriving horizontal longitude (latitude or y axis) lines\n')
     lats_seq <- c(long_seg,short_seg,short_seg,long_seg,short_seg,short_seg,long_seg)
     latslist <- lats.list(minlat,minlong,radial,maxlat,lats_seq)
@@ -134,7 +134,7 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,radial) {
      if (rem_lat == 0 | rem_lat == 4){
             inc_by_rem <- FALSE
             inc_adj <- 0}
-    np <- new.point(c(maxlat,maxlong),0.7071*200,0)
+    np <- new.point(c(maxlat,maxlong),0.7071*100,0)
     if (do_log == TRUE)
         {
              cat('\nrem_lat is:',rem_lat,' inc_by_rem is:',inc_by_rem,' inc_adj is::',inc_adj,' new point is:',np[2],'\n')
