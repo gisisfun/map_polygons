@@ -478,6 +478,6 @@ else:
             hexagons(float(b_north),float(b_south),float(b_east),float(b_west),float(radial_d),f_name)
         else:
             if shape == "box":
-                boxes(b_north,b_south,b_east,b_west,radial_d,f_name)
+                boxes(float(b_north),float(b_south),float(b_east),float(b_west),float(radial_d),f_name)
             else:
                 print('shape is hex or box')
