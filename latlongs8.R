@@ -183,11 +183,15 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,radial) {
                     start <- c(intersect_list[vertex[0], 1],intersect_list[vertex[0], 0])
                     end <- c(intersect_list[vertex[1], 1],intersect_list[vertex[1], 0])
                     est_area <- 0.945 * ((3 * sqrt(3))/2)*(radial^2) #estimate polygon area}
-                    geopoly <- makeHexagon(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,row)      
-                    
-                    
+       
                     if ((intersect_list[vertex[1],1 ] > intersect_list[vertex[6],1 ]) & (intersect_list[vertex[1],1 ] < intersect_list[vertex[3],1 ])) {
+                        geopoly <- makeHexagon(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,row)
                         gj_string <- paste(gj_string, geopoly,"")
+                        if (do_log == TRUE)
+                        {
+                            cat'\npoly:',hexagon,'x1',poly_coords[1],'y1',poly_coords[2],'x2',poly_coords[3],'y2',poly_coords[2])
+                        } 
+                        
                         hexagon <- hexagon + 1
                     }
                     
