@@ -87,11 +87,11 @@ is.odd <- function(x) {return(intToBits(x)[1] == 1)}
 hexagons <- function(minlat,maxlong,maxlat,minlong,radial) {
     #bbox <- c(113.338953078, -43.6345972634, 153.569469029, -10.6681857235)
 
-    #minlat <- c(bbox[1])
-    #minlong <- c(bbox[4])
+    #minlat <- c(bbox[1]) #east
+    #minlong <- c(bbox[4]) #north
     #dist <- 57
-    #maxlat <- bbox[3]
-    #maxlong <- bbox[2]
+    #maxlat <- bbox[3] #west
+    #maxlong <- bbox[2] #south
     lat_offset <- 4
     short_seg <- 0.7071
     long_seg <- 1
@@ -100,14 +100,16 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,radial) {
     even_row <- FALSE
     do_log <- FALSE
     
-    cat('\n1/7 deriving horizontal longitude (latitude or y axis) lines\n')
-    lats_seq <- c(long_seg,short_seg,short_seg,long_seg,short_seg,short_seg,long_seg)
+    cat('\n1/7 deriving horizontal longitude (latitude or y axis or east to west) lines\n')
+    #lats_seq <- c(long_seg,short_seg,short_seg,long_seg,short_seg,short_seg,long_seg)
+    lats_seq <- c(short_seg,long_seg,short_seg,short_seg,long_seg,short_seg,short_seg)
+    
     latslist <- lats.list(minlat,minlong,radial,maxlat,lats_seq)
     
-    cat('\n2/7 deriving vertical longitude (longitude or x axis) lines\n')
+    cat('\n2/7 deriving vertical longitude (longitude or x axis or north to south) lines\n')
     longslist <- longs.list(minlat,minlong,radial,maxlong,short_seg)
     
-    cat('\n3/7 deriving intersection point data between horizontal (latitude or y axis) and vertical (longitude or x axis) lines\n')
+    cat('\n3/7 deriving intersection point data between horizontal (latitude or y axis or east to west) and vertical (longitude or x axis or north to south) lines\n')
     intersect_list <- expand.grid(latslist,longslist)
     colnames(intersect_list) <- c("latitude", "longitude")
     
@@ -115,11 +117,11 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,radial) {
     top_left <- 1
     row <- 1
     intersect_len <- nrow(intersect_list)# intersect_list is a dataframe
-    last_lat_row <- 0
+    last_centre_lat <- 0
     hexagon <- 0
     max_v <- length(latslist)
     max_h <- length(longslist)
-    vertex <- c(2, 3, max_v+4, (max_v*2)+3, (max_v*2)+2, max_v+1)  
+    vertex <- c(1, 2, max_v+3, (max_v*2)+2, (max_v*2)+1, max_v+0)  
     poly_row_count <- round((max_v/ 4),0)
     rem_lat <- max_v%%(lat_offset+4)
     inc_by_rem <- TRUE
@@ -155,16 +157,15 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,radial) {
                     cat('\npoly:',hexagon,'row:',row,'odd_row:',odd_row,'even_row:',even_row)
                     cat('\npoly:',hexagon,'top_left:',top_left,'intersect_list len:',intersect_len)
                     cat('\npoly:',hexagon,'centre_lat:',centre_lat,' centre_lon:',centre_lon)
-                    cat('\npoly:',hexagon,'lat_last_row:',last_lat_row,'dist_check:',dist_check)
+                    cat('\npoly:',hexagon,'lat_last_row:',last_centre_lat,'dist_check:',dist_check)
                     cat('\npoly:',hexagon,'point 1:x',intersect_list[vertex[1],1 ],',y',intersect_list[vertex[1],2],'point 2:x',intersect_list[vertex[2],1 ],',y',intersect_list[vertex[2],2])
                     cat('\npoly:',hexagon,'area:',areaPolygon(poly_points),' m^2')
                     cat('\npoly:',hexagon,'vertex:',vertex)
                     cat('\npoly:',hexagon,'points:',poly_coords)
                     cat('\npoly:',hexagon,'lat 1:',intersect_list[vertex[1],1 ],'lat 3:',intersect_list[vertex[3],1 ],'lat 6:',intersect_list[vertex[6],1 ])
                 }
-            #if ((centre_lat != last_lat_row) | (last_lat_row == 0)) 
-            #if ((centre_lat < last_lat_row) | (last_lat_row == 0)) 
-                #{
+            if ((centre_lat != last_centre_lat) | (last_centre_lat == 0))  
+                {
                     bounds_n = intersect_list[vertex[1], 2]
                     bounds_s = intersect_list[vertex[4], 2]
                     bounds_e = intersect_list[vertex[2], 1]
@@ -173,7 +174,7 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,radial) {
                     #bounds_s <- intersect_list[vertex[2], 2]
                     #bounds_e <- intersect_list[vertex[2], 1]
                     #bounds_w <- intersect_list[vertex[5], 1]
-                    last_lat_row <- centre_lat
+                    last_centre_lat <- centre_lat
                     if (do_log == TRUE)
                         {
                             cat('\npoly:',hexagon,'lat 1 is greater than lat 6 is',(intersect_list[vertex[1],1 ] > intersect_list[vertex[6],1 ]))
@@ -184,19 +185,19 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,radial) {
                     est_area <- 0.945 * ((3 * sqrt(3))/2)*(radial^2) #estimate polygon area}
                     geopoly <- makeHexagon(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,row)      
                     
-                    #if ((intersect_list[vertex[1],1 ] > intersect_list[vertex[6],1 ]) & (intersect_list[vertex[1],1 ] < intersect_list[vertex[3],1 ])) {
-                    if (bounds_e > bounds_w) {
+                    if ((intersect_list[vertex[1],1 ] > intersect_list[vertex[6],1 ]) & (intersect_list[vertex[1],1 ] < intersect_list[vertex[3],1 ])) {
+                    #if (bounds_e > bounds_w) {
                         #print(top_left)
                         gj_string <- paste(gj_string, geopoly,"")
                         hexagon <- hexagon + 1
                     }
                     
-                #}#end last row check if statement
+                }#end last centre lat check if statement
         last_row <- row
-        last_lat_row <- centre_lat
+        last_centre_lat <- centre_lat
         row <- round(1+round(hexagon/poly_row_count,0),0)
         top_left <- top_left + lat_offset
-        vertex <- c(2, 3, max_v+4, (max_v*2)+3, (max_v*2)+2, max_v+1)+top_left
+        vertex <- c(1, 2, max_v+3, (max_v*2)+2, (max_v*2)+1, max_v+0)+top_left
         if (row != last_row)
             {
                 top_left <- top_left + inc_adj
@@ -268,6 +269,6 @@ otherbits <- function()
     }
 
 output <- hexagons(113.338953078, -43.6345972634, 153.569469029, -10.6681857235, 57)
-fileConn<-file("output.json")
+fileConn<-file("output8.json")
 writeLines(output, fileConn)
 close(fileConn)
