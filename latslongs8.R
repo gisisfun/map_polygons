@@ -300,5 +300,17 @@ output <- hexagons(96,  -8,168,  -45,57)
 fileConn<-file("output8.json")
 writeLines(output, fileConn)
 close(fileConn)
+#convert and reproject
+ogr2ogr(src_datasource_name='output8.json',f='ESRI Shapefile',dst_datasource_name='output8.shp',t_srs="EPSG:4283",verbose=TRUE)
+#run query
+ogr2ogr(src_datasource_name='all.vrt',dialect='sqlite',sql='select * from shapes',dst_datasource_name='output8_q1.csv',verbose=TRUE)
 
-ogr2ogr('output8.json','output8.shp',t_srs="EPSG:4283",verbose=TRUE)
+ogr2ogr(src_datasource_name='all.vrt',dialect='sqlite',sql='select * from fred',dst_datasource_name='output8_q2.csv',verbose=TRUE)
+
+
+
+
+
+
+
+
