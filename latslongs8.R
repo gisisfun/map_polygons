@@ -2,6 +2,8 @@ library('geosphere')
 #library('geojson')
 library('sp')
 library('gdalUtils')
+libary('RSQlite')
+library('rgdal')
 
 
 #Create a function to print squares of numbers in sequence.
@@ -117,6 +119,7 @@ hexagons <- function(east,north,west,south,radial) {
     odd_row <- TRUE
     even_row <- FALSE
     do_log <- FALSE
+    hexagon <- 0
 
     #1/7 deriving horizontal list of reference points for longitude or (x axis or north to south) lines
     cat('\n1/7 deriving vertical list of reference points from north to south for longitudes or x axis\n')
@@ -136,8 +139,9 @@ hexagons <- function(east,north,west,south,radial) {
     #print(class(intersect_df))
     colnames(intersect_df) <- c("latitude", "longitude")
     #write.csv(intersect_df,'intersect_df8.csv')
-    
-
+    intersect_len <- nrow(intersect_df)# intersect_df is a dataframe
+    poly_row_count <- round(((max_v*max_h)/length(hor_seq)+2),0)
+    last_lat_row <-0 
     inc_by_rem <- TRUE
     inc_adj <- 0
     rem_lat <- max_v%%(lat_offset+4)
@@ -154,10 +158,9 @@ hexagons <- function(east,north,west,south,radial) {
     cat('\n4/7 deriving polygons from intersection points\n')
     row <- 1
 
-    intersect_len <- nrow(intersect_df)# intersect_df is a dataframe
-    last_lat_row <- 0
-    hexagon <- 0
-    poly_row_count <- round(((max_v*max_h)/length(hor_seq)+2),0)
+    
+    
+    
                 
     max_val <- ((max_h)*(max_v-3))-(max_h*0.5)
     while (top_left < max_val)
@@ -192,8 +195,8 @@ hexagons <- function(east,north,west,south,radial) {
                     cat('\npoly:',hexagon,'lat 1:',poly_coords[1],'lat 3:',poly_coords[5],'lat 6:',poly_coords[11])
                 }
             
-            if ((centre_lat != last_lat_row) || (last_lat_row == 0))  #are we on the first or current row of polygons?
-                {
+            #if ((centre_lat != last_lat_row) || (last_lat_row == 0))  #are we on the first or current row of polygons?
+                #{
                     bounds_n <- poly_coords[2] #intersect_df[vertex[0]][1]
                     bounds_s <- poly_coords[6] #intersect_df[vertex[2]][1]
                     bounds_e <- poly_coords[5] #intersect_df[vertex[2]][0]
@@ -219,13 +222,13 @@ hexagons <- function(east,north,west,south,radial) {
                             #print(top_left)
                             gj_string <- paste(gj_string, geopoly,"")                    
                         }             
-                }#end last centre lat check if statement 
+                #}#end last centre lat check if statement 
         last_row <- row
         last_centre_lat <- centre_lat
         row <- round(hexagon/poly_row_count,0)+1
         top_left <- top_left + lat_offset
 
-        if (row != last_row)
+        if (row != last_row && row != 1)
             {
                 top_left <- top_left + inc_adj
                 if (inc_by_rem == TRUE) {top_left <-  top_left + rem_lat}
@@ -307,10 +310,16 @@ ogr2ogr(src_datasource_name='all.vrt',dialect='sqlite',sql='select * from shapes
 
 ogr2ogr(src_datasource_name='all.vrt',dialect='sqlite',sql='select * from fred',dst_datasource_name='output8_q2.csv',verbose=TRUE)
 
+#ogr2ogr(src_datasource_name='output8.shp',t_srs="EPSG:4283",dst_datasource_name='output8_q2.csv',layer='track+points',verbose=TRUE)
 
+#ogr2ogr -F "SQLite" -t_srs '+proj=utm +zone=10 +datum=NAD83' trip1_track_points.db trip1.gpx track_points
+#dbfile="Path/To/field.sqlite"
 
+#sqlite=dbDriver("SQLite")
+#con=dbConnect(sqlite,dbfile, loadable.extensions=TRUE )
 
-
+#vectorImport <- readOGR(dsn="NUTS_BN_03M_2013.sqlite", layer="nuts_bn_03m_2013")
+#plot(vectorImport)
 
 
 
