@@ -1,6 +1,7 @@
 library('geosphere')
 #library('geojson')
 library('sp')
+library('gdalUtils')
 
 
 #Create a function to print squares of numbers in sequence.
@@ -108,7 +109,7 @@ hexagons <- function(east,north,west,south,radial) {
     #south <- bbox[2] #south
     cat('\nMaking hexagon shapes starting from ',north,',',east,' to ',south,',',west,' with a radial length of ',radial,' km\n')
     #init bits
-    top_left <- 1 #R starts at 1 not 0
+    top_left <- 1 #R starts at 1 not 0 - yes
     lat_offset <- 4
     short_seg <- 0.7071
     long_seg <- 1
@@ -120,7 +121,6 @@ hexagons <- function(east,north,west,south,radial) {
     #1/7 deriving horizontal list of reference points for longitude or (x axis or north to south) lines
     cat('\n1/7 deriving vertical list of reference points from north to south for longitudes or x axis\n')
     hor_seq =c(short_seg, short_seg, short_seg, short_seg)
-
     h_list <- horizontal(east,north,west,south,radial,hor_seq)
     max_h <- length(h_list)
     write.csv(h_list,'h_list8.csv')
@@ -136,8 +136,7 @@ hexagons <- function(east,north,west,south,radial) {
     #print(class(intersect_df))
     colnames(intersect_df) <- c("latitude", "longitude")
     #write.csv(intersect_df,'intersect_df8.csv')
-    #halt
-#not working    
+    
 
     inc_by_rem <- TRUE
     inc_adj <- 0
@@ -148,7 +147,7 @@ hexagons <- function(east,north,west,south,radial) {
     if (rem_lat == 1 | rem_lat == 3){
             inc_by_rem <- TRUE
             inc_adj <- 0}
-     if (rem_lat == 0 | rem_lat == 4){
+    if (rem_lat == 0 | rem_lat == 4){
             inc_by_rem <- FALSE
             inc_adj <- 0}
 
@@ -158,7 +157,7 @@ hexagons <- function(east,north,west,south,radial) {
     intersect_len <- nrow(intersect_df)# intersect_df is a dataframe
     last_lat_row <- 0
     hexagon <- 0
-    poly_row_count <- round((max_v/max_h),0)
+    poly_row_count <- round(((max_v*max_h)/length(hor_seq)+2),0)
                 
     max_val <- ((max_h)*(max_v-3))-(max_h*0.5)
     while (top_left < max_val)
@@ -200,7 +199,7 @@ hexagons <- function(east,north,west,south,radial) {
                     bounds_e <- poly_coords[5] #intersect_df[vertex[2]][0]
                     bounds_w <- poly_coords[11] #intersect_df[vertex[5]][0]
                     last_lat_row <- centre_lat
-                    
+                    cat(hexagon,bounds_e,bounds_w,'\n')
                     
                     hexagon <- hexagon + 1
                     start <- c(poly_coords[2],poly_coords[1] )
@@ -301,3 +300,5 @@ output <- hexagons(96,  -8,168,  -45,57)
 fileConn<-file("output8.json")
 writeLines(output, fileConn)
 close(fileConn)
+
+ogr2ogr('output8.json','output8.shp',t_srs="EPSG:4283",verbose=TRUE)
