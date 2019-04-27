@@ -6,8 +6,8 @@ library('sp')
 #Create a function to print squares of numbers in sequence.
 
 new.point <- function(latlong,dist,angle) {   
-    #c <- destPoint(cbind(tail(latlong[1], n=1),tail(latlong[2], n=1)), b=angle, d=dist*100, a=6378137, f=1/298.257223563)
-    c <- geodesic(cbind(tail(latlong[1], n=1),tail(latlong[2], n=1)), azi=angle, d=dist*100, a=6378137, f=1/298.257223563)
+    #c <- destPoint(cbind(tail(latlong[1], n=1),tail(latlong[2], n=1)), b=angle, d=dist*1000, a=6378137, f=1/298.257223563)
+    c <- geodesic(cbind(tail(latlong[1], n=1),tail(latlong[2], n=1)), azi=angle, d=dist*1000, a=6378137, f=1/298.257223563)
     newlatlong <- c(c[1],c[2]) 
     #print(newlatlong)
     return(newlatlong)
@@ -18,46 +18,48 @@ dist.points <- function(latlong1,latlong2) {
     return(dist)
 }
 
-horizontal <- function(east,south,west,north,radial,hor_seq) {
-    #1/7 deriving horizontal list of reference points for longitude or (x axis or north to south) lines
+horizontal <- function(east,north,west,south,radial,hor_seq) {
+    #1/7 deriving vertical list of reference points from north to south for longitudes or x axis
     angle <- 180
     new_north <-north
     cat(east,new_north,south,'\n')
     i <- 0
     latitudes <- vector()
-    longitudes <- vector()
+    longitudes <- latitudes <- c(north)
     repeat {
         i <- i + 1
         if (i < 5) {i <- i} else {i <- 1}  
         
         latlong <- c(east,new_north)
         p <- new.point(latlong,radial*hor_seq[i],angle)
+        
         new_north <- p[2]
         if (new_north <= south){break}
         latitudes <- c(latitudes,p[1])
         longitudes <- c(longitudes,p[2])
      }
+cat(longitudes,'\n')
     return(longitudes)
 }
 
- vertical <- function(east,south,west,north,radial,vert_seq) {
-    #2/7 deriving vertical list of reference points for latitude lines or (y axis or east to west) lines
+ vertical <- function(east,north,west,south,radial,vert_seq) {
+    #2/7 deriving horizontal list of reference points from east to west for latitudes or y axis
     angle <- 90
     i <-0
     new_east <- east
-    latitudes <- vector()
-    longitudes <- vector()
+    latitudes <- c(east)
     repeat 
         {  
            i <- i + 1
            if (i < 5) {i <- i} else {i <- 1}          
            latlong <- c(new_east,north)
            p <- new.point(latlong,radial*vert_seq[i],angle)
+           
            new_east <- p[1]
            if (new_east >= west){ break}
-           latitudes <- c(latitudes,p[1])
-           longitudes <- c(longitudes,p[2])      
+           latitudes <- c(latitudes,p[1])    
         }
+
     return(latitudes)
     }
 
@@ -96,7 +98,7 @@ is.even <- function(x) {return(!is.odd(x))}
  
 is.odd <- function(x) {return(intToBits(x)[1] == 1)}
 
-hexagons <- function(east,south,west,north,radial) {
+hexagons <- function(east,north,west,south,radial) {
     #bbox <- c(113.338953078, -43.6345972634, 153.569469029, -10.6681857235)
 
     #east <- c(bbox[1]) #east
@@ -104,7 +106,7 @@ hexagons <- function(east,south,west,north,radial) {
     #dist <- 57
     #west <- bbox[3] #west
     #south <- bbox[2] #south
-    cat('\nMaking hexagon shapes starting from ',north,',',west,',',' to ',south,',',east,' with a radial length of ',radial,' km\n')
+    cat('\nMaking hexagon shapes starting from ',north,',',east,' to ',south,',',west,' with a radial length of ',radial,' km\n')
     #init bits
     top_left <- 0 #R starts at 1 not 0
     lat_offset <- 4
@@ -116,22 +118,25 @@ hexagons <- function(east,south,west,north,radial) {
     do_log <- FALSE
 
     #1/7 deriving horizontal list of reference points for longitude or (x axis or north to south) lines
-    cat('\n1/7 deriving horizontal list of reference points for longitude or (x axis or north to south) lines\n')
+    cat('\n1/7 deriving vertical list of reference points from north to south for longitudes or x axis\n')
     hor_seq =c(short_seg, short_seg, short_seg, short_seg)
 
-    h_list <- horizontal(east,south,west,north,radial,hor_seq)
+    h_list <- horizontal(east,north,west,south,radial,hor_seq)
     max_h <- length(h_list)
+    write.csv(h_list,'h_list8.csv')
     
-    cat('\n2/7 deriving vertical list of reference points for latitude lines or (y axis or east to west) lines\n')
+    cat('\n2/7 deriving horizontal list of reference points from east to west for latitudes or y axis\n')
     vert_seq <- c(short_seg, long_seg, short_seg,long_seg) 
-    v_list <- vertical(east,south,west,north,radial,vert_seq)
+    v_list <- vertical(east,north,west,south,radial,vert_seq)
     max_v <- length(v_list)
-    print(v_list)
+    write.csv(v_list,'v_list8.csv')
 
     cat('\n3/7 deriving intersection point data between horizontal (latitude or east to west) and vertical (longitude or x axis or north to south) lines\n')
-    intersect_list <- expand.grid(v_list,h_list)
-    colnames(intersect_list) <- c("latitude", "longitude")
-    
+    intersect_df <- expand.grid(v_list,h_list)
+print(class(intersect_df))
+    colnames(intersect_df) <- c("latitude", "longitude")
+    write.csv(intersect_df,'intersect_df8.csv')
+    halt
 #not working    
 
     inc_by_rem <- TRUE
@@ -150,7 +155,7 @@ hexagons <- function(east,south,west,north,radial) {
     cat('\n4/7 deriving polygons from intersection points\n')
     row <- 1
 
-    intersect_len <- nrow(intersect_list)# intersect_list is a dataframe
+    intersect_len <- nrow(intersect_df)# intersect_df is a dataframe
     last_lat_row <- 0
     hexagon <- 0
     poly_row_count <- round((max_v/max_h),0)
@@ -163,22 +168,22 @@ hexagons <- function(east,south,west,north,radial) {
             vertex <- c(1, 2, max_v+3, (max_v*2)+2, (max_v*2)+1, max_v+0)+top_left
  
             
-            poly_coords <- c(intersect_list[vertex[1], 1], intersect_list[vertex[1], 2], intersect_list[vertex[2], 1], 
-                intersect_list[vertex[2], 2], intersect_list[vertex[3], 1], intersect_list[vertex[3], 2],intersect_list[vertex[4], 1], 
-                intersect_list[vertex[4], 2], intersect_list[vertex[5], 1], intersect_list[vertex[5], 2],intersect_list[vertex[6], 1], 
-                intersect_list[vertex[6], 2], intersect_list[vertex[1], 1], intersect_list[vertex[1], 2])
+            poly_coords <- c(intersect_df[vertex[1], 1], intersect_df[vertex[1], 2], intersect_df[vertex[2], 1], 
+                intersect_df[vertex[2], 2], intersect_df[vertex[3], 1], intersect_df[vertex[3], 2],intersect_df[vertex[4], 1], 
+                intersect_df[vertex[4], 2], intersect_df[vertex[5], 1], intersect_df[vertex[5], 2],intersect_df[vertex[6], 1], 
+                intersect_df[vertex[6], 2], intersect_df[vertex[1], 1], intersect_df[vertex[1], 2])
 
             poly_points <- matrix(poly_coords, ncol=2, byrow=TRUE)
             centre_lat <- poly_coords[2] + (poly_coords[12] - poly_coords[2])/2
             centre_lon <- poly_coords[1] + (poly_coords[11] - poly_coords[1])/2
-            dist_check <- dist.points(intersect_list[vertex[1], ],intersect_list[vertex[2], ])
+            dist_check <- dist.points(intersect_df[vertex[1], ],intersect_df[vertex[2], ])
 
             
             if (do_log == TRUE)
                 {
                     cat('\npoly:',hexagon,'top_left:',top_left,'max_val:', max_val)
                     cat('\npoly:',hexagon,'row:',row,'odd_row:',odd_row,'even_row:',even_row)
-                    cat('\npoly:',hexagon,'top_left:',top_left,'intersect_list len:',intersect_len)
+                    cat('\npoly:',hexagon,'top_left:',top_left,'intersect_df len:',intersect_len)
                     cat('\npoly:',hexagon,'centre_lat:',centre_lat,' centre_lon:',centre_lon)
                     cat('\npoly:',hexagon,'lat_last_row:',last_centre_lat,'dist_check:',dist_check)
                     cat('\npoly:',hexagon,'point 1:x',poly_coords[1],',y',poly_coords[2],'point 2:x',poly_coords[3],',y',poly_coords[4])
@@ -190,10 +195,10 @@ hexagons <- function(east,south,west,north,radial) {
             
             if ((centre_lat != last_lat_row) || (last_lat_row == 0))  #are we on the first or current row of polygons?
                 {
-                    bounds_n <- poly_points[1,2] #intersect_list[vertex[0]][1]
-                    bounds_s <- poly_points[3,2] #intersect_list[vertex[2]][1]
-                    bounds_e <- poly_points[3,1] #intersect_list[vertex[2]][0]
-                    bounds_w <- poly_points[6,1] #intersect_list[vertex[5]][0]
+                    bounds_n <- intersect_df[vertex[1],2] #intersect_df[vertex[0]][1]
+                    bounds_s <- intersect_df[vertex[3],2] #intersect_df[vertex[2]][1]
+                    bounds_e <- intersect_df[vertex[3],1] #intersect_df[vertex[2]][0]
+                    bounds_w <- intersect_df[vertex[6],1] #intersect_df[vertex[5]][0]
 
                     last_lat_row <- centre_lat
                     
@@ -292,7 +297,8 @@ otherbits <- function()
     #str(sp_lns_dfr)
     }
 
-output <- hexagons(113.338953078, -43.6345972634, 153.569469029, -10.6681857235, 57)
+output <- hexagons(96,  -8,168,  -45,57)
+
 fileConn<-file("output8.json")
 writeLines(output, fileConn)
 close(fileConn)
