@@ -18,39 +18,51 @@ dist.points <- function(latlong1,latlong2) {
     return(dist)
 }
 
-lats.list <- function(latitudes,longitudes,dist,maxlat,lats_seq) {
+horizontal <- function(east,south,west,north,radial,hor_seq) {
+    #1/7 deriving horizontal list of reference points for longitude or (x axis or north to south) lines
     angle <- 90
+    i <-0
+    new_east <- east
+    latitudes <- vector()
+    longitudes <- vector()
+    repeat 
+        {  
+           i <- i + 1
+           if (i < 5) {i <- i} else {i <- 1}          
+           latlong <- c(new_east,north)
+           p <- new.point(latlong,radial*hor_seq[i],angle)
+           new_east <- p[1]
+           if (new_east >= west){ break}
+           latitudes <- c(latitudes,p[1])
+           longitudes <- c(longitudes,p[2])      
+        }
+    return(longitudes)
+}
+
+ vertical <- function(east,south,west,north,radial,vert_seq) {
+    #2/7 deriving vertical list of reference points for latitude lines or (y axis or east to west) lines
+    angle <- 180
+    new_north <-north
+    cat(east,new_north,south,'\n')
     i <- 0
+    latitudes <- vector()
+    longitudes <- vector()
     repeat {
         i <- i + 1
-        if (i > 3) {i <- 1}
+        if (i < 5) {i <- i} else {i <- 1}  
         
-        latlong <- c(tail(latitudes, n=1),tail(longitudes, n=1))
-        p <- new.point(latlong,dist*lats_seq[i],angle)
-        if (p[1] >= maxlat){
-            break
-         }
+        latlong <- c(east,new_north)
+        p <- new.point(latlong,radial*vert_seq[i],angle)
+        new_north <- p[2]
+        cat(new_north,'\n')
+        if (new_north <= south){break}
         latitudes <- c(latitudes,p[1])
         longitudes <- c(longitudes,p[2])
      }
     return(latitudes)
     }
 
-longs.list <- function(latitudes,longitudes,dist,maxlong,short_gap) {
-    angle <- 180
-    longid <- 0
-    gap <- short_gap
-    repeat {
-        latlong <- c(tail(latitudes, n=1),tail(longitudes, n=1))
-        p <- new.point(latlong,dist*gap,angle)
-        if (p[2] <= maxlong){
-            break
-         }
-        latitudes <- c(latitudes,p[1])
-        longitudes <- c(longitudes,p[2])      
-     }
-    return(longitudes)
-}
+
 makeHexagon <- function(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,row) 
 { 
     templ_hexagon <-'{"geometry": {"coordinates": [[[x1, y1], [x2, y2], [x3, y3], [x4, y4], [x5, y5], [x6, y6], [x1, y1]]], "type": "Polygon"}, "properties": {"E": be, "N": bn, "S": bs, "W": bw, "est_area": earea, "lat": latc, "lon": lonc, "p": polyn, "row": rown}, "type": "Feature"}, '
@@ -85,15 +97,15 @@ is.even <- function(x) {return(!is.odd(x))}
  
 is.odd <- function(x) {return(intToBits(x)[1] == 1)}
 
-hexagons <- function(minlat,maxlong,maxlat,minlong,radial) {
+hexagons <- function(east,south,west,north,radial) {
     #bbox <- c(113.338953078, -43.6345972634, 153.569469029, -10.6681857235)
 
-    #minlat <- c(bbox[1]) #east
-    #minlong <- c(bbox[4]) #north
+    #east <- c(bbox[1]) #east
+    #north <- c(bbox[4]) #north
     #dist <- 57
-    #maxlat <- bbox[3] #west
-    #maxlong <- bbox[2] #south
-
+    #west <- bbox[3] #west
+    #south <- bbox[2] #south
+    cat('\nMaking hexagon shapes starting from ',north,',',west,',',' to ',south,',',east,' with a radial length of ',radial,' km\n')
     #init bits
     top_left <- 0 #R starts at 1 not 0
     lat_offset <- 4
@@ -104,23 +116,23 @@ hexagons <- function(minlat,maxlong,maxlat,minlong,radial) {
     even_row <- FALSE
     do_log <- FALSE
 
-    hor_seq =c(short_seg, long_seg, short_seg)
-    vert_seq =c(short_seg, short_seg)
+    #1/7 deriving horizontal list of reference points for longitude or (x axis or north to south) lines
+    cat('\n1/7 deriving horizontal list of reference points for longitude or (x axis or north to south) lines\n')
+    hor_seq =c(short_seg, short_seg, short_seg, short_seg)
 
-    cat('\n1/7 deriving horizontal (longitude or y axis or east to west) lines\n')
-    #lats_seq <- c(long_seg,short_seg,short_seg,long_seg,short_seg,short_seg,long_seg)
-    lats_seq <- c(short_seg, long_seg, short_seg,long_seg) #c(short_seg,long_seg,short_seg,short_seg,long_seg,short_seg,short_seg)
-    latslist <- lats.list(minlat,minlong,radial,maxlat,lats_seq)
-    max_v <- length(latslist)
+    h_list <- horizontal(east,south,west,north,radial,hor_seq)
+    max_h <- length(h_list)
     
-
-    cat('\n2/7 deriving vertical (longitude or x axis or north to south) lines\n')
-    longslist <- longs.list(minlat,minlong,radial,maxlong,short_seg)
-    max_h <- length(longslist)
+    cat('\n2/7 deriving vertical list of reference points for latitude lines or (y axis or east to west) lines\n')
+    vert_seq <- c(short_seg, long_seg, short_seg,long_seg) 
+    v_list <- vertical(east,south,west,north,radial,vert_seq)
+    max_v <- length(v_list)
 
     cat('\n3/7 deriving intersection point data between horizontal (latitude or east to west) and vertical (longitude or x axis or north to south) lines\n')
-    intersect_list <- expand.grid(latslist,longslist)
+    intersect_list <- expand.grid(v_list,h_list)
     colnames(intersect_list) <- c("latitude", "longitude")
+    #print(intersect_list)
+#not working    
 
     inc_by_rem <- TRUE
     inc_adj <- 0
