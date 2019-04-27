@@ -108,7 +108,7 @@ hexagons <- function(east,north,west,south,radial) {
     #south <- bbox[2] #south
     cat('\nMaking hexagon shapes starting from ',north,',',east,' to ',south,',',west,' with a radial length of ',radial,' km\n')
     #init bits
-    top_left <- 0 #R starts at 1 not 0
+    top_left <- 1 #R starts at 1 not 0
     lat_offset <- 4
     short_seg <- 0.7071
     long_seg <- 1
@@ -133,10 +133,10 @@ hexagons <- function(east,north,west,south,radial) {
 
     cat('\n3/7 deriving intersection point data between horizontal (latitude or east to west) and vertical (longitude or x axis or north to south) lines\n')
     intersect_df <- expand.grid(v_list,h_list)
-print(class(intersect_df))
+    #print(class(intersect_df))
     colnames(intersect_df) <- c("latitude", "longitude")
-    write.csv(intersect_df,'intersect_df8.csv')
-    halt
+    #write.csv(intersect_df,'intersect_df8.csv')
+    #halt
 #not working    
 
     inc_by_rem <- TRUE
@@ -195,11 +195,10 @@ print(class(intersect_df))
             
             if ((centre_lat != last_lat_row) || (last_lat_row == 0))  #are we on the first or current row of polygons?
                 {
-                    bounds_n <- intersect_df[vertex[1],2] #intersect_df[vertex[0]][1]
-                    bounds_s <- intersect_df[vertex[3],2] #intersect_df[vertex[2]][1]
-                    bounds_e <- intersect_df[vertex[3],1] #intersect_df[vertex[2]][0]
-                    bounds_w <- intersect_df[vertex[6],1] #intersect_df[vertex[5]][0]
-
+                    bounds_n <- poly_coords[2] #intersect_df[vertex[0]][1]
+                    bounds_s <- poly_coords[6] #intersect_df[vertex[2]][1]
+                    bounds_e <- poly_coords[5] #intersect_df[vertex[2]][0]
+                    bounds_w <- poly_coords[11] #intersect_df[vertex[5]][0]
                     last_lat_row <- centre_lat
                     
                     
