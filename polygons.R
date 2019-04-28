@@ -318,7 +318,8 @@ ogr2ogr(src_datasource_name='all.vrt',dialect='sqlite',sql='select * from fred',
 #con=dbConnect(sqlite,dbfile, loadable.extensions=TRUE )
 
 #vectorImport <- readOGR(dsn="NUTS_BN_03M_2013.sqlite", layer="nuts_bn_03m_2013")
-#plot(vectorImport)
+myShapeInR<-readOGR(".","output8")
+plot(myShapeInR)
 
 
 
