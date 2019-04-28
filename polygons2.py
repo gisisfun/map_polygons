@@ -32,7 +32,7 @@ def line_intersection(line1, line2):
     return x, y
 
 def horizontal_lines(b_lat_min, b_lat_max, b_lon_min, b_lon_max, hor_seq,radial):
-    print('\n1/7 deriving horizontal longitude lines')
+    print('\n1/7 deriving horizontal list of reference points from north to south for longitudes or x axis')
     #lines of latitude from north to south
     #across min and max bounds latitude
     #min and max longitude from west to east
@@ -64,7 +64,7 @@ def horizontal_lines(b_lat_min, b_lat_max, b_lon_min, b_lon_max, hor_seq,radial)
     return hor_line_list
     
 def vertical_lines(b_lat_min, b_lat_max, b_lon_min, b_lon_max, vert_seq,radial):    
-    print('\n2/7 deriving vertical latitude lines ')
+    print('\n2/7 deriving horizontal list of reference points from east to west for latitudes or y axis')
     #lines of longitude from west to east
     #across min and max bounds from longitude
     #min to max latitude north to south
@@ -247,13 +247,18 @@ def boxes(north,south,east,west,radial,outfile):
     bounds_lat_max = south
     bounds_lon_max = east
     bounds_lon_min = west
-        
+
+    #1/7 deriving horizontal list of reference points for longitude or (x axis or north to south) lines    
     h_line_list = horizontal_lines(bounds_lat_min, bounds_lat_max, bounds_lon_min, bounds_lon_max, hor_seq,radial)
     num_h = len(h_line_list)
-    max_h = num_h-1    
+    max_h = num_h-1  
+    
+    #2/7 deriving horizontal list of reference points from east to west for latitudes or y axis  
     v_line_list = vertical_lines(bounds_lat_min, bounds_lat_max, bounds_lon_min, bounds_lon_max, vert_seq,radial)    
     num_v = len(v_line_list)
-    max_v = num_v-1    
+    max_v = num_v-1 
+
+      
     intersect_list = intersections(h_line_list,max_h,v_line_list,max_v)     
     
     print('\n4/7 deriving boxes polygons from intersection data')
@@ -316,7 +321,6 @@ def boxes(north,south,east,west,radial,outfile):
     print('The End')# end boxes
 
 def hexagons(north,south,east,west,radial,outfile):   
-
     params('hexagons',north,south,east,west,radial)
     
     if (os.name is 'posix'):
@@ -342,18 +346,22 @@ def hexagons(north,south,east,west,radial,outfile):
     bounds_lat_max = south
     bounds_lon_max = east
     bounds_lon_min = west
-    
+
+    #1/7 deriving horizontal list of reference points from north to south for longitudes or x axis
     hor_seq =[layer_dict['Hexagon']['short'], layer_dict['Hexagon']['short'], layer_dict['Hexagon']['short'], layer_dict['Hexagon']['short']]
-    
-    vert_seq =[layer_dict['Hexagon']['short'], layer_dict['Hexagon']['long'], layer_dict['Hexagon']['short'], layer_dict['Hexagon']['long']]
-    
     h_line_list = horizontal_lines(bounds_lat_min, bounds_lat_max, bounds_lon_min, bounds_lon_max, hor_seq,radial)
     max_h = len(h_line_list)
-    
+
+    #2/7 deriving horizontal list of reference points from east to west for latitudes or y axis
+    vert_seq =[layer_dict['Hexagon']['short'], layer_dict['Hexagon']['long'], layer_dict['Hexagon']['short'], layer_dict['Hexagon']['long']]
     v_line_list = vertical_lines(bounds_lat_min, bounds_lat_max, bounds_lon_min, bounds_lon_max, vert_seq,radial)    
     max_v = len(v_line_list)
-   
+
+    #3/7 deriving intersection point data between horizontal and vertical lines
     intersect_list = intersections(h_line_list,max_h,v_line_list,max_v)
+    intersect_df = pd.DataFrame(intersect_list) #convert intersect array to tabular data frame
+    intersect_df.columns = ['lat','long']
+    intersect_df.to_csv('csv{slash}intersect_dataset.csv'.format(outfile=outfile,slash=slash), sep=',')
     lat_offset = 4
     top_left = 0
     poly_row_count =int(max_v/ (len(hor_seq)))
@@ -367,7 +375,6 @@ def hexagons(north,south,east,west,radial,outfile):
 
     inc_by_rem = True
     inc_adj = 0
-    #if rem_lat is 0 or rem_lat is 1 or rem_lat is 2 or rem_lat is 3 or rem_lat is 4 or rem_lat is 5 or rem_lat is 6 or rem_lat is 7:
         
     if rem_lat is 2 or rem_lat is 5 or rem_lat is 6 or rem_lat is 7:
         inc_by_rem = True
@@ -379,18 +386,19 @@ def hexagons(north,south,east,west,radial,outfile):
         inc_by_rem = False
         inc_adj = 0
 
-
     print('\n4/7 deriving polygons from intersection data')
     row=1
     last_lat_row=0
     hexagon=0
-    row = 1
-    max_val=((max_h)*(max_v-3))-(max_h*0.5)
+    max_val=((max_h)*(max_v-3))-(max_h*0.255)
     while (top_left < max_val):
         vertex = [1+top_left, 2+top_left, max_v+3+top_left, (max_v*2)+2+top_left, (max_v*2)+1+top_left, max_v+top_left]
+
         poly_coords = [intersect_list[vertex[0]], intersect_list[vertex[1]], intersect_list[vertex[2]], intersect_list[vertex[3]], intersect_list[vertex[4]], intersect_list[vertex[5]], intersect_list[vertex[0]]]
+
         centre_lat=intersect_list[vertex[0]][1] + (intersect_list[vertex[5]][1 ] - intersect_list[vertex[0]][1])/2
         centre_lon=intersect_list[vertex[0]][0] + (intersect_list[vertex[5]][0] - intersect_list[vertex[0]][0])/2
+
             
         if (centre_lat is not last_lat_row) or last_lat_row is 0:
             bounds_n = intersect_list[vertex[0]][1]
@@ -398,25 +406,29 @@ def hexagons(north,south,east,west,radial,outfile):
             bounds_e = intersect_list[vertex[2]][0]
             bounds_w = intersect_list[vertex[5]][0]
             last_lat_row=centre_lat
+
             geopoly = Polygon([poly_coords])       
             hexagon+=1
             start=(intersect_list[vertex[0]][1],intersect_list[vertex[0]][0])
             end=(intersect_list[vertex[1]][1],intersect_list[vertex[1]][0])
+
             #len_radial = geodesic(start,end).km
             est_area = (((3 * sqrt(3))/2)*pow(radial,2))*.945 #estimate polygon area
-            geopoly = Feature(geometry=geopoly, properties={"p": hexagon,"row": row, "lat": centre_lat, "lon": centre_lon, "N": bounds_n, "S": bounds_s, "E": bounds_e, "W": bounds_w, "est_area": est_area})                                                                
+
+            geopoly = Feature(geometry=geopoly, properties={"p": hexagon,"row": row, "lat": centre_lat, "lon": centre_lon, "N": bounds_n, "S": bounds_s, "E": bounds_e, "W": bounds_w, "est_area": est_area}) 
+                                                             
             if  (bounds_e>bounds_w):
                 g_array.append(geopoly)     #append geojson geometry definition attributes to list
                 #tabular dataset
                 tabular_line = [top_left, row, centre_lat, centre_lon, bounds_n, bounds_s, bounds_e, bounds_w, est_area]
                 tabular_list.append(tabular_line) #array of polygon and tabular columns
         else:#centre_not last_row or last_lat_row is not 0
-            donothing=True
-                
+            donothing=True                
         last_row = row
         last_lat_row=centre_lat
         row=int(1+int(hexagon/poly_row_count))
         top_left += lat_offset
+
         if row is not last_row:
             top_left += inc_adj
             if inc_by_rem:
