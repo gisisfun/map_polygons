@@ -222,7 +222,7 @@ hexagons <- function(east,north,west,south,radial) {
         last_row <- row
         last_lat_row <- centre_lat
         
-        row <- round(0.5+(hexagon/(poly_row_count)),0)
+        row <- round(0.5+(hexagon+1/(poly_row_count)),0)
        
         top_left <- top_left + lat_offset
 
