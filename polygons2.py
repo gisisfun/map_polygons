@@ -230,6 +230,7 @@ def boxes(north,south,east,west,radial,outfile):
         slash='\/'
     #init bits
     poly_list = []
+    point_list =[]
     g_array=[] #array of geojson formatted geometry elements
     tabular_list=[] #array of all polygons and tabular columns
     layer_dict={'Bounds':{'Australia':{'North': north,'South': south,'West': west,'East': east}}}
@@ -275,10 +276,12 @@ def boxes(north,south,east,west,radial,outfile):
         bounds_s = intersect_list[vertex[3]][1]
         bounds_e = intersect_list[vertex[1]][0]
         bounds_w = intersect_list[vertex[0]][0]
+        geopoly = Polygon([poly_coords])            
+         geopoly = Feature(geometry=geopoly, properties={"p": top_left,"lat": centre_lat,"lon": centre_lon,\
+                                                        "N": bounds_n,"S": bounds_s,"E": bounds_e,"W": bounds_w})
         if bounds_e > bounds_w:
-            geopoly = Polygon([poly_coords])            
-            geopoly = Feature(geometry=geopoly, properties={"p": top_left,"lat": centre_lat,"lon": centre_lon,\
-                                                            "N": bounds_n,"S": bounds_s,"E": bounds_e,"W": bounds_w})
+            for i in range(0,5):
+                point_list.append([hexagon,str(intersect_list[vertex[i]][0])+str(intersect_list[vertex[i]][1])])
             g_array.append(geopoly) #append geojson geometry definition attributes to list
             #tabular dataset
             tabular_line = [top_left,centre_lat,centre_lon,\
@@ -298,7 +301,10 @@ def boxes(north,south,east,west,radial,outfile):
     file.write(str(boxes_geojson)) #write geojson layer to open file
     file.close() #close file
     
-    print('\n6/7 tabular dataset of {0} lines of boxes polygon data'.format(len(tabular_list)))      
+    print('\n6/7 tabular dataset of {0} lines of boxes polygon data'.format(len(tabular_list)))    
+    point_df=pd.DataFrame(point_list)
+    point_df.columns = ['poly','latlong']
+    point_df.to_csv('csv{slash}{outfile}_points.csv'.format(outfile=outfile,slash=slash), sep=',')
     print('writing tabular dataset to file: {0}_dataset.csv'.format(outfile))
     tabular_df = pd.DataFrame(tabular_list) #convert tabular array to tabular data frame
     tabular_df.columns = ['poly','lat','long','N','S','E','W']
