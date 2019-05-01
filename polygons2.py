@@ -3,12 +3,14 @@ import pandas as pd
 import json
 from geopy.distance import distance,geodesic
 from geojson import Polygon,Feature,FeatureCollection
+import geojson as gj
 from math import pow,sqrt
 import pandas as pd
 import subprocess
 import urllib.request
 from pyunpack import Archive
 import os
+import shapely.geometry as shply
 
 #1 deg longitude is about 88 km, 1 deg latitude  is about 110 km
 #http://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/1270.0.55.001July%202016?OpenDocument
@@ -113,6 +115,24 @@ def intersections(hor_line_list,hor_max,vert_line_list,vert_max):
 def params(shape,north,south,east,west,radial):
     print('Making {0} hex shapes starting from {1},{2} to {3},{4} with a radial length of {5} km'.format(shape, north, west, south, east, radial))
 
+def point_in_polygon(poly_coords,point_x,point_y):
+    p1 = Point(point_x, point_y)
+    poly = shply.Polygon(poly_coords)
+    return(poly.contains(p1))
+
+def points_in_polygon(poly_coords,poly_id,points_list):
+    i=0
+    p_count=0
+    poly = shply.Polygon(poly_coords)
+    for point in points_list:
+        print('x {x} y {y}'.format(x=points_list[i][0],y=points_list[i][1]))
+        p1 = Point(points_list[i][0],points_list[i][1])
+        if poly.contains(p1) is True:
+            p_count += 1        
+        i += 1
+    return poly_id,p_count
+    
+    
 def to_shp_tab(f_name,shape):
     if (os.name is 'posix'):
         cmd_text='/usr/bin/ogr2ogr'
@@ -280,6 +300,9 @@ def boxes(north,south,east,west,radial,outfile):
          geopoly = Feature(geometry=geopoly, properties={"p": top_left,"lat": centre_lat,"lon": centre_lon,\
                                                         "N": bounds_n,"S": bounds_s,"E": bounds_e,"W": bounds_w})
         if bounds_e > bounds_w:
+            #new bit here
+            print(point_in_polygon(poly_coords,150.4631878053463, -44.37207855857603))
+            #new bit here
             for i in range(0,5):
                 point_list.append([hexagon,str(intersect_list[vertex[i]][0])+str(intersect_list[vertex[i]][1])])
             g_array.append(geopoly) #append geojson geometry definition attributes to list
