@@ -201,41 +201,45 @@ def hexagons(north,south,east,west,radial,col_name,lat_longs):
     row=1
     last_lat_row=0
     hexagon=0
-    max_val=((max_h)*(max_v-3))-(max_h*0.255)
-    while (top_left < max_val):
+    #max_val=((max_h)*(max_v-3))-(max_h*0.255)
+    while (top_left < (max_h)*(max_v)):
         vertex = [1+top_left, 2+top_left, max_v+3+top_left, (max_v*2)+2+top_left, (max_v*2)+1+top_left, max_v+top_left]
-
-        poly_coords = [intersect_list[vertex[0]], intersect_list[vertex[1]], intersect_list[vertex[2]], intersect_list[vertex[3]], intersect_list[vertex[4]], intersect_list[vertex[5]], intersect_list[vertex[0]]]
+        try:
+            poly_coords = [intersect_list[vertex[0]], intersect_list[vertex[1]], intersect_list[vertex[2]], intersect_list[vertex[3]], intersect_list[vertex[4]], intersect_list[vertex[5]], intersect_list[vertex[0]]]
              
-        centre_lat=intersect_list[vertex[0]][1] + (intersect_list[vertex[5]][1 ] - intersect_list[vertex[0]][1])/2
-        centre_lon=intersect_list[vertex[0]][0] + (intersect_list[vertex[5]][0] - intersect_list[vertex[0]][0])/2
+            centre_lat=intersect_list[vertex[0]][1] + (intersect_list[vertex[5]][1 ] - intersect_list[vertex[0]][1])/2
+            centre_lon=intersect_list[vertex[0]][0] + (intersect_list[vertex[5]][0] - intersect_list[vertex[0]][0])/2
          
-        if (centre_lat is not last_lat_row) or last_lat_row is 0:
-            bounds_n = intersect_list[vertex[0]][1]
-            bounds_s = intersect_list[vertex[2]][1]
-            bounds_e = intersect_list[vertex[2]][0]
-            bounds_w = intersect_list[vertex[5]][0]
-            last_lat_row=centre_lat
+            if (centre_lat is not last_lat_row) or last_lat_row is 0:
+                bounds_n = intersect_list[vertex[0]][1]
+                bounds_s = intersect_list[vertex[2]][1]
+                bounds_e = intersect_list[vertex[2]][0]
+                bounds_w = intersect_list[vertex[5]][0]
+                last_lat_row=centre_lat
 
-            geo_poly = gj.Polygon([poly_coords])       
-            hexagon+=1
-            start=(intersect_list[vertex[0]][1],intersect_list[vertex[0]][0])
-            end=(intersect_list[vertex[1]][1],intersect_list[vertex[1]][0])
+                geo_poly = gj.Polygon([poly_coords])       
+                hexagon+=1
+                start=(intersect_list[vertex[0]][1],intersect_list[vertex[0]][0])
+                end=(intersect_list[vertex[1]][1],intersect_list[vertex[1]][0])
 
-            est_area = (((3 * sqrt(3))/2)*pow(radial,2))*.945 #estimate polygon area
+                est_area = (((3 * sqrt(3))/2)*pow(radial,2))*.945 #estimate polygon area
 
-            geo_poly = Feature(geometry=geo_poly, properties={"p": hexagon,"row": row, "lat": centre_lat, "lon": centre_lon, "N": bounds_n, "S": bounds_s, "E": bounds_e, "W": bounds_w, "est_area": est_area}) 
+                geo_poly = Feature(geometry=geo_poly, properties={"p": hexagon,"row": row, "lat": centre_lat, "lon": centre_lon, "N": bounds_n, "S": bounds_s, "E": bounds_e, "W": bounds_w, "est_area": est_area}) 
                                                              
-            if  (bounds_e>bounds_w):
-                g_array.append(geo_poly)     #append geojson geometry definition attributes to list
-                #new bit here
-                print(point_in_polygon(poly_coords,150.4631878053463, -44.37207855857603))
-                #new bit here
-                #tabular dataset
-                tabular_line = [top_left, row, centre_lat, centre_lon, bounds_n, bounds_s, bounds_e, bounds_w, est_area]
-                tabular_list.append(tabular_line) #array of polygon and tabular columns
-        else:#centre_not last_row or last_lat_row is not 0
-            donothing=True                
+                if  (bounds_e>bounds_w):
+                    g_array.append(geo_poly)     #append geojson geometry definition attributes to list
+                    #new bit here
+                    print(point_in_polygon(poly_coords,150.4631878053463, -44.37207855857603))
+                    #new bit here
+                    #tabular dataset
+                    tabular_line = [top_left, row, centre_lat, centre_lon, bounds_n, bounds_s, bounds_e, bounds_w, est_area]
+                    tabular_list.append(tabular_line) #array of polygon and tabular columns
+            else:#centre_not last_row or last_lat_row is not 0
+                donothing=True  
+                
+        except IndexError:
+                donothing=True
+        
         last_row = row
         last_lat_row=centre_lat
         row=int(1+int(hexagon/poly_row_count))
