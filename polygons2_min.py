@@ -6,10 +6,7 @@ from geojson import Polygon,Feature,FeatureCollection
 import shapely.geometry as shply
 import geojson as gj
 from math import pow,sqrt
-
-
-
-
+import random
 
 #1 deg longitude is about 88 km, 1 deg latitude  is about 110 km
 #http://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/1270.0.55.001July%202016?OpenDocument
@@ -25,7 +22,7 @@ def line_intersection(line1, line2):
 
     div = det(xdiff, ydiff)
     if div == 0:
-       raise Exception('lines do not intersect')
+        raise Exception('lines do not intersect')
 
     d = (det(*line1), det(*line2))
     x = det(d, xdiff) / div
@@ -33,7 +30,7 @@ def line_intersection(line1, line2):
     return x, y
 
 def horizontal_lines(b_lat_min, b_lat_max, b_lon_min, b_lon_max, hor_seq,radial):
-    print('\n1/7 deriving horizontal list of reference points from north to south for longitudes or x axis')
+    print('\n1/5 deriving horizontal list of reference points from north to south for longitudes or x axis')
     #lines of latitude from north to south
     #across min and max bounds latitude
     #min and max longitude from west to east
@@ -65,7 +62,7 @@ def horizontal_lines(b_lat_min, b_lat_max, b_lon_min, b_lon_max, hor_seq,radial)
     return hor_line_list
     
 def vertical_lines(b_lat_min, b_lat_max, b_lon_min, b_lon_max, vert_seq,radial):    
-    print('\n2/7 deriving horizontal list of reference points from east to west for latitudes or y axis')
+    print('\n2/5 deriving horizontal list of reference points from east to west for latitudes or y axis')
     #lines of longitude from west to east
     #across min and max bounds from longitude
     #min to max latitude north to south
@@ -100,7 +97,7 @@ def vertical_lines(b_lat_min, b_lat_max, b_lon_min, b_lon_max, vert_seq,radial):
     return vert_line_list
 
 def intersections(hor_line_list,hor_max,vert_line_list,vert_max):
-    print('\n3/7 deriving intersection point data between horizontal and vertical lines')
+    print('\n3/5 deriving intersection point data between horizontal and vertical lines')
     intersect_list=[]
     for h in range(0,hor_max):
         for v in range(0,vert_max):
@@ -115,31 +112,26 @@ def params(shape,north,south,east,west,radial):
     print('Making {0} hex shapes starting from {1},{2} to {3},{4} with a radial length of {5} km'.format(shape, north, west, south, east, radial))
 
 def point_in_polygon(coords_list,point_x,point_y):  
-   poly = shply.Polygon(coords_list)
-   p1=Point(point_x, point_y)
-   return p1.within(poly)
+    poly = shply.Polygon(coords_list)
+    p1=shply.Point(point_x, point_y)
+    return p1.within(poly)
 
 def points_in_polygon(poly_coords,poly_id,query_points_list):
-    tcount=1
-    i=0
     p_count=0
     poly = shply.Polygon(poly_coords)
+    i=0
     for point in query_points_list:
-        p1 = shply.Point(query_points_list[i][0],query_points_list[i][1])
+        #p1 = shply.Point(query_points_list[i][0],query_points_list[i][1])
+        p1 = shply.Point(point[0],point[1])
         if poly.contains(p1) is True:
             p_count += 1 
         i += 1        
     return poly_id,p_count
 
-def hexagons(north,south,east,west,radial,col_name,lat_longs):   
+def hexagons(north,south,east,west,radial,col_name,lat_longs):
+#def hexagons(north,south,east,west,radial,outfile):   
     params('hexagons',north,south,east,west,radial)
     
-    if (os.name is 'posix'):
-        cmd_text='/usr/bin/ogr2ogr'
-        slash='/'
-    else:
-        cmd_text='ogr2ogr.exe'
-        slash='\/'    
     #init bits
     poly_list = []
     g_array=[] #array of geojson formatted geometry elements
@@ -172,7 +164,7 @@ def hexagons(north,south,east,west,radial,col_name,lat_longs):
     intersect_list = intersections(h_line_list,max_h,v_line_list,max_v)
     intersect_df = pd.DataFrame(intersect_list) #convert intersect array to tabular data frame
     intersect_df.columns = ['lat','long']
-    intersect_df.to_csv('csv{slash}intersect_dataset.csv'.format(outfile=outfile,slash=slash), sep=',')
+    #intersect_df.to_csv('csv{slash}intersect_dataset.csv'.format(outfile=outfile,slash=slash), sep=',')
     lat_offset = 4
     top_left = 0
     poly_row_count =int(max_v/ (len(hor_seq)))
@@ -217,19 +209,22 @@ def hexagons(north,south,east,west,radial,col_name,lat_longs):
                 bounds_w = intersect_list[vertex[5]][0]
                 last_lat_row=centre_lat
 
-                geo_poly = gj.Polygon([poly_coords])       
+                geopoly = gj.Polygon([poly_coords])       
                 hexagon+=1
-                start=(intersect_list[vertex[0]][1],intersect_list[vertex[0]][0])
-                end=(intersect_list[vertex[1]][1],intersect_list[vertex[1]][0])
+                #start=(intersect_list[vertex[0]][1],intersect_list[vertex[0]][0])
+                #end=(intersect_list[vertex[1]][1],intersect_list[vertex[1]][0])
 
                 est_area = (((3 * sqrt(3))/2)*pow(radial,2))*.945 #estimate polygon area
 
-                geo_poly = Feature(geometry=geo_poly, properties={"p": hexagon,"row": row, "lat": centre_lat, "lon": centre_lon, "N": bounds_n, "S": bounds_s, "E": bounds_e, "W": bounds_w, "est_area": est_area}) 
-                                                             
+                #geo_poly = Feature(geometry=geo_poly, properties={"p": hexagon,"row": row, "lat": centre_lat, "lon": centre_lon, "N": bounds_n, "S": bounds_s, "E": bounds_e, "W": bounds_w, "est_area": est_area}) 
+                
+                                                              
                 if  (bounds_e>bounds_w):
-                    g_array.append(geo_poly)     #append geojson geometry definition attributes to list
+                    #append geojson geometry definition attributes to list
                     #new bit here
-                    print(point_in_polygon(poly_coords,150.4631878053463, -44.37207855857603))
+                    (poly,pcount)=points_in_polygon(poly_coords,hexagon,lat_longs)
+                    geopoly = Feature(geometry=geopoly, properties={"p": hexagon,"random_points": pcount, "est_area": est_area})
+                    g_array.append(geopoly)   
                     #new bit here
                     #tabular dataset
                     tabular_line = [top_left, row, centre_lat, centre_lon, bounds_n, bounds_s, bounds_e, bounds_w, est_area]
@@ -254,12 +249,33 @@ def hexagons(north,south,east,west,radial,col_name,lat_longs):
             if row & 1:# is odd
                 top_left += -2    
         
-    print('\n55 geojson dataset of {0} derived hexagon polygons'.format(len(g_array)))
+    print('\n5/5 geojson dataset of {0} derived hexagon polygons'.format(len(g_array)))
     hexagons_geojson = FeatureCollection(g_array) #convert merged geojson features to geojson feature geohex_geojson 
     g_array=[] #release g_array - array of geojson geometry elements
 
     print('\n')
     print('The End')# hexagons
+    return hexagons_geojson
     
-hexagons(-8, -45, 168, 96, 57, 'hex_57km')
-
+def test_hexagons():
+    bounds_n=-8
+    bounds_s=-45
+    bounds_e=168
+    bounds_w=96
+    file = open('geojson_layer.json', 'w') #open file for writing geojson layer in geojson format
+    file.write(str(hexagons(bounds_n,bounds_s,bounds_e,bounds_w, 'random',random_points(bounds_n,bounds_s,bounds_e,bounds_w,10000)))) #write geojson layer to open file
+    file.close() #close file
+    
+def random_points(bounds_n,bounds_s,bounds_e,bounds_w,numpoints):
+    ns_range = bounds_n - bounds_s
+    ew_range = bounds_e - bounds_w
+    coord_list=[]
+    for i in range(0,numpoints):
+        y_coord = bounds_s+random.randrange(0, ns_range*10000)/10000
+        x_coord = bounds_w+random.randrange(0, ew_range*10000)/10000
+        coord=[x_coord,y_coord]
+        coord_list.append(coord)
+    return coord_list    
+   
+#print(random_points(-8,-45,168,96,2))
+#test_hexagons
