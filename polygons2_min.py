@@ -1,6 +1,6 @@
 
 import pandas as pd
-import json
+#import json
 from geopy.distance import distance,geodesic
 from geojson import Polygon,Feature,FeatureCollection
 import shapely.geometry as shply
@@ -116,13 +116,14 @@ def point_in_polygon(coords_list,point_x,point_y):
     p1=shply.Point(point_x, point_y)
     return p1.within(poly)
 
-def points_in_polygon(poly_coords,poly_id,query_points_list):
+def points_in_polygon(poly_coords,poly_id,bound_points_df):
     p_count=0
     poly = shply.Polygon(poly_coords)
     i=0
-    for point in query_points_list:
+    for index, row in bound_points_df.iterrows():
         #p1 = shply.Point(query_points_list[i][0],query_points_list[i][1])
-        p1 = shply.Point(point[0],point[1])
+        p1 = shply.Point(row['longitude'], row['latitude'])
+        
         if poly.contains(p1) is True:
             p_count += 1 
         i += 1        
@@ -131,7 +132,10 @@ def points_in_polygon(poly_coords,poly_id,query_points_list):
 def hexagons(north,south,east,west,radial,col_name,lat_longs):
 #def hexagons(north,south,east,west,radial,outfile):   
     params('hexagons',north,south,east,west,radial)
+    lat_longs_df=pd.DataFrame(lat_longs)
+    lat_longs_df.columns = ['longitude','latitude']
     
+
     #init bits
     poly_list = []
     g_array=[] #array of geojson formatted geometry elements
@@ -216,18 +220,31 @@ def hexagons(north,south,east,west,radial,col_name,lat_longs):
 
                 est_area = (((3 * sqrt(3))/2)*pow(radial,2))*.945 #estimate polygon area
 
-                #geo_poly = Feature(geometry=geo_poly, properties={"p": hexagon,"row": row, "lat": centre_lat, "lon": centre_lon, "N": bounds_n, "S": bounds_s, "E": bounds_e, "W": bounds_w, "est_area": est_area}) 
-                
-                                                              
+                #geo_poly = Feature(geometry=geo_poly, properties={"p": hexagon,"row": row, "lat": centre_lat, "lon": centre_lon, "N": bounds_n, "S": bounds_s, "E": bounds_e, "W": bounds_w, "est_area": est_area})
                 if  (bounds_e>bounds_w):
                     #append geojson geometry definition attributes to list
-                    #new bit here
-                    (poly,pcount)=points_in_polygon(poly_coords,hexagon,lat_longs)
-                    geopoly = Feature(geometry=geopoly, properties={"p": hexagon,"random_points": pcount, "est_area": est_area})
+                    #*** new bit here ***
+                    
+                    points_df=lat_longs_df[(lat_longs_df['latitude'] >= bounds_s) & \
+                                              (lat_longs_df['latitude'] <= bounds_n)  & \
+                                              (lat_longs_df['longitude'] <= bounds_e) & \
+                                              (lat_longs_df['longitude'] >= bounds_w)]
+
+                    total_rows = len(points_df)
+                    
+                    pcount=0
+                    if (total_rows >= 1):
+                        (poly,pcount)=points_in_polygon(poly_coords,hexagon,points_df)
+
+                    #*** new bit here ***
+                        
+                    geopoly = Feature(geometry=geopoly, properties={"p": hexagon,"random_points": \
+                                     pcount, "est_area": est_area})
                     g_array.append(geopoly)   
-                    #new bit here
+                    
                     #tabular dataset
-                    tabular_line = [top_left, row, centre_lat, centre_lon, bounds_n, bounds_s, bounds_e, bounds_w, est_area]
+                    tabular_line = [top_left, row, centre_lat, centre_lon, bounds_n, bounds_s, \
+                                    bounds_e, bounds_w, est_area]
                     tabular_list.append(tabular_line) #array of polygon and tabular columns
             else:#centre_not last_row or last_lat_row is not 0
                 donothing=True  
@@ -263,7 +280,7 @@ def test_hexagons():
     bounds_e=168
     bounds_w=96
     file = open('geojson_layer.json', 'w') #open file for writing geojson layer in geojson format
-    file.write(str(hexagons(bounds_n,bounds_s,bounds_e,bounds_w, 'random',random_points(bounds_n,bounds_s,bounds_e,bounds_w,10000)))) #write geojson layer to open file
+    file.write(str(hexagons(bounds_n,bounds_s,bounds_e,bounds_w, 57,'random',random_points(bounds_n,bounds_s,bounds_e,bounds_w,1000)))) #write geojson layer to open file
     file.close() #close file
     
 def random_points(bounds_n,bounds_s,bounds_e,bounds_w,numpoints):
@@ -278,4 +295,5 @@ def random_points(bounds_n,bounds_s,bounds_e,bounds_w,numpoints):
     return coord_list    
    
 #print(random_points(-8,-45,168,96,2))
-#test_hexagons
+test_hexagons()
+
