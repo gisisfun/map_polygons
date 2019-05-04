@@ -327,8 +327,9 @@ def random_points(bounds_n,bounds_s,bounds_e,bounds_w,numpoints):
         y_coords_list.append(y_coord)
         
     layer_dict['Column']['Random']['X_Coord']=x_coords_list
-    layer_dict['Column']['Random']['Y_Coord']=y_coords_list    
-    #print(layer_dict)
+    layer_dict['Column']['Random']['Y_Coord']=y_coords_list
+    layer_json=json.dumps(layer_dict)
+    print(layer_json)
     return coord_list    
    
 #print(random_points(-8,-45,168,96,2))
