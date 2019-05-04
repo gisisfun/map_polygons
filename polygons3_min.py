@@ -230,17 +230,16 @@ def hexagons(north,south,east,west,radial,col_name,lat_longs):
                                               (lat_longs_df['longitude'] <= bounds_e) & \
                                               (lat_longs_df['longitude'] >= bounds_w)]
 
-                    total_rows = len(points_df)
-                    
+                    total_rows = len(points_df)                    
                     pcount=0
                     if (total_rows >= 1):
                         (poly,pcount)=points_in_polygon(poly_coords,hexagon,points_df)
 
                     #*** new bit here ***
-                        
-#                    geopoly = Feature(geometry=geopoly, properties={"p": hexagon,"random_points": \
-#                                     pcount, "est_area": est_area})
-                    template='{"geometry": {"coordinates": [[[x0, y0], [x1, y1], [x2, y2], [x3, y3], [x4, y4], [x5, y5], [x0, y0]]], "type": "Polygon"}, "properties": {"p": polyval, "col_name": colval, "est-area": areaval}, "type": "Feature"}'
+                    template='''{"geometry": {"coordinates": [[[x0, y0], [x1, y1],\
+[x2, y2], [x3, y3], [x4, y4], [x5, y5], [x0, y0]]], "type": "Polygon"}, \
+"properties": {"p": polyval, "col_name": colval, "est-area": areaval}, \
+"type": "Feature"}'''
 
                     geopoly=template.replace('x0',str(intersect_list[vertex[0]][0]))\
                              .replace('y0',str(intersect_list[vertex[0]][1]))\
@@ -257,14 +256,6 @@ def hexagons(north,south,east,west,radial,col_name,lat_longs):
                              .replace('polyval',str(hexagon))\
                              .replace('colval',str(pcount))\
                              .replace('areaval',str(est_area))
-#                    ndict={'p': hexagon}
-#                    ndict.update( {'col_name' : pcount} )
-#                    ndict.update({'est-area' : est_area} )
-#                    ndict_json = str(json.dumps(ndict)).replace('\\','')
-#                    print(ndict_json)
-#                    
-#                    geopoly = Feature(geometry=geopoly, properties=ndict_json)
-                    
                     g_array.append(geopoly)   
                     
                     #tabular dataset
@@ -290,14 +281,9 @@ def hexagons(north,south,east,west,radial,col_name,lat_longs):
                 top_left += 2
             if row & 1:# is odd
                 top_left += -2    
-    print(' '.join(g_array)[:-2])
     print('\n5/5 geojson dataset of {0} derived hexagon polygons'.format(len(g_array)))
     hextext=', '.join(g_array)
     hexagons_geojson='{"features": ['+hextext+'], "type": "FeatureCollection"}'
-#    for polyline in g_array:
-#        hexagons_geojson=hexagons_geojson.rstrip()+polyline.rstrip()
-#    hexagons_geojson = hexagons_geojson[:-2].rstrip() +'], "type": "FeatureCollection"}'
-    #hexagons_geojson = FeatureCollection(g_array) #convert merged geojson features to geojson feature geohex_geojson 
     g_array=[] #release g_array - array of geojson geometry elements
 
     print('\n')
@@ -314,14 +300,35 @@ def test_hexagons():
     file.close() #close file
     
 def random_points(bounds_n,bounds_s,bounds_e,bounds_w,numpoints):
+    layer_dict={'Bounds':{'Australia':{'North': bounds_n ,'South': bounds_s,'West': bounds_w,'East': bounds_e}}}
+    layer_dict['Param']={}
+    layer_dict['Param']['side_km'] = {}
+    layer_dict['Param']['epsg'] = 4326
+    layer_dict['Param']['shape'] = 'hexagon'
+    layer_dict['Column']={}
+    layer_dict['Column']['Random']={}
+    layer_dict['Column']['Random']['X_Coord']={}
+    layer_dict['Column']['Random']['Y_Coord']={}
+    
+    
     ns_range = bounds_n - bounds_s
     ew_range = bounds_e - bounds_w
     coord_list=[]
+
+    x_coords_list=[]
+    y_coords_list=[]
+    
     for i in range(0,numpoints):
         y_coord = bounds_s+random.randrange(0, ns_range*10000)/10000
         x_coord = bounds_w+random.randrange(0, ew_range*10000)/10000
         coord=[x_coord,y_coord]
         coord_list.append(coord)
+        x_coords_list.append(x_coord)
+        y_coords_list.append(y_coord)
+        
+    layer_dict['Column']['Random']['X_Coord']=x_coords_list
+    layer_dict['Column']['Random']['Y_Coord']=y_coords_list    
+    #print(layer_dict)
     return coord_list    
    
 #print(random_points(-8,-45,168,96,2))
