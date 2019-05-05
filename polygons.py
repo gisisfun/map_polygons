@@ -211,7 +211,7 @@ def ref_files():
     else:
         print('ABS Australia file in Shape file format exists')
     
-    if not os.path.isfile('AUS_2016_AUST.tab'):
+    if not os.path.isfile('tabfiles/AUS_2016_AUST.tab'):
         print('Downloading ABS Australia file in Tab file format')
         url ='http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_tab.zip&1270.0.55.001&Data%20Cubes&F18065BF058615F9CA2581640014491B&0&July%202016&24.07.2017&Latest'
         urllib.request.urlretrieve(url, 'shapefiles{slash}1270055001_aus_2016_aust_tab.zip'.format(slash=slash)) 
@@ -446,6 +446,12 @@ def hexagons(north,south,east,west,radial,outfile):
         point_df=pd.DataFrame(point_list)
         point_df.columns = ['poly','latlong']
         point_df.to_csv('csv{slash}{outfile}_points.csv'.format(outfile=outfile,slash=slash), sep=',')
+        #not finished yet
+        point_df_a=point_df#make copy of dataframe
+        process_point_df=pd.merge(point_df, point_df_a, on='latlong') # merge columns of same dataframe on concatenated latlong
+        process_point_df = process_point_df[(process_point_df['poly_x'] != process_point_df['poly_y'])] # remove self references
+        output_point_df =  process_point_df[['poly_x', 'poly_y']].copy().sort_values(by=['poly_x']).drop_duplicates()#just leave polygon greferences and filter output
+        output_point_df.to_csv('csv{slash}{outfile}_neighbours.csv'.format(outfile=outfile,slash=slash), sep=',')
         
         tabular_df = pd.DataFrame(tabular_list) #convert tabular array to tabular data frame
         tabular_df.columns = ['poly','row','lat','long','N','S','E','W','area']
@@ -485,18 +491,9 @@ else:
         shape=str(shape)
         print(shape)
         if shape == "hex":
-
-            hexagons(float(b_north),
-            float(b_south),
-            float(b_east),
-        float(b_west),  
-            float(radial_d),f_name)
+            hexagons(float(b_north),float(b_south),float(b_east),float(b_west), float(radial_d),f_name)
         else:
             if shape == "box":
-                boxes(float(b_north),
-            float(b_south),
-            float(b_east),
-        float(b_west),  
-            float(radial_d),f_name)
+                boxes(float(b_north),float(b_south),float(b_east),float(b_west),float(radial_d),f_name)
             else:
                 print('shape is hex or box')
