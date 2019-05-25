@@ -1,6 +1,5 @@
 city,city_ascii,lat,lng,country,iso2,iso3,admin_name,capital,population,id
 Kingoonya,Kingoonya,-30.8996,135.3,Australia,AU,AUS,South Australia,,50,1036942792
-test,test,-43.64714,97.50675,Australia,,,,,,
 Port Denison,Port Denison,-29.2828,114.9166,Australia,AU,AUS,Western Australia,,1213,1036873405
 Cairns,Cairns,-16.8878,145.7633,Australia,AU,AUS,Queensland,,154225,1036016939
 Kwinana,Kwinana,-32.2394,115.7702,Australia,AU,AUS,Western Australia,,20086,1036753478
