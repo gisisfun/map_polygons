@@ -16,16 +16,18 @@ new.point <- function(latlong,dist,angle) {
   return(newlatlong)
 }
 
-points_in_polygon <- function (ref_points,poly_points){
+points_in_polygon <- function (poly,ref_points,poly_points){
+  
   poly_x <- poly_points[c(TRUE, FALSE)]
   poly_y <- poly_points[c(FALSE, TRUE)]
   p_count <- 0
   i <- 0
   for(row in 1:length(poly_points)) {
-    i <- i +1
+    i <- i + 1
     #cat(ref_points$lng[i],ref_points$lat[i],'\n')
     isin <- point.in.polygon(ref_points$lng[i],ref_points$lat[i],poly_x,poly_y) 
     p_count <- p_count + isin
+    if (isin == 1) {cat(ref_points$population[i],',',ref_points$city_ascii[i],',',ref_points$lng[i],',',ref_points$lat[i],',',poly,'\n')}
     #cat(i,'\n')
   }
   return(p_count)
@@ -82,9 +84,9 @@ vertical <- function(east,north,west,south,radial,vert_seq) {
 }
 
 
-makeHexagon <- function(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,row) 
+makeHexagon <- function(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,row,colname,colvalue) 
 { 
-  templ_hexagon <-'{"geometry": {"coordinates": [[[x1, y1], [x2, y2], [x3, y3], [x4, y4], [x5, y5], [x6, y6], [x1, y1]]], "type": "Polygon"}, "properties": {"E": be, "N": bn, "S": bs, "W": bw, "est_area": earea, "lat": latc, "lon": lonc, "p": polyn, "row": rown}, "type": "Feature"}, '
+  templ_hexagon <-'{"geometry": {"coordinates": [[[x1, y1], [x2, y2], [x3, y3], [x4, y4], [x5, y5], [x6, y6], [x1, y1]]], "type": "Polygon"}, "properties": {"E": be, "N": bn, "S": bs, "W": bw, "est_area": earea, "lat": latc, "lon": lonc, "p": polyn, "row": rown, "colname": colvalue}, "type": "Feature"}, '
   out_hexagon <- gsub("x1", poly_coords[1], templ_hexagon)
   out_hexagon <- gsub("x2", poly_coords[3], out_hexagon)   
   out_hexagon <- gsub("x3", poly_coords[5], out_hexagon) 
@@ -108,6 +110,8 @@ makeHexagon <- function(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area
   out_hexagon <- gsub("lonc", centre_lon, out_hexagon)    
   out_hexagon <- gsub("polyn", hexagon, out_hexagon) 
   out_hexagon <- gsub("rown", row, out_hexagon) 
+  out_hexagon <- gsub("colname", colname, out_hexagon) 
+  out_hexagon <- gsub("colvalue", colvalue, out_hexagon) 
   
   return(out_hexagon)
 }
@@ -117,13 +121,17 @@ is.even <- function(x) {return(!is.odd(x))}
 is.odd <- function(x) {return(intToBits(x)[1] == 1)}
 
 hexagons <- function(east,north,west,south,radial) {
-  
+  #
+  # New Bit Start
+  #
   MyData <- read.csv(file="/home/pi/Downloads/map_polygons-master/csv/cities.csv", header=TRUE, sep=",")
   attach(MyData)
-  point_coords <- data.frame(city,lng,lat)
+  point_coords <- data.frame(population,city_ascii,lng,lat)
   detach(MyData)
   point_coords
-  
+  #
+  # New Bit End
+  #
   #bbox <- c(113.338953078, -43.6345972634, 153.569469029, -10.6681857235)
   
   #east <- c(bbox[1]) #east
@@ -213,21 +221,21 @@ hexagons <- function(east,north,west,south,radial) {
     end <- c(poly_coords[4],poly_coords[3])
     est_area <- 0.945 * ((3 * sqrt(3))/2)*(radial^2) #estimate polygon area
     #
-    #new bit start
+    # New Bit Start
     #
     
-    points_df <- point_coords[which((point_coords$lat >= bounds_s) & (point_coords$lat <= bounds_n) & 
+    points_df <- point_coords[which((point_coords$city != '') & (point_coords$lat >= bounds_s) & (point_coords$lat <= bounds_n) & 
                                       (point_coords$lng <= bounds_e) & (point_coords$lng >= bounds_w)),]
-    row.has.na <- apply(points_df, 1, function(x){any(is.na(x))})
-    ref_points <- points_df[!row.has.na,]
-    p_count <- points_in_polygon(ref_points,poly_coords)
+    ref_points <- na.omit(points_df)
+    #row.has.na <- apply(points_df, 1, function(x){any(is.na(x))})
+    #ref_points <- points_df[!row.has.na,]
+    p_count <- points_in_polygon(hexagon,ref_points,poly_coords)
     
     #
-    #new bit end
+    # New Bit End
     #
     
-    geopoly <- makeHexagon(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,row)
-    
+    geopoly <- makeHexagon(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,row,'test',p_count)
     
     #if ((poly_coords[1] > poly_coords[11])) 
     if (bounds_e > bounds_w) 
