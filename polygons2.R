@@ -1,14 +1,11 @@
   library('geosphere')
   #library('geojson')
   library('sp')
-  #library('gdalUtils')
+  library('gdalUtils')
   #library('RSQLite')
-  #library('rgdal')
+  library('rgdal')
   library('csvread')
-  
-  
-  #Create a function to print squares of numbers in sequence.
-  
+
   new.point <- function(latlong,dist,angle) {   
     #c <- destPoint(cbind(tail(latlong[1], n=1),tail(latlong[2], n=1)), b=angle, d=dist*1000, a=6378137, f=1/298.257223563)
     c <- geodesic(cbind(tail(latlong[1], n=1),tail(latlong[2], n=1)), azi=angle, d=dist*1000, a=6378137, f=1/298.257223563)
@@ -18,7 +15,6 @@
   }
   
   points_in_polygon <- function (poly,ref_points,poly_points){
-    
     poly_x <- poly_points[c(TRUE, FALSE)]
     poly_y <- poly_points[c(FALSE, TRUE)]
     p_count <- 0
@@ -59,7 +55,6 @@
       latitudes <- c(latitudes,p[1])
       longitudes <- c(longitudes,p[2])
     }
-    
     return(longitudes)
   }
   
@@ -80,12 +75,17 @@
       if (new_east >= west){ break}
       latitudes <- c(latitudes,p[1])    
     }
-    
     return(latitudes)
   }
   
   
-  makeHexagon <- function(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,row,colname,colvalue) 
+  MyData <- read.csv(file="/home/pi/Downloads/map_polygons-master/csv/cities.csv", header=TRUE,colClasses=c("city"="character"), sep=",")
+  attach(MyData)
+  point_coords <- data.frame(population,city,lng,lat)
+  detach(MyData)
+  #point_coords
+  
+  makeHexagon <- function(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,rowno,colname,colvalue) 
   { 
     templ_hexagon <-'{"geometry": {"coordinates": [[[x1, y1], [x2, y2], [x3, y3], [x4, y4], [x5, y5], [x6, y6], [x1, y1]]], "type": "Polygon"}, "properties": {"E": be, "N": bn, "S": bs, "W": bw, "est_area": earea, "lat": latc, "lon": lonc, "p": polyn, "row": rown, "colname": colvalue}, "type": "Feature"}, '
     out_hexagon <- gsub("x1", poly_coords[1], templ_hexagon)
@@ -110,7 +110,7 @@
     out_hexagon <- gsub("latc", centre_lat, out_hexagon)   
     out_hexagon <- gsub("lonc", centre_lon, out_hexagon)    
     out_hexagon <- gsub("polyn", hexagon, out_hexagon) 
-    out_hexagon <- gsub("rown", row, out_hexagon) 
+    out_hexagon <- gsub("rown", rowno, out_hexagon) 
     out_hexagon <- gsub("colname", colname, out_hexagon) 
     out_hexagon <- gsub("colvalue", colvalue, out_hexagon) 
     
@@ -193,7 +193,7 @@
       inc_adj <- 0}
     
     cat('\n4/7 deriving polygons from intersection points\n')
-    row <- 1
+    rowno <- 1
     last_row <- 1
     
     len_val <- ((len_h)*(len_v-3))-(len_h*0.3)
@@ -201,9 +201,9 @@
     {     
       vertex <- c(1, 2, len_v+3, (len_v*2)+2, (len_v*2)+1, len_v+0)+top_left  
       poly_coords <- c(intersect_df[vertex[1], 1], intersect_df[vertex[1], 2], intersect_df[vertex[2], 1], 
-                       intersect_df[vertex[2], 2], intersect_df[vertex[3], 1], intersect_df[vertex[3], 2],intersect_df[vertex[4], 1], 
-                       intersect_df[vertex[4], 2], intersect_df[vertex[5], 1], intersect_df[vertex[5], 2],intersect_df[vertex[6], 1], 
-                       intersect_df[vertex[6], 2], intersect_df[vertex[1], 1], intersect_df[vertex[1], 2])
+  intersect_df[vertex[2], 2], intersect_df[vertex[3], 1], intersect_df[vertex[3], 2],intersect_df[vertex[4], 1], 
+  intersect_df[vertex[4], 2], intersect_df[vertex[5], 1], intersect_df[vertex[5], 2],intersect_df[vertex[6], 1], 
+  intersect_df[vertex[6], 2], intersect_df[vertex[1], 1], intersect_df[vertex[1], 2])
       
       poly_points <- matrix(poly_coords, ncol=2, byrow=TRUE)
       centre_lat <- poly_coords[2] + (poly_coords[12] - poly_coords[2])/2
@@ -247,16 +247,16 @@
       
       #last_centre_lat <- centre_lat
       
-      last_row <- row
+      last_row <- rowno
       last_lat_row <- centre_lat
-      row <- round(0.51+(hexagon/(poly_row_count)),0)
+      rowno <- round(0.51+(hexagon/(poly_row_count)),0)
       top_left <- top_left + lat_offset
       
-      if (row != last_row && row != 1)
+      if (rowno != last_row && rowno != 1)
       {
         top_left <- top_left + inc_adj 
         if (inc_by_rem == TRUE) {top_left <-  top_left + rem_lat}
-        if (row %% 2 == 0) 
+        if (rowno %% 2 == 0) 
         {
           top_left <-  top_left + 2
           even_row <- TRUE
@@ -296,7 +296,7 @@
     
     print(perimeter(poly_points))
     print(isok) #1 result is ok
-    rem_lat <- len_v%%(lat_offset+4)
+    rem_lat <- len_v+1%%(lat_offset+4)
     print(rem_lat)
     
     cat('\npoly_x is:',poly_x,'\n')
@@ -330,26 +330,30 @@
   #detach(MyData)
   #point_coords
   
-  output <- hexagons(96,  -8,168,  -45,57)#,point_coords)
+  output <- hexagons(96,  -8,168,  -45,34)
+#point_coords
+
+fileConn<-file('output8.json')
+writeLines(output, fileConn)
+close(fileConn)
+#convert and reproject
+ogr2ogr(src_datasource_name='output8.json',f='ESRI Shapefile',dst_datasource_name='output8.shp',t_srs="EPSG:4283",verbose=TRUE)
+#run query
+#ogr2ogr(src_datasource_name='all.vrt',dialect='sqlite',sql='select * from shapes',dst_datasource_name='output8_q1.csv',verbose=TRUE)
+
+#ogr2ogr(src_datasource_name='all.vrt',dialect='sqlite',sql='select * from fred',dst_datasource_name='output8_q2.csv',verbose=TRUE)
+
+#ogr2ogr(src_datasource_name='output8.shp',t_srs="EPSG:4283",dst_datasource_name='output8_q2.csv',layer='track+points',verbose=TRUE)
+
+#ogr2ogr -F "SQLite" -t_srs '+proj=utm +zone=10 +datum=NAD83' trip1_track_points.db trip1.gpx track_points
+#dbfile="Path/To/field.sqlite"
+
+#sqlite=dbDriver("SQLite")
+#con=dbConnect(sqlite,dbfile, loadable.extensions=TRUE )
+
+#vectorImport <- readOGR(dsn="NUTS_BN_03M_2013.sqlite", layer="nuts_bn_03m_2013")
+myShapeInR<-readOGR(".","output8")
+plot(myShapeInR)
+#point_coords
   
-  fileConn<-file("output8.json")
-  writeLines(output, fileConn)
-  close(fileConn)
-  #convert and reproject
-  #ogr2ogr(src_datasource_name='output8.json',f='ESRI Shapefile',dst_datasource_name='output8.shp',t_srs="EPSG:4283",verbose=TRUE)
-  #run query
-  #ogr2ogr(src_datasource_name='all.vrt',dialect='sqlite',sql='select * from shapes',dst_datasource_name='output8_q1.csv',verbose=TRUE)
   
-  #ogr2ogr(src_datasource_name='all.vrt',dialect='sqlite',sql='select * from fred',dst_datasource_name='output8_q2.csv',verbose=TRUE)
-  
-  #ogr2ogr(src_datasource_name='output8.shp',t_srs="EPSG:4283",dst_datasource_name='output8_q2.csv',layer='track+points',verbose=TRUE)
-  
-  #ogr2ogr -F "SQLite" -t_srs '+proj=utm +zone=10 +datum=NAD83' trip1_track_points.db trip1.gpx track_points
-  #dbfile="Path/To/field.sqlite"
-  
-  #sqlite=dbDriver("SQLite")
-  #con=dbConnect(sqlite,dbfile, loadable.extensions=TRUE )
-  
-  #vectorImport <- readOGR(dsn="NUTS_BN_03M_2013.sqlite", layer="nuts_bn_03m_2013")
-  #myShapeInR<-readOGR(".","output8")
-  #plot(myShapeInR)
