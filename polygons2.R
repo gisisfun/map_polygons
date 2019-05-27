@@ -1,10 +1,10 @@
   library('geosphere')
   #library('geojson')
   library('sp')
-  library('gdalUtils')
+  #library('gdalUtils')
   #library('RSQLite')
-  library('rgdal')
-  library('csvread')
+  #library('rgdal')
+  #library('csvread')
 
   new.point <- function(latlong,dist,angle) {   
     #c <- destPoint(cbind(tail(latlong[1], n=1),tail(latlong[2], n=1)), b=angle, d=dist*1000, a=6378137, f=1/298.257223563)
@@ -79,7 +79,7 @@
   }
   
   
-  MyData <- read.csv(file="/home/pi/Downloads/map_polygons-master/csv/cities.csv", header=TRUE,colClasses=c("city"="character"), sep=",")
+  MyData <- read.csv(file="csv/cities.csv", header=TRUE,colClasses=c("city"="character"), sep=",")
   attach(MyData)
   point_coords <- data.frame(population,city,lng,lat)
   detach(MyData)
@@ -126,7 +126,7 @@
     # New Bit Start
     #
     stringsAsFactors = FALSE
-    MyData <- read.csv(file="/home/pi/Downloads/map_polygons-master/csv/cities.csv", header=TRUE,colClasses=c("city"="character", "admin_name"="character"), sep=",")
+    MyData <- read.csv(file="csv/cities.csv", header=TRUE,colClasses=c("city"="character", "admin_name"="character"), sep=",")
     #sapply(MyData, typeof)
     #attach(MyData)
     #point_coords <- data.frame(city,city_ascii,population,lng,lat)
@@ -235,7 +235,7 @@
       # New Bit End
       #
       
-      geopoly <- makeHexagon(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,row,'test',p_count)
+      geopoly <- makeHexagon(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,rowno,'test',p_count)
       
       #if ((poly_coords[1] > poly_coords[11])) 
       if (bounds_e > bounds_w) 
@@ -280,6 +280,7 @@
     print('the end')
     return(gj_string)
   }#end function hexagon
+
   otherbits <- function()
   {
     poly_points <- matrix(poly_coords, ncol=2, byrow=TRUE)
@@ -337,7 +338,7 @@ fileConn<-file('output8.json')
 writeLines(output, fileConn)
 close(fileConn)
 #convert and reproject
-ogr2ogr(src_datasource_name='output8.json',f='ESRI Shapefile',dst_datasource_name='output8.shp',t_srs="EPSG:4283",verbose=TRUE)
+#ogr2ogr(src_datasource_name='output8.json',f='ESRI Shapefile',dst_datasource_name='output8.shp',t_srs="EPSG:4283",verbose=TRUE)
 #run query
 #ogr2ogr(src_datasource_name='all.vrt',dialect='sqlite',sql='select * from shapes',dst_datasource_name='output8_q1.csv',verbose=TRUE)
 
@@ -352,8 +353,8 @@ ogr2ogr(src_datasource_name='output8.json',f='ESRI Shapefile',dst_datasource_nam
 #con=dbConnect(sqlite,dbfile, loadable.extensions=TRUE )
 
 #vectorImport <- readOGR(dsn="NUTS_BN_03M_2013.sqlite", layer="nuts_bn_03m_2013")
-myShapeInR<-readOGR(".","output8")
-plot(myShapeInR)
+#myShapeInR<-readOGR(".","output8")
+#plot(myShapeInR)
 #point_coords
   
   
