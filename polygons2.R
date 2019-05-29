@@ -14,9 +14,10 @@
     return(newlatlong)
   }
   
-  points_in_polygon <- function (poly,ref_points,poly_points){
+points_in_polygon <- function (poly,ref_points,poly_points){
     poly_x <- poly_points[c(TRUE, FALSE)]
     poly_y <- poly_points[c(FALSE, TRUE)]
+    p_list <- setNames(data.frame(matrix(ncol = 5, nrow = 0)), c("poly","city", "state", "lng","lat"))
     p_count <- 0
     i <- 0
     for(row in 1:length(poly_points)) {
@@ -24,9 +25,14 @@
       #cat(ref_points$lng[i],ref_points$lat[i],'\n')
       isin <- point.in.polygon(ref_points$lng[i],ref_points$lat[i],poly_x,poly_y) 
       p_count <- p_count + isin
-      if (isin == 1) {cat(poly,',',ref_points$city[i],',',ref_points$admin_name[i],',',ref_points$lng[i],',',ref_points$lat[i],'\n')}
+      if (isin == 1)
+      {
+        cat(poly,',',ref_points$city[i],',',ref_points$admin_name[i],',',ref_points$lng[i],',',ref_points$lat[i],'\n')
+        p_list[nrow(p_list) + 1,] = list(poly,ref_points$admin_name[i],ref_points$admin_name[i],ref_points$lng[i],ref_points$lat[i])
+        }
       #cat(i,'\n')
     }
+    p_count <- nrow(p_list)
     return(p_count)
   }
   
