@@ -285,6 +285,8 @@ points_in_polygon <- function (poly,ref_points,poly_points){
     
     ## make a copy of data frame
     #point_df_a <- point_df_a
+    #names(point_df_a)[(point_df_a) == "poly"] <- "poly_x"
+    #names(point_df)[(point_df) == "poly"] <- "poly_y"
     ##merge and sort columns by latlong
     #process_points_df <- merge(pointdf,point_df_a,point_df$latlong,point_df_a$latlong,TRUE)
     #ouput_points_df <- data.frame(process_points_df$poly_x,process_points_df$poly_y)
