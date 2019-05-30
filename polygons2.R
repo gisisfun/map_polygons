@@ -1,11 +1,10 @@
   library('geosphere')
   #library('geojson')
   library('sp')
-  #library('gdalUtils')
+  library('gdalUtils')
   #library('RSQLite')
-  #library('rgdal')
-  #library('csvread')
-
+  library('rgdal')
+  
   new.point <- function(latlong,dist,angle) {   
     #c <- destPoint(cbind(tail(latlong[1], n=1),tail(latlong[2], n=1)), b=angle, d=dist*1000, a=6378137, f=1/298.257223563)
     c <- geodesic(cbind(tail(latlong[1], n=1),tail(latlong[2], n=1)), azi=angle, d=dist*1000, a=6378137, f=1/298.257223563)
@@ -14,10 +13,10 @@
     return(newlatlong)
   }
   
-points_in_polygon <- function (poly,ref_points,poly_points){
+  points_in_polygon <- function (poly,ref_points,poly_points){
     poly_x <- poly_points[c(TRUE, FALSE)]
     poly_y <- poly_points[c(FALSE, TRUE)]
-    p_list <- setNames(data.frame(matrix(ncol = 5, nrow = 0)), c("poly","city", "state", "lng","lat"))
+    plist <- setNames(data.frame(matrix(ncol = 5, nrow = 0)), c("poly","city", "state", "lng","lat"))
     p_count <- 0
     i <- 0
     for(row in 1:length(poly_points)) {
@@ -28,11 +27,11 @@ points_in_polygon <- function (poly,ref_points,poly_points){
       if (isin == 1)
       {
         cat(poly,',',ref_points$city[i],',',ref_points$admin_name[i],',',ref_points$lng[i],',',ref_points$lat[i],'\n')
-        p_list[nrow(p_list) + 1,] = list(poly,ref_points$admin_name[i],ref_points$admin_name[i],ref_points$lng[i],ref_points$lat[i])
-        }
+        plist[nrow(plist) + 1,] = list(poly,ref_points$admin_name[i],ref_points$admin_name[i],ref_points$lng[i],ref_points$lat[i])
+      }
       #cat(i,'\n')
     }
-    p_count <- nrow(p_list)
+    p_count <- nrow(plist)
     return(p_count)
   }
   
@@ -138,6 +137,10 @@ points_in_polygon <- function (poly,ref_points,poly_points){
     #point_coords <- data.frame(city,city_ascii,population,lng,lat)
     #detach(MyData)
     #point_coords$city_ascii
+    
+    plist <- setNames(data.frame(matrix(ncol = 5, nrow = 0)), c("poly","city", "state", "lng","lat"))
+    point_list <- setNames(data.frame(matrix(ncol = 2, nrow = 0)), c("poly","latlong"))
+    
     #
     # New Bit End
     #
@@ -207,9 +210,9 @@ points_in_polygon <- function (poly,ref_points,poly_points){
     {     
       vertex <- c(1, 2, len_v+3, (len_v*2)+2, (len_v*2)+1, len_v+0)+top_left  
       poly_coords <- c(intersect_df[vertex[1], 1], intersect_df[vertex[1], 2], intersect_df[vertex[2], 1], 
-  intersect_df[vertex[2], 2], intersect_df[vertex[3], 1], intersect_df[vertex[3], 2],intersect_df[vertex[4], 1], 
-  intersect_df[vertex[4], 2], intersect_df[vertex[5], 1], intersect_df[vertex[5], 2],intersect_df[vertex[6], 1], 
-  intersect_df[vertex[6], 2], intersect_df[vertex[1], 1], intersect_df[vertex[1], 2])
+      intersect_df[vertex[2], 2], intersect_df[vertex[3], 1], intersect_df[vertex[3], 2],intersect_df[vertex[4], 1], 
+      intersect_df[vertex[4], 2], intersect_df[vertex[5], 1], intersect_df[vertex[5], 2],intersect_df[vertex[6], 1], 
+      intersect_df[vertex[6], 2], intersect_df[vertex[1], 1], intersect_df[vertex[1], 2])
       
       poly_points <- matrix(poly_coords, ncol=2, byrow=TRUE)
       centre_lat <- poly_coords[2] + (poly_coords[12] - poly_coords[2])/2
@@ -229,6 +232,7 @@ points_in_polygon <- function (poly,ref_points,poly_points){
       start <- c(poly_coords[2],poly_coords[1] )
       end <- c(poly_coords[4],poly_coords[3])
       est_area <- 0.945 * ((3 * sqrt(3))/2)*(radial^2) #estimate polygon area
+      
       #
       # New Bit Start
       #
@@ -247,6 +251,12 @@ points_in_polygon <- function (poly,ref_points,poly_points){
       if (bounds_e > bounds_w) 
       {
         #print(top_left)
+        i <- 0
+        for (row in nrow(poly_points))
+          i <- i + 1
+          latlong <- paste0(as.character(poly_points[i,1]),as.character(poly_points[i,2]))
+          {point_list[nrow(point_list) + 1,] = list(hexagon,latlong)}
+        
         gj_string <- paste(gj_string, geopoly,"")                    
       }             
       #}#end last centre lat check if statement 
@@ -282,7 +292,7 @@ points_in_polygon <- function (poly,ref_points,poly_points){
     gj_suffix <- '], "type": "FeatureCollection"}'
     gj_string <- paste(gj_prefix, substr(gj_string,1,nchar(gj_string)-3),"")
     gj_string <- paste(gj_string, gj_suffix,"")
-    
+    write.csv(point_list,'point_list.csv')   
     ## make a copy of data frame
     #point_df_a <- point_df_a
     #names(point_df_a)[(point_df_a) == "poly"] <- "poly_x"
@@ -294,7 +304,6 @@ points_in_polygon <- function (poly,ref_points,poly_points){
     #output_points_df <- output_points_df[output_points_df$poly_x != output_points_df$poly_y]
     ## unique records
     #output_points_df <- unique(output_points_df)
-    
     print('the end')
     return(gj_string)
   }#end function hexagon
@@ -373,6 +382,6 @@ close(fileConn)
 #vectorImport <- readOGR(dsn="NUTS_BN_03M_2013.sqlite", layer="nuts_bn_03m_2013")
 #myShapeInR<-readOGR(".","output8")
 #plot(myShapeInR)
-#point_coords
+
   
   
