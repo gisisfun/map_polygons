@@ -283,6 +283,16 @@ points_in_polygon <- function (poly,ref_points,poly_points){
     gj_string <- paste(gj_prefix, substr(gj_string,1,nchar(gj_string)-3),"")
     gj_string <- paste(gj_string, gj_suffix,"")
     
+    ## make a copy of data frame
+    #point_df_a <- point_df_a
+    ##merge and sort columns by latlong
+    #process_points_df <- merge(pointdf,point_df_a,point_df$latlong,point_df_a$latlong,TRUE)
+    #ouput_points_df <- data.frame(process_points_df$poly_x,process_points_df$poly_y)
+    ## remove self references
+    #output_points_df <- output_points_df[output_points_df$poly_x != output_points_df$poly_y]
+    ## unique records
+    #output_points_df <- unique(output_points_df)
+    
     print('the end')
     return(gj_string)
   }#end function hexagon
