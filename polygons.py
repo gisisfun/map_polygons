@@ -118,9 +118,11 @@ def to_shp_tab(f_name,shape):
         cmd_text='/usr/bin/ogr2ogr'
         slash='/'
     else:
-        cmd_text='ogr2ogr.exe'
-        slash='\/'
-    
+        cmd_text='c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+        slash='\\'
+        gdal_vars = {'GDAL_DATA': 'C:\OSGeo4W64\share\gdal'}
+        os.environ.update(gdal_vars)
+                
     shp_fname='shapefiles{slash}{fname}_layer.shp'.format(fname=f_name.replace(' ','_'),slash=slash)
     tab_fname='tabfiles{slash}{fname}_layer.tab'.format(fname=f_name.replace(' ','_'),slash=slash)
     json_fname='geojson{slash}{fname}_layer.json'.format(fname=f_name.replace(' ','_'),slash=slash)
@@ -142,8 +144,8 @@ def write_vrt_tabular_file(f_name):
         cmd_text='/usr/bin/ogr2ogr'
         slash='/'
     else:
-        cmd_text='ogr2ogr.exe'
-        slash='\/'
+        cmd_text='c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+        slash='\\'
     
     vrt_template = """<OGRVRTDataSource>
     <OGRVRTLayer name="{0}">
@@ -169,8 +171,8 @@ def write_vrt_file(f_name,shape,ext,ext_label):
         cmd_text='/usr/bin/ogr2ogr'
         slash='/'
     else:
-        cmd_text='ogr2ogr.exe'
-        slash='\/'
+        cmd_text='c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+        slash='\\'
     vrt_template = """<OGRVRTDataSource>
     <OGRVRTLayer name="shapes">
         <SrcDataSource>{0}_layer.{1}</SrcDataSource>
@@ -200,18 +202,18 @@ def ref_files():
         cmd_text='/usr/bin/ogr2ogr'
         slash='/'
     else:
-        cmd_text='ogr2ogr.exe'
-        slash='\/'
-    if not os.path.isfile('shapefiles/AUS_2016_AUST.shp'):
+        cmd_text='C:\\OSGeo\\bin\\ogr2ogr.exe'
+        slash='\\'
+    if not os.path.isfile('shapefiles{slash}AUS_2016_AUST.shp'.format(slash=slash)):
         print('Downloading ABS Australia file in Shape file format')
         url = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&5503B37F8055BFFECA2581640014462C&0&July%202016&24.07.2017&Latest'
-        urllib.request.urlretrieve(url, 'shapefiles/1270055001_aus_2016_aust_shape.zip')
+        urllib.request.urlretrieve(url, 'shapefiles{slash}1270055001_aus_2016_aust_shape.zip'.format(slash=slash))
         print('Unzipping ABS Australia file in Shape file format')    
         Archive('shapefiles{slash}1270055001_aus_2016_aust_shape.zip'.format(slash=slash)).extractall('shapefiles'.format(slash=slash))
     else:
         print('ABS Australia file in Shape file format exists')
     
-    if not os.path.isfile('tabfiles/AUS_2016_AUST.tab'):
+    if not os.path.isfile('tabfiles{slash}AUS_2016_AUST.tab'.format(slash=slash)):
         print('Downloading ABS Australia file in Tab file format')
         url ='http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_tab.zip&1270.0.55.001&Data%20Cubes&F18065BF058615F9CA2581640014491B&0&July%202016&24.07.2017&Latest'
         urllib.request.urlretrieve(url, 'shapefiles{slash}1270055001_aus_2016_aust_tab.zip'.format(slash=slash)) 
@@ -226,8 +228,8 @@ def boxes(north,south,east,west,radial,outfile):
         cmd_text='/usr/bin/ogr2ogr'
         slash='/'
     else:
-        cmd_text='ogr2ogr.exe'
-        slash='\/'
+        cmd_text='c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+        slash='\\'
     #init bits
     poly_list = []
     g_array=[] #array of geojson formatted geometry elements
@@ -323,8 +325,8 @@ def hexagons(north,south,east,west,radial,outfile):
         cmd_text='/usr/bin/ogr2ogr'
         slash='/'
     else:
-        cmd_text='ogr2ogr.exe'
-        slash='\/'    
+        cmd_text='c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+        slash='\\'    
     #init bits
     poly_list = []
     point_list =[]
