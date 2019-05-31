@@ -88,33 +88,18 @@ vertical <- function(east,north,west,south,radial,vert_seq) {
 
 makeHexagon <- function(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,rowno,colname,colvalue) 
 { 
-  templ_hexagon <-'{"geometry": {"coordinates": [[[x1, y1], [x2, y2], [x3, y3], [x4, y4], [x5, y5], [x6, y6], [x1, y1]]], "type": "Polygon"}, "properties": {"E": be, "N": bn, "S": bs, "W": bw, "est_area": earea, "lat": latc, "lon": lonc, "p": polyn, "row": rown, "colname": colvalue}, "type": "Feature"}, '
-  out_hexagon <- gsub("x1", poly_coords[1], templ_hexagon)
-  out_hexagon <- gsub("x2", poly_coords[3], out_hexagon)   
-  out_hexagon <- gsub("x3", poly_coords[5], out_hexagon) 
-  out_hexagon <- gsub("x4", poly_coords[7], out_hexagon)
-  out_hexagon <- gsub("x5", poly_coords[9], out_hexagon)    
-  out_hexagon <- gsub("x6", poly_coords[11], out_hexagon)
-  
-  out_hexagon <- gsub("y1", poly_coords[2], out_hexagon)
-  out_hexagon <- gsub("y2", poly_coords[4], out_hexagon)   
-  out_hexagon <- gsub("y3", poly_coords[6], out_hexagon) 
-  out_hexagon <- gsub("y4", poly_coords[8], out_hexagon)
-  out_hexagon <- gsub("y5", poly_coords[10], out_hexagon)    
-  out_hexagon <- gsub("y6", poly_coords[12], out_hexagon) 
-  
-  out_hexagon <- gsub("be", bounds_e, out_hexagon)
-  out_hexagon <- gsub("bn", bounds_n, out_hexagon)   
-  out_hexagon <- gsub("bs", bounds_s, out_hexagon) 
-  out_hexagon <- gsub("bw", bounds_w, out_hexagon)
-  out_hexagon <- gsub("earea", est_area, out_hexagon)    
-  out_hexagon <- gsub("latc", centre_lat, out_hexagon)   
-  out_hexagon <- gsub("lonc", centre_lon, out_hexagon)    
-  out_hexagon <- gsub("polyn", hexagon, out_hexagon) 
-  out_hexagon <- gsub("rown", rowno, out_hexagon) 
-  out_hexagon <- gsub("colname", colname, out_hexagon) 
-  out_hexagon <- gsub("colvalue", colvalue, out_hexagon) 
-  
+  out_hexagon <-paste0('{"geometry": {"coordinates": [[[',poly_coords[1],', '
+                       ,poly_coords[2],'], [',poly_coords[3],', ',poly_coords[4]
+                       ,'], [',poly_coords[5],', ',poly_coords[6],'], ['
+                       ,poly_coords[7],', ',poly_coords[8],'], [',poly_coords[9]
+                       ,', ',poly_coords[10],'], [',poly_coords[11],', '
+                       ,poly_coords[12],'], [',poly_coords[1],', ',poly_coords[2]
+                       ,']]], "type": "Polygon"}, "properties": {"E": ',bounds_e
+                       ,', "N": ',bounds_n,', "S": ',bounds_s,', "W": ',bounds_w
+                       ,', "est_area": ',est_area,', "lat": ',centre_lat
+                       ,', "lon": ',centre_lon,', "p": ',hexagon,', "row": '
+                       ,rowno,', "colname": ',colvalue,'}, "type": "Feature"}, ')
+
   return(out_hexagon)
 }
 
