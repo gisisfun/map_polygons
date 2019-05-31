@@ -24,10 +24,14 @@ Open one or both of these files in your preferred GIS tool of choice and have a 
 - **You** can contribute or make something better
 - Have a look in the shapefiles directory for the processed shape files for area weighted and place point of interest weighted files.
 
+**The Python Code will switch between Linux and Windows Enviromments (under development)**
+For Windows download the OSGeo4W package and install the 'express install'. The code will map to the standard installation location on C drive. The code was riginally bult for Linux. Linux has pretty good package management so no worries here. All python modules are installed using pip3.
+
+
 **Why not use Vendor 'XYZ' or 'ABC' Software?**
 
 The processes applied to the datasets would normally be tasked to individual analysts and use software purchased for that purpose.
-There are software packages that work at a larger scale than the desktop analydis to perform more industrial scale processes. Again there is another set of personnel to achieve perform these tasks.
+There are software packages that work at a larger scale than the desktop analysis to perform more industrial scale processes. Again there is another set of personnel to achieve perform these tasks.
 Making the best use of both types of software is a challenge.
 
 The list of software is entirely open sourced. The coding and deployement of sub systems where chosen according to each software's ability to perform a given task in set period of time balancing out memory, storage and CPU access requirements.
@@ -312,9 +316,8 @@ Categories:
 | |||P_Tot_UCC_NS|Persons_Total_Unpaid_child_care_not_stated|Unpaid child care not stated|PERSONS|
 | |||***P_Tot_Total***|Persons_Total_Total|Total|PERSONS|
 
-
 ### Conclusion
 If you have read down to this point in the documemtation then you can see the end result is worth the wait. The benefits of using a Discrete Global Grid System (DGGC) like visualisation is better on the eye once you see it for yourself. But this depends on how your data is made and how fast you want it made. If your data is like this then a traditional SQL server will do just fine, with a bit of extra work. You will have access to all of the viewing and map production software that the current generation of software going back to the 1990s will provide. 
 
-Larger volumes of data and newer SPARQL/GeoSPARQL and Discrete Global Grid System (DGGC) enabled systems and and data sets provide a much better end product for the real users of this data. Not the Geospatial Anaysts, staticians but the people who benefit from quality decisiions. The LOC-I DIPA Project is a good example of the emerging technology for such end users. Until then I will have fun with this technology and look forward to the next. 
+Larger volumes of data and newer SPARQL/GeoSPARQL and Discrete Global Grid System (DGGC) enabled systems and and data sets provide a much better end product for the real users of this data. Not the Geospatial Anaysts, staticians but the people who benefit from decisions informed from data.  
 
