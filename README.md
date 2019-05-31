@@ -26,8 +26,11 @@ Open one or both of these files in your preferred GIS tool of choice and have a 
 
 **The Python Code will switch between Linux and Windows Enviromments (under development)**
 
-For full functionality with Windows OS, download the OSGeo4W package and install the 'express install'. The code will map to the standard installation location on C drive. The code was originally bult for Linux OS. Linux has pretty good package management so no worries here. All python modules are installed using pip3.
+For full functionality with Windows OS, download the OSGeo4W package and install the 'express install'. The code will map to the standard installation location on C drive. The code was originally bult for Linux OS. Linux has pretty good package management so no worries here. All python modules are installed using pip3. **polygons.py** has been tested and works with Linux and Windows.
 
+**R version in development**
+
+Not everyone has access to Python so there is an R version of the code with much of the same features. Have a look at **polygons2.R**. 
 
 **Why not use Vendor 'XYZ' or 'ABC' Software?**
 
