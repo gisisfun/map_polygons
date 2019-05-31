@@ -307,7 +307,7 @@ hexagons <- function(east,north,west,south,radial) {
   gj_suffix <- '], "type": "FeatureCollection"}'
   gj_string <- paste(gj_prefix, substr(gj_string,1,nchar(gj_string)-3),"")
   gj_string <- paste(gj_string, gj_suffix,"")
-  write.csv(finalplist,'finalplist.csv')   
+  write.csv(finalplist,'finalplist.csv',row.names=FALSE)   
   ## make a copy of data frame
   attach(point_list)
   point_list_a <- point_list[ c("poly", "latlong")]
@@ -320,7 +320,7 @@ hexagons <- function(east,north,west,south,radial) {
   ## remove self references
   #cat(point_list_a$poly,point_list_a$latlong,'\n')
   output <- subset(output, output$poly.x != output$poly.y)
-  write.csv(unique(output),'neighbours.csv')
+  write.csv(unique(output),'neighbours.csv',row.names=FALSE)
   ## unique records
   #output_points_df <- unique(output_points_df)
   print('the end')
