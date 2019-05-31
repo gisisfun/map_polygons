@@ -25,7 +25,8 @@ Open one or both of these files in your preferred GIS tool of choice and have a 
 - Have a look in the shapefiles directory for the processed shape files for area weighted and place point of interest weighted files.
 
 **The Python Code will switch between Linux and Windows Enviromments (under development)**
-For Windows download the OSGeo4W package and install the 'express install'. The code will map to the standard installation location on C drive. The code was riginally bult for Linux. Linux has pretty good package management so no worries here. All python modules are installed using pip3.
+
+For full functionality with Windows OS, download the OSGeo4W package and install the 'express install'. The code will map to the standard installation location on C drive. The code was originally bult for Linux OS. Linux has pretty good package management so no worries here. All python modules are installed using pip3.
 
 
 **Why not use Vendor 'XYZ' or 'ABC' Software?**
