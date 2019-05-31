@@ -1,9 +1,9 @@
 library('geosphere')
 #library('geojson')
 library('sp')
-#library('gdalUtils')
+library('gdalUtils')
 #library('RSQLite')
-#library('rgdal')
+library('rgdal')
 
 new.point <- function(latlong,dist,angle) {   
   #c <- destPoint(cbind(tail(latlong[1], n=1),tail(latlong[2], n=1)), b=angle, d=dist*1000, a=6378137, f=1/298.257223563)
@@ -254,15 +254,17 @@ hexagons <- function(east,north,west,south,radial) {
       geopoly <- makeHexagon(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,rowno,'test',p_count)
       if (p_count > 0) 
         { 
-        i <- 0
-        for (row in 1:(nrow(plist)) )
-        {
-          i <- i + 1
-          finalplist[nrow(finalplist) + 1,] <- list(plist$poly[i],plist$city[i], plist$state[i], plist$lng[i], plist$lat[i])
-        }
+        #i <- 0
+        finalplist<- rbind(finalplist,plist)
+        #for (row in 1:(nrow(plist)) )
+        #{
+        #  i <- i + 1
+        #  finalplist[nrow(finalplist) + 1,] <- list(plist$poly[i],plist$city[i], plist$state[i], plist$lng[i], plist$lat[i])
+        #}
       }
       
       #print(top_left)
+      #point_list <- rbind(point_list,poly_points)
       i <- 0
       for (row in 1:(nrow(poly_points)-1) )
            {
@@ -382,7 +384,7 @@ fileConn<-file('output8.json')
 writeLines(output, fileConn)
 close(fileConn)
 #convert and reproject
-#ogr2ogr(src_datasource_name='output8.json',f='ESRI Shapefile',dst_datasource_name='output8.shp',t_srs="EPSG:4283",verbose=TRUE)
+ogr2ogr(src_datasource_name='output8.json',f='ESRI Shapefile',dst_datasource_name='output8.shp',t_srs="EPSG:4283",verbose=TRUE)
 #run query
 #ogr2ogr(src_datasource_name='all.vrt',dialect='sqlite',sql='select * from shapes',dst_datasource_name='output8_q1.csv',verbose=TRUE)
 
@@ -397,5 +399,5 @@ close(fileConn)
 #con=dbConnect(sqlite,dbfile, loadable.extensions=TRUE )
 
 #vectorImport <- readOGR(dsn="NUTS_BN_03M_2013.sqlite", layer="nuts_bn_03m_2013")
-#myShapeInR<-readOGR(".","output8")
-#plot(myShapeInR)
+myShapeInR<-readOGR(".","output8")
+plot(myShapeInR)
