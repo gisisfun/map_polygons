@@ -1,9 +1,9 @@
 library('geosphere')
 #library('geojson')
 library('sp')
-library('gdalUtils')
+#library('gdalUtils')
 #library('RSQLite')
-library('rgdal')
+#library('rgdal')
 
 new.point <- function(latlong,dist,angle) {   
   #c <- destPoint(cbind(tail(latlong[1], n=1),tail(latlong[2], n=1)), b=angle, d=dist*1000, a=6378137, f=1/298.257223563)
@@ -27,12 +27,12 @@ points_in_polygon <- function (poly,ref_points,poly_points){
     if (isin == 1)
     {
       cat(poly,',',ref_points$city[i],',',ref_points$admin_name[i],',',ref_points$lng[i],',',ref_points$lat[i],'\n')
-      plist[nrow(plist) + 1,] = list(poly,ref_points$admin_name[i],ref_points$admin_name[i],ref_points$lng[i],ref_points$lat[i])
+      plist[nrow(plist) + 1,] = list(poly,ref_points$city[i],ref_points$admin_name[i],ref_points$lng[i],ref_points$lat[i])
     }
     #cat(i,'\n')
   }
   p_count <- nrow(plist)
-  return(p_count)
+  return(plist)
 }
 
 dist.points <- function(latlong1,latlong2) {   
@@ -138,7 +138,7 @@ hexagons <- function(east,north,west,south,radial) {
   #detach(MyData)
   #point_coords$city_ascii
   
-  plist <- setNames(data.frame(matrix(ncol = 5, nrow = 0)), c("poly","city", "state", "lng","lat"))
+  finalplist <- setNames(data.frame(matrix(ncol = 5, nrow = 0)), c("poly","city", "state", "lng","lat"))
   point_list <- setNames(data.frame(matrix(ncol = 2, nrow = 0)), c("poly","latlong"))
   
   #
@@ -239,17 +239,29 @@ hexagons <- function(east,north,west,south,radial) {
     
     ref_points <- subset(MyData, lat >= bounds_s & lat <= bounds_n & lng <= bounds_e & lng >= bounds_w)
     #ref_points <- na.omit(points_df)
-    p_count <- points_in_polygon(hexagon,ref_points,poly_coords)
-    
+
     #
     # New Bit End
     #
     
-    geopoly <- makeHexagon(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,rowno,'test',p_count)
+    
     
     #if ((poly_coords[1] > poly_coords[11])) 
     if (bounds_e > bounds_w) 
     {
+      plist <- points_in_polygon(hexagon,ref_points,poly_coords)
+      p_count <- nrow(plist)
+      geopoly <- makeHexagon(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,rowno,'test',p_count)
+      if (p_count > 0) 
+        { 
+        i <- 0
+        for (row in 1:(nrow(plist)) )
+        {
+          i <- i + 1
+          finalplist[nrow(finalplist) + 1,] <- list(plist$poly[i],plist$city[i], plist$state[i], plist$lng[i], plist$lat[i])
+        }
+      }
+      
       #print(top_left)
       i <- 0
       for (row in 1:(nrow(poly_points)-1) )
@@ -293,7 +305,7 @@ hexagons <- function(east,north,west,south,radial) {
   gj_suffix <- '], "type": "FeatureCollection"}'
   gj_string <- paste(gj_prefix, substr(gj_string,1,nchar(gj_string)-3),"")
   gj_string <- paste(gj_string, gj_suffix,"")
-  write.csv(point_list,'point_list.csv')   
+  write.csv(finalplist,'finalplist.csv')   
   ## make a copy of data frame
   attach(point_list)
   point_list_a <- point_list[ c("poly", "latlong")]
