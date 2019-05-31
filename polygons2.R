@@ -84,11 +84,7 @@ vertical <- function(east,north,west,south,radial,vert_seq) {
 }
 
 
-MyData <- read.csv(file="csv/cities.csv", header=TRUE,colClasses=c("city"="character"), sep=",")
-attach(MyData)
-point_coords <- data.frame(population,city,lng,lat)
-detach(MyData)
-#point_coords
+
 
 makeHexagon <- function(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,rowno,colname,colvalue) 
 { 
@@ -131,6 +127,8 @@ hexagons <- function(east,north,west,south,radial) {
   # New Bit Start
   #
   stringsAsFactors = FALSE
+
+  #point_coords
   MyData <- read.csv(file="csv/cities.csv", header=TRUE,colClasses=c("city"="character", "admin_name"="character"), sep=",")
   #sapply(MyData, typeof)
   #attach(MyData)
