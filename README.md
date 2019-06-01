@@ -28,7 +28,7 @@ Open one or both of these files in your preferred GIS tool of choice and have a 
 
 For full functionality with Windows OS, download the OSGeo4W package and install the 'express install'. The code will map to the standard installation location on C drive. The code was originally bult for Linux OS. Linux has pretty good package management so no worries here. All python modules are installed using pip3. **polygons.py** has been tested and works with Linux and Windows.
 
-For windows and geopandas download the python wheel package here https://www.lfd.uci.edu/~gohlke/pythonlibs/#fiona and http://download.microsoft.com/download/5/F/7/5F7ACAEB-8363-451F-9425-68A90F98B238/visualcppbuildtools_full.exe.
+For windows and geopandas download the python wheel package here https://www.lfd.uci.edu/~gohlke/pythonlibs/#fiona, https://www.lfd.uci.edu/~gohlke/pythonlibs/#gdal and http://download.microsoft.com/download/5/F/7/5F7ACAEB-8363-451F-9425-68A90F98B238/visualcppbuildtools_full.exe.
 
 **R version in development**
 
