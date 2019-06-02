@@ -200,7 +200,7 @@ def write_vrt_file(f_name, shape, ext, ext_label):
     #ogr2ogr hex_aust.shp hex_55km_layer_ESRI_Shapefile.vrt -dialect sqlite -sql @austshape.sql
 
 def ref_files():
-    my_os = os,name
+    my_os = os.name
     if (my_os is 'posix'):
         cmd_text = '/usr/bin/ogr2ogr'
         slash = '/'
@@ -324,7 +324,7 @@ def boxes(north, south, east, west, radial, outfile):
 def hexagons(north, south, east, west, radial, outfile):   
 
     params('hexagons', north, south, east, west, radial)
-    my_os = os,name
+    my_os = os.name
     if (my_os is 'posix'):
         cmd_text = '/usr/bin/ogr2ogr'
         slash = '/'
