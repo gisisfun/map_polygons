@@ -167,8 +167,8 @@ Performs the functions:
 |                  |  hex_57km_points.csv | hex_57km_neighbours.csv  |
 |                  | AUS_2016_AUST.shp                |                                  |
 |  |         |  aust_hex_shape_57km.shp       | 
-|  |          | feat_aust_57km_sa1_11.shp        | 
-|   |           | feat_aust_57km_sa1_16.shp        |
+|  |        SA1_2011_AUST.shp   | feat_aust_57km_sa1_11.shp        | 
+|   |     SA1_2016_AUST.shp       | feat_aust_57km_sa1_16.shp        |
 |                  | 2011Census_B18_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B21_AUST_SA1_long.csv |                                  |
 |                  | 2011Census_B22B_AUST_SA1_long.csv |                               |                           
