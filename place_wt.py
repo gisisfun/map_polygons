@@ -11,12 +11,13 @@ def shape_and_size (dirname, file, shape, size, newfile):
         slash = '/'
     else:
         slash = '\\'
+        
     infile = open("{dirname}{slash}{file}".format(dir=dir,file=file,slash=slash), "r")
     infiletext = infile.read()
     infile.close()
     
     outfile = open("{dirname}{slash}{file}".format(dir=dir,file=newfile,slash=slash),"w")
-    outfiletext = infiletext.replace('57',size).replace('hex',shape).replace('/',slash)
+    outfiletext = infiletext.replace('57', size).replace('hex', shape).replace('/', slash)
     outfile.write(outfiletext)
     outfile.close() 
     return outfiletext
@@ -29,25 +30,26 @@ def do_spatialite (sqlfile, dbfile):
     else:
         slash='\\'
         
-    sql_text = "spatialite_db{slash}{sqlfile}".format(sqlfile=sqlfile,slash=slash)
+    sql_text = "spatialite_db{slash}{sqlfile}".format(sqlfile=sqlfile, slash=slash)
     p1 = subprocess.Popen(["cat", sql_text], stdout=subprocess.PIPE)
-    db_text = 'spatialite_db{slash}{dbfile}.sqlite'.format(dbfile=dbfile,slash=slash)
+    db_text = 'spatialite_db{slash}{dbfile}.sqlite'.format(dbfile=dbfile, slash=slash)
     p2 = subprocess.Popen(["spatialite", db_text], stdin=p1.stdout)
     p2.communicate()
       
+        
 def geojson_to_shp (geojsonfile,shapefile,srid):
     #print(options_text)
     if (os.name is 'posix'):
-        cmd_text='/usr/bin/ogr2ogr'
-        slash='/'
+        cmd_text = '/usr/bin/ogr2ogr'
+        slash = '/'
     else:
-        cmd_text='c:\\OSGeo4W\bin\ogr2ogr.exe'
-        slash='\/'
+        cmd_text = 'c:\\OSGeo4W\bin\ogr2ogr.exe'
+        slash = '\\'
     
-    shapefiles_text = 'shapefiles{slash}{shapefile}.shp'.format(shapefile=shapefile,slash=slash)
-    geojson_text = 'geojson{slash}{geojsonfile}.json'.format(geojsonfile=geojsonfile,slash=slash)
+    shapefiles_text = 'shapefiles{slash}{shapefile}.shp'.format(shapefile=shapefile, slash=slash)
+    geojson_text = 'geojson{slash}{geojsonfile}.json'.format(geojsonfile=geojsonfile, slash=slash)
     epsg_text = 'EPSG:{srid}'.format(srid=srid)  
-    shp_options = [cmd_text,'-f', 'ESRI Shapefile',shapefiles_text, '-t_srs', epsg_text, geojson_text]
+    shp_options = [cmd_text, '-f', 'ESRI Shapefile', shapefiles_text, '-t_srs', epsg_text, geojson_text]
     try:
         # record the output!        
         subprocess.check_output(shp_options)
@@ -55,6 +57,7 @@ def geojson_to_shp (geojsonfile,shapefile,srid):
     except FileNotFoundError:
         print('No files processed')
 
+        
 def sql_to_ogr (sqlfile, vrtfile, shapefile):
     print('sqlfile: {0} vrt: {1} shapefile: {2}'.format(sqlfile,vrtfile,shapefile))
     my_os = os.name
@@ -85,10 +88,10 @@ def sql_to_db (sqlfile,db):
         slash='/'
     else:
         slash='\\'
-    file  = open("spatialite_db{slash}{file}.txt".format(file=sqlfile,slash=slash), "r")
+    file  = open("spatialite_db{slash}{file}.txt".format(file=sqlfile, slash=slash), "r")
     sqltext = file.read()
     file.close()
-    with sqlite3.connect("spatialite_db{slash}{db}.sqlite".format(db=db,slash=slash)) as conn:
+    with sqlite3.connect("spatialite_db{slash}{db}.sqlite".format(db=db, slash=slash)) as conn:
         conn.enable_load_extension(True)
         c = conn.cursor()
         c.execute("SELECT load_extension('mod_spatialite')")
@@ -97,15 +100,16 @@ def sql_to_db (sqlfile,db):
         conn.commit()
 
         
-def shp_to_db (filename,db,tblname,srid):
-    os.environ['SPATIALITE_SECURITY']='relaxed'
+def shp_to_db (filename, db, tblname, srid):
+    os.environ['SPATIALITE_SECURITY'] = 'relaxed'
     charset = 'CP1252'
     my_os = os.name
     if (my_os is 'posix'):
         slash='/'
     else:
         slash='\\'
-    with sqlite3.connect("spatialite_db{slash}{db}.sqlite".format(db=db,slash=slash)) as conn:
+        
+    with sqlite3.connect("spatialite_db{slash}{db}.sqlite".format(db=db, slash=slash)) as conn:
         conn.enable_load_extension(True)
         c = conn.cursor()
         c.execute("SELECT load_extension('mod_spatialite')")
@@ -124,6 +128,7 @@ def csv_to_db (filename, db, tblname):
         slash='/'
     else:
         slash='\\'
+        
     cnx = sqlite3.connect('spatialite_db{slash}{db}.sqlite'.format(db=db, slash=slash))
     with sqlite3.connect("spatialite_db{slash}{db}.sqlite".format(db=db, slash=slash)) as conn:
         c = conn.cursor()
@@ -141,8 +146,9 @@ def cmds_to_db (cmdfile, db):
     else:
         slash='\\'
         cmd_text='c:\\OSGeo4W\bin\spatialite.exe'
-    db_text = 'db{slash}{db}.sqlite'.format(db=db,slash=slash)
-    cmd_text = 'vrt{slash}{cmdfile}.vrt'.format(cmdfile=cmdfile,slash=slash)
+        
+    db_text = 'db{slash}{db}.sqlite'.format(db=db, slash=slash)
+    cmd_text = 'vrt{slash}{cmdfile}.vrt'.format(cmdfile=cmdfile, slash=slash)
     options = [cmd_text,  db_text ,'<', cmd_text]
 
     try:
@@ -155,10 +161,11 @@ def cmds_to_db (cmdfile, db):
 
 def sql_to_db (sqlfile, db):
     my_os = os.name
-    if (os.name is 'posix'):
+    if (my_os is 'posix'):
         slash='/'
     else:
         slash='\\'
+        
     file  = open("spatialite_db{slash}{sqlfile}.txt".format(sqlfile=sqlfile, slash=slash), "r")
     sqltext = file.read()
     file.close()
@@ -170,11 +177,12 @@ def sql_to_db (sqlfile, db):
         c.execute(sqltext)
         conn.commit()
 
+        
 def process_sql(shape,size):
 #    size='57'
 #    shape='hex'
-    shape_and_size ('vrt','template.vrt',shape,size,'all_{shape}_{size}.vrt'.format(shape=shape,size=size))
-    do_spatialite('table_goes_here.txt','db_place_{shape}_{size}'.format(shape=shape,size=size))
+    shape_and_size ('vrt','template.vrt',shape,size,'all_{shape}_{size}.vrt'.format(shape=shape, size=size))
+    do_spatialite('table_goes_here.txt','db_place_{shape}_{size}'.format(shape=shape, size=size))
     
     # print('neighbours')
     # csv_to_db('{shape}_{size}km_points'.format(shape=shape,size=size),'db_place_{shape}_{size}'.format(shape=shape,size=size),'{shape}_{size}km_points'.format(shape=shape,size=size))
@@ -198,10 +206,10 @@ def process_sql(shape,size):
     shp_to_db(fname,'db_place_{shape}_{size}'.format(shape=shape, size=size), fname, 4823)
     
     print('tabular_place_wt')   
-    csv_to_db('2011Census_B18_AUST_SA1_long','db_place_{shape}_{size}'.format(shape=shape, size=size), '2011Census_B18_AUST_SA1_long')
-    csv_to_db('2011Census_B21_AUST_SA1_long','db_place_{shape}_{size}'.format(shape=shape, size=size), '2011Census_B21_AUST_SA1_long')
-    csv_to_db('2011Census_B22B_AUST_SA1_long','db_place_{shape}_{size}'.format(shape=shape, size=size), '2011Census_B22B_AUST_SA1_long')
-    csv_to_db('2016Census_G18_AUS_SA1','db_place_{shape}_{size}'.format(shape=shape, size=size), '2016Census_G18_AUS_SA1')
+    csv_to_db('2011Census_B18_AUST_SA1_long', 'db_place_{shape}_{size}'.format(shape=shape, size=size), '2011Census_B18_AUST_SA1_long')
+    csv_to_db('2011Census_B21_AUST_SA1_long', 'db_place_{shape}_{size}'.format(shape=shape, size=size), '2011Census_B21_AUST_SA1_long')
+    csv_to_db('2011Census_B22B_AUST_SA1_long', 'db_place_{shape}_{size}'.format(shape=shape, size=size), '2011Census_B22B_AUST_SA1_long')
+    csv_to_db('2016Census_G18_AUS_SA1', 'db_place_{shape}_{size}'.format(shape=shape, size=size), '2016Census_G18_AUS_SA1')
     csv_to_db('2016Census_G21_AUS_SA1','db_place_{shape}_{size}'.format(shape=shape, size=size), '2016Census_G21_AUS_SA1')
     csv_to_db('2016Census_G22B_AUS_SA1','db_place_{shape}_{size}'.format(shape=shape, size=size), '2016Census_G22B_AUS_SA1')
     fname = 'aust_{shape}_shape_{size}km'.format(shape=shape, size=size)
@@ -239,4 +247,4 @@ else:
         sys.exit("arguments are \nshape \n size (km)\n ")
     else:
         (blah,shape,size) = sys.argv
-        process_sql(shape,size)
+        process_sql(shape, size)
