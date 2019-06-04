@@ -233,28 +233,20 @@ def ref_files():
     if not os.path.isfile('shapefiles{slash}AUS_2016_AUST.shp'
     .format(slash=slash)):
         print('Downloading ABS Australia file in Shape file format')
-        url = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&\
-        1270055001_aus_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&5503B37\
-        F8055BFFECA2581640014462C&0&July%202016&24.07.2017&Latest'
-        urllib.request.urlretrieve(url, 'shapefiles{slash}1270055001_aus_\
-        2016_aust_shape.zip'.format(slash=slash))
+        url = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&5503B37F8055BFFECA2581640014462C&0&July%202016&24.07.2017&Latest'
+        urllib.request.urlretrieve(url, 'shapefiles{slash}1270055001_aus_2016_aust_shape.zip'.format(slash=slash))
         print('Unzipping ABS Australia file in Shape file format')
-        Archive('shapefiles{slash}1270055001_aus_2016_aust_shape.zip'
-        .format(slash=slash)).extractall('shapefiles'.format(slash=slash))
+        Archive('shapefiles{slash}1270055001_aus_2016_aust_shape.zip'.format(slash=slash)).extractall('shapefiles'.format(slash=slash))
     else:
         print('ABS Australia file in Shape file format exists')
 
     if not os.path.isfile('tabfiles{slash}AUS_2016_AUST.tab'
     .format(slash=slash)):
         print('Downloading ABS Australia file in Tab file format')
-        url = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&\
-        1270055001_aus_2016_aust_tab.zip&1270.0.55.001&Data%20Cubes&F18065\
-        BF058615F9CA2581640014491B&0&July%202016&24.07.2017&Latest'
-        urllib.request.urlretrieve(url, 'shapefiles{slash}1270055001_aus_20\
-        16_aust_tab.zip'.format(slash=slash))
+        url = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_tab.zip&1270.0.55.001&Data%20Cubes&F18065BF058615F9CA2581640014491B&0&July%202016&24.07.2017&Latest'
+        urllib.request.urlretrieve(url, 'shapefiles{slash}1270055001_aus_2016_aust_tab.zip'.format(slash=slash))
         print('Unzipping ABS Australia file in Tab file format')
-        Archive('shapefiles{slash}1270055001_aus_2016_aust_tab.zip'
-        .format(slash=slash)).extractall('tabfiles'.format(slash=slash))
+        Archive('shapefiles{slash}1270055001_aus_2016_aust_tab.zip'.format(slash=slash)).extractall('tabfiles'.format(slash=slash))
     else:
         print('ABS Australia file in Tab file format exists')
 
