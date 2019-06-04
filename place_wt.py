@@ -43,7 +43,7 @@ def geojson_to_shp (geojsonfile,shapefile,srid):
         cmd_text = '/usr/bin/ogr2ogr'
         slash = '/'
     else:
-        cmd_text = 'c:\\OSGeo4W\bin\ogr2ogr.exe'
+        cmd_text = 'c:\\OSGeo4W\\bin\\ogr2ogr.exe'
         slash = '\\'
     
     shapefiles_text = 'shapefiles{slash}{shapefile}.shp'.format(shapefile=shapefile, slash=slash)
@@ -178,11 +178,11 @@ def sql_to_db (sqlfile, db):
         conn.commit()
 
         
-def process_sql(shape,size):
+def process_sql(shape, size):
 #    size='57'
 #    shape='hex'
-    shape_and_size ('vrt','template.vrt',shape,size,'all_{shape}_{size}.vrt'.format(shape=shape, size=size))
-    do_spatialite('table_goes_here.txt','db_place_{shape}_{size}'.format(shape=shape, size=size))
+    shape_and_size ('vrt', 'template.vrt', shape, size, 'all_{shape}_{size}.vrt'.format(shape=shape, size=size))
+    do_spatialite('table_goes_here.txt', 'db_place_{shape}_{size}'.format(shape=shape, size=size))
     
     # print('neighbours')
     # csv_to_db('{shape}_{size}km_points'.format(shape=shape,size=size),'db_place_{shape}_{size}'.format(shape=shape,size=size),'{shape}_{size}km_points'.format(shape=shape,size=size))
@@ -235,16 +235,16 @@ def process_sql(shape,size):
 
     print('shape_11_16_place')
     fname='{shape}_{size}km_place_11_16'.format(shape=shape, size=size)
-    sql_to_ogr('shape_11_16_place','all_{shape}_{size}'.format(shape=shape, size=size), fname)
+    sql_to_ogr('shape_11_16_place', 'all_{shape}_{size}'.format(shape=shape, size=size), fname)
 
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
 if len(sys.argv) is 1:
-    (shape,size) = ['hex','57']
-    process_sql(shape,size)
+    (shape, size) = ['hex', '57']
+    process_sql(shape, size)
 else:
-    if (len(sys.argv) <3 ):
+    if (len(sys.argv) < 3 ):
         sys.exit("arguments are \nshape \n size (km)\n ")
     else:
-        (blah,shape,size) = sys.argv
+        (blah, shape, size) = sys.argv
         process_sql(shape, size)
