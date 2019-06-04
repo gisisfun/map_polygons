@@ -28,11 +28,31 @@ Open one or both of these files in your preferred GIS tool of choice and have a 
 
 For full functionality with Windows OS, download the OSGeo4W package and install the 'express install'. The code will map to the standard installation location on C drive. The code was originally bult for Linux OS. Linux has pretty good package management so no worries here. All python modules are installed using pip3. **polygons.py** has been tested and works with Linux and Windows.
 
-For windows and geopandas download the python wheel package here https://www.lfd.uci.edu/~gohlke/pythonlibs/#fiona, https://www.lfd.uci.edu/~gohlke/pythonlibs/#gdal and add the path c:\OSGeo4W\bin to the Windows environment variables for 'PATH' and path c:\OSGeo4W\share\gdal for 'GDAL_PATH' .You can 'pip3 install' your modules.
+For windows and geopandas download the python wheel packages from links
+
+- https://www.lfd.uci.edu/~gohlke/pythonlibs/#fiona 
+- https://www.lfd.uci.edu/~gohlke/pythonlibs/#gdal 
+
+Add the PATH variable
+
+- C:\OSGeo4W\bin
+- C:\OSGeo4W\include
+
+Create/add a GDAL_PATH variable
+
+- C:\OSGeo4W\share\gdal
+
+to the Windows environment variables for 'PATH' and path c:\OSGeo4W\share\gdal for 'GDAL_PATH' .You can 'pip3 install' your modules.
 
 **R version in development**
 
-Not everyone has access to Python so there is an R version of the code with much of the same features. Have a look at **polygons2.R**. 
+Not everyone has access to Python so there is an R version of the code with much of the same features. Have a look at **polygons2.R**. The code is functional in a Windows environment using the OSGeo4W software. 
+
+Add to the PATH variable
+
+- C:\OSGeo4W\bin
+- C:\OSGeo4W\include
+- C:\Program Files\R\R-3.6.0\bin
 
 **Why not use Vendor 'XYZ' or 'ABC' Software?**
 
