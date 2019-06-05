@@ -69,6 +69,7 @@ radial):
     print('derived {0} longitudinal lines'.format(num_h))
     return hor_line_list
 
+
 def vertical_lines(b_lat_min, b_lat_max, b_lon_min, b_lon_max, vert_seq
 , radial):
     print('\n2/7 deriving vertical latitude lines ')
@@ -101,7 +102,7 @@ def vertical_lines(b_lat_min, b_lat_max, b_lon_min, b_lon_max, vert_seq
         ref_lat = offset[0]
 
     num_v = len(vert_line_list)
-    max_v = (num_v)  # -1)##-((num_v-1) % 4)
+    # max_v = (num_v)  # -1)##-((num_v-1) % 4)
     print('derived {0} latitude lines'.format(num_v))
     return vert_line_list
 
@@ -161,10 +162,10 @@ def to_shp_tab(f_name,shape):
 def write_vrt_tabular_file(f_name):
     my_os = os.name
     if (my_os is 'posix'):
-        cmd_text = '/usr/bin/ogr2ogr'
+        # cmd_text = '/usr/bin/ogr2ogr'
         slash = '/'
     else:
-        cmd_text = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+        # cmd_text = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
         slash = '\\'
 
     vrt_template = """<OGRVRTDataSource>
@@ -192,10 +193,10 @@ def write_vrt_tabular_file(f_name):
 def write_vrt_file(f_name, shape, ext, ext_label):
     my_os = os.name
     if (my_os is 'posix'):
-        cmd_text = '/usr/bin/ogr2ogr'
+        # cmd_text = '/usr/bin/ogr2ogr'
         slash = '/'
     else:
-        cmd_text = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+        # cmd_text = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
         slash = '\\'
     vrt_template = """<OGRVRTDataSource>
     <OGRVRTLayer name="shapes">
@@ -225,10 +226,10 @@ def write_vrt_file(f_name, shape, ext, ext_label):
 def ref_files():
     my_os = os.name
     if (my_os is 'posix'):
-        cmd_text = '/usr/bin/ogr2ogr'
+        # cmd_text = '/usr/bin/ogr2ogr'
         slash = '/'
     else:
-        cmd_text = 'C:\\OSGeo\\bin\\ogr2ogr.exe'
+        # cmd_text = 'C:\\OSGeo\\bin\\ogr2ogr.exe'
         slash = '\\'
     if not os.path.isfile('shapefiles{slash}AUS_2016_AUST.shp'
     .format(slash=slash)):
@@ -255,13 +256,13 @@ def boxes(north, south, east, west, radial, outfile):
     params('boxes', north, south, east, west, radial)
     my_os = os.name
     if (my_os is 'posix'):
-        cmd_text = '/usr/bin/ogr2ogr'
+        # cmd_text = '/usr/bin/ogr2ogr'
         slash = '/'
     else:
-        cmd_text = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+        # cmd_text = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
         slash = '\\'
     #init bits
-    poly_list = []
+    # poly_list = []
     g_array = []  # array of geojson formatted geometry elements
     tabular_list = []  # array of all polygons and tabular columns
     layer_dict = {'Bounds': {'Australia': {'North': north,'South': south,
@@ -353,17 +354,18 @@ def boxes(north, south, east, west, radial, outfile):
     layer_dict['Bounds']['Dataset']['South'] = tabular_df['S'].min()
     layer_dict['Bounds']['Dataset']['East'] = tabular_df['E'].max()
     layer_dict['Bounds']['Dataset']['West'] = tabular_df['W'].min()
-    tabular_df.to_csv('csv{slash}{outfile}_dataset.csv'.format(outfile =
+    tabular_df.to_csv('csv{slash}{outfile}_dataset.csv'.format(outfile=
     outfile, slash = slash), sep = ',')
-    write_vrt_tabular_file('{outfile}_dataset'.format(outfile = outfile,
+    write_vrt_tabular_file('{outfile}_dataset'.format(outfile=outfile,
     slash = slash))
 
     print('\n7/7 boxes json metadata to written to file: {0}_metadata.json'
     .format(outfile))
-    file = open('metadata{slash}{outfile}_metadata.json'.format(outfile =
-    outfile, slash = slash), 'w') #open file for writing geojson layer
-    file.write(str(json.dumps(layer_dict)))  #write geojson layer to open file
-    file.close()  #close file
+    myfile = open('metadata{slash}{outfile}_metadata.json'.format(outfile=
+    outfile, slash=slash), 'w')  # open file for writing geojson layer
+    myfile.write(str(json.dumps(layer_dict)))
+    #write geojson layer to open file
+    myfile.close()  # close file
     write_vrt_file(outfile, 'boxes', 'json', 'geojson')
     to_shp_tab(outfile, 'boxes')
     ref_files()
@@ -376,18 +378,17 @@ def hexagons(north, south, east, west, radial, outfile):
     params('hexagons', north, south, east, west, radial)
     my_os = os.name
     if (my_os is 'posix'):
-        cmd_text = '/usr/bin/ogr2ogr'
+        # cmd_text = '/usr/bin/ogr2ogr'
         slash = '/'
     else:
-        cmd_text = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+        # cmd_text = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
         slash = '\\'
-    #init bits
-    poly_list = []
+    # init bits
     point_list = []
-    g_array = []  #array of geojson formatted geometry elements
-    tabular_list = []  #array of all polygons and tabular columns
-    layer_dict = {'Bounds':{'Australia':{'North': north ,'South': south,
-        'West': west,'East': east}}}
+    g_array = []  # array of geojson formatted geometry elements
+    tabular_list = []  # array of all polygons and tabular columns
+    layer_dict = {'Bounds': {'Australia': {'North': north, 'South': south,
+        'West': west, 'East': east}}}
     layer_dict['Param'] = {}
     layer_dict['Param']['side_km'] = radial
     layer_dict['Param']['epsg'] = 4326
@@ -401,10 +402,10 @@ def hexagons(north, south, east, west, radial, outfile):
     bounds_lon_max = east
     bounds_lon_min = west
 
-    hor_seq =[layer_dict['Hexagon']['short'], layer_dict['Hexagon']['short'],
+    hor_seq = [layer_dict['Hexagon']['short'], layer_dict['Hexagon']['short'],
     layer_dict['Hexagon']['short'], layer_dict['Hexagon']['short']]
 
-    vert_seq =[layer_dict['Hexagon']['short'], layer_dict['Hexagon']['long'],
+    vert_seq = [layer_dict['Hexagon']['short'], layer_dict['Hexagon']['long'],
     layer_dict['Hexagon']['short'], layer_dict['Hexagon']['long']]
 
     h_line_list = horizontal_lines(bounds_lat_min, bounds_lat_max,
@@ -412,7 +413,7 @@ def hexagons(north, south, east, west, radial, outfile):
     max_h = len(h_line_list)
 
     v_line_list = vertical_lines(bounds_lat_min, bounds_lat_max,
-    bounds_lon_min, bounds_lon_max, vert_seq,radial)
+    bounds_lon_min, bounds_lon_max, vert_seq, radial)
     max_v = len(v_line_list)
 
     intersect_list = intersections(h_line_list, max_h, v_line_list, max_v)
@@ -430,7 +431,8 @@ def hexagons(north, south, east, west, radial, outfile):
 
     inc_by_rem = True
     inc_adj = 0
-    if (rem_lat is 0) or (rem_lat is 1) or (rem_lat is 2) or (rem_lat is 3) or (rem_lat is 4) or (rem_lat is 5) or (rem_lat is 6) or (rem_lat is 7):
+    if rem_lat is 0 or rem_lat is 1 or rem_lat is 2 or rem_lat is 3 \
+    or rem_lat is 4 or rem_lat is 5 or rem_lat is 6 or rem_lat is 7:
 
         if rem_lat is 2 or rem_lat is 5 or rem_lat is 6 or rem_lat is 7:
             inc_by_rem = True
@@ -471,11 +473,11 @@ def hexagons(north, south, east, west, radial, outfile):
                     last_lat_row = centre_lat
                     geopoly = Polygon([poly_coords])
                     hexagon += 1
-                    start = (intersect_list[vertex[0]][1],
-                    intersect_list[vertex[0]][0])
-                    end = (intersect_list[vertex[1]][1],
-                    intersect_list[vertex[1]][0])
-##                    len_radial = geodesic(start,end).km
+                    # start = (intersect_list[vertex[0]][1],
+                    # intersect_list[vertex[0]][0])
+                    # end = (intersect_list[vertex[1]][1],
+                    # intersect_list[vertex[1]][0])
+                    # len_radial = geodesic(start,end).km
                     est_area = (((3 * sqrt(3)) / 2) * pow(radial, 2)) * 0.945
                     #estimate polygon area
                     geopoly = Feature(geometry = geopoly, properties =
@@ -516,30 +518,38 @@ def hexagons(north, south, east, west, radial, outfile):
         print('\n5/7 geojson dataset of {0} derived hexagon polygons'
         .format(len(g_array)))
         boxes_geojson = FeatureCollection(g_array)
-        #convert merged geojson features to geojson feature geohex_geojson
-        g_array = []  #release g_array - array of geojson geometry elements
+        # convert merged geojson features to geojson feature geohex_geojson
+        g_array = []  # release g_array - array of geojson geometry elements
 
         print('writing geojson formatted hexagon dataset to file: {0}.json'
         .format(outfile))
         myfile = open('geojson{slash}{outfile}_layer.json'
-        .format(outfile = outfile, slash = slash), 'w')
+        .format(outfile=outfile, slash=slash), 'w')
         #open file for writing geojson layer in geojson format
-        myfile.write(str(boxes_geojson)) #write geojson layer to open file
-        myfile.close()  #close file
+        myfile.write(str(boxes_geojson))  # write geojson layer to open file
+        myfile.close()  # close file
 
-        print('\n6/7 tabular dataset of {0} lines of hexagon polygon data'.format(len(tabular_list)))
-        print('writing tabular dataset to file: {0}_dataset.csv'.format(outfile))
+        print('\n6/7 tabular dataset of {0} lines of hexagon polygon data'
+        .format(len(tabular_list)))
+        print('writing tabular dataset to file: {0}_dataset.csv'
+        .format(outfile))
         point_df = pd.DataFrame(point_list)
         point_df.columns = ['poly', 'latlong']
-        point_df.to_csv('csv{slash}{outfile}_points.csv'.format(outfile = outfile, slash = slash), sep = ',')
-        #not finished yet
-        point_df_a=point_df  #make copy of dataframe
-        process_point_df=pd.merge(point_df, point_df_a, on = 'latlong') # merge columns of same dataframe on concatenated latlong
-        process_point_df = process_point_df[(process_point_df['poly_x'] != process_point_df['poly_y'])] # remove self references
-        output_point_df =  process_point_df[['poly_x', 'poly_y']].copy().sort_values(by = ['poly_x']).drop_duplicates()#just leave polygon greferences and filter output
-        output_point_df.to_csv('csv{slash}{outfile}_neighbours.csv'.
-        format(outfile = outfile, slash = slash), sep = ',')
+        point_df.to_csv('csv{slash}{outfile}_points.csv'
+        .format(outfile=outfile, slash=slash), sep=',')
+        point_df_a = point_df  # make copy of dataframe
+        process_point_df = pd.merge(point_df, point_df_a, on='latlong')
+        # merge columns of same dataframe on concatenated latlong
+        process_point_df = process_point_df[(process_point_df['poly_x']
+        != process_point_df['poly_y'])]  # remove self references
+        output_point_df = process_point_df[['poly_x', 'poly_y']].copy()\
+        .sort_values(by=['poly_x']).drop_duplicates()
+        #just leave polygon greferences and filter output
 
+        output_point_df.to_csv('csv{slash}{outfile}_neighbours.csv'.format(outfile=outfile, slash=slash), sep=',')
+        output_point_df = output_point_df.groupby('poly_x')['poly_y'].apply(list).replace(',','|')
+        print(output_point_df)
+         
         tabular_df = pd.DataFrame(tabular_list)
         #convert tabular array to tabular data frame
         tabular_df.columns = ['poly', 'row', 'lat', 'long', 'N',
@@ -550,13 +560,15 @@ def hexagons(north, south, east, west, radial, outfile):
         layer_dict['Bounds']['Dataset']['South'] = tabular_df['S'].min()
         layer_dict['Bounds']['Dataset']['East'] = tabular_df['E'].max()
         layer_dict['Bounds']['Dataset']['West'] = tabular_df['W'].min()
-        tabular_df.to_csv('csv{slash}{outfile}_dataset.csv'.format(outfile = outfile,slash = slash), sep = ',')
+        tabular_df.to_csv('csv{slash}{outfile}_dataset.csv'
+        .format(outfile=outfile,slash=slash), sep=',')
         write_vrt_tabular_file('{0}_dataset'.format(outfile))
 
         print('\n7/7 hexagon json metadata to written to file:\
          {0}_metadata.json'.format(outfile))
         myfile = open('metadata{slash}{outfile}_metadata.json'
-        .format(outfile = outfile, slash = slash), 'w') #open file for writing geojson layer
+        .format(outfile=outfile, slash=slash), 'w')
+        #open file for writing geojson layer
         myfile.write(str(json.dumps(layer_dict)))
         #write geojson layer to open file
         myfile.close()  #close file
@@ -572,21 +584,30 @@ def hexagons(north, south, east, west, radial, outfile):
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
 if len(sys.argv) is 1:
-#    (shape, b_north, b_south, b_east, b_west, radial_d, f_name) = ['box', -8, -45, 168, 96, 55, 'box_55km']
+#    (shape, b_north, b_south, b_east, b_west, radial_d, f_name) =
+#    ['box', -8, -45, 168, 96, 55, 'box_55km']
 #    boxes(b_north, b_south, b_east, b_west, radial_d, f_name)
-    (shape, b_north, b_south, b_east, b_west, radial_d, f_name) = ['hex', -8, -45, 168, 96, 57, 'hex_57km']
+    (shape, b_north, b_south, b_east, b_west, radial_d, f_name) =\
+    ['hex', -8, -45, 168, 96, 57, 'hex_57km']
     hexagons(b_north, b_south, b_east, b_west, radial_d, f_name)
 else:
     if (len(sys.argv) < 8 ):
-        sys.exit("arguments are \nshape - hex or box \n bounding north\n bounding south \n bounding east \n bounding west \n radial in km\n filename for output\n\nfor hexagon\npython3 polygons.py hex -8 -45 168 96 212 hex_212km\n\nfor boxes\npython3 polygons.py box -8 -45 168 96 212 box_212km\n")
+        sys.exit("arguments are \nshape - hex or box \n bounding north\n \
+        bounding south \n bounding east \n bounding west \n radial in km\n \
+        filename for output\n\nfor hexagon\n\
+        python3 polygons.py hex -8 -45 168 96 212 hex_212km\n\nfor boxes\n\
+        python3 polygons.py box -8 -45 168 96 212 box_212km\n")
     else:
-        (blah, shape, b_north, b_south, b_east, b_west, radial_d, f_name) = sys.argv
+        (blah, shape, b_north, b_south, b_east, b_west, radial_d, f_name) =\
+        sys.argv
         shape=str(shape)
         print(shape)
         if shape == "hex":
-            hexagons(float(b_north), float(b_south), float(b_east), float(b_west), float(radial_d), f_name)
+            hexagons(float(b_north), float(b_south), float(b_east),
+            float(b_west), float(radial_d), f_name)
         else:
             if shape == "box":
-                boxes(float(b_north), float(b_south), float(b_east), float(b_west), float(radial_d), f_name)
+                boxes(float(b_north), float(b_south), float(b_east),
+                float(b_west), float(radial_d), f_name)
             else:
                 print('shape is hex or box')
