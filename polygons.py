@@ -547,7 +547,8 @@ def hexagons(north, south, east, west, radial, outfile):
         #just leave polygon greferences and filter output
 
         output_point_df.to_csv('csv{slash}{outfile}_neighbours.csv'.format(outfile=outfile, slash=slash), sep=',')
-        output_point_df = output_point_df.groupby('poly_x')['poly_y'].apply(list).replace(',','|')
+        #output_point_df = output_point_df.groupby('poly_x')['poly_y'].apply(list).replace(',','|')
+        output_point_df = output_point_df.groupby('poly_x').agg(lambda x: x.tolist())
         print(output_point_df)
          
         tabular_df = pd.DataFrame(tabular_list)
