@@ -46,6 +46,9 @@ Create/add a GDAL_PATH variable
 
 - C:\OSGeo4W\share\gdal
 
+or this link to documentation
+https://sandbox.idre.ucla.edu/sandbox/tutorials/installing-gdal-for-windows
+
 to the Windows environment variables for 'PATH' and path c:\OSGeo4W\share\gdal for 'GDAL_PATH' .You can 'pip3 install' your modules.
 
 **R version in development**
