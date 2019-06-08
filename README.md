@@ -41,10 +41,13 @@ Add the PATH variable
 
 - C:\OSGeo4W\bin
 - C:\OSGeo4W\include
+- C:\OSGeo4W64\bin
+- C:\OSGeo4W64\include
 
 Create/add a GDAL_PATH variable
 
 - C:\OSGeo4W\share\gdal
+- C:\OSGeo4W64\share\gdal
 
 to the Windows environment variables for 'PATH' and path c:\OSGeo4W\share\gdal for 'GDAL_PATH' .You can 'pip3 install' your modules.
 
@@ -55,8 +58,12 @@ Not everyone has access to Python so there is an R version of the code with much
 Add to the PATH variable
 
 - C:\OSGeo4W\bin
+- C:\OSGeo4W64\bin
 - C:\OSGeo4W\include
+- C:\OSGeo4W64\inclus
 - C:\Program Files\R\R-3.6.0\bin
+
+- C\OSGeo4W64\bin
 
 **Why not use Vendor 'XYZ' or 'ABC' Software?**
 
