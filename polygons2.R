@@ -1,9 +1,124 @@
-library('geosphere')
-#library('geojson')
-library('sp')
-library('gdalUtils')
-#library('RSQLite')
-library('rgdal')
+library(geosphere)
+#library(geojson)
+library(sp)
+library(gdalUtils)
+#library(RSQLite)
+library(rgdal)
+
+library(geojsonio)
+library(leaflet)
+library(magrittr)
+library(htmlwidgets)
+
+new.map <- function () {
+  #######################
+  ## READ POLYGON DATA ##
+  #######################
+  #https://www.r-bloggers.com/polygon-plotting-in-r/
+  # Read shapefile: Spatial Polygon DB
+  output8 <- geojson_read("output8.json", method= "local", what = "sp")
+  
+  # What kind of data does this spatial object contain
+  head(output8@data)
+  
+  # Show the neighborhoods of Utrecht on a Leaflet map
+  leaflet(output8) %>%
+    addProviderTiles("Esri.WorldGrayCanvas") %>%
+    addPolygons(stroke = TRUE, color = "white", weight="1", smoothFactor = 0.3, fillOpacity = 0.7, fillColor = "lightblue")
+  
+  
+  
+  ##################################
+  ## LOAD DATA TO PLOT ON POLYGON ##
+  ##################################
+  
+  # Import data to be displayed on the map 
+  #output8_data <- read.csv("output8.csv", header = TRUE, sep = ";", quote = "\"", dec = ".", fill = TRUE)
+  
+  # Create merge ID and merge data
+  #output8@data$gwb_buurt_code <- 344 * 10000 + as.numeric(levels(neighborhoods_utrecht@data$KODE))[neighborhoods_utrecht@data$KODE] 
+  #output8@data <- merge(neighborhoods_utrecht@data, utrecht_data, by.x="gwb_buurt_code", by.y="gwb_buurt_code")
+  
+  
+  
+  #########################
+  ## DISPLAY DATA ON MAP ##
+  #########################
+  
+  # Define cut points for the colorbins
+  cuts <- c(0, 1, 2, 3, 4, 5, 6, 7)
+  
+  # Choose a color palette and assign it to the values
+  colorbins <- colorBin("YlOrRd", 
+                        domain = output8$colname, 
+                        bins = cuts)
+  
+  # Display data on elderly people on the map 
+  map <-  leaflet(output8) %>%
+    addTiles() %>%
+    addProviderTiles("Esri.WorldGrayCanvas") %>%
+    addPolygons(stroke = TRUE, 
+                color = "white", 
+                weight="1", 
+                smoothFactor = 0.3, 
+                fillOpacity = 0.7, 
+                fillColor = ~colorbins(output8$colname))  
+  
+  map
+  
+  # Add a legend
+  map_with_legend <- map %>% 
+    addLegend(pal = colorbins, 
+    values = output8$colname,
+    labFormat = labelFormat(suffix = "", 
+                            transform = function(colname) 1 * colname),
+    opacity = 0.7, 
+    title = "count of location", 
+    position = "topright"
+    )
+  
+  map_with_legend
+  
+  
+  
+  ###########################################
+  ## ADD MOUSE-OVER HIGHLIGHTS AND TOOLTIP ##
+  ###########################################
+  
+  # Create HTML labels for tooltip
+  tooltip <- sprintf("%s %s location count"
+                     ,output8$p
+                     ,output8$colname
+                     ) %>% lapply(htmltools::HTML)
+  
+  
+  # Display map
+  map_with_tooltip <- map_with_legend %>%
+    addPolygons(stroke = TRUE, 
+                color = "white", 
+                weight="1", 
+                smoothFactor = 0.3, 
+                fillOpacity = 0.7, 
+                fillColor = ~colorbins(output8$colname), 
+                highlight = highlightOptions(
+                  weight = 5, 
+                  color = "grey", 
+                  fillOpacity = 0.7, 
+                  bringToFront = TRUE),
+                label = tooltip
+                )
+  map_with_tooltip
+  
+  
+  
+  ###########################
+  ## SAVE OUTPUT HTML FILE ##
+  ###########################
+  
+  # Save output as HTML widget (or incorporate into Shiny / Flexdashboard)
+  saveWidget(map_with_tooltip, file="output8.html")
+  
+}
 
 new.point <- function(latlong,dist,angle) {   
   #c <- destPoint(cbind(tail(latlong[1], n=1),tail(latlong[2], n=1)), b=angle, d=dist*1000, a=6378137, f=1/298.257223563)
@@ -367,7 +482,7 @@ fileConn<-file('output8.json')
 writeLines(output, fileConn)
 close(fileConn)
 #convert and reproject
-ogr2ogr(src_datasource_name='output8.json',f='ESRI Shapefile',dst_datasource_name='output8.shp',t_srs="EPSG:4283",verbose=TRUE)
+#ogr2ogr(src_datasource_name='output8.json',f='ESRI Shapefile',dst_datasource_name='output8.shp',t_srs="EPSG:4283",verbose=TRUE)
 #run query
 #ogr2ogr(src_datasource_name='all.vrt',dialect='sqlite',sql='select * from shapes',dst_datasource_name='output8_q1.csv',verbose=TRUE)
 
@@ -382,5 +497,7 @@ ogr2ogr(src_datasource_name='output8.json',f='ESRI Shapefile',dst_datasource_nam
 #con=dbConnect(sqlite,dbfile, loadable.extensions=TRUE )
 
 #vectorImport <- readOGR(dsn="NUTS_BN_03M_2013.sqlite", layer="nuts_bn_03m_2013")
-myShapeInR<-readOGR(".","output8")
-plot(myShapeInR)
+#myShapeInR<-readOGR(".","output8")
+#plot(myShapeInR)
+new.map()
+
