@@ -86,7 +86,7 @@ new.map <- function () {
   ###########################################
   
   # Create HTML labels for tooltip
-  tooltip <- sprintf("%s %s location count"
+  tooltip <- sprintf("poly %s has %s locations"
                      ,output8$p
                      ,output8$colname
                      ) %>% lapply(htmltools::HTML)
