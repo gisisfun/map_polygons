@@ -46,7 +46,7 @@ new.map <- function () {
   #########################
   
   # Define cut points for the colorbins
-  cuts <- c(0, 1, 2, 3, 4, 5, 6, 7)
+  cuts <- c(0, 0.5, 1, 2, 3, 4, 5, 6, 7)
   
   # Choose a color palette and assign it to the values
   colorbins <- colorBin("YlOrRd", 
@@ -56,12 +56,12 @@ new.map <- function () {
   # Display data on elderly people on the map 
   map <-  leaflet(output8) %>%
     addTiles() %>%
-    addProviderTiles("Esri.WorldGrayCanvas") %>%
+    #addProviderTiles("Esri.WorldGrayCanvas") %>%
     addPolygons(stroke = TRUE, 
                 color = "white", 
                 weight="1", 
                 smoothFactor = 0.3, 
-                fillOpacity = 0.7, 
+                fillOpacity = 0.1, 
                 fillColor = ~colorbins(output8$colname))  
   
   map
@@ -72,7 +72,7 @@ new.map <- function () {
     values = output8$colname,
     labFormat = labelFormat(suffix = "", 
                             transform = function(colname) 1 * colname),
-    opacity = 0.7, 
+    opacity = 0.1, 
     title = "count of location", 
     position = "topright"
     )
