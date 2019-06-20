@@ -116,7 +116,7 @@ new.map <- function () {
   ###########################
   
   # Save output as HTML widget (or incorporate into Shiny / Flexdashboard)
-  saveWidget(map_with_tooltip, file="output8.html")
+  #saveWidget(map_with_tooltip, file="output8.html")
   
 }
 
