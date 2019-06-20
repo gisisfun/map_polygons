@@ -51,7 +51,8 @@ to the Windows environment variables for 'PATH' and path c:\OSGeo4W\share\gdal f
 **R version in development**
 
 Not everyone has access to Python so there is an R version of the code with much of the same features. Have a look at **polygons2.R**. The code is functional in a Windows environment using the OSGeo4W software. 
-see http://rpubs.com/damien123/506636
+
+see the end result http://rpubs.com/damien123/506636
 
 This R library is quite nice https://github.com/r-barnes/dggridR  
 
