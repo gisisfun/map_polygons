@@ -54,7 +54,7 @@ Not everyone has access to Python so there is an R version of the code with much
 
 see the end result http://rpubs.com/damien123/506636
 
-This R library is quite nice https://github.com/r-barnes/dggridR  
+This R library is quite nice https://github.com/r-barnes/dggridR  and result http://rpubs.com/damien123/506921
 
 Add to the PATH variable
 
