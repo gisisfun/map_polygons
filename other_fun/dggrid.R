@@ -31,12 +31,12 @@ cutoff        <- quantile(grid$count,0.9)
 grid          <- grid %>% mutate(count=ifelse(count>cutoff,cutoff,count))
 
 #Get polygons for each country of the world
-countries <- map_data("world")
-
+countries_of_world <- map_data("world")
+australia <- countries_of_world[countries_of_world$region == "Australia",]
 # Plot everything on a flat map
 
 p<- ggplot() + 
-    geom_polygon(data=countries, aes(x=long, y=lat, group=group), fill=NA, color="black")   +
+    geom_polygon(data=australia, aes(x=long, y=lat, group=group), fill=NA, color="black")   +
     geom_polygon(data=grid,      aes(x=long, y=lat, group=group, fill=count), alpha=0.4)    +
     geom_path   (data=grid,      aes(x=long, y=lat, group=group), alpha=0.4, color="white") +
 #    geom_point  (aes(x=cellcenters$lon_deg, y=cellcenters$lat_deg)) +
