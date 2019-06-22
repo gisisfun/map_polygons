@@ -48,6 +48,10 @@ Create/add a GDAL_PATH variable
 
 to the Windows environment variables for 'PATH' and path c:\OSGeo4W\share\gdal for 'GDAL_PATH' .You can 'pip3 install' your modules.
 
+**pygeogrids**
+
+https://pygeogrids.readthedocs.io/en/v0.1/_rst/pygeogrids.html 
+
 **R version in development**
 
 Not everyone has access to Python so there is an R version of the code with much of the same features. Have a look at **polygons2.R**. The code is functional in a Windows environment using the OSGeo4W software. 
