@@ -36,6 +36,7 @@ Download the python wheel packages from links for geopandas
 
 - https://www.lfd.uci.edu/~gohlke/pythonlibs/#fiona 
 - https://www.lfd.uci.edu/~gohlke/pythonlibs/#gdal 
+- https://www.lfd.uci.edu/~gohlke/pythonlibs/#basemap
 
 Add the PATH variable
 
