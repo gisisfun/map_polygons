@@ -25,7 +25,7 @@ Open one or both of these files in your preferred GIS tool of choice and have a 
 - Have a look in the shapefiles directory for the processed shape files for area weighted and place point of interest weighted files.
 
 **Useful Python and R Libraries**
-Cloreplath (Thematic mapping) cloreplathr (R) pysal (Python)
+Choropleths (Thematic mapping) choroplethr (R) pysal (Python)
 
 **The Python Code will switch between Linux and Windows Enviromments (under development)**
 
