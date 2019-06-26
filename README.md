@@ -24,6 +24,9 @@ Open one or both of these files in your preferred GIS tool of choice and have a 
 - **You** can contribute or make something better
 - Have a look in the shapefiles directory for the processed shape files for area weighted and place point of interest weighted files.
 
+**Useful Python and R Libraries**
+Cloreplath (Thematic mapping) cloreplathr (R) pysal (Python)
+
 **The Python Code will switch between Linux and Windows Enviromments (under development)**
 
 For full functionality with Windows OS, download the OSGeo4W package and install the 'express install'. The code will map to the standard installation location on C drive. The code was originally bult for Linux OS. Linux has pretty good package management so no worries here. All python modules are installed using pip3. **polygons.py** has been tested and works with Linux and Windows.
