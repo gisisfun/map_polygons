@@ -364,4 +364,6 @@ Larger volumes of data and newer SPARQL/GeoSPARQL and Discrete Global Grid Syste
 
 **Further Reading**
 
-http://redblobgames.com/grids/hexagons
+- http://redblobgames.com/grids/hexagons
+- https://geoawesomeness.com/discrete-global-grid-system-dggs-new-reference-system/
+
