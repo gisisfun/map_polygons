@@ -362,3 +362,6 @@ If you have read down to this point in the documemtation then you can see the en
 
 Larger volumes of data and newer SPARQL/GeoSPARQL and Discrete Global Grid System (DGGC) enabled systems and and data sets provide a much better end product for the real users of this data. Not the Geospatial Anaysts, staticians but the people who benefit from decisions informed from data.  
 
+**Further Reading**
+
+http://redblobgames.com/grids/hexagons
