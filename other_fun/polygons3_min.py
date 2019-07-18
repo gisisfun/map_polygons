@@ -29,72 +29,46 @@ def line_intersection(line1, line2):
     y = det(d, ydiff) / div
     return x, y
 
-def horizontal_lines(b_lat_min, b_lat_max, b_lon_min, b_lon_max, hor_seq,radial):
-    print('\n1/5 deriving horizontal list of reference points from north to south for longitudes or x axis')
-    #lines of latitude from north to south
-    #across min and max bounds latitude
-    #min and max longitude from west to east
-    hor_line_list=[]
-    hor_line_points=[]
-    seq=0
-    line = [[b_lat_min, b_lon_min],[b_lat_min, b_lon_max]]
-    hor_line_list.append(line)
-    ref_point = [b_lat_min,b_lon_min]
-    hor_line_points.append([b_lon_min, b_lat_min])
-    offset = point_radial_distance(ref_point,180,radial * hor_seq[0])
-    hor_line_points.append([offset[1], offset[0]])
-    ref_lat = offset[0]
-    ref_lon = offset[1]    
-    while (ref_lat > b_lat_max):
-        if seq <3:
-            seq+=1
-        else:
-            seq=0
-        line = [[ref_lat, b_lon_min],[ref_lat, b_lon_max]]
-        hor_line_list.append(line)
-        ref_point = [ref_lat,ref_lon]
-        offset = point_radial_distance(ref_point, 180, radial * hor_seq[seq])
-        hor_line_points.append([offset[1],offset[0]])
-        ref_lat = offset[0]
-        ref_lon = offset[1]
-    num_h = len(hor_line_list)
-    print('derived {0} longitudinal lines'.format(num_h))
-    return hor_line_list
-    
-def vertical_lines(b_lat_min, b_lat_max, b_lon_min, b_lon_max, vert_seq,radial):    
-    print('\n2/5 deriving horizontal list of reference points from east to west for latitudes or y axis')
-    #lines of longitude from west to east
-    #across min and max bounds from longitude
-    #min to max latitude north to south
-    vert_line_list = []
-    vert_line_points = []
-    #ns_dist = geodesic([b_lat_min,b_lon_min],[b_lat_max],[b_lon_max]]).kilometers
-    line = [[b_lat_min, b_lon_min],[b_lat_max, b_lon_min]]
-    vert_line_list.append(line)
-    seq=0
-    ref_point = [b_lat_min,b_lon_min]
-    vert_line_points.append([b_lon_min,b_lat_min,vert_seq[seq]])
-    offset = point_radial_distance(ref_point, 90, radial * vert_seq[seq])
-    vert_line_points.append([offset[1], offset[0], vert_seq[seq]])
-    ref_lon = offset[1]
-    ref_lat = offset[0]
-    while (ref_lon < b_lon_max):
-        if seq <3:
-            seq+=1
-        else:
-            seq=0
-        line = [[b_lat_min,ref_lon],[b_lat_max, ref_lon]]
-        vert_line_list.append(line)
-        ref_point = [ref_lat,ref_lon]
-        offset = point_radial_distance(ref_point, 90, radial * vert_seq[seq])
-        vert_line_points.append([offset[1],offset[0],vert_seq[seq]])
-        ref_lon = offset[1]
-        ref_lat = offset[0]
+def horizontal(east,north,west,south,hor_seq,radial):
+    #1/7 deriving vertical list of reference points from north to south for longitudes or x axis
+    angle = 180
+    new_north = north
+    #print(east,new_north,south,'\n')
+    i = 0
+    longitudes = []
+    longitudes.append([[north,west],[north,east]])
 
-    num_v = len(vert_line_list)
-    max_v = (num_v)##-1)##-((num_v-1) % 4)
-    print('derived {0} latitude lines'.format(num_v))    
-    return vert_line_list
+    while new_north >= south:
+        if i > 3:
+            i = 0
+            
+        latlong = [new_north,east]
+        p = point_radial_distance(latlong,angle,radial * hor_seq[i]) 
+        new_north = p[0]
+        longitudes.append([[p[0],west],[p[0],east]])
+        i += 1
+    return longitudes
+
+
+def vertical(east,north,west,south,vert_seq,radial):
+    print('east {0} west {1}'.format(east,west))
+    #2/7 deriving horizontal list of reference points from east to west for latitudes or y axis
+    angle = 90
+
+    i = 0
+    new_west = west
+    latitudes =[]
+    latitudes.append([[north,west],[south,west]])
+    while new_west <= east:
+        if i > 3:
+            i = 0
+
+        latlong = [north,new_west]
+        p = point_radial_distance(latlong,angle,radial*vert_seq[i])
+        new_west = p[1]
+        latitudes.append([[north,p[1]],[south,p[1]]])    
+        i += 1     
+    return latitudes
 
 def intersections(hor_line_list,hor_max,vert_line_list,vert_max):
     print('\n3/5 deriving intersection point data between horizontal and vertical lines')
@@ -156,12 +130,12 @@ def hexagons(north,south,east,west,radial,col_name,lat_longs):
 
     #1/5 deriving horizontal list of reference points from north to south for longitudes or x axis
     hor_seq =[layer_dict['Hexagon']['short'], layer_dict['Hexagon']['short'], layer_dict['Hexagon']['short'], layer_dict['Hexagon']['short']]
-    h_line_list = horizontal_lines(bounds_lat_min, bounds_lat_max, bounds_lon_min, bounds_lon_max, hor_seq,radial)
+    h_line_list = horizontal(east,north,west,south, hor_seq,radial)
     max_h = len(h_line_list)
 
     #2/5 deriving horizontal list of reference points from east to west for latitudes or y axis
     vert_seq =[layer_dict['Hexagon']['short'], layer_dict['Hexagon']['long'], layer_dict['Hexagon']['short'], layer_dict['Hexagon']['long']]
-    v_line_list = vertical_lines(bounds_lat_min, bounds_lat_max, bounds_lon_min, bounds_lon_max, vert_seq,radial)    
+    v_line_list = vertical(east,north,west,south, vert_seq,radial)    
     max_v = len(v_line_list)
 
     #3/5 deriving intersection point data between horizontal and vertical lines
