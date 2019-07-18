@@ -344,7 +344,7 @@ def boxes(north, south, east, west, radial, outfile):
 
 def hexagons(north, south, east, west, radial, outfile):
 
-    params('hexagons', north, south, east, west, radial)
+    params('heagons', north, south, east, west, radial)
     my_os = os.name
     if (my_os is 'posix'):
         # cmd_text = '/usr/bin/ogr2ogr'
@@ -397,7 +397,7 @@ def hexagons(north, south, east, west, radial, outfile):
     layer_dict['Row_1']['poly_row_count'] = poly_row_count
     layer_dict['Row_1']['remain_lat'] = rem_lat
 
-    print('first row of hexagons starting from {0}, {1} hexagons, {2} \
+    print('first row starting from {0}, {1} hexagons, {2} \
     latitude line(s) remaining'.format(top_left, poly_row_count, rem_lat))
 
     inc_by_rem = True
@@ -415,7 +415,7 @@ def hexagons(north, south, east, west, radial, outfile):
             inc_by_rem = False
             inc_adj = 0
 
-        print('\n4/7 deriving polygons from intersection data')
+        print('\n4/7 deriving hexagon polygons from intersection data')
         row = 1
         last_lat_row = 0
         hexagon = 0
@@ -533,7 +533,7 @@ def hexagons(north, south, east, west, radial, outfile):
         tabular_df.to_csv('csv{slash}{outfile}_dataset.csv'.format(outfile=outfile,slash=slash), sep=',', index = False)
         write_vrt_tabular_file('{0}_dataset'.format(outfile))
 
-        print('\n7/7 hexagon json metadata to written to file:\
+        print('\n7/7 hexagons json metadata to written to file:\
          {0}_metadata.json'.format(outfile))
         myfile = open('metadata{slash}{outfile}_metadata.json'
         .format(outfile=outfile, slash=slash), 'w')
@@ -542,12 +542,12 @@ def hexagons(north, south, east, west, radial, outfile):
         #write geojson layer to open file
         myfile.close()  #close file
 
-        write_vrt_file(outfile, 'boxes', 'json', 'geojson')
-        to_shp_tab(outfile, 'boxes')
+        write_vrt_file(outfile, 'hexagons', 'json', 'geojson')
+        to_shp_tab(outfile, 'hexagons')
         ref_files()
 
     print('\n')
-    print('The End')  # boxes
+    print('The End')  # hexagons
 
 
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
