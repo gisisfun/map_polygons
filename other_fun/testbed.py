@@ -95,7 +95,7 @@ def vertical_lines(b_lat_min, b_lat_max, b_lon_min, b_lon_max, vert_seq
 def point_radial_distance(self,brng,radial):
     return geodesic(kilometers=radial).destination(point = self, bearing = brng)
 
-def line_intersection(line1, line2):
+def line_intersectionnew(line1, line2):
     #source: https://stackoverflow.com/questions/20677795/how-do-i-compute-the-intersection-between-two-lines-in-python
     xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
     ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1]) 
@@ -116,8 +116,20 @@ def line_intersection(line1, line2):
 def params(shape,north,south,east,west,radial):
     print('Making {0} hex shapes starting from {1},{2} to {3},{4} with a radial length of {5} km'.format(shape, north, west, south, east, radial))
 
+def intersectionsnew(hor_line_list, vert_line_list):
+    #print("hor_max",hor_line_list[-1][0][0],hor_max,"vert_max",vert_line_list[-1][1][1,vert_max)
+    print('\n3/7 deriving intersection point data between horizontal and \
+    vertical lines')
+    intersect_list = []
+    for h in hor_line_list:
+        for v in vert_line_list:
+            intersect_list.append(line_intersection(h,v))
+
+    print('derived {0} points of intersection'.format(len(intersect_list)))
+    return intersect_list
 
 def intersections(hor_line_list, hor_max, vert_line_list, vert_max):
+    #print("hor_max",hor_line_list[-1][0][0],hor_max,"vert_max",vert_line_list[-1][1][1,vert_max)
     print('\n3/7 deriving intersection point data between horizontal and \
     vertical lines')
     intersect_list = []
@@ -342,7 +354,9 @@ def hexagons(north, south, east, west, radial, outfile):
     max_v = len(v_line_list)
     
     print(len(v_line_list))
-    intersect_list = intersections(h_line_list, max_h, v_line_list, max_v)
+    #intersect_list = intersections(h_line_list, max_h, v_line_list, max_v)
+    intersect_list = intersectionsnew(h_line_list, v_line_list)
+    
     print(len(intersect_list))
     #array output
     print(intersect_list[164],intersect_list[165])
@@ -355,8 +369,8 @@ def hexagons(north, south, east, west, radial, outfile):
           '\n',
           h_line_list[1][0][0],
           v_line_list[1][1][1])
+          
     i_list = []
-    
     for i in range(len(h_line_list)*len(v_line_list)):
         h_pointer = int(i/max_v)
         v_pointer = (i% max_v)
