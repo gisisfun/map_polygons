@@ -314,7 +314,7 @@ def hexagons(north, south, east, west, radial, outfile):
                            vert_seq, radial)
     max_v = len(v_line_list)
 
-    intersect_list = intersections(h_line_list, max_h, v_line_list, max_v)
+    intersect_list = intersections(h_line_list, v_line_list)
     lat_offset = 4
     top_left = 0
     poly_row_count = int(max_v / (len(hor_seq)))
