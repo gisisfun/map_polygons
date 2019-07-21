@@ -78,19 +78,14 @@ def vertical(east,north,west,south,vert_seq,radial):
     return latitudes
 
 
-def intersections(hor_line_list, hor_max, vert_line_list, vert_max):
+def intersections(hor_line_list, vert_line_list):
+    #print("hor_max",hor_line_list[-1][0][0],hor_max,"vert_max",vert_line_list[-1][1][1,vert_max)
     print('\n3/7 deriving intersection point data between horizontal and \
     vertical lines')
     intersect_list = []
-    for h in range(0, hor_max):
-        for v in range(0, vert_max):
-            intersect_point = line_intersection(hor_line_list[h],
-            vert_line_list[v])
-            intersect_data = [intersect_point[1], intersect_point[0]]
-            intersect_list.append(intersect_data)
-
-    print('derived {0} points of intersection'.format(len(intersect_list)))
-    return intersect_list
+    for h in hor_line_list:
+        for v in vert_line_list:
+            intersect_list.append(line_intersection(h,v))
 
 
 def params(shape, north, south, east, west, radial):
@@ -193,7 +188,7 @@ def boxes(north, south, east, west, radial, outfile):
     v_line_list = vertical(east,north,west,south,vert_seq,radial)
     num_v = len(v_line_list)
     max_v = num_v - 1
-    intersect_list = intersections(h_line_list, max_h, v_line_list, max_v)
+    intersect_list = intersections(h_line_list, v_line_list)
 
     print('\n4/7 deriving boxes polygons from intersection data')
     top_left = 0
