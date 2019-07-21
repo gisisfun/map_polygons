@@ -267,7 +267,7 @@ def boxes(north, south, east, west, radial, outfile):
     v_line_list = vertical(east,north,west,south,vert_seq,radial)
     num_v = len(v_line_list)
     max_v = num_v - 1
-    intersect_list = intersectionsnew(h_line_list, v_line_list)
+    intersect_list = intersections(h_line_list,max_h, v_line_list, max_v)
 
     print('\n4/7 deriving boxes polygons from intersection data')
     top_left = 0
@@ -393,7 +393,7 @@ def hexagons(north, south, east, west, radial, outfile):
                               vert_seq, radial)
     max_v = len(v_line_list)
 
-    intersect_list = intersectionsnew(h_line_list, v_line_list)
+    intersect_list = intersections(h_line_list, max_h, v_line_list, max_v)
     
     lat_offset = 4
     top_left = 0
