@@ -17,6 +17,23 @@ import os
 def point_radial_distance(self, brng, radial):
     return geodesic(kilometers=radial).destination(point=self, bearing=brng)
 
+def line_intersectionnew(h_coords, v_coords):
+    #source: https://stackoverflow.com/questions/20677795/how-do-i-compute-the-intersection-between-two-lines-in-python
+    #xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
+    #ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1]) 
+    xdiff = (h_coords[0][0] - h_coords[1][0], v_coords[0][0] - v_coords[1][0])
+    ydiff = (h_coords[0][1] - h_coords[1][1], v_coords[0][1] - v_coords[1][1]) 
+    def det(a, b):
+        return a[0] * b[1] - a[1] * b[0]
+
+    div = det(xdiff, ydiff)
+    if div == 0:
+       raise Exception('lines do not intersect')
+
+    d = (det(*h_coords), det(*v_coords))
+    x = det(d, xdiff) / div
+    y = det(d, ydiff) / div
+    return x, y
 
 def line_intersection(line1, line2):
     # source: https://stackoverflow.com/questions/20677795/how-do-i-compute-the-intersection-between-two-lines-in-python
@@ -120,6 +137,20 @@ def vertical(east,north,west,south,vert_seq,radial):
 ##    del latitudes[-1]
 ##    return latitudes
 
+def intersectionsnew(hor_line_list, vert_line_list):
+    del hor_line_list[-1]
+    del vert_line_list[-1]
+    #print("hor_min",hor_line_list[0][0][0],"vert_min",vert_line_list[0][1][1])
+    print('\n3/7 deriving intersection point data between horizontal and \
+    vertical lines')
+    intersect_list = []
+    for h in hor_line_list:
+        for v in vert_line_list:
+            intersect_point = line_intersectionnew(h,v)
+            intersect_list.append([intersect_point[1], intersect_point[0]])
+
+    print('derived {0} points of intersection'.format(len(intersect_list)))
+    return intersect_list
 
 def intersections(hor_line_list, hor_max, vert_line_list, vert_max):
     print('\n3/7 deriving intersection point data between horizontal and \
@@ -236,7 +267,7 @@ def boxes(north, south, east, west, radial, outfile):
     v_line_list = vertical(east,north,west,south,vert_seq,radial)
     num_v = len(v_line_list)
     max_v = num_v - 1
-    intersect_list = intersections(h_line_list, max_h, v_line_list, max_v)
+    intersect_list = intersectionsnew(h_line_list, v_line_list)
 
     print('\n4/7 deriving boxes polygons from intersection data')
     top_left = 0
@@ -362,7 +393,7 @@ def hexagons(north, south, east, west, radial, outfile):
                               vert_seq, radial)
     max_v = len(v_line_list)
 
-    intersect_list = intersections(h_line_list, max_h, v_line_list, max_v)
+    intersect_list = intersectionsnew(h_line_list, v_line_list)
     
     lat_offset = 4
     top_left = 0
@@ -554,3 +585,4 @@ else:
                 float(b_west), float(radial_d), f_name)
             else:
                 print('shape is hex or box')
+                
