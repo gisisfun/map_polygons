@@ -114,12 +114,15 @@ def params(shape,north,south,east,west,radial):
     print('Making {0} hex shapes starting from {1},{2} to {3},{4} with a radial length of {5} km'.format(shape, north, west, south, east, radial))
 
 def to_shp_tab(f_name,shape):
-    if (os.name is 'posix'):
-        cmd_text='/usr/bin/ogr2ogr'
-        slash='/'
+    my_os = os.name
+    if (my_os is 'posix'):
+        cmd_text = '/usr/bin/ogr2ogr'
+        slash = '/'
     else:
-        cmd_text='ogr2ogr.exe'
-        slash='\/'
+        cmd_text = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+        slash = '\\'
+        gdal_vars = {'GDAL_DATA': 'C:\\OSGeo4W64\\share\\gdal'}
+        os.environ.update(gdal_vars)
     
     shp_fname='shapefiles{slash}{fname}_layer.shp'.format(fname=f_name.replace(' ','_'),slash=slash)
     tab_fname='tabfiles{slash}{fname}_layer.tab'.format(fname=f_name.replace(' ','_'),slash=slash)
@@ -130,79 +133,23 @@ def to_shp_tab(f_name,shape):
         # record the output!
         print('\nwriting {0} shapefile {1}_layer.shp'.format(shape,f_name))
         subprocess.check_call(shp_options)
-        write_vrt_file(f_name,shape,'shp','ESRI Shapefile')    
         print('\nwriting {0} shapefile {1}_layer.tab'.format(shape,f_name))
         subprocess.check_call(tab_options)
-        write_vrt_file(f_name,shape,'tab','Mapinfo file')        
+               
     except FileNotFoundError:
         print('No files processed')
-
-def write_vrt_tabular_file(f_name):
-    if (os.name is 'posix'):
-        cmd_text='/usr/bin/ogr2ogr'
-        slash='/'
-    else:
-        cmd_text='ogr2ogr.exe'
-        slash='\/'
     
-    vrt_template = """<OGRVRTDataSource>
-    <OGRVRTLayer name="{0}">
-        <SrcDataSource>{0}.csv</SrcDataSource>
-            <GeometryType>wkbPoint</GeometryType>
-            <LayerSRS>EPSG:4823</LayerSRS>
-            <GeometryField encoding="PointFromColumns" x="Long" y="Lat"/>
-        </OGRVRTLayer>
-    </OGRVRTDataSource>"""
-    vrt_content = vrt_template.format(f_name).replace(' ','_')
-    
-    print('\n tabular definition in vrt format for csv file to written to file: {0}.vrt'.format(f_name))  
-    file = open('vrt{slash}{fname}.vrt'.format(fname=f_name.replace(' ','_'),slash=slash), 'w') #open file for writing geojson layer
-    file.write(vrt_content) #write vrt layer to open file
-    file.close() #close file 
-    #to check: ogrinfo -ro -al box_106km_layer.vrt
-    #to create australia layer
-    #https://gis.stackexchange.com/questions/147820/st-intersect-with-ogr2ogr-and-spatialite
-    
-
-def write_vrt_file(f_name,shape,ext,ext_label):
-    if (os.name is 'posix'):
-        cmd_text='/usr/bin/ogr2ogr'
-        slash='/'
-    else:
-        cmd_text='ogr2ogr.exe'
-        slash='\/'
-    vrt_template = """<OGRVRTDataSource>
-    <OGRVRTLayer name="shapes">
-        <SrcDataSource>{0}_layer.{1}</SrcDataSource>
-        <SrcLayer>{0}_layer</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
-    </OGRVRTLayer>
-    <OGRVRTLayer name="aust">
-        <SrcDataSource>AUS_2016_AUST.{1}</SrcDataSource>
-        <SrcLayer>AUS_2016_AUST</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
-    </OGRVRTLayer>
-</OGRVRTDataSource>"""
-    vrt_content = vrt_template.format(f_name,ext)
-    
-    print('\n {0} vrt for {1} file to written to file: {2}_layer_{3}.vrt'.format(shape,ext_label,f_name,ext))  
-    file = open('vrt{slash}{fname}_layer_{extlabel}.vrt'.format(slash=slash,fname=f_name,extlabel=ext_label.replace(' ','_')), 'w') #open file for writing geojson layer
-    file.write(vrt_content) #write vrt layer to open file
-    file.close() #close file 
-    #to check: ogrinfo -ro -al box_106km_layer.vrt
-    #ogr2ogr hex_aust.shp hex_55km_layer_ESRI_Shapefile.vrt -dialect sqlite -sql @austshape.sql
 
 def ref_files():
-    #dir_path = os.path.dirname(os.path.realpath(__file__))
-    if (os.name is 'posix'):
-        cmd_text='/usr/bin/ogr2ogr'
-        slash='/'
+    my_os = os.name
+    if (my_os is 'posix'):
+        cmd_text = '/usr/bin/ogr2ogr'
+        slash = '/'
     else:
-        cmd_text='ogr2ogr.exe'
-        slash='\/'
-    if not os.path.isfile('shapefiles/AUS_2016_AUST.shp'):
+        cmd_text = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+        slash = '//'
+        
+    if not os.path.isfile('shapefiles{slash}AUS_2016_AUST.shp'.format(slash=slash)):
         print('Downloading ABS Australia file in Shape file format')
         url = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&5503B37F8055BFFECA2581640014462C&0&July%202016&24.07.2017&Latest'
         urllib.request.urlretrieve(url, 'shapefiles/1270055001_aus_2016_aust_shape.zip')
@@ -211,7 +158,7 @@ def ref_files():
     else:
         print('ABS Australia file in Shape file format exists')
     
-    if not os.path.isfile('AUS_2016_AUST.tab'):
+    if not os.path.isfile('tabfiles{slash}AUS_2016_AUST.tab'.format(slash=slash)):
         print('Downloading ABS Australia file in Tab file format')
         url ='http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_tab.zip&1270.0.55.001&Data%20Cubes&F18065BF058615F9CA2581640014491B&0&July%202016&24.07.2017&Latest'
         urllib.request.urlretrieve(url, 'shapefiles{slash}1270055001_aus_2016_aust_tab.zip'.format(slash=slash)) 
@@ -222,12 +169,13 @@ def ref_files():
 
 def boxes(north,south,east,west,radial,outfile):
     params('boxes',north,south,east,west,radial)
-    if (os.name is 'posix'):
-        cmd_text='/usr/bin/ogr2ogr'
-        slash='/'
+    my_os = os.name
+    if (my_os is 'posix'):
+        cmd_text = '/usr/bin/ogr2ogr'
+        slash = '/'
     else:
-        cmd_text='ogr2ogr.exe'
-        slash='\/'
+        cmd_text = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+        slash = '//'
     #init bits
     poly_list = []
     g_array=[] #array of geojson formatted geometry elements
@@ -303,13 +251,11 @@ def boxes(north,south,east,west,radial,outfile):
     layer_dict['Bounds']['Dataset']['East'] = tabular_df['E'].max()
     layer_dict['Bounds']['Dataset']['West'] = tabular_df['W'].min() 
     tabular_df.to_csv('csv{slash}{outfile}_dataset.csv'.format(outfile=outfile,slash=slash), sep=',')
-    write_vrt_tabular_file('{outfile}_dataset'.format(outfile=outfile,slash=slash))
 
     print('\n7/7 boxes json metadata to written to file: {0}_metadata.json'.format(outfile))  
     file = open('metadata{slash}{outfile}_metadata.json'.format(outfile=outfile,slash=slash), 'w') #open file for writing geojson layer
     file.write(str(json.dumps(layer_dict))) #write geojson layer to open file
-    file.close() #close file
-    write_vrt_file(outfile,'boxes','json','geojson')    
+    file.close() #close file   
     to_shp_tab(outfile,'boxes')
     ref_files()
     print('\n')
@@ -320,11 +266,11 @@ def hexagons(north,south,east,west,radial,outfile):
     params('hexagons',north,south,east,west,radial)
     
     if (os.name is 'posix'):
-        cmd_text='/usr/bin/ogr2ogr'
-        slash='/'
+        cmd_text = '/usr/bin/ogr2ogr'
+        slash = '/'
     else:
-        cmd_text='ogr2ogr.exe'
-        slash='\/'    
+        cmd_text = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+        slash = '//'    
     #init bits
     poly_list = []
     point_list =[]
@@ -455,14 +401,12 @@ def hexagons(north,south,east,west,radial,outfile):
         layer_dict['Bounds']['Dataset']['East'] = tabular_df['E'].max()
         layer_dict['Bounds']['Dataset']['West'] = tabular_df['W'].min() 
         tabular_df.to_csv('csv{slash}{outfile}_dataset.csv'.format(outfile=outfile,slash=slash), sep=',')
-        write_vrt_tabular_file('{0}_dataset'.format(outfile))
 
         print('\n7/7 hexagon json metadata to written to file: {0}_metadata.json'.format(outfile))  
         file = open('metadata{slash}{outfile}_metadata.json'.format(outfile=outfile,slash=slash), 'w') #open file for writing geojson layer
         file.write(str(json.dumps(layer_dict))) #write geojson layer to open file
         file.close() #close file
     
-        write_vrt_file(outfile,'boxes','json','geojson')
         to_shp_tab(outfile,'boxes')
         ref_files()
 
