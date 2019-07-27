@@ -12,15 +12,13 @@ from pyunpack import Archive
 import os
 import itertools
 
-def expand_grid(data_dict):
-  rows = itertools.product(*data_dict.values())
-  return pd.DataFrame.from_records(rows, columns=data_dict.keys())
 
 def myexpand_grid(x, y):
     xG, yG = np.meshgrid(x, y) # create the actual grid
     xG = xG.flatten() # make the grid 1d
     yG = yG.flatten() # same
     return ( xG, yG)
+
 
 def horizontal_lines(b_lat_min, b_lat_max, b_lon_min, b_lon_max, hor_seq,
 radial):
@@ -95,7 +93,7 @@ def vertical_lines(b_lat_min, b_lat_max, b_lon_min, b_lon_max, vert_seq
 def point_radial_distance(self,brng,radial):
     return geodesic(kilometers=radial).destination(point = self, bearing = brng)
 
-def line_intersectionnew(line1, line2):
+def line_intersection(line1, line2):
     #source: https://stackoverflow.com/questions/20677795/how-do-i-compute-the-intersection-between-two-lines-in-python
     xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
     ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1]) 
@@ -112,7 +110,6 @@ def line_intersectionnew(line1, line2):
     return x, y
     
 
-
 def params(shape,north,south,east,west,radial):
     print('Making {0} hex shapes starting from {1},{2} to {3},{4} with a radial length of {5} km'.format(shape, north, west, south, east, radial))
 
@@ -123,7 +120,7 @@ def intersectionsnew(hor_line_list, vert_line_list):
     intersect_list = []
     for h in hor_line_list:
         for v in vert_line_list:
-            intersect_list.append(line_intersection(h,v))
+            intersect_list.append((h,v))
 
     print('derived {0} points of intersection'.format(len(intersect_list)))
     return intersect_list
@@ -146,7 +143,7 @@ def intersections(hor_line_list, hor_max, vert_line_list, vert_max):
 
 def expand_grid(x, y):
     xG, yG = np.meshgrid(x, y) # create the actual grid
-    xG = xG.flatten() # make the grid 1d
+    xG = xG.flatten() # makeimport sys
     yG = yG.flatten() # same
     return pd.DataFrame({'x':xG, 'y':yG})
 
@@ -355,12 +352,12 @@ def hexagons(north, south, east, west, radial, outfile):
     
     print(len(v_line_list))
     #intersect_list = intersections(h_line_list, max_h, v_line_list, max_v)
-    intersect_list = intersectionsnew(h_line_list, v_line_list)
+    intersect_list_new = intersectionsnew(h_line_list, v_line_list)
     
     print(len(intersect_list))
     #array output
-    print(intersect_list[164],intersect_list[165])
-    print(intersect_list[328],intersect_list[329])
+    print(intersect_list_new[164],intersect_list_new[165])
+    print(intersect_list_new[328],intersect_list_new[329])
     #
     
     print('\n',
@@ -376,12 +373,14 @@ def hexagons(north, south, east, west, radial, outfile):
         v_pointer = (i% max_v)
         i_list.append([v_line_list[v_pointer][1][1],h_line_list[h_pointer][0][0]])    
        
-    print('old')
+    print('*** old-new bit ***')
     print(len(intersect_list)-1,len(i_list)-1,intersect_list[len(intersect_list)-1],i_list[len(i_list)-1])
     print(2000,intersect_list[2000],i_list[2000])
     print(4000,intersect_list[4000],i_list[4000])
     print('this is it')
 
 (shape, b_north, b_south, b_east, b_west, radial_d, f_name) = ['hex', -8, -45, 168, 96, 57, 'hex_57km']
+print('***old***')
 hexagons(b_north, b_south, b_east, b_west, radial_d, f_name)
+print('***new bits***')
 hexagonsnew(b_north, b_south, b_east, b_west, radial_d, f_name)
