@@ -5,6 +5,24 @@ import sqlite3
 import subprocess
 
 
+def vrt_shape_and_size (dirname, file, shape, size, newfile):
+    my_os = os.name
+    if (my_os is 'posix'):
+        slash = '/'
+    else:
+        slash = '\\'
+        
+    infile = open("{dirname}{slash}{file}".format(dirname=dirname,file=file,slash=slash), "r")
+    infiletext = infile.read()
+    infile.close()
+    
+    outfile = open("{dirname}{slash}{file}".format(dirname=dirname,file=newfile,slash=slash),"w")
+    outfiletext = infiletext.replace('57', size).replace('hex', shape).replace('*slash*', slash)
+    outfile.write(outfiletext)
+    outfile.close() 
+    return outfiletext
+
+
 def shape_and_size (dirname, file, shape, size, newfile):
     my_os = os.name
     if (my_os is 'posix'):
@@ -181,7 +199,7 @@ def sql_to_db (sqlfile, db):
 def process_sql(shape, size):
 #    size='57'
 #    shape='hex'
-    shape_and_size ('vrt', 'template.vrt', shape, size, 'all_{shape}_{size}.vrt'.format(shape=shape, size=size))
+    vrt_shape_and_size ('vrt', 'template.vrt', shape, size, 'all_{shape}_{size}.vrt'.format(shape=shape, size=size))
     do_spatialite('table_goes_here.txt', 'db_place_{shape}_{size}'.format(shape=shape, size=size))
     
     # print('neighbours')
