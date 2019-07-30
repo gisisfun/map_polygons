@@ -12,11 +12,11 @@ def shape_and_size (dirname, file, shape, size, newfile):
     else:
         slash = '\\'
         
-    infile = open("{dirname}{slash}{file}".format(dir=dir,file=file,slash=slash), "r")
+    infile = open("{dirname}{slash}{file}".format(dirname=dirname,file=file,slash=slash), "r")
     infiletext = infile.read()
     infile.close()
     
-    outfile = open("{dirname}{slash}{file}".format(dir=dir,file=newfile,slash=slash),"w")
+    outfile = open("{dirname}{slash}{file}".format(dirname=dirname,file=newfile,slash=slash),"w")
     outfiletext = infiletext.replace('57', size).replace('hex', shape).replace('/', slash)
     outfile.write(outfiletext)
     outfile.close() 
