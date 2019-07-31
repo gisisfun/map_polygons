@@ -59,8 +59,8 @@ def do_spatialite (sqlfile, dbfile):
       
         
 def geojson_to_shp (geojsonfile,shapefile,srid):
-    #print(options_text)
-    if (os.name is 'posix'):
+    my_os = os.name
+    if (my_os is 'posix'):
         cmd_text = '/usr/bin/ogr2ogr'
         slash = '/'
     else:
@@ -107,15 +107,17 @@ def sql_to_db (sqlfile,db):
     my_os = os.name
     if (my_os is 'posix'):
         slash='/'
+        modspatialite = "SELECT load_extension('mod_spatialite')"
     else:
         slash='\\'
+        modspatialite = "SELECT load_extension('mod_spatialite')"
     file  = open("spatialite_db{slash}{file}.txt".format(file=sqlfile, slash=slash), "r")
     sqltext = file.read()
     file.close()
     with sqlite3.connect("spatialite_db{slash}{db}.sqlite".format(db=db, slash=slash)) as conn:
         conn.enable_load_extension(True)
         c = conn.cursor()
-        c.execute("SELECT load_extension('mod_spatialite')")
+        c.execute(modspatialite)
         #c.execute("SELECT InitSpatialMetaData(1)")
         c.execute(sqltext)
         conn.commit()
@@ -127,13 +129,15 @@ def shp_to_db (filename, db, tblname, srid):
     my_os = os.name
     if (my_os is 'posix'):
         slash='/'
+        modspatialite = "SELECT load_extension('mod_spatialite')"
     else:
         slash='\\'
+        modspatialite = "SELECT load_extension('mod_spatialite')"
         
     with sqlite3.connect("spatialite_db{slash}{db}.sqlite".format(db=db, slash=slash)) as conn:
         conn.enable_load_extension(True)
         c = conn.cursor()
-        c.execute("SELECT load_extension('mod_spatialite')")
+        c.execute(modspatialite)
         #c.execute("SELECT InitSpatialMetaData(1)")
         sql_statement="""DROP TABLE IF EXISTS "{table}";""".format(table=tblname)
         c.execute(sql_statement)
