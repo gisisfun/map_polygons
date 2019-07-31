@@ -64,7 +64,7 @@ def geojson_to_shp (geojsonfile,shapefile,srid):
         cmd_text = '/usr/bin/ogr2ogr'
         slash = '/'
     else:
-        cmd_text = 'c:\\OSGeo4W\\bin\\ogr2ogr.exe'
+        cmd_text = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
         slash = '\\'
     
     shapefiles_text = 'shapefiles{slash}{shapefile}.shp'.format(shapefile=shapefile, slash=slash)
@@ -86,7 +86,7 @@ def sql_to_ogr (sqlfile, vrtfile, shapefile):
         cmd_text='/usr/bin/ogr2ogr'
         slash='/'
     else:
-        cmd_text='c:\\OSGeo4W\\bin\\ogr2ogr.exe'
+        cmd_text='c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
         slash='\\'
         
     shapefiles_text = 'shapefiles{slash}{shapefile}.shp'.format(shapefile=shapefile, slash=slash)
@@ -166,7 +166,7 @@ def cmds_to_db (cmdfile, db):
         cmd_text='spatialite'
     else:
         slash='\\'
-        cmd_text='c:\\OSGeo4W\bin\spatialite.exe'
+        cmd_text='c:\\OSGeo4W64\bin\spatialite.exe'
         
     db_text = 'db{slash}{db}.sqlite'.format(db=db, slash=slash)
     cmd_text = 'vrt{slash}{cmdfile}.vrt'.format(cmdfile=cmdfile, slash=slash)
