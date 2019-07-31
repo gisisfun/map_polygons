@@ -43,15 +43,18 @@ def shape_and_size (dirname, file, shape, size, newfile):
 
 def do_spatialite (sqlfile, dbfile):
     my_os = os.name
-    if (os.name is 'posix'):
+    if (my_os is 'posix'):
         slash='/'
+        cmd_text = 'spatialite'
+        modspatialite = ''
     else:
         slash='\\'
-        
+        cmd_text = 'c:\\OSGeo4W64\\bin\\sqlite3.exe'
+
+    db_text = 'spatialite_db{slash}{dbfile}.sqlite'.format(dbfile=dbfile, slash=slash)   
     sql_text = "spatialite_db{slash}{sqlfile}".format(sqlfile=sqlfile, slash=slash)
     p1 = subprocess.Popen(["cat", sql_text], stdout=subprocess.PIPE)
-    db_text = 'spatialite_db{slash}{dbfile}.sqlite'.format(dbfile=dbfile, slash=slash)
-    p2 = subprocess.Popen(["spatialite", db_text], stdin=p1.stdout)
+    p2 = subprocess.Popen([cmd_text, db_text], stdin= p1.stdout)
     p2.communicate()
       
         
