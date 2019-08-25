@@ -367,3 +367,10 @@ Larger volumes of data and newer SPARQL/GeoSPARQL and Discrete Global Grid Syste
 - http://redblobgames.com/grids/hexagons
 - https://geoawesomeness.com/discrete-global-grid-system-dggs-new-reference-system/
 
+## TO DO
+
+To finish things off it would be nice to be able to run multiple instances of the same code to process all of the different data sources and visualisation requirements. Containerisation allows for all of this to happen.
+
+**Docker/Containersiation**
+
+Rebuilding the Python and SQLITE code around the Docker environment makes the code portable and usable in a production environment. 
