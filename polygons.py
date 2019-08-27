@@ -167,7 +167,7 @@ def ref_files():
     .format(slash=slash)):
         print('Downloading ABS Australia file in Tab file format')
         url = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_tab.zip&1270.0.55.001&Data%20Cubes&F18065BF058615F9CA2581640014491B&0&July%202016&24.07.2017&Latest'
-        urllib.request.urlretrieve(url, 'shapefiles{slash}1270055001_aus_2016_aust_tab.zip'.format(slash=slash))
+        urllib.request.urlretrieve(url, 'tabfiles{slash}1270055001_aus_2016_aust_tab.zip'.format(slash=slash))
         print('Unzipping ABS Australia file in Tab file format')
         Archive('tabfiles{slash}1270055001_aus_2016_aust_tab.zip'.format(slash=slash)).extractall('tabfiles'.format(slash=slash))
     else:
