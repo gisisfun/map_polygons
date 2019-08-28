@@ -1,2 +1,2 @@
-sudo apt upgrade && sudo apt update && sudo apt install gdal-bin libgdal* python3-geopandas python3-mpltoolkits.basemap libsqlite3-* sqlite3-* spatialite3-* python3-pip
+sudo apt upgrade && sudo apt update && sudo apt install python3-gdal libgdal* python3-geopandas python3-mpltoolkits.basemap libsqlite3-* sqlite3-* spatialite3-* python3-pip
 pip3 install pyunpack
