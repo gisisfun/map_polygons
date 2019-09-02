@@ -107,10 +107,10 @@ def sql_to_db (sqlfile,db):
     my_os = os.name
     if (my_os is 'posix'):
         slash='/'
-        extn = "SELECT load_extension('mod_spatialite.so')"
+        extn = "SELECT load_extension('mod_spatialite.so');"
     else:
         slash='\\'
-        extn = "SELECT load_extension('mod_spatialite.dll')"
+        extn = "SELECT load_extension('mod_spatialite.dll');"
     file  = open("spatialite_db{slash}{file}.txt".format(file=sqlfile, slash=slash), "r")
     sqltext = file.read()
     file.close()
@@ -129,10 +129,10 @@ def shp_to_db (filename, db, tblname, srid):
     my_os = os.name
     if (my_os is 'posix'):
         slash='/'
-        extn = "SELECT load_extension('mod_spatialite.so')"
+        extn = "SELECT load_extension('mod_spatialite.so');"
     else:
         slash='\\'
-        extn = "SELECT load_extension('mod_spatialite.dll')"
+        extn = "SELECT load_extension('mod_spatialite.dll');"
         
     with sqlite3.connect("spatialite_db{slash}{db}.sqlite".format(db=db, slash=slash)) as conn:
         conn.enable_load_extension(True)
@@ -188,10 +188,10 @@ def sql_to_db (sqlfile, db):
     my_os = os.name
     if (my_os is 'posix'):
         slash='/'
-        extn = "SELECT load_extension('mod_spatialite.so')"
+        extn = "SELECT load_extension('mod_spatialite.so');"
     else:
         slash='\\'
-        extn = "SELECT load_extension('mod_spatialite.dll')"
+        extn = "SELECT load_extension('mod_spatialite.dll');"
         
     file  = open("spatialite_db{slash}{sqlfile}.txt".format(sqlfile=sqlfile, slash=slash), "r")
     sqltext = file.read()
