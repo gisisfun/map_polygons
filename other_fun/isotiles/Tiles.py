@@ -28,11 +28,11 @@ class Fred:
         self.Shape = Shape
         self.Radial = Radial_km
         if Shape is 'hex':
-            self.hor_seq = [ ]
-            self.vert_seq = [ ]
+            self.hor_seq = [0.7071,1,0.7071,1]
+            self.vert_seq = [0.7071,0.7071,0.7071,0.7071]
         else:
-            self.hor_seq = [ ]
-            self.vert_seq = [ ]
+            self.hor_seq = [0.7071,0.7071,0.7071,0.7071]
+            self.vert_seq = [0.7071,0.7071,0.7071,0.7071]
 
 
     def dump(self):
