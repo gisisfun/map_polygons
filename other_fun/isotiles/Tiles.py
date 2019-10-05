@@ -15,13 +15,8 @@ class Fred:
 
     def dump(self):
 
-        print(self.North, 
-              self.East, 
-              self.South, 
-              self.West, 
-              self.Shape, 
-              self.Radial,
-              '\n')
+        print(self.North, self.East, self.South, 
+              self.West, self.Shape, self.Radial,'\n')
 
 
     def __init__(self, Bounds_North: float = -8,
@@ -46,6 +41,15 @@ class Fred:
             self.Hor_Seq = [1,1,1,1]
             self.Vert_Seq = [1,1,1,1]
             self.Pattern = np.array( [[1,1,1,1],[1,0,1,0],[1,1,1,1],[1,0,1,0]])
+
+        self.H_List = self.horizontal()
+        self.V_List = self.vertical()
+
+        self.H_Len = len(self.H_List)
+        self.V_Len = len(self.V_List)
+
+        self.PatternGrid = np.tile(A = self.Pattern, reps = [int(self.V_Len/4),int(((self.H_Len/3)/1.333333333333334))])
+
 
 
     def horizontal(self):
