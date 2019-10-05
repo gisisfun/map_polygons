@@ -49,8 +49,39 @@ class Fred:
         self.V_Len = len(self.V_List)
 
         self.PatternGrid = np.tile(A = self.Pattern, reps = [int(self.V_Len/4),int(((self.H_Len/3)/1.333333333333334))])
+        self.Intersect_List = self.intersections()
 
+    def line_intersection(self,line1,line2):
+        # source: https://stackoverflow.com/questions/20677795/how-do-i-compute-the-intersection-between-two-lines-in-python
+        xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
+        ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
 
+        def det(a, b):
+            return a[0] * b[1] - a[1] * b[0]
+
+        div = det(xdiff, ydiff)
+        if div == 0:
+            raise Exception('lines do not intersect')
+
+        d = (det(*line1), det(*line2))
+        x = det(d, xdiff) / div
+        y = det(d, ydiff) / div
+        return x, y
+
+    def intersections(self):
+        print('\n3/7 deriving intersection point data between horizontal and \
+        vertical lines')
+        intersect_list = []
+        for h in range(0, self.H_Len):
+            for v in range(0, self.V_Len):
+                #print(self.H_List[h],self.V_List[v])
+                intersect_point = self.line_intersection(self.H_List[h],self.V_List[v])
+                intersect_data = [intersect_point[1], intersect_point[0]]
+                intersect_list.append(intersect_data)
+
+        print('derived {0} points of intersection'.format(len(intersect_list)))
+        return intersect_list
+        
 
     def horizontal(self):
         """
