@@ -14,6 +14,5 @@ PatternGrid = np.tile(A = fred.Pattern, reps = [int(V_Len/4),int(((H_Len/3)/1.33
 print(V_Len,H_Len,PatternGrid.shape[0])
 
 
-print(H_List[0],H_List[-1],H_List[PatternGrid.shape[1]])
 print(V_List[0],V_List[-1],V_List[PatternGrid.shape[0]])
-
+print(H_List[0],H_List[-1],H_List[PatternGrid.shape[1]])
