@@ -1,5 +1,6 @@
 from geopy.distance import distance,geodesic
 from isotiles.Tools import next_point
+import numpy as np
 
 class Fred:
     """
@@ -30,10 +31,11 @@ class Fred:
         if Shape is 'hex':
             self.hor_seq = [0.7071,1,0.7071,1]
             self.vert_seq = [0.7071,0.7071,0.7071,0.7071]
+            self.pattern = np.array( [[0,1,1,0],[1,0,0,1],[0,1,1,0],[1,0,0,1]])
         else:
             self.hor_seq = [1,1,1,1]
             self.vert_seq = [1,1,1,1]
-
+            self.pattern = np.array( [[0,1,1,0],[1,0,0,1],[0,1,1,0],[1,0,0,1]])
 
     def dump(self):
         print(self.North, self.East, self.South, self.West, self.Shape, self.Radial)
