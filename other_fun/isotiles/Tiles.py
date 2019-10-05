@@ -27,6 +27,12 @@ class Fred:
         self.West = Bounds_West
         self.Shape = Shape
         self.Radial = Radial_km
+        if Shape is 'hex':
+            self.hor_seq = [ ]
+            self.vert_seq = [ ]
+        else:
+            self.hor_seq = [ ]
+            self.vert_seq = [ ]
 
 
     def dump(self):
@@ -47,7 +53,7 @@ class Fred:
                 i = 0
             
             latlong = [new_north,self.East]
-            p = next_point(latlong,angle,self.Radial * hor_seq[i]) 
+            p = next_point(latlong,angle,self.Radial * self.hor_seq[i]) 
             new_north = p[0]
             longitudes.append([[p[0],self.West],[p[0],self.East]])
             i += 1
