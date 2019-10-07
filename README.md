@@ -372,7 +372,7 @@ Larger volumes of data and newer SPARQL/GeoSPARQL and Discrete Global Grid Syste
 To finish things off it would be nice to be able to run multiple instances of the same code to process all of the different data sources and visualisation requirements. Containerisation allows for all of this to happen.
 
 **Class and method conversion of Python code.**
-see other_fun/iso_tiles for work on pythonisation (classes) of polygons,py code to allow for Docker and API use cases.
+see other_fun/testiso.py and other_fun/isotiles for work on pythonisation (classes) of polygons,py code to allow for Docker and API use cases.
 
 
 **Docker/Containerisation**
