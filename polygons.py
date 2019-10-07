@@ -218,13 +218,13 @@ def boxes(north, south, east, west, radial, outfile):
         top_left + max_v]
 
     while (vertex[2] < (max_h) * (max_v)):
-        poly_coords = [intersect_list[vertex[0]],
-            intersect_list[vertex[1]], intersect_list[vertex[2]],
-            intersect_list[vertex[3]], intersect_list[vertex[0]]]
-        centre_lat = intersect_list[vertex[0]][1]
-        + (intersect_list[vertex[2]][1] - intersect_list[vertex[0]][1]) / 2
-        centre_lon = intersect_list[vertex[0]][0]
-        + (intersect_list[vertex[2]][0] - intersect_list[vertex[0]][0]) / 2
+        poly_coords = [intersect_list[vertex[0]] , \
+                       intersect_list[vertex[1]], intersect_list[vertex[2]], \
+                       intersect_list[vertex[3]], intersect_list[vertex[0]]]
+        centre_lat = intersect_list[vertex[0]][1] \
+                                    + (intersect_list[vertex[2]][1] - intersect_list[vertex[0]][1]) / 2
+        centre_lon = intersect_list[vertex[0]][0] \
+                                    + (intersect_list[vertex[2]][0] - intersect_list[vertex[0]][0]) / 2
         bounds_n = intersect_list[vertex[0]][1]
         bounds_s = intersect_list[vertex[3]][1]
         bounds_e = intersect_list[vertex[1]][0]
@@ -239,7 +239,7 @@ def boxes(north, south, east, west, radial, outfile):
             #tabular dataset
             tabular_line = [top_left, centre_lat, centre_lon,
                             bounds_n, bounds_s, bounds_e, bounds_w]
-            tabular_list  .append(tabular_line)
+            tabular_list.append(tabular_line)
             #array of polygon and tabular columns
 
         #increment values
