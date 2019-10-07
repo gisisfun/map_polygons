@@ -50,6 +50,9 @@ class Fred:
 
         self.PatternGrid = np.tile(A = self.Pattern, reps = [int(self.V_Len/4),int(((self.H_Len/3)/1.333333333333334))])
         self.Intersect_List = self.intersections()
+#        A = np.array(self.Intersect_List)
+#        self.new = np.reshape(A,(-1, self.V_Len*2))
+#        print(self.new.shape)
 
     def line_intersection(self,line1,line2):
         # source: https://stackoverflow.com/questions/20677795/how-do-i-compute-the-intersection-between-two-lines-in-python
@@ -86,7 +89,7 @@ class Fred:
     def horizontal(self):
         """
         horizontal function derives a list of vertical reference points from north to south for longitudes or x axis
-	"""
+    """
         angle = 180
         new_north = self.North
         new_east = self.East
@@ -112,8 +115,8 @@ class Fred:
     def vertical(self):
         """
         vertical funtion derives a list of horizontal reference points from east to west for latitudes or y axis
-    	
-	"""
+        
+    """
 
         print('east {0} west {1}'.format(self.East,self.West))
 
@@ -127,7 +130,6 @@ class Fred:
         while new_west <= self.East:
             if i > 3:
                 i = 0
-
             latlong = [new_north,new_west]
             p = next_point(latlong,angle,self.Radial*self.Vert_Seq[i])
             new_north = p[0]
@@ -136,3 +138,93 @@ class Fred:
             i += 1
         return latitudes
 
+
+    def poly_array_hex(self):
+        lat_offset = 4
+        top_left = 0
+        poly_row_count = int(max_v / (len(hor_seq)))
+        rem_lat = max_v % (lat_offset + len(hor_seq))
+        print('first row starting from {0}, {1} hexagons, {2} latitude line(s) remaining'.format(top_left, poly_row_count, rem_lat))
+
+        inc_by_rem = True
+        inc_adj = 0
+        if rem_lat is 0 or rem_lat is 1 or rem_lat is 2 or rem_lat is 3 \
+           or rem_lat is 4 or rem_lat is 5 or rem_lat is 6 or rem_lat is 7:
+
+            if rem_lat is 2 or rem_lat is 5 or rem_lat is 6 or rem_lat is 7:
+                inc_by_rem = True
+                inc_adj = -4
+            if rem_lat is 1 or rem_lat is 3:
+                inc_by_rem = True
+                inc_adj = 0
+            if rem_lat is 0 or rem_lat is 4:
+                inc_by_rem = False
+                inc_adj = 0
+
+            print('\n4/7 deriving hexagon polygons from intersection data')
+            row = 1
+            last_lat_row = 0
+            hexagon = 0
+            row = 1
+            while (top_left < (max_h) * (max_v)):
+                vertex = [1 + top_left, 2 + top_left, max_v + 3 + top_left,
+                          (max_v * 2) + 2 + top_left, (max_v * 2) + 1 + top_left, max_v +
+                          top_left]
+                try:
+                    poly_coords = [intersect_list[vertex[0]],
+                                   intersect_list[vertex[1]], intersect_list[vertex[2]],
+                                   intersect_list[vertex[3]], intersect_list[vertex[4]],
+                                   intersect_list[vertex[5]], intersect_list[vertex[0]]]
+                    centre_lat = intersect_list[vertex[0]][1] + (intersect_list[vertex[5]][1] - intersect_list[vertex[0]][1]) / 2
+                    centre_lon = intersect_list[vertex[0]][0] + (intersect_list[vertex[5]][0] - intersect_list[vertex[0]][0]) / 2
+
+                    if (centre_lat is not last_lat_row) or last_lat_row is 0:
+                        bounds_n = intersect_list[vertex[0]][1]
+                        bounds_s = intersect_list[vertex[2]][1]
+                        bounds_e = intersect_list[vertex[2]][0]
+                        bounds_w = intersect_list[vertex[5]][0]
+                        last_lat_row = centre_lat
+                        geopoly = Polygon([poly_coords])
+                        hexagon += 1
+                        # start = (intersect_list[vertex[0]][1],
+                        # intersect_list[vertex[0]][0])
+                        # end = (intersect_list[vertex[1]][1],
+                        # intersect_list[vertex[1]][0])
+                        # len_radial = geodesic(start,end).km
+                        est_area = (((3 * sqrt(3)) / 2) * pow(radial, 2)) * 0.945
+                        #estimate polygon area
+                        geopoly = Feature(geometry = geopoly, properties =
+                                          {"p": hexagon,"row": row, "lat": centre_lat
+                                           , "lon": centre_lon, "N": bounds_n, "S": bounds_s
+                                           , "E": bounds_e, "W": bounds_w, "est_area": est_area})
+                        if  (bounds_e > bounds_w):
+                            for i in range(0, 5):
+                                point_list.append([hexagon, str(intersect_list[vertex[i]][0])
+                                                   + str(intersect_list[vertex[i]][1])])
+                                g_array.append(geopoly)
+                                #append geojson geometry definition attributes to list
+                                #tabular dataset
+                                tabular_line = [top_left, row, centre_lat, centre_lon,
+                                                bounds_n, bounds_s, bounds_e, bounds_w, est_area]
+                                tabular_list.append(tabular_line)
+                                #array of polygon and tabular columns
+                    else:
+                        donothing = True
+
+                except IndexError:
+                    donothing = True
+
+                last_row = row
+                last_lat_row = centre_lat
+                row = int(1 + int(hexagon / poly_row_count))
+                top_left += lat_offset
+                if row is not last_row:
+                    top_left += inc_adj
+                    if inc_by_rem:
+                        top_left += rem_lat
+                    if row % 2 is 0:
+                        top_left += 2
+                    if row & 1:
+                        top_left += -2
+
+        return g_array        
