@@ -228,38 +228,37 @@ class Fred:
                                                              - intersect_list[vertex[0]][1]) / 2
                 centre_lon = intersect_list[vertex[0]][0] + (intersect_list[vertex[5]][0] \
                                                              - intersect_list[vertex[0]][0]) / 2
+                # if (centre_lat is not last_lat_row) or last_lat_row is 0:
                 
-                #(centre_lat is not last_lat_row) or
-                if  last_lat_row is 0:
-                    bounds_n = intersect_list[vertex[0]][1]
-                    bounds_s = intersect_list[vertex[2]][1]
-                    bounds_e = intersect_list[vertex[2]][0]
-                    bounds_w = intersect_list[vertex[5]][0]
-                    last_lat_row = centre_lat
-                    geopoly = Polygon([poly_coords])
-                    hexagon += 1
-                    # start = (intersect_list[vertex[0]][1],
-                    # intersect_list[vertex[0]][0])
-                    # end = (intersect_list[vertex[1]][1],
-                    # intersect_list[vertex[1]][0])
-                    # len_radial = geodesic(start,end).km
-                    est_area = (((3 * sqrt(3)) / 2) * pow(radial, 2)) * 0.945
-                    #estimate polygon area
-                    geopoly = Feature(geometry = geopoly, properties = \
-                                      {"p": hexagon,"row": row, "lat": centre_lat \
-                                       , "lon": centre_lon, "N": bounds_n, "S": bounds_s \
-                                       , "E": bounds_e, "W": bounds_w, "est_area": est_area})
-                    if  (bounds_e > bounds_w):
-                        for i in range(0, 5):
-                            point_list.append([hexagon, str(intersect_list[vertex[i]][0]) \
-                                               + str(intersect_list[vertex[i]][1])])
-                            g_array.append(geopoly)
-                            #append geojson geometry definition attributes to list
-                            #tabular dataset
-                            tabular_line = [top_left, row, centre_lat, centre_lon, \
-                                            bounds_n, bounds_s, bounds_e, bounds_w, est_area]
-                            tabular_list.append(tabular_line)
-                            #array of polygon and tabular columns
+                bounds_n = intersect_list[vertex[0]][1]
+                bounds_s = intersect_list[vertex[2]][1]
+                bounds_e = intersect_list[vertex[2]][0]
+                bounds_w = intersect_list[vertex[5]][0]
+                last_lat_row = centre_lat
+                geopoly = Polygon([poly_coords])
+                hexagon += 1
+                # start = (intersect_list[vertex[0]][1],
+                # intersect_list[vertex[0]][0])
+                # end = (intersect_list[vertex[1]][1],
+                # intersect_list[vertex[1]][0])
+                # len_radial = geodesic(start,end).km
+                est_area = (((3 * sqrt(3)) / 2) * pow(radial, 2)) * 0.945
+                #estimate polygon area
+                geopoly = Feature(geometry = geopoly, properties = \
+                                  {"p": hexagon,"row": row, "lat": centre_lat \
+                                   , "lon": centre_lon, "N": bounds_n, "S": bounds_s \
+                                   , "E": bounds_e, "W": bounds_w, "est_area": est_area})
+                if  (bounds_e > bounds_w):
+                    for i in range(0, 5):
+                        point_list.append([hexagon, str(intersect_list[vertex[i]][0]) \
+                                           + str(intersect_list[vertex[i]][1])])
+                        g_array.append(geopoly)
+                        #append geojson geometry definition attributes to list
+                        #tabular dataset
+                        tabular_line = [top_left, row, centre_lat, centre_lon, \
+                                        bounds_n, bounds_s, bounds_e, bounds_w, est_area]
+                        tabular_list.append(tabular_line)
+                        #array of polygon and tabular columns
                 else:
                     donothing = True
 
