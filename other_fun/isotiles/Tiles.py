@@ -1,6 +1,8 @@
 from geopy.distance import distance,geodesic
 from isotiles.Tools import next_point
 import numpy as np
+from geojson import FeatureCollection, Polygon, Feature
+from math import sqrt, pow
 
 class Fred:
     """
@@ -44,6 +46,7 @@ class Fred:
             lat_offset = 4
             self.H_List = self.horizontal()
             self.V_List = self.vertical()                        
+            self.Intersect_List = self.intersections()
             self.V_Len = len(self.V_List)
 
             rem_lat = self.V_Len % (lat_offset + len(self.Hor_Seq))
@@ -57,7 +60,8 @@ class Fred:
             if rem_lat in [0, 4]:
                 self.inc_by_rem = False
                 self.inc_adj = 0
-
+            
+            self.array_hex = self.poly_array_hex()
         else:
             #box
             self.Hor_Seq = [1,1,1,1]
@@ -68,7 +72,7 @@ class Fred:
 
         
         self.PatternGrid = np.tile(A = self.Pattern, reps = [int(self.V_Len/4),int(((self.H_Len/3)/1.333333333333334))])
-        self.Intersect_List = self.intersections()
+        
 
 
     def line_intersection(self,line1,line2):
@@ -205,13 +209,16 @@ class Fred:
         return g_array
 
     def poly_array_hex(self):
+        tabular_list = []
+        g_array = []
+        point_list = []
         max_h = self.H_Len - 1
         max_v = self.H_Len - 1
         intersect_list = self.Intersect_List
         lat_offset = 4
         top_left = 0
-        poly_row_count = int(max_v / (len(hor_seq)))
-        rem_lat = max_v % (lat_offset + len(hor_seq))
+        poly_row_count = int(max_v / (len(self.Hor_Seq)))
+        rem_lat = max_v % (lat_offset + len(self.Hor_Seq))
         print('first row starting from {0}, {1} hexagons, {2} latitude line(s) remaining'.format(top_left, poly_row_count, rem_lat))
 
         inc_by_rem = self.inc_by_rem
@@ -249,7 +256,7 @@ class Fred:
                 # end = (intersect_list[vertex[1]][1],
                 # intersect_list[vertex[1]][0])
                 # len_radial = geodesic(start,end).km
-                est_area = (((3 * sqrt(3)) / 2) * pow(radial, 2)) * 0.945
+                est_area = (((3 * sqrt(3)) / 2) * pow(self.Radial, 2)) * 0.945
                 #estimate polygon area
                 geopoly = Feature(geometry = geopoly, properties = \
                                   {"p": hexagon,"row": row, "lat": centre_lat \

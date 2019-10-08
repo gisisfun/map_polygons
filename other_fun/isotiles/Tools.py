@@ -1,6 +1,6 @@
 from geopy.distance import distance,geodesic
 import os
-from geojson import FeatureCollection
+from geojson import FeatureCollection, Polygon
 def next_point(coords, brng, radial):
     return geodesic(kilometers=radial).destination(point=coords, bearing=brng)
 
