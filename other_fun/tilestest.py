@@ -22,7 +22,7 @@ print('\n')
 
 print('length',fred.H_Len,fred.V_Len,fred.V_List[-1])
 print('\n')
-print(fred.Intersect_List[-1])
+print(len(fred.array_hex))
 
 
 #print(fred.Intersect_List[0],fred.new[0][0],fred.new[0][1])
