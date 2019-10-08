@@ -33,6 +33,7 @@ class Fred:
         self.Shape = Shape
         self.Radial = Radial_km
 
+        
         if Shape is 'hex':
             self.Hor_Seq = [0.7071,1,0.7071,1]
             self.Vert_Seq = [0.7071,0.7071,0.7071,0.7071]
@@ -40,8 +41,14 @@ class Fred:
             self.inc_by_rem = True
             self.inc_adj = 0
             #if self.rem_lat is in [0, 1, 2, 3, 4, 5, 6, 7]:
-                
-            if self.rem_lat in [2, 5, 6, 7]:
+            lat_offset = 4
+            self.H_List = self.horizontal()
+            self.V_List = self.vertical()                        
+            self.V_Len = len(self.V_List)
+
+            rem_lat = self.V_Len % (lat_offset + len(self.Hor_Seq))
+            
+            if rem_lat in [2, 5, 6, 7]:
                 self.inc_by_rem = True
                 self.inc_adj = -4
             if rem_lat in [1, 3]:
@@ -57,9 +64,9 @@ class Fred:
             self.Vert_Seq = [1,1,1,1]
             self.Pattern = np.array( [[1,1,1,1],[1,0,1,0],[1,1,1,1],[1,0,1,0]])
 
-        self.H_List = self.horizontal()
-        self.V_List = self.vertical()
 
+
+        
         self.PatternGrid = np.tile(A = self.Pattern, reps = [int(self.V_Len/4),int(((self.H_Len/3)/1.333333333333334))])
         self.Intersect_List = self.intersections()
 
@@ -100,6 +107,7 @@ class Fred:
         """
         horizontal function derives a list of vertical reference points from north to south for longitudes or x axis
     """
+        print(self.Hor_Seq)
         angle = 180
         new_north = self.North
         new_east = self.East
@@ -160,7 +168,6 @@ class Fred:
         intersect_list = self.Intersect_List
         g_array = []  # array of geojson formatted geometry elements
         tabular_list = []  # array of all polygons and tabular columns
-
         print('\n4/7 deriving boxes polygons from intersection data')
         top_left = 0
         vertex = [top_left + 0, top_left + 1, top_left + max_v + 1,
