@@ -1,4 +1,4 @@
-
+import numpy as np
 from isotiles import (Tiles,Tools)
 
 fred = Tiles.Fred()
@@ -24,3 +24,18 @@ print('length',fred.H_Len,fred.V_Len,fred.V_List[-1])
 print('\n')
 print(fred.Intersect_List[-1])
 
+
+#print(fred.Intersect_List[0],fred.new[0][0],fred.new[0][1])
+#print(fred.Intersect_List[250],fred.new[0][498],fred.new[1][499])
+#print(fred.Intersect_List[498],fred.new[1][0],fred.new[1][1])
+#print(fred.Intersect_List[499],fred.new[1][2],fred.new[1][3])
+##index divided by 501(502 col count) and remainder
+#print(fred.Intersect_List[1],fred.new[0][2],fred.new[0][3])
+#print(fred.Intersect_List[2],fred.new[0][4],fred.new[0][5])
+#
+#print(fred.Intersect_List[107],fred.new[0][214],fred.new[0][215])
+#print(fred.Intersect_List[456],fred.new[1,411],fred.new[1,412])
+##print(fred.Intersect_List[249],fred.new[1,247],fred.new[1,248])
+##print(fred.Intersect_List[250],fred.new[1,248],fred.new[1,249])
+##print('250',fred.Intersect_List[251],fred.new[2,0],fred.new[2,1])
+#print(fred.new.shape)
