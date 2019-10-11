@@ -1,7 +1,7 @@
 from geopy.distance import distance,geodesic
-from isotiles.Tools import next_point
+from isotiles.Tools import next_point,to_geojson_FeatureCollection,to_geojson_Polygon,to_geojson_Feature
 import numpy as np
-from geojson import FeatureCollection, Polygon, Feature
+
 from math import sqrt, pow
 
 class Fred:
@@ -190,9 +190,9 @@ class Fred:
             bounds_e = intersect_list[vertex[1]][0]
             bounds_w = intersect_list[vertex[0]][0]
             if bounds_e > bounds_w:
-                geopoly = Polygon([poly_coords])
-                geopoly = Feature(geometry=geopoly,
-                properties={"p": top_left, "lat": centre_lat, "lon": centre_lon, \
+                geopoly = to_geojson_Polygon([poly_coords])
+                geopoly = to_geojson_Feature(geopoly, \
+                {"p": top_left, "lat": centre_lat, "lon": centre_lon, \
                             "N": bounds_n, "S": bounds_s, "E": bounds_e, "W": bounds_w})
                 g_array.append(geopoly)
                 #append geojson geometry definition attributes to list
@@ -249,7 +249,7 @@ class Fred:
                 bounds_e = intersect_list[vertex[2]][0]
                 bounds_w = intersect_list[vertex[5]][0]
                 last_lat_row = centre_lat
-                geopoly = Polygon([poly_coords])
+                geopoly = to_geojson_Polygon([poly_coords])
                 hexagon += 1
                 # start = (intersect_list[vertex[0]][1],
                 # intersect_list[vertex[0]][0])
@@ -258,10 +258,11 @@ class Fred:
                 # len_radial = geodesic(start,end).km
                 est_area = (((3 * sqrt(3)) / 2) * pow(self.Radial, 2)) * 0.945
                 #estimate polygon area
-                geopoly = Feature(geometry = geopoly, properties = \
-                                  {"p": hexagon,"row": row, "lat": centre_lat \
-                                   , "lon": centre_lon, "N": bounds_n, "S": bounds_s \
-                                   , "E": bounds_e, "W": bounds_w, "est_area": est_area})
+                geopoly = to_geojson_Feature( \
+                    geopoly, {\
+                        "p": hexagon,"row": row, "lat": centre_lat, \
+                        "lon": centre_lon, "N": bounds_n, "S": bounds_s, \
+                        "E": bounds_e, "W": bounds_w, "est_area": est_area})
                 if  (bounds_e > bounds_w):
                     for i in range(0, 5):
                         point_list.append([hexagon, str(intersect_list[vertex[i]][0]) \

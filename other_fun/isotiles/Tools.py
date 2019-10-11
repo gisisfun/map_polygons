@@ -1,14 +1,21 @@
 from geopy.distance import distance,geodesic
 import os
-from geojson import FeatureCollection, Polygon
+from geojson import FeatureCollection, Polygon, Feature
+
 def next_point(coords, brng, radial):
     return geodesic(kilometers=radial).destination(point=coords, bearing=brng)
 
     
-def to_geojson(geo_array):
-    output_geojson = FeatureCollection(geo_array)
-    # convert merged geojson features to geojson feature geohex_geojson
-    return output_geojosn
+def to_geojson_FeatureCollection(GeoArray):
+    return FeatureCollection(GeoArray)
+
+
+def to_geojson_Polygon(PolyCoords):
+    return Polygon(PolyCoords)
+
+
+def to_geojson_Feature(PolyCoords,PolyDict):
+    return Feature(geometry = PolyCoords, properties = PolyDict)
 
 
 def to_file(prompt,contents,filename):
