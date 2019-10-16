@@ -4,15 +4,12 @@ import json
 from geopy.distance import distance,geodesic
 from geojson import Polygon,Feature,FeatureCollection
 from math import pow,sqrt
-import pandas as pd
 import subprocess
 import urllib.request
 from pyunpack import Archive
 import os
 
 #1 deg longitude is about 88 km, 1 deg latitude  is about 110 km
-#http://www.abs.gov.au/AUSSTATS/abs@.nsf/DetailsPage/1270.0.55.001July%202016?OpenDocument
-
 
 def point_radial_distance(self, brng, radial):
     return geodesic(kilometers=radial).destination(point=self, bearing=brng)
@@ -28,8 +25,8 @@ def line_intersectionnew(h_coords, v_coords):
 
     div = det(xdiff, ydiff)
     if div == 0:
-       raise Exception('lines do not intersect')
-
+        raise Exception('lines do not intersect')
+    
     d = (det(*h_coords), det(*v_coords))
     x = det(d, xdiff) / div
     y = det(d, ydiff) / div
@@ -110,11 +107,12 @@ def intersections(hor_line_list, hor_max, vert_line_list, vert_max):
     return intersect_list
 
 
-def params(shape, north, south, east, west, radial):
+def params(theShape, north, south, east, west, radial):
     print('Making {0} hex shapes starting from {1},{2} to {3},{4} with a \
-    radial length of {5} km'.format(shape, north, west, south, east, radial))
+    radial length of {5} km'.format(theShape, north, west, south, east, radial))
 
-def to_shp_tab(f_name,shape):
+
+def to_shp_tab(theFname):
     my_os = os.name
     if (my_os is 'posix'):
         cmd_text = '/usr/bin/ogr2ogr'
@@ -125,11 +123,11 @@ def to_shp_tab(f_name,shape):
         gdal_vars = {'GDAL_DATA': 'C:\OSGeo4W64\share\gdal'}
         os.environ.update(gdal_vars)
 
-    shp_fname = 'shapefiles{slash}{fname}_layer.shp'.format(fname=f_name
+    shp_fname = 'shapefiles{slash}{fname}_layer.shp'.format(fname=theFname
     .replace(' ', '_'), slash=slash)
-    tab_fname = 'tabfiles{slash}{fname}_layer.tab'.format(fname=f_name
+    tab_fname = 'tabfiles{slash}{fname}_layer.tab'.format(fname=theFname
     .replace(' ', '_'), slash=slash)
-    json_fname = 'geojson{slash}{fname}_layer.json'.format(fname=f_name
+    json_fname = 'geojson{slash}{fname}_layer.json'.format(fname=theFname
     .replace(' ', '_'), slash=slash)
     tab_options = [cmd_text, '-f', 'Mapinfo file', tab_fname,
     '-t_srs', 'EPSG:4823', json_fname]
@@ -199,12 +197,8 @@ def boxes(north, south, east, west, radial, outfile):
                layer_dict['Boxes']['long'], layer_dict['Boxes']['long']]
     vert_seq = [layer_dict['Boxes']['long'], layer_dict['Boxes']['long'],
                layer_dict['Boxes']['long'], layer_dict['Boxes']['long']]
-    bounds_lat_min = north
-    bounds_lat_max = south
-    bounds_lon_max = east
-    bounds_lon_min = west
 
-    h_line_list = horizontal(east,north,west,south,vert_seq,radial)
+    h_line_list = horizontal(east,north,west,south,hor_seq,radial)
     num_h = len(h_line_list)
     max_h = num_h - 1
     v_line_list = vertical(east,north,west,south,vert_seq,radial)
@@ -285,7 +279,7 @@ def boxes(north, south, east, west, radial, outfile):
     myfile.write(str(json.dumps(layer_dict)))
     #write geojson layer to open file
     myfile.close()  # close file
-    to_shp_tab(outfile, 'boxes')
+    to_shp_tab(outfile)
     ref_files()
     print('\n')
     print('The End')  # end boxes
@@ -315,25 +309,16 @@ def hexagons(north, south, east, west, radial, outfile):
     layer_dict['Hexagon']['short'] = 0.707108
     layer_dict['Hexagon']['long'] = 1
 
-    bounds_lat_min = north
-    bounds_lat_max = south
-    bounds_lon_max = east
-    bounds_lon_min = west
-
     hor_seq = [layer_dict['Hexagon']['short'], layer_dict['Hexagon']['short'],
     layer_dict['Hexagon']['short'], layer_dict['Hexagon']['short']]
 
     vert_seq = [layer_dict['Hexagon']['short'], layer_dict['Hexagon']['long'],
     layer_dict['Hexagon']['short'], layer_dict['Hexagon']['long']]
 
-    h_line_list = horizontal(east, north,
-                            west, south,
-                            hor_seq, radial)
+    h_line_list = horizontal(east, north, west, south, hor_seq, radial)
     max_h = len(h_line_list)
 
-    v_line_list = vertical(east, north,
-                              west, south,
-                              vert_seq, radial)
+    v_line_list = vertical(east, north, west, south, vert_seq, radial)
     max_v = len(v_line_list)
 
     intersect_list = intersections(h_line_list, max_h, v_line_list, max_v)
@@ -375,16 +360,19 @@ def hexagons(north, south, east, west, radial, outfile):
             (max_v * 2) + 2 + top_left, (max_v * 2) + 1 + top_left, max_v +
              top_left]
             try:
-                poly_coords = [intersect_list[vertex[0]],
-                intersect_list[vertex[1]], intersect_list[vertex[2]],
-                intersect_list[vertex[3]], intersect_list[vertex[4]],
-                intersect_list[vertex[5]], intersect_list[vertex[0]]]
-                centre_lat = intersect_list[vertex[0]][1]
-                + (intersect_list[vertex[5]][1]
-                   - intersect_list[vertex[0]][1]) / 2
-                centre_lon = intersect_list[vertex[0]][0]
-                + (intersect_list[vertex[5]][0] -
-                intersect_list[vertex[0]][0]) / 2
+                poly_coords = [intersect_list[vertex[0]], \
+                               intersect_list[vertex[1]], \
+                               intersect_list[vertex[2]], \
+                               intersect_list[vertex[3]], \
+                               intersect_list[vertex[4]], \
+                               intersect_list[vertex[5]], \
+                               intersect_list[vertex[0]]]
+                centre_lat = intersect_list[vertex[0]][1] + \
+                             (intersect_list[vertex[5]][1] - \
+                              intersect_list[vertex[0]][1]) / 2
+                centre_lon = intersect_list[vertex[0]][0] + \
+                             (intersect_list[vertex[5]][0] - \
+                              intersect_list[vertex[0]][0]) / 2
 
                 if (centre_lat is not last_lat_row) or last_lat_row is 0:
                     bounds_n = intersect_list[vertex[0]][1]
@@ -394,34 +382,32 @@ def hexagons(north, south, east, west, radial, outfile):
                     last_lat_row = centre_lat
                     geopoly = Polygon([poly_coords])
                     hexagon += 1
-                    # start = (intersect_list[vertex[0]][1],
-                    # intersect_list[vertex[0]][0])
-                    # end = (intersect_list[vertex[1]][1],
-                    # intersect_list[vertex[1]][0])
-                    # len_radial = geodesic(start,end).km
                     est_area = (((3 * sqrt(3)) / 2) * pow(radial, 2)) * 0.945
                     #estimate polygon area
-                    geopoly = Feature(geometry = geopoly, properties =
-                    {"p": hexagon,"row": row, "lat": centre_lat
-                    , "lon": centre_lon, "N": bounds_n, "S": bounds_s
-                    , "E": bounds_e, "W": bounds_w, "est_area": est_area})
+                    geopoly = Feature(geometry = geopoly, properties = \
+                                      {"p": hexagon,"row": row, \
+                                       "lat": centre_lat, "lon": centre_lon, \
+                                       "N": bounds_n, "S": bounds_s, \
+                                       "E": bounds_e, "W": bounds_w, \
+                                       "est_area": est_area})
                     if  (bounds_e > bounds_w):
                         for i in range(0, 5):
-                            point_list.append(
-                                [hexagon, str(intersect_list[vertex[i]][0])
-                                + str(intersect_list[vertex[i]][1])])
+                            point_list.append( \
+                                [hexagon, str(intersect_list[vertex[i]][0]) + \
+                                 str(intersect_list[vertex[i]][1])])
                         g_array.append(geopoly)
                         #append geojson geometry definition attributes to list
                         #tabular dataset
-                        tabular_line = [top_left, row, centre_lat, centre_lon,
-                        bounds_n, bounds_s, bounds_e, bounds_w, est_area]
+                        tabular_line = [top_left, row, centre_lat, centre_lon, \
+                                        bounds_n, bounds_s, bounds_e, bounds_w, \
+                                        est_area]
                         tabular_list.append(tabular_line)
                         #array of polygon and tabular columns
                 else:
-                    donothing = True
+                    print('')
 
             except IndexError:
-                donothing = True
+                print('')
 
             last_row = row
             last_lat_row = centre_lat
@@ -438,7 +424,7 @@ def hexagons(north, south, east, west, radial, outfile):
 
         print('\n5/7 geojson dataset of {0} derived hexagon polygons'
         .format(len(g_array)))
-        boxes_geojson = FeatureCollection(g_array)
+        hex_geojson = FeatureCollection(g_array)
         # convert merged geojson features to geojson feature geohex_geojson
         g_array = []  # release g_array - array of geojson geometry elements
 
@@ -447,7 +433,7 @@ def hexagons(north, south, east, west, radial, outfile):
         myfile = open('geojson{slash}{outfile}_layer.json'
         .format(outfile=outfile, slash=slash), 'w')
         #open file for writing geojson layer in geojson format
-        myfile.write(str(boxes_geojson))  # write geojson layer to open file
+        myfile.write(str(hex_geojson))  # write geojson layer to open file
         myfile.close()  # close file
 
         print('\n6/7 tabular dataset of {0} lines of hexagon polygon data'
@@ -484,14 +470,14 @@ def hexagons(north, south, east, west, radial, outfile):
 
         print('\n7/7 hexagons json metadata to written to file:\
          {0}_metadata.json'.format(outfile))
-        myfile = open('metadata{slash}{outfile}_metadata.json'
-        .format(outfile=outfile, slash=slash), 'w')
+        myfile = open('metadata{slash}{outfile}_metadata.json'.\
+                      format(outfile = outfile, slash = slash), 'w')
         #open file for writing geojson layer
         myfile.write(str(json.dumps(layer_dict)))
         #write geojson layer to open file
         myfile.close()  #close file
 
-        to_shp_tab(outfile, 'hexagons')
+        to_shp_tab(outfile)
         ref_files()
 
     print('\n')
@@ -501,9 +487,7 @@ def hexagons(north, south, east, west, radial, outfile):
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
 if len(sys.argv) is 1:
-#    (shape, b_north, b_south, b_east, b_west, radial_d, f_name) =
-#    ['box', -8, -45, 168, 96, 55, 'box_55km']
-#    boxes(b_north, b_south, b_east, b_west, radial_d, f_name)
+
     (shape, b_north, b_south, b_east, b_west, radial_d, f_name) =\
     ['hex', -8, -45, 168, 96, 57, 'hex_57km']
     hexagons(b_north, b_south, b_east, b_west, radial_d, f_name)
@@ -528,4 +512,3 @@ else:
                 float(b_west), float(radial_d), f_name)
             else:
                 print('shape is hex or box')
-
