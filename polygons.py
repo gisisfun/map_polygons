@@ -282,8 +282,8 @@ def hexagons(north, south, east, west, radial, outfile):
     point_list = []
     g_array = []  # array of geojson formatted geometry elements
     tabular_list = []  # array of all polygons and tabular columns
-    layer_dict = {'Bounds': {'Australia': {'North': north, 'South': south,
-        'West': west, 'East': east}}}
+    layer_dict = {'Bounds': {'Australia': {'North': north, 'South': south, \
+                                           'West': west, 'East': east}}}
     layer_dict['Param'] = {}
     layer_dict['Param']['side_km'] = radial
     layer_dict['Param']['epsg'] = 4326
@@ -320,148 +320,146 @@ def hexagons(north, south, east, west, radial, outfile):
 
     inc_by_rem = True
     inc_adj = 0
-    if rem_lat is 0 or rem_lat is 1 or rem_lat is 2 or rem_lat is 3 \
-    or rem_lat is 4 or rem_lat is 5 or rem_lat is 6 or rem_lat is 7:
+    
 
-        if rem_lat is 2 or rem_lat is 5 or rem_lat is 6 or rem_lat is 7:
-            inc_by_rem = True
-            inc_adj = -4
-        if rem_lat is 1 or rem_lat is 3:
-            inc_by_rem = True
-            inc_adj = 0
-        if rem_lat is 0 or rem_lat is 4:
-            inc_by_rem = False
-            inc_adj = 0
+    if rem_lat in [2, 5, 6, 7]:
+        inc_by_rem = True
+        inc_adj = -4
+    if rem_lat in [1, 3]:
+        inc_by_rem = True
+        inc_adj = 0
+    if rem_lat in [0, 4]:
+        inc_by_rem = False
+        inc_adj = 0
 
-        print('\n4/7 deriving hexagon polygons from intersection data')
-        row = 1
-        last_lat_row = 0
-        hexagon = 0
-        row = 1
-        while (top_left < (max_h) * (max_v)):
-            vertex = [1 + top_left, 2 + top_left, max_v + 3 + top_left,
-            (max_v * 2) + 2 + top_left, (max_v * 2) + 1 + top_left, max_v +
-             top_left]
-            try:
-                poly_coords = [intersect_list[vertex[0]], \
-                               intersect_list[vertex[1]], \
-                               intersect_list[vertex[2]], \
-                               intersect_list[vertex[3]], \
-                               intersect_list[vertex[4]], \
-                               intersect_list[vertex[5]], \
-                               intersect_list[vertex[0]]]
-                centre_lat = intersect_list[vertex[0]][1] + \
-                             (intersect_list[vertex[5]][1] - \
-                              intersect_list[vertex[0]][1]) / 2
-                centre_lon = intersect_list[vertex[0]][0] + \
-                             (intersect_list[vertex[5]][0] - \
-                              intersect_list[vertex[0]][0]) / 2
+    print('\n4/7 deriving hexagon polygons from intersection data')
+    row = 1
+    last_lat_row = 0
+    hexagon = 0
 
-                if (centre_lat is not last_lat_row) or last_lat_row is 0:
-                    bounds_n = intersect_list[vertex[0]][1]
-                    bounds_s = intersect_list[vertex[2]][1]
-                    bounds_e = intersect_list[vertex[2]][0]
-                    bounds_w = intersect_list[vertex[5]][0]
-                    last_lat_row = centre_lat
-                    geopoly = Polygon([poly_coords])
-                    hexagon += 1
-                    est_area = (((3 * sqrt(3)) / 2) * pow(radial, 2)) * 0.945
-                    #estimate polygon area
-                    geopoly = Feature(geometry = geopoly, properties = \
-                                      {"p": hexagon,"row": row, \
-                                       "lat": centre_lat, "lon": centre_lon, \
-                                       "N": bounds_n, "S": bounds_s, \
-                                       "E": bounds_e, "W": bounds_w, \
-                                       "est_area": est_area})
-                    if  (bounds_e > bounds_w):
-                        for i in range(0, 5):
-                            point_list.append( \
-                                [hexagon, str(intersect_list[vertex[i]][0]) + \
-                                 str(intersect_list[vertex[i]][1])])
-                        g_array.append(geopoly)
-                        #append geojson geometry definition attributes to list
-                        #tabular dataset
-                        tabular_line = [top_left, row, centre_lat, centre_lon, \
-                                        bounds_n, bounds_s, bounds_e, bounds_w, \
-                                        est_area]
-                        tabular_list.append(tabular_line)
-                        #array of polygon and tabular columns
-                else:
-                    print('')
+    while (top_left < (max_h) * (max_v)):
+        vertex = [1 + top_left, 2 + top_left, max_v + 3 + top_left, \
+                  (max_v * 2) + 2 + top_left, (max_v * 2) + \
+                  1 + top_left, max_v + top_left]
+        try:
+            poly_coords = [intersect_list[vertex[0]], \
+                           intersect_list[vertex[1]], \
+                           intersect_list[vertex[2]], \
+                           intersect_list[vertex[3]], \
+                           intersect_list[vertex[4]], \
+                           intersect_list[vertex[5]], \
+                           intersect_list[vertex[0]]]
+            centre_lat = intersect_list[vertex[0]][1] + \
+                         (intersect_list[vertex[5]][1] - \
+                          intersect_list[vertex[0]][1]) / 2
+            centre_lon = intersect_list[vertex[0]][0] + \
+                         (intersect_list[vertex[5]][0] - \
+                          intersect_list[vertex[0]][0]) / 2
 
-            except IndexError:
+            if (centre_lat is not last_lat_row) or last_lat_row is 0:
+                bounds_n = intersect_list[vertex[0]][1]
+                bounds_s = intersect_list[vertex[2]][1]
+                bounds_e = intersect_list[vertex[2]][0]
+                bounds_w = intersect_list[vertex[5]][0]
+                last_lat_row = centre_lat
+                geopoly = Polygon([poly_coords])
+                hexagon += 1
+                est_area = (((3 * sqrt(3)) / 2) * pow(radial, 2)) * 0.945
+                #estimate polygon area
+                geopoly = Feature(geometry = geopoly, properties = \
+                                  {"p": hexagon,"row": row, \
+                                   "lat": centre_lat, "lon": centre_lon, \
+                                   "N": bounds_n, "S": bounds_s, \
+                                   "E": bounds_e, "W": bounds_w, \
+                                   "est_area": est_area})
+                if  (bounds_e > bounds_w):
+                    for i in range(0, 5):
+                        point_list.append( \
+                            [hexagon, str(intersect_list[vertex[i]][0]) + \
+                             str(intersect_list[vertex[i]][1])])
+                    g_array.append(geopoly)
+                    #append geojson geometry definition attributes to list
+                    #tabular dataset
+                    tabular_line = [top_left, row, centre_lat, centre_lon, \
+                                    bounds_n, bounds_s, bounds_e, bounds_w, \
+                                    est_area]
+                    tabular_list.append(tabular_line)
+                    #array of polygon and tabular columns
+            else:
                 print('')
 
-            last_row = row
-            last_lat_row = centre_lat
-            row = int(1 + int(hexagon / poly_row_count))
-            top_left += lat_offset
-            if row is not last_row:
-                top_left += inc_adj
-                if inc_by_rem:
-                    top_left += rem_lat
-                if row % 2 is 0:
-                    top_left += 2
-                if row & 1:
-                    top_left += -2
+        except IndexError:
+            print('')
 
-        print('\n5/7 geojson dataset of {0} derived hexagon polygons'
-        .format(len(g_array)))
-        hex_geojson = FeatureCollection(g_array)
-        # convert merged geojson features to geojson feature geohex_geojson
-        g_array = []  # release g_array - array of geojson geometry elements
+        last_row = row
+        last_lat_row = centre_lat
+        row = int(1 + int(hexagon / poly_row_count))
+        top_left += lat_offset
+        if row is not last_row:
+            top_left += inc_adj
+            if inc_by_rem:
+                top_left += rem_lat
+            if row % 2 is 0:
+                top_left += 2
+            if row & 1:
+                top_left += -2
 
-        print('writing geojson formatted hexagon dataset to file: {0}.json'
-        .format(outfile))
-        myfile = open('geojson{slash}{outfile}_layer.json'
-        .format(outfile=outfile, slash=slash), 'w')
-        #open file for writing geojson layer in geojson format
-        myfile.write(str(hex_geojson))  # write geojson layer to open file
-        myfile.close()  # close file
+    print('\n5/7 geojson dataset of {0} derived hexagon polygons' \
+          .format(len(g_array)))
+    hex_geojson = FeatureCollection(g_array)
+    # convert merged geojson features to geojson feature geohex_geojson
+    g_array = []  # release g_array - array of geojson geometry elements
 
-        print('\n6/7 tabular dataset of {0} lines of hexagon polygon data'
-        .format(len(tabular_list)))
-        print('writing tabular dataset to file: {0}_dataset.csv'
-        .format(outfile))
-        point_df = pd.DataFrame(point_list)
-        point_df.columns = ['poly', 'latlong']
-        point_df.to_csv('csv{slash}{outfile}_points.csv'
-        .format(outfile=outfile, slash=slash), sep=',')
-        point_df_a = point_df  # make copy of dataframe
-        process_point_df = pd.merge(point_df, point_df_a, on='latlong')
-        # merge columns of same dataframe on concatenated latlong
-        process_point_df = process_point_df[(process_point_df['poly_x']
-        != process_point_df['poly_y'])]  # remove self references
-        output_point_df = process_point_df[['poly_x', 'poly_y']].copy().sort_values(by=['poly_x']).drop_duplicates()
-        #just leave polygon greferences and filter output
+    print('writing geojson formatted hexagon dataset to file: {0}.json' \
+          .format(outfile))
+    myfile = open('geojson{slash}{outfile}_layer.json' \
+                  .format(outfile=outfile, slash=slash), 'w')
+    #open file for writing geojson layer in geojson format
+    myfile.write(str(hex_geojson))  # write geojson layer to open file
+    myfile.close()  # close file
 
-        output_point_df.to_csv('csv{slash}{outfile}_neighbours.csv'.format(outfile=outfile, slash=slash), sep=',', index = False)
-        #print(output_point_df['poly_y',0])
+    print('\n6/7 tabular dataset of {0} lines of hexagon polygon data' \
+          .format(len(tabular_list)))
+    print('writing tabular dataset to file: {0}_dataset.csv' \
+          .format(outfile))
+    point_df = pd.DataFrame(point_list)
+    point_df.columns = ['poly', 'latlong']
+    point_df.to_csv('csv{slash}{outfile}_points.csv'\
+                    .format(outfile=outfile, slash=slash), sep=',')
+    point_df_a = point_df  # make copy of dataframe
+    process_point_df = pd.merge(point_df, point_df_a, on='latlong')
+    # merge columns of same dataframe on concatenated latlong
+    process_point_df = process_point_df[(process_point_df['poly_x']
+    != process_point_df['poly_y'])]  # remove self references
+    output_point_df = process_point_df[['poly_x', 'poly_y']].copy().sort_values(by=['poly_x']).drop_duplicates()
+    #just leave polygon greferences and filter output
+
+    output_point_df.to_csv('csv{slash}{outfile}_neighbours.csv'.format(outfile=outfile, slash=slash), sep=',', index = False)
+    #print(output_point_df['poly_y',0])
 
 
-        tabular_df = pd.DataFrame(tabular_list)
-        #convert tabular array to tabular data frame
-        tabular_df.columns = ['poly', 'row', 'lat', 'long', 'N',
-        'S', 'E', 'W', 'area']
-        layer_dict['Bounds']['Dataset'] = {}
-        #update layer_dict with dataset bounds
-        layer_dict['Bounds']['Dataset']['North'] = tabular_df['N'].max()
-        layer_dict['Bounds']['Dataset']['South'] = tabular_df['S'].min()
-        layer_dict['Bounds']['Dataset']['East'] = tabular_df['E'].max()
-        layer_dict['Bounds']['Dataset']['West'] = tabular_df['W'].min()
-        tabular_df.to_csv('csv{slash}{outfile}_dataset.csv'.format(outfile=outfile,slash=slash), sep=',', index = False)
+    tabular_df = pd.DataFrame(tabular_list)
+    #convert tabular array to tabular data frame
+    tabular_df.columns = ['poly', 'row', 'lat', 'long', 'N', \
+                          'S', 'E', 'W', 'area']
+    layer_dict['Bounds']['Dataset'] = {}
+    #update layer_dict with dataset bounds
+    layer_dict['Bounds']['Dataset']['North'] = tabular_df['N'].max()
+    layer_dict['Bounds']['Dataset']['South'] = tabular_df['S'].min()
+    layer_dict['Bounds']['Dataset']['East'] = tabular_df['E'].max()
+    layer_dict['Bounds']['Dataset']['West'] = tabular_df['W'].min()
+    tabular_df.to_csv('csv{slash}{outfile}_dataset.csv'.format(outfile=outfile,slash=slash), sep=',', index = False)
 
-        print('\n7/7 hexagons json metadata to written to file:\
-         {0}_metadata.json'.format(outfile))
-        myfile = open('metadata{slash}{outfile}_metadata.json'.\
-                      format(outfile = outfile, slash = slash), 'w')
-        #open file for writing geojson layer
-        myfile.write(str(json.dumps(layer_dict)))
-        #write geojson layer to open file
-        myfile.close()  #close file
+    print('\n7/7 hexagons json metadata to written to file: {0}_metadata.json'.format(outfile))
+    myfile = open('metadata{slash}{outfile}_metadata.json'.\
+                  format(outfile = outfile, slash = slash), 'w')
+    #open file for writing geojson layer
+    myfile.write(str(json.dumps(layer_dict)))
+    #write geojson layer to open file
+    myfile.close()  #close file
 
-        to_shp_tab(outfile)
-        ref_files()
+    to_shp_tab(outfile)
+    ref_files()
 
     print('\n')
     print('The End')  # hexagons
@@ -495,3 +493,4 @@ else:
                 float(b_west), float(radial_d), f_name)
             else:
                 print('shape is hex or box')
+
