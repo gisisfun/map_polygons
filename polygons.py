@@ -28,8 +28,7 @@ def line_intersection(line1, line2):
         raise Exception('lines do not intersect')
 
     d = (det(*line1), det(*line2))
-    x = det(d, xdiff) / div
-    y = det(d, ydiff) / div
+    (x, y) = (det(d, xdiff) / div, det(d, ydiff) / div)
     return x, y
 
 
@@ -69,10 +68,10 @@ def vertical(east,north,west,south,vert_seq,radial):
     return latitudes
 
 
-def intersections(hor_line_list, hor_max, vert_line_list, vert_max):
+def intersections(hor_line_list, vert_line_list):
     print('\n3/7 deriving intersection point data between horizontal and \
     vertical lines')
-    intersect_list = []
+    (intersect_list, hor_max, vert_max) = ([],len(hor_line_list), len(vert_line_list))
     for h in range(0, hor_max):
         for v in range(0, vert_max):
             intersect_point = line_intersection(hor_line_list[h],
@@ -178,7 +177,7 @@ def boxes(north, south, east, west, radial, outfile):
     (num_h, max_h) = (len(h_line_list), len(h_line_list)-1)
     v_line_list = vertical(east,north,west,south,vert_seq,radial)
     (num_v, max_v) = (len(v_line_list), len(v_line_list)-1)
-    intersect_list = intersections(h_line_list,max_h, v_line_list, max_v)
+    intersect_list = intersections(h_line_list, v_line_list)
 
     print('\n4/7 deriving boxes polygons from intersection data')
     (top_left, vertex) = (0, [top_left + 0, top_left + 1, top_left + max_v + 1, top_left + max_v])
@@ -289,7 +288,7 @@ def hexagons(north, south, east, west, radial, outfile):
     v_line_list = vertical(east, north, west, south, vert_seq, radial)
     (max_h, max_v) = (len(h_line_list), len(v_line_list))
 
-    intersect_list = intersections(h_line_list, max_h, v_line_list, max_v)
+    intersect_list = intersections(h_line_list, v_line_list)
     
     (lat_offset,top_left, poly_row_count) = (4, 0, int(max_v / len(hor_seq)))
     rem_lat = max_v % (lat_offset + len(hor_seq))
@@ -302,15 +301,10 @@ def hexagons(north, south, east, west, radial, outfile):
     latitude line(s) remaining'.format(top_left, poly_row_count, rem_lat))
 
     (inc_by_rem, in_adj) = (True,0)
+    p_tuple = ((False, True, True, True, False, True, True, True), \
+               (0, 0, -4, 0, 0, -4, -4, -4))
     
-    if rem_lat in [2, 5, 6, 7]:
-        (inc_by_rem, inc_adj) = (True, -4)
-        
-    if rem_lat in [1, 3]:
-        (inc_by_rem, inc_adj) = (True, 0)
-        
-    if rem_lat in [0, 4]:
-        (inc_by_rem, inc_adj) = (False, 0)
+    (inc_by_rem, inc_adj) = (p_tuple[0][rem_lat],p_tuple[1][rem_lat])
 
     print('\n4/7 deriving hexagon polygons from intersection data')
     (row,last_lat_row, hexagon) = (1,0,0)
@@ -327,18 +321,19 @@ def hexagons(north, south, east, west, radial, outfile):
                            intersect_list[vertex[4]], \
                            intersect_list[vertex[5]], \
                            intersect_list[vertex[0]]]
-            centre_lat = intersect_list[vertex[0]][1] + \
-                         (intersect_list[vertex[5]][1] - \
-                          intersect_list[vertex[0]][1]) / 2
-            centre_lon = intersect_list[vertex[0]][0] + \
-                         (intersect_list[vertex[5]][0] - \
-                          intersect_list[vertex[0]][0]) / 2
+            (vertex00, vertex01, vertex20, vertex21, vertex50, vertex51) = \
+                       (intersect_list[vertex[0]][0], \
+                        intersect_list[vertex[0]][1], \
+                        intersect_list[vertex[2]][0], \
+                        intersect_list[vertex[2]][1], \
+                        intersect_list[vertex[5]][0], \
+                        intersect_list[vertex[5]][1])
+            centre_lat = vertex01 + (vertex51 - vertex01) / 2
+            centre_lon = vertex00 + (vertex50 - vertex00) / 2
 
             if (centre_lat is not last_lat_row) or last_lat_row is 0:
-                bounds_n = intersect_list[vertex[0]][1]
-                bounds_s = intersect_list[vertex[2]][1]
-                bounds_e = intersect_list[vertex[2]][0]
-                bounds_w = intersect_list[vertex[5]][0]
+                (bounds_n,bounds_s, bounds_e, bounds_w) = \
+                                    (vertex01, vertex21, vertex20, vertex50)
                 last_lat_row = centre_lat
                 geopoly = Polygon([poly_coords])
                 hexagon += 1
@@ -470,3 +465,4 @@ else:
                 float(b_west), float(radial_d), f_name)
             else:
                 print('shape is hex or box')
+
