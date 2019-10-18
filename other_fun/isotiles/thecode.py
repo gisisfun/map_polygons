@@ -6,7 +6,7 @@ import subprocess
 import pandas as pd
 
 
-from testclass.parameters import Defaults,OSVars,Offsets
+from isotiles.parameters import Defaults,OSVars,Offsets
 
 
 
