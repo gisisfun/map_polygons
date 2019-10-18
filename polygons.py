@@ -11,8 +11,8 @@ import os
 
 #1 deg longitude is about 88 km, 1 deg latitude  is about 110 km
 
-def point_radial_distance(self, brng, radial):
-    return geodesic(kilometers=radial).destination(point=self, bearing=brng)
+def point_radial_distance(coords, brng, radial):
+    return geodesic(kilometers=radial).destination(point=coords, bearing=brng)
 
 
 def line_intersection(line1, line2):
