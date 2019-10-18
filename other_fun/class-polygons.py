@@ -1,4 +1,4 @@
-from testclass.thecode import test
+from isotiles.thecode import test
 #fred = test(north = -8, south = -45, east = 168, west = 96, radial = 45, shape ='hex')
 fred = test()
 
