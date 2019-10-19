@@ -10,7 +10,8 @@ verts = fred.vertical()
 
 intersects = fred.intersections(hors,verts)
 
-(hexagon_array,hex_points) = fred.hex_array(intersects,len(hors),len(verts))
+hexagon_array = fred.hex_array(intersects,len(hors),len(verts))
+hex_points = fred.points_and_polygons(hexagon_array)
 
 gj_hexagon = fred.to_geojson(hexagon_array)
 
@@ -18,6 +19,6 @@ fred.to_file(gj_hexagon)
 
 fred.to_shp_tab()
 
-fred.intersecting(hex_points)
+intersect_poly = fred.intersecting(hex_points)
 
 fred.ref_files()
