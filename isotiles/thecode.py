@@ -357,7 +357,8 @@ class test():
         point_df_a = point_df  # make copy of dataframe
         process_point_df = pd.merge(point_df, point_df_a, on = 'latlong')
         # merge columns of same dataframe on concatenated latlong
-        #process_point_df = process_point_df[(process_point_df['poly_x'] ! = process_point_df['poly_y'])]  # remove self references
+        process_point_df = process_point_df[(process_point_df['poly_x']
+    != process_point_df['poly_y'])]  # remove self references
         output_point_df = process_point_df[['poly_x', 'poly_y']].copy().sort_values(by=['poly_x']).drop_duplicates()
         #just leave polygon greferences and filter output
 
@@ -385,8 +386,8 @@ class test():
 
         RefData = DataSets.Australia.TabFormat()
         self.file_deploy(RefData)
-        
-        
+
+
     def point_in_polygon(coords_list,point_x,point_y):  
         poly = shply.Polygon(coords_list)
         p1=shply.Point(point_x, point_y)
@@ -394,6 +395,15 @@ class test():
         
         
     def points_in_polygon(poly_coords,poly_id,bound_points_df):
+        #points_df=lat_longs_df[(lat_longs_df['latitude'] >= bounds_s) & \
+        #        (lat_longs_df['latitude'] <= bounds_n)  & \
+        #        (lat_longs_df['longitude'] <= bounds_e) & \
+        #        (lat_longs_df['longitude'] >= bounds_w)]
+
+        #total_rows = len(points_df)                    
+        #            pcount=0
+        #            if (total_rows >= 1):
+        #                (poly,pcount)=points_in_polygon(poly_coords,hexagon,points_df)
         p_count=0
         poly = shply.Polygon(poly_coords)
         i=0
