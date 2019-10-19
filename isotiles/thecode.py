@@ -7,17 +7,17 @@ import pandas as pd
 import urllib.request
 from pyunpack import Archive
 
-from isotiles.parameters import Defaults, OSVars, Offsets, DataSets
+from isotiles.parameters import Bounding_Box, OSVars, Offsets, DataSets
 
 
 class test():
-    value = Defaults()
-    def __init__(self, north: Defaults = value.North,
-                 south: Defaults = value.South,
-                 east: Defaults = value.East,
-                 west: Defaults = value.West,
-                 radial: Defaults = value.Radial,
-                 shape: Defaults = value.Shape):
+    value = Bounding_Box.Australia()
+    def __init__(self, north: Bounding_Box = value.North,
+                 south: Bounding_Box = value.South,
+                 east: Bounding_Box = value.East,
+                 west: Bounding_Box = value.West,
+                 radial: Bounding_Box = value.Radial,
+                 shape: Bounding_Box = value.Shape):
         self.North = north
         self.South = south
         self.East = east
@@ -360,26 +360,23 @@ class test():
                                .format(outfile = self.FName, \
                                        slash = self.Slash), \
                                sep = ',', index = False)
-    
+
+    def file_deploy(self,RData):
+        if not os.path.isfile(RData.FilePath.format(slash = self.Slash)):
+            print('Downloading {descr} file in {fmt} file format'\
+                  .format(fmt = RData.Format, descr = RData.Description))
+            urllib.request.urlretrieve(url, RData.DownURL.format(slash = self.Slash))
+            print('Unzipping {descr} file in {fmt} file format'\
+                  .format(descr = RData.Description, fmt = RData.Format ))
+            Archive(RData.ZipPath.format(slash = self.Slash)).extractall(RData.ZipDir\
+                                                                         .format(slash = self.Slash))
+        else:
+            print('{descr} file in {fmt} file format exists'\
+                  .format(descr = RData.Description, fmt = RData.Format))
 
     def ref_files(self):
         RefData = DataSets.Australia.ShapeFormat()
-        if not os.path.isfile(RefData.FilePath.format(slash = self.Slash)):
-            print(RefData.DownPrompt)
-            urllib.request.urlretrieve(url, RefData.DownURL.format(slash=slash))
-            print(RefData.ZipPrompt)
-            Archive(RefData.ZipPath.format(slash = self.Slash)).extractall(RefData.ZipDir\
-                                                                           .format(slash = self.Slash))
-        else:
-            print(RefData.FileExists)
+        self.file_deploy(RefData)
 
         RefData = DataSets.Australia.TabFormat()
-        if not os.path.isfile(RefData.FilePath.format(slash = self.Slash)):
-            print(RefData.DownPrompt)
-            urllib.request.urlretrieve(url, RefData.DownURL.format(slash=slash))
-            print(RefData.ZipPrompt)
-            Archive(RefData.ZipPath.format(slash = self.Slash)).extractall(RefData.ZipDir\
-                                                                           .format(slash = self.Slash))
-        else:
-            print(RefData.FileExists)
-
+        self.file_deploy(RefData)
