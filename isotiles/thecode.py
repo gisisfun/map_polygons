@@ -6,6 +6,7 @@ import subprocess
 import pandas as pd
 import urllib.request
 from pyunpack import Archive
+import shapely as shaply
 
 from isotiles.parameters import Bounding_Box, OSVars, Offsets, DataSets, Defaults
 
@@ -386,7 +387,21 @@ class test():
         self.file_deploy(RefData)
         
         
-    #def point_in_polygon(coords_list,point_x,point_y):  
-        #poly = shply.Polygon(coords_list)
-        #p1=shply.Point(point_x, point_y)
-        #return p1.within(poly)
+    def point_in_polygon(coords_list,point_x,point_y):  
+        poly = shply.Polygon(coords_list)
+        p1=shply.Point(point_x, point_y)
+        return p1.within(poly)
+        
+        
+    def points_in_polygon(poly_coords,poly_id,bound_points_df):
+        p_count=0
+        poly = shply.Polygon(poly_coords)
+        i=0
+        for index, row in bound_points_df.iterrows():
+            #p1 = shply.Point(query_points_list[i][0],query_points_list[i][1])
+            p1 = shply.Point(row['longitude'], row['latitude'])
+        
+            if poly.contains(p1) is True:
+                p_count += 1 
+            i += 1        
+        return poly_id,p_count
