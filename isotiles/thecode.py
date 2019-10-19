@@ -7,17 +7,18 @@ import pandas as pd
 import urllib.request
 from pyunpack import Archive
 
-from isotiles.parameters import Bounding_Box, OSVars, Offsets, DataSets
+from isotiles.parameters import Bounding_Box, OSVars, Offsets, DataSets, Defaults
 
 
 class test():
     value = Bounding_Box.Australia()
+    defaults = Defaults()
     def __init__(self, north: Bounding_Box = value.North,
                  south: Bounding_Box = value.South,
                  east: Bounding_Box = value.East,
                  west: Bounding_Box = value.West,
-                 radial: Bounding_Box = value.Radial,
-                 shape: Bounding_Box = value.Shape):
+                 radial: Defaults = defaults.Radial,
+                 shape: Defaults = defaults.Shape):
         self.North = north
         self.South = south
         self.East = east

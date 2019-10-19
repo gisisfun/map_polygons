@@ -1,3 +1,14 @@
+class Defaults:
+    """
+    """
+    ...
+    
+    
+    def __init__(self):
+        self.Radial = 57
+        self.Shape = 'hex'
+        
+
 class Bounding_Box:
     """
     Parameters for request to create tessilating shapes
@@ -14,8 +25,6 @@ class Bounding_Box:
             self.South = -45
             self.East = 168
             self.West = 96
-            self.Radial = 57
-            self.Shape = 'hex'
 
 class Offsets:
     """
