@@ -7,7 +7,7 @@ import pandas as pd
 import urllib.request
 from pyunpack import Archive
 
-from isotiles.parameters import Defaults, OSVars, Offsets, Australia
+from isotiles.parameters import Defaults, OSVars, Offsets, DataSets
 
 
 class test():
@@ -363,28 +363,23 @@ class test():
     
 
     def ref_files(self):
-
-        if not os.path.isfile('shapefiles{slash}AUS_2016_AUST.shp' \
-                              .format(slash = self.Slash)):
-            print('Downloading ABS Australia file in Shape file format')
-            url = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&5503B37F8055BFFECA2581640014462C&0&July%202016&24.07.2017&Latest'
-            urllib.request.urlretrieve(url, 'shapefiles{slash}1270055001_aus_2016_aust_shape.zip'.format(slash=slash))
-            print('Unzipping ABS Australia file in Shape file format')
-            Archive('shapefiles{slash}1270055001_aus_2016_aust_shape.zip'\
-                    .format(slash = self.Slash))\
-                    .extractall('shapefiles'\
-                                .format(slash = self.Slash))
+        RefData = DataSets.Australia.ShapeFormat()
+        if not os.path.isfile(RefData.FilePath.format(slash = self.Slash)):
+            print(RefData.DownPrompt)
+            urllib.request.urlretrieve(url, RefData.DownURL.format(slash=slash))
+            print(RefData.ZipPrompt)
+            Archive(RefData.ZipPath.format(slash = self.Slash)).extractall(RefData.ZipDir\
+                                                                           .format(slash = self.Slash))
         else:
-            print('ABS Australia file in Shape file format exists')
+            print(RefData.FileExists)
 
-        if not os.path.isfile('tabfiles{slash}AUS_2016_AUST.tab' \
-                              .format(slash = self.Slash)):
-            print('Downloading ABS Australia file in Tab file format')
-            url = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_tab.zip&1270.0.55.001&Data%20Cubes&F18065BF058615F9CA2581640014491B&0&July%202016&24.07.2017&Latest'
-            urllib.request.urlretrieve(url, 'tabfiles{slash}1270055001_aus_2016_aust_tab.zip'\
-                                       .format(slash = self.Slash))
-            print('Unzipping ABS Australia file in Tab file format')
-            Archive('tabfiles{slash}1270055001_aus_2016_aust_tab.zip'.format(slash=slash)).extractall('tabfiles'.format(slash=slash))
+        RefData = DataSets.Australia.TabFormat()
+        if not os.path.isfile(RefData.FilePath.format(slash = self.Slash)):
+            print(RefData.DownPrompt)
+            urllib.request.urlretrieve(url, RefData.DownURL.format(slash=slash))
+            print(RefData.ZipPrompt)
+            Archive(RefData.ZipPath.format(slash = self.Slash)).extractall(RefData.ZipDir\
+                                                                           .format(slash = self.Slash))
         else:
-            print('ABS Australia file in Tab file format exists')
+            print(RefData.FileExists)
 

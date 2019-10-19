@@ -45,32 +45,38 @@ class OSVars:
             self.Slash = '\\'
             self.ogr2ogr = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
 
+class DataSets:
+    
 
-class Australia:
-    """
-    Operating System Dependant values for 'posix' and 'nt'
-    """    
-    ...
+    class Australia:
+        """
+        ABS Australian Boundary
+        """    
+        ...
     
     
-    class ShapeFormat:
-        __slots__= ('FilePath', 'DownPrompt', 'DownURL', 'ZipDir', 'ZipPath', 'ZipPrompt')
-        def __init__(self):
-            self.FilePath = 'shapefiles{slash}AUS_2016_AUST.shp'
-            self.DownPrompt = 'Downloading ABS Australia file in Shape file format'
-            self.DownURL = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&5503B37F8055BFFECA2581640014462C&0&July%202016&24.07.2017&Latest'
-            self.ZipDir = 'shapefiles'
-            self.ZipPath ='shapefiles{slash}1270055001_aus_2016_aust_shape.zip'
-            self.ZipPrompt = 'Unzipping ABS Australia file in Shape file format'
+        class ShapeFormat:
+            __slots__= ('FilePath', 'DownPrompt', 'DownURL', 'ZipDir', 'ZipPath', 'ZipPrompt','FileExists')
+            def __init__(self):
+                self.FilePath = 'shapefiles{slash}AUS_2016_AUST.shp'
+                self.DownPrompt = 'Downloading ABS Australia file in Shape file format'
+                self.DownURL = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&5503B37F8055BFFECA2581640014462C&0&July%202016&24.07.2017&Latest'
+                self.ZipDir = 'shapefiles'
+                self.ZipPath ='shapefiles{slash}1270055001_aus_2016_aust_shape.zip'
+                self.ZipPrompt = 'Unzipping ABS Australia file in Shape file format'
+                self.FileExists = 'ABS Australia file in Shape file format exists'
         
     
-    class TabFormat:
-        __slots__= ('FilePath', 'DownPrompt', 'DownURL', 'ZipDir', 'ZipPath', 'ZipPrompt')
-        def __init__(self):
-            self.FilePath = 'tabfiles{slash}AUS_2016_AUST.tab'
-            self.DownPrompt = 'Downloading ABS Australia file in Tab file format'
-            self.DownURL = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&5503B37F8055BFFECA2581640014462C&0&July%202016&24.07.2017&Latest'
-            self.ZipDir = 'tabfiles'
-            self.ZipPath ='tabfiles{slash}1270055001_aus_2016_aust_tab.zip'
-            self.ZipPrompt = 'Unzipping ABS Australia file in Tab file format'
-        
+        class TabFormat:
+            __slots__= ('FilePath', 'DownPrompt', 'DownURL', 'ZipDir', 'ZipPath', 'ZipPrompt', 'FileExists')
+            def __init__(self):
+                self.FilePath = 'tabfiles{slash}AUS_2016_AUST.tab'
+                self.DownPrompt = 'Downloading ABS Australia file in Tab file format'
+                self.DownURL = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&5503B37F8055BFFECA2581640014462C&0&July%202016&24.07.2017&Latest'
+                self.ZipDir = 'tabfiles'
+                self.ZipPath ='tabfiles{slash}1270055001_aus_2016_aust_tab.zip'
+                self.ZipPrompt = 'Unzipping ABS Australia file in Tab file format'
+                self.FileExists = 'ABS Australia file in Tab file format exists'
+                
+                
+                
