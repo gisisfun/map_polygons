@@ -207,10 +207,6 @@ class test():
                                        "E": bounds_e, "W": bounds_w, \
                                        "est_area": est_area})
                     if  (bounds_e > bounds_w):
-                        for i in range(0, 5):
-                            point_list.append( \
-                                [hexagon, str(intersect_list[vertex[i]][0]) + \
-                                 str(intersect_list[vertex[i]][1])])
                         g_array.append(geopoly)
                         #append geojson geometry definition attributes to list
                         #tabular dataset
@@ -237,11 +233,11 @@ class test():
                 if row & 1:
                     top_left += -2
         print('created dataset of {0} derived hexagon polygons'.format(len(g_array)))
-        return g_array,point_list
+        return g_array
 
 
     def box_array(self):
-        (top_left, g_array, tabular_list, point_list) = (0, [], [], [])  # g_array - array of geojson formatted geometry element
+        (top_left, g_array, tabular_list) = (0, [], [])  # g_array - array of geojson formatted geometry element
         print('\n4/7 deriving boxes polygons from intersection data')
         vertex = [top_left + 0, top_left + 1, top_left + max_v + 1, top_left + max_v]
 
@@ -261,11 +257,6 @@ class test():
             bounds_e = vertex10
             bounds_w = vertex00
             if bounds_e > bounds_w:
-                for i in range(0, 3):
-                    point_list.append( \
-                        [hexagon, str(intersect_list[vertex[i]][0]) + \
-                         str(intersect_list[vertex[i]][1])])
-                        
                 geopoly = Polygon([poly_coords])
                 geopoly = Feature(geometry=geopoly, \
                 properties = {"p": top_left, "lat": centre_lat, "lon": centre_lon, \
@@ -283,8 +274,20 @@ class test():
             vertex = [top_left + 0, top_left + 1, top_left + max_v + 1, top_left + max_v]
 
         print('\n5/7 boxes geojson dataset of {0} derived polygons'.format(len(g_array)))
-        return g_array,point_list
+        return g_array
 
+    def points_and_polygons(self,GArray):
+
+        (point_list, num_poly) = ([], len(GArray))
+
+        for n in range (0, num_poly):
+            num_coords = len(GArray[n]['geometry']['coordinates'][0])-2
+            hexagon = GArray[n]['properties']['p']
+            for i in range(0, num_coords):
+                point_list.append( \
+                    [hexagon, str(GArray[n]['geometry']['coordinates'][0][i][0]) + \
+                     str(GArray[n]['geometry']['coordinates'][0][i][1])])
+        return point_list
 
     def to_geojson(self,gArray):
         """
