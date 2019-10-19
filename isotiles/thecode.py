@@ -346,6 +346,12 @@ class test():
     def intersecting(self,pointsList):
         """
         Intersecting polygons list
+        
+        Prerequisites:
+        hex_array or box_array, horizontal and vertical
+        
+        Input variables:
+        pointslist: array of points and metadata defining polygon shapes 
         """
         ...
         
@@ -394,24 +400,38 @@ class test():
         return p1.within(poly)
         
         
-    def points_in_polygon(poly_coords,poly_id,bound_points_df):
-        #points_df=lat_longs_df[(lat_longs_df['latitude'] >= bounds_s) & \
-        #        (lat_longs_df['latitude'] <= bounds_n)  & \
-        #        (lat_longs_df['longitude'] <= bounds_e) & \
-        #        (lat_longs_df['longitude'] >= bounds_w)]
+    def points_in_polygon(self, GArray, QPoints_df, QLabel):
+        (point_list, num_poly) = ([], len(GArray))
 
-        #total_rows = len(points_df)                    
-        #            pcount=0
-        #            if (total_rows >= 1):
-        #                (poly,pcount)=points_in_polygon(poly_coords,hexagon,points_df)
-        p_count=0
-        poly = shply.Polygon(poly_coords)
-        i=0
-        for index, row in bound_points_df.iterrows():
-            #p1 = shply.Point(query_points_list[i][0],query_points_list[i][1])
-            p1 = shply.Point(row['longitude'], row['latitude'])
+        for n in range (0, num_poly):
+            num_coords = len(GArray[n]['geometry']['coordinates'][0])-2
+            hexagon = GArray[n]['properties']['p']
+            bound_points_df = QPoints_df
+            bound_points_df = [(GArray[n]['properties']['S'] >= bounds_s) & \
+                               (GArray[n]['properties']['N'] <= bounds_n)  & \
+                               (GArray[n]['properties']['E'] <= bounds_e) & \
+                               (GArray[n]['properties']['W'] >= bounds_w)]
+
+            (pcount, total_rows) = (0, len(bound_points_df)) 
+            if (total_rows >= 1):
+                (p_count, polycoords) = (0, [])
+                num_coords = len(GArray[n]['geometry']['coordinates'][0])-2
+                for i in range(0, num_coords):
+                    polycoords.append( \
+                        [GArray[n]['geometry']['coordinates'][0][i][0] + \
+                         GArray[n]['geometry']['coordinates'][0][i][1]])
+                poly = shply.Polygon(poly_coords)
+                i=0
+                for index, row in bound_points_df.iterrows():
+                    #p1 = shply.Point(query_points_list[i][0],query_points_list[i][1])
+                    p1 = shply.Point(row['longitude'], row['latitude'])
         
-            if poly.contains(p1) is True:
-                p_count += 1 
-            i += 1        
-        return poly_id,p_count
+                    if poly.contains(p1) is True:
+                        p_count += 1 
+                    i += 1
+            else:
+                p = 0
+                
+            GArray[n]['properties'][QLabel] = p_count
+                
+        return GArray
