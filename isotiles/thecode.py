@@ -384,3 +384,9 @@ class test():
 
         RefData = DataSets.Australia.TabFormat()
         self.file_deploy(RefData)
+        
+        
+    #def point_in_polygon(coords_list,point_x,point_y):  
+        #poly = shply.Polygon(coords_list)
+        #p1=shply.Point(point_x, point_y)
+        #return p1.within(poly)
