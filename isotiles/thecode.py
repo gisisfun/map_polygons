@@ -6,7 +6,7 @@ import subprocess
 import pandas as pd
 import urllib.request
 from pyunpack import Archive
-import shapely as shaply
+import shapely.geometry as shply
 
 from isotiles.parameters import Bounding_Box, OSVars, Offsets, DataSets, Defaults
 
@@ -400,28 +400,28 @@ class test():
         return p1.within(poly)
         
         
-    def points_in_polygon(self, GArray, QPoints_df, QLabel):
-        (point_list, num_poly) = ([], len(GArray))
-
+    def points_in_polygon(self, GArray, lat_longs, QLabel):
+        (point_list, num_poly) = ([], len(GArray)-1)
+        lat_longs_df=pd.DataFrame(lat_longs)
+        lat_longs_df.columns = ['longitude','latitude']
         for n in range (0, num_poly):
-            num_coords = len(GArray[n]['geometry']['coordinates'][0])-2
             hexagon = GArray[n]['properties']['p']
-            bound_points_df = QPoints_df
-            bound_points_df = [(GArray[n]['properties']['S'] >= bounds_s) & \
-                               (GArray[n]['properties']['N'] <= bounds_n)  & \
-                               (GArray[n]['properties']['E'] <= bounds_e) & \
-                               (GArray[n]['properties']['W'] >= bounds_w)]
+            p_count = 0
+            bound_points_df = lat_longs_df[(lat_longs_df['latitude'] >= GArray[n]['properties']['S']) & \
+                                           (lat_longs_df['latitude'] <= GArray[n]['properties']['N']) & \
+                                           (lat_longs_df['longitude'] <= GArray[n]['properties']['E']) & \
+                                           (lat_longs_df['longitude'] >= GArray[n]['properties']['W'])]
 
             (pcount, total_rows) = (0, len(bound_points_df)) 
             if (total_rows >= 1):
-                (p_count, polycoords) = (0, [])
+                (p_count, poly_coords) = (0, [])
                 num_coords = len(GArray[n]['geometry']['coordinates'][0])-2
                 for i in range(0, num_coords):
-                    polycoords.append( \
-                        [GArray[n]['geometry']['coordinates'][0][i][0] + \
+                    poly_coords.append( \
+                        [GArray[n]['geometry']['coordinates'][0][i][0], \
                          GArray[n]['geometry']['coordinates'][0][i][1]])
                 poly = shply.Polygon(poly_coords)
-                i=0
+                i = 0
                 for index, row in bound_points_df.iterrows():
                     #p1 = shply.Point(query_points_list[i][0],query_points_list[i][1])
                     p1 = shply.Point(row['longitude'], row['latitude'])
