@@ -35,7 +35,11 @@ intersects = fred.intersections(hors,verts)
 hexagon_array = fred.hex_array(intersects,len(hors),len(verts))
 hex_points = fred.points_and_polygons(hexagon_array)
 
-gj_hexagon = fred.to_geojson(hexagon_array)
+points = random_points(-8, -45, 168, 96,10)
+
+new_hex_array = fred.points_in_polygon(hexagon_array,points,'Test')
+
+gj_hexagon = fred.to_geojson(new_hex_array)
 
 fred.to_file(gj_hexagon)
 
@@ -45,6 +49,3 @@ intersect_poly = fred.intersecting(hex_points)
 
 fred.ref_files()
 
-points = random_points(-8, -45, 168, 96,10)
-
-new_hex_array = fred.points_in_polygon(hexagon_array,points,'Test')
