@@ -1,4 +1,5 @@
 from isotiles.thecode import test
+import random
 
 def random_points(bounds_n,bounds_s,bounds_e,bounds_w,numpoints):
         
@@ -17,7 +18,7 @@ def random_points(bounds_n,bounds_s,bounds_e,bounds_w,numpoints):
         x_coords_list.append(x_coord)
         y_coords_list.append(y_coord)
         
-    print(layer_json)
+    #print(layer_json)
     return coord_list 
 
 #fred = test(north = -8, south = -45, east = 168, west = 96, radial = 45, shape ='hex')
@@ -43,3 +44,7 @@ fred.to_shp_tab()
 intersect_poly = fred.intersecting(hex_points)
 
 fred.ref_files()
+
+points = random_points(-8, -45, 168, 96,10)
+
+new_hex_array = fred.points_in_polygon(hexagon_array,points,'Test')
