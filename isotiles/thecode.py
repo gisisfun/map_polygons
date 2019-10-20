@@ -11,15 +11,24 @@ import shapely.geometry as shply
 from isotiles.parameters import Bounding_Box, OSVars, Offsets, DataSets, Defaults
 
 
-class test():
+class Tiles():
+    """
+    Modules for map_polygons
+    """
+    ...
+    
     value = Bounding_Box.Australia()
     defaults = Defaults()
+    
     def __init__(self, north: Bounding_Box = value.North,
                  south: Bounding_Box = value.South,
                  east: Bounding_Box = value.East,
                  west: Bounding_Box = value.West,
                  radial: Defaults = defaults.Radial,
                  shape: Defaults = defaults.Shape):
+        """
+        supply variables for map_polygons
+        """
         self.North = north
         self.South = south
         self.East = east
@@ -57,6 +66,9 @@ class test():
     def params(self):
         """
         Construct feedback of user variables for user
+        
+        Dependencies:
+        Tiles
         """
         ...
 
@@ -67,6 +79,9 @@ class test():
     def f_name(self):
         """
         Construct filename string
+        
+        Dependencies:
+        Tiles
         """
         ...
 
@@ -75,9 +90,21 @@ class test():
         return self.Shape + '_' + str(self.Radial) + 'km'
 
     def point_radial_distance(self,coords, brng, radial):
+        """
+        Calulate next point from coordinates and bearing
+        
+        Dependencies:
+        None
+        """
         return geodesic(kilometers=radial).destination(point=coords, bearing=brng)
 
     def horizontal(self):
+        """
+        Horizontal Reference Points
+        
+        Dependencies:
+        Tiles
+        """
         #1/7 deriving vertical list of reference points from north to south for longitudes or x axis
         (angle, new_north, i, longitudes) = (180, self.North, 0, [])
         #print(east,new_north,south,'\n')
@@ -98,6 +125,12 @@ class test():
     def vertical(self):
         """
         #2/7 deriving horizontal list of reference points from east to west for latitudes or y axis
+        
+        Prerequisites:
+        Tiles
+        
+        Input variables:
+        Provided
         """
         print('east {0} west {1}'.format(self.East,self.West))
 
@@ -119,6 +152,9 @@ class test():
     def line_intersection(self,line1, line2):
         """
         source: https://stackoverflow.com/questions/20677795/how-do-i-compute-the-intersection-between-two-lines-in-python
+        
+        Dependencies:
+        intersections,horizontal,vertical,Tiles
         """
         ...
         
@@ -137,6 +173,18 @@ class test():
         return x, y
     
     def intersections(self,hor_line_list, vert_line_list):
+        """
+        Intersecting Lines as points
+        
+        Dependencies:
+        horizontal,vertical,Tiles
+        
+        Input variables:
+        hor_line_list:
+        vert_line_list:
+        """
+        ...
+        
         print('\n3/7 deriving intersection point data between horizontal and vertical lines')
         (intersect_list, hor_max, vert_max) = ([],len(hor_line_list), len(vert_line_list))
         for h in range(0, hor_max):
@@ -155,6 +203,15 @@ class test():
     def hex_array(self,intersect_list,max_h, max_v):
         """
         Put it all together - deriving hexagon polygons from intersection data
+        
+        
+        Prerequisites:
+        intersections, horizontal, vertical, Tiles
+        
+        Input variables:
+        intersect_list:
+        max_h:
+        max_v:
         """
         ...
         
@@ -238,6 +295,17 @@ class test():
 
 
     def box_array(self):
+        """
+        Create array of box shaped polygons
+        
+        Prerequisites:
+        horizontal, vertical, Tiles
+        
+        Input variables:
+        Provided
+        """
+        ...
+        
         (top_left, g_array, tabular_list) = (0, [], [])  # g_array - array of geojson formatted geometry element
         print('\n4/7 deriving boxes polygons from intersection data')
         vertex = [top_left + 0, top_left + 1, top_left + max_v + 1, top_left + max_v]
@@ -278,7 +346,17 @@ class test():
         return g_array
 
     def points_and_polygons(self,GArray):
-
+        """
+        Neighbouring Polygons derivation
+        
+        Prerequisites:
+        hex_array or box_array, horizontal, vertical ,Tiles
+        
+        Input variables:
+        GArray
+        """
+        ...
+        
         (point_list, num_poly) = ([], len(GArray))
 
         for n in range (0, num_poly):
@@ -293,6 +371,12 @@ class test():
     def to_geojson(self,gArray):
         """
         Convert Features to FeatureCollection
+        
+        Prerequisites:
+        hex_array or box_array, horizontal, vertical, Tiles
+        
+        Input variables:
+        gArray:
         """
         ...
         
@@ -300,9 +384,14 @@ class test():
               .format(len(gArray)))
         return FeatureCollection(gArray)
 
-    def to_file(self,content):
+    def geojson_to_file(self,content):
         """
         Write string to file
+        
+        Prerequisites:
+        to_geojson, hex_array or box_array, horizontal, vertical, Tiles
+        
+        Input variables:
         """
         ...
         
@@ -317,6 +406,12 @@ class test():
     def to_shp_tab(self):
         """
         Convert geojson file to shapfile and tab file
+        
+        Prerequisites:
+        geojson_to_file, to_geojson, hex_array or box_array, horizontal, vertical, Tiles
+        
+        Input variables:
+        Provided
         """
         ...
         
@@ -343,12 +438,12 @@ class test():
             print('No files processed')
 
 
-    def intersecting(self,pointsList):
+    def neighbours(self,pointsList):
         """
         Intersecting polygons list
         
         Prerequisites:
-        hex_array or box_array, horizontal and vertical
+        hex_array or box_array, horizontal, vertical, Tiles
         
         Input variables:
         pointslist: array of points and metadata defining polygon shapes 
