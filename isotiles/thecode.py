@@ -308,7 +308,7 @@ class test():
         
         print('writing geojson formatted {shape} dataset to file: {fname}_layer.json'\
               .format(shape = self.Shape, fname = self.FName))
-        myfile = open('csv/{fname}_layer.csv'.format(fname = self.FName), 'w')
+        myfile = open('geojson{slash}{fname}_layer.json'.format(fname = self.FName,slash = self.Slash), 'w')
         #open file for writing geojson layer in geojson format
         myfile.write(str(content))  # write geojson layer to open file
         myfile.close()  # close file
@@ -401,7 +401,12 @@ class test():
         
         
     def points_in_polygon(self, GArray, lat_longs, QLabel):
-        (point_list, num_poly) = ([], len(GArray)-1)
+        """
+        Counts for lat_longs generated
+        """
+        ...
+        
+        (point_list, num_poly) = ([], len(GArray))
         lat_longs_df=pd.DataFrame(lat_longs)
         lat_longs_df.columns = ['longitude','latitude']
         for n in range (0, num_poly):
@@ -432,6 +437,6 @@ class test():
             else:
                 p = 0
                 
-            GArray[n]['properties'][QLabel] = p_count
+            GArray[n]['properties'][QLabel] = float(p_count)
                 
         return GArray
