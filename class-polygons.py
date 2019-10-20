@@ -1,8 +1,13 @@
-from isotiles.thecode import test
+from isotiles.thecode import Tiles
 import random
 
 def random_points(bounds_n,bounds_s,bounds_e,bounds_w,numpoints):
-        
+    """
+    Create an array of random points
+    """
+    ...
+    
+    
     ns_range = bounds_n - bounds_s
     ew_range = bounds_e - bounds_w
     coord_list=[]
@@ -22,7 +27,7 @@ def random_points(bounds_n,bounds_s,bounds_e,bounds_w,numpoints):
     return coord_list 
 
 #fred = test(north = -8, south = -45, east = 168, west = 96, radial = 45, shape ='hex')
-fred = test()
+fred = Tiles()
 
 print(fred.params())
 
@@ -41,11 +46,11 @@ new_hex_array = fred.points_in_polygon(hexagon_array,points,'Test')
 
 gj_hexagon = fred.to_geojson(new_hex_array)
 
-fred.to_file(gj_hexagon)
+fred.geojson_to_file(gj_hexagon)
 
 fred.to_shp_tab()
 
-intersect_poly = fred.intersecting(hex_points)
+intersect_poly = fred.neighbours(hex_points)
 
 fred.ref_files()
 
