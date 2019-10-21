@@ -469,30 +469,40 @@ class Tiles():
                                sep = ',', index = False)
 
     def file_deploy(self,RData):
+        """
+        Deploy downloaded files
+        
+        Prerequisites:
+        ref_files
+        
+        Input variables:
+        """
         if not os.path.isfile(RData.FilePath.format(slash = self.Slash)):
             print('Downloading {descr} file in {fmt} file format'\
                   .format(fmt = RData.Format, descr = RData.Description))
-            urllib.request.urlretrieve(url, RData.DownURL.format(slash = self.Slash))
-            print('Unzipping {descr} file in {fmt} file format'\
-                  .format(descr = RData.Description, fmt = RData.Format ))
-            Archive(RData.ZipPath.format(slash = self.Slash)).extractall(RData.ZipDir\
-                                                                         .format(slash = self.Slash))
+            if RData,DownURL is not '':
+                urllib.request.urlretrieve(RData.DownURL, RData.ZipPath.format(slash = self.Slash))
+                print('Unzipping {descr} file in {fmt} file format'\
+                      .format(descr = RData.Description, fmt = RData.Format ))
+                Archive(RData.ZipPath.format(slash = self.Slash)).extractall(RData.ZipDir\
+                                                                             .format(slash = self.Slash))
         else:
             print('{descr} file in {fmt} file format exists'\
                   .format(descr = RData.Description, fmt = RData.Format))
 
     def ref_files(self):
+        """
+        Get reference files
+
+        Prerequisites:
+        
+        Input variables:
+        """
         RefData = DataSets.Australia.ShapeFormat()
         self.file_deploy(RefData)
 
         RefData = DataSets.Australia.TabFormat()
         self.file_deploy(RefData)
-
-
-    def point_in_polygon(coords_list,point_x,point_y):  
-        poly = shply.Polygon(coords_list)
-        p1=shply.Point(point_x, point_y)
-        return p1.within(poly)
         
         
     def points_in_polygon(self, GArray, lat_longs, QLabel):
@@ -507,10 +517,14 @@ class Tiles():
         for n in range (0, num_poly):
             hexagon = GArray[n]['properties']['p']
             p_count = 0
-            bound_points_df = lat_longs_df[(lat_longs_df['latitude'] >= GArray[n]['properties']['S']) & \
-                                           (lat_longs_df['latitude'] <= GArray[n]['properties']['N']) & \
-                                           (lat_longs_df['longitude'] <= GArray[n]['properties']['E']) & \
-                                           (lat_longs_df['longitude'] >= GArray[n]['properties']['W'])]
+            bound_points_df = lat_longs_df[(lat_longs_df['latitude'] >=\
+                                            GArray[n]['properties']['S']) & \
+                                           (lat_longs_df['latitude'] <=\
+                                            GArray[n]['properties']['N']) & \
+                                           (lat_longs_df['longitude'] <=\
+                                            GArray[n]['properties']['E']) & \
+                                           (lat_longs_df['longitude'] >=\
+                                            GArray[n]['properties']['W'])]
 
             (pcount, total_rows) = (0, len(bound_points_df)) 
             if (total_rows >= 1):
@@ -529,8 +543,7 @@ class Tiles():
                     if poly.contains(p1) is True:
                         p_count += 1 
                     i += 1
-            else:
-                p = 0
+            
                 
             GArray[n]['properties'][QLabel] = float(p_count)
                 
