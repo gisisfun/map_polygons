@@ -480,7 +480,7 @@ class Tiles():
         if not os.path.isfile(RData.FilePath.format(slash = self.Slash)):
             print('Downloading {descr} file in {fmt} file format'\
                   .format(fmt = RData.Format, descr = RData.Description))
-            if RData,DownURL is not '':
+            if RData.DownURL is not '':
                 urllib.request.urlretrieve(RData.DownURL, RData.ZipPath.format(slash = self.Slash))
                 print('Unzipping {descr} file in {fmt} file format'\
                       .format(descr = RData.Description, fmt = RData.Format ))
