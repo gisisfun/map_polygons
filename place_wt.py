@@ -89,11 +89,12 @@ def sql_to_ogr (sqlfile, vrtfile, shapefile):
         cmd_text='c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
         slash='\\'
         
-    shapefiles_text = 'shapefiles{slash}{shapefile}.shp'.format(shapefile=shapefile, slash=slash)
-    vrt_text = 'vrt{slash}{vrtfile}.vrt'.format(vrtfile=vrtfile, slash=slash)
-    sql_text = '@sql{slash}{sqlfile}.sql'.format(sqlfile=sqlfile, slash=slash)
+    shapefiles_text = 'shapefiles{slash}{shapefile}.shp'.format(shapefile = shapefile, slash = slash)
+    vrt_text = 'vrt{slash}{vrtfile}.vrt'.format(vrtfile = vrtfile, slash = slash)
+    sql_text = '@sql{slash}{sqlfile}.sql'.format(sqlfile = sqlfile, slash = slash)
 
-    shp_options = [cmd_text,'-f', 'ESRI Shapefile', shapefiles_text , vrt_text , '-dialect', 'sqlite','-sql', sql_text ]
+    shp_options = [cmd_text,'-f', 'ESRI Shapefile', shapefiles_text , vrt_text , \
+                   '-dialect', 'sqlite','-sql', sql_text ]
     #shp_options = [options_text]
     try:
         # record the output!        
@@ -241,11 +242,11 @@ def process_sql(shape, size):
     shp_to_db(fname,'db_place_{shape}_{size}'.format(shape=shape, size=size), fname, 4823)
     shp_to_db('gis_osm_places_free_1','db_place_{shape}_{size}'.format(shape=shape, size=size), 'gis_osm_places_free_1', 4823)
     shp_to_db('gis_osm_roads_free_1','db_place_{shape}_{size}'.format(shape=shape, size=size), 'gis_osm_roads_free_1', 4823)
-    sql_to_ogr('shape_pois_shp', 'all', 'POI')
+    sql_to_ogr('shape_pois_shp', 'all_{shape}_{size}'.format(shape=shape, size=size), 'POI')
     shp_to_db('POI','db_place_{shape}_{size}'.format(shape=shape, size=size), 'POI', 4823)
-    geojson_to_shp ('AGIL', 'agil', 4823)
+    sql_to_ogr('shape_agil_shp', 'all_{shape}_{size}'.format(shape=shape, size=size), 'agil')
     shp_to_db('agil','db_place_{shape}_{size}'.format(shape=shape, size=size), 'agil', 4823)
-    sql_to_ogr('shape_mbsp_shp', 'all', 'mbsp')
+    sql_to_ogr('shape_mbsp_shp', 'all_{shape}_{size}'.format(shape=shape, size=size), 'mbsp')
     shp_to_db('mbsp','db_place_{shape}_{size}'.format(shape=shape, size=size), 'mbsp', 4823)
 
     sqlname='tabular_place_wt_{shape}_{size}.txt'.format(shape=shape, size=size)
