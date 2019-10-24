@@ -7,6 +7,15 @@ class Defaults:
     def __init__(self):
         self.Radial = 57
         self.Shape = 'hex'
+        self.ShapefilesPath = 'shapefiles'
+        self.TabfilesPath  = 'tabfiles'
+        self.MetaDataPath = 'metadata'
+        self.GeoJSONPath = 'geojson'
+        self.CSVPath = 'csv'
+        self.ImagesPath = 'images'
+        self.SQLPath = 'sql'
+        self.SpatialitePath = 'spatialite_db'
+        self.VRTPath = 'vrt'
         
 
 class Bounding_Box:
@@ -42,17 +51,19 @@ class OSVars:
     """
 
     class posix:
-        __slots__ = ("Slash","ogr2ogr")
+        __slots__ = ("Slash","Ogr2ogr","Spatialite")
         def __init__(self):
             self.Slash = '/'
-            self.ogr2ogr = '/usr/bin/ogr2ogr'
+            self.Ogr2ogr = '/usr/bin/ogr2ogr'
+            self.Spatialite = 'spatialite'
         
 
     class nt:
-        __slots__ = ("Slash","ogr2ogr")
+        __slots__ = ("Slash","Ogr2ogr","Spatialite")
         def __init__(self):
             self.Slash = '\\'
-            self.ogr2ogr = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+            self.Ogr2ogr = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+            self.Spatialite = 'c:\\OSGeo4W64\\bin\\sqlite3.exe'
 
 class DataSets:
     
@@ -85,17 +96,24 @@ class DataSets:
                 self.ZipDir = 'tabfiles'
                 self.ZipPath ='tabfiles{slash}1270055001_aus_2016_aust_tab.zip'
                 
-        class Statistical_Areas_Level_1_2011:
-            class Shape:
-                self.Description = 'ABS Australia'
+    class Statistical_Areas_Level_1_2011:
+
+        class ShapeFormat:
+            __slots__= ('Description','Format','FilePath', 'DownURL', 'ZipDir', 'ZipPath')
+            def __init__(self):
+                self.Description = '2011 ABS Statistical Areas Level 1'
                 self.Format = 'Shape'
                 self.FilePath = 'shapefiles{slash}SA1_2011_AUST.shp'
                 self.DownURL = 'http://www.abs.gov.au/ausstats/subscriber.nsf/log?openagent&1270055001_sa1_2011_aust_shape.zip&1270.0.55.001&Data%20Cubes&24A18E7B88E716BDCA257801000D0AF1&0&July%202011&23.12.2010&Latest'
                 self.ZipDir = 'shapefiles'
                 self.ZipPath ='shapefiles{slash}1270055001_sa1_2011_aust_shape.zip'
                 
-        class Statistical_Areas_Level_1_2016:
-            class Shape:
+    class Statistical_Areas_Level_1_2016:
+
+        class ShapeFormat:
+            __slots__= ('Description','Format','FilePath', 'DownURL', 'ZipDir', 'ZipPath')
+            
+            def __init__(self):
                 self.Description = 'ABS Australia'
                 self.Format = 'Shape'
                 self.FilePath = 'shapefiles{slash}SA1_2011_AUST.shp'
@@ -103,21 +121,23 @@ class DataSets:
                 self.ZipDir = 'shapefiles'
                 self.ZipPath ='shapefiles{slash}1270055001_sa1_2011_aust_shape.zip'
                 
-        class AGIL_Dataset:
-            class csv:
+    class AGIL_Dataset:
+        
+        class CSVFormat:
+            __slots__= ('Description','Format','FilePath', 'DownURL', 'ZipDir', 'ZipPath')
+            
+            def __init__(self):
                 self.Description = 'AGIL DataSet'
                 self.Format = 'CSV'
                 self.FilePath = 'csv{slash}agil_locations20190208.csv'
                 self.DownURL = 'https://data.gov.au/dataset/34b1c164-fbe8-44a0-84fd-467dba645aa7/resource/625e0a41-6a30-4c11-9a20-ac64ba5a1d1f/download/agil_locations20190208.csv'                
                 self.ZipDir = 'csv'
                 self.ZipPath =''
-                                
-                
-                https://data.gov.au/dataset/34b1c164-fbe8-44a0-84fd-467dba645aa7/resource/625e0a41-6a30-4c11-9a20-ac64ba5a1d1f/download/agil_locations20190208.csv
                 
     class OpenStreetMaps:
         
         class ShapeFormat:
+            __slots__= ('Description','Format','FilePath', 'DownURL', 'ZipDir', 'ZipPath')
             
             def __init__(self):
                 self.Description = 'OpenStreetMaps'

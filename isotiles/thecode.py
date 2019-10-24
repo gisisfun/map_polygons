@@ -1,16 +1,300 @@
+#both
 import os
+import pandas as pd
+
+#Tiles
 from geopy.distance import geodesic
 from geojson import Polygon,Feature,FeatureCollection
 from math import pow,sqrt
-import subprocess
-import pandas as pd
+import shapely.geometry as shply
+
+#PostProcess
 import urllib.request
 from pyunpack import Archive
-import shapely.geometry as shply
+import sqlite3
+import subprocess
 
 from isotiles.parameters import Bounding_Box, OSVars, Offsets, DataSets, Defaults
 
+class PostProcess():
 
+    defaults = Defaults()
+
+    def __init__(self,radial: Defaults = defaults.Radial,
+                 shape: Defaults = defaults.Shape,
+                 images: Defaults = defaults.ImagesPath,
+                 metadata: Defaults = defaults.MetaDataPath,
+                 tabfiles: Defaults = defaults.TabfilesPath,
+                 shapefiles: Defaults = defaults.ShapefilesPath,
+                 geojson: Defaults = defaults.GeoJSONPath,
+                 vrt: Defaults = defaults.VRTPath,
+                 csv: Defaults = defaults.CSVPath,
+                 spatialite: Defaults = defaults.SpatialitePath,
+                 sql: Defaults = defaults.SQLPath):
+        posixvars = OSVars.posix()
+        ntvars = OSVars.nt()
+        os.environ['SPATIALITE_SECURITY'] = 'relaxed'
+        self.Radial = radial
+        self.Shape = shape
+        self.Charset = 'CP1252'
+
+        self.SpatialitePath = spatialite
+        self.SQLPath = sql
+        self.ImagesPath = images
+        self.MetaDataPath = metadata
+        self.TabfilesPath= tabfiles
+        self.ShapefilesPath = shapefiles
+        self.GeoJSONPath = geojson
+        self.VRTPath = vrt
+        self.CSVPath = csv 
+        self.SpatialitePath = spatialite
+        self.SQLPath = sql
+        my_os = str(os.name)
+        if (my_os is 'posix'):
+            self.Ogrogr = posixvars.Ogr2ogr # '/usr/bin/ogr2ogr'
+            self.Slash = posixvars.Slash # '/'
+            self.Extn = "SELECT load_extension('mod_spatialite.so');"
+        else:
+            self.Ogr2ogr = ntvars.Ogr2ogr # 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+            self.Slash = ntvars.Slash # '\\'
+            Gdal_vars = {'GDAL_DATA': 'C:\OSGeo4W64\share\gdal'}
+            os.environ.update(gdal_vars)
+            self.Extn = "SELECT load_extension('mod_spatialite.dll');"
+
+        
+    def file_deploy(self,RData):
+        """
+        Deploy downloaded files
+        
+        Prerequisites:
+        ref_files
+        
+        Input variables:
+        """
+        if not os.path.isfile(RData.FilePath.format(slash = self.Slash)):
+            print('Downloading {descr} file in {fmt} file format'\
+                  .format(fmt = RData.Format, descr = RData.Description))
+            if RData.DownURL is not '':
+                urllib.request.urlretrieve(RData.DownURL, RData.ZipPath.format(slash = self.Slash))
+                print('Unzipping {descr} file in {fmt} file format'\
+                      .format(descr = RData.Description, fmt = RData.Format ))
+                Archive(RData.ZipPath.format(slash = self.Slash)).extractall(RData.ZipDir\
+                                                                             .format(slash = self.Slash))
+        else:
+            print('{descr} file in {fmt} file format exists'\
+                  .format(descr = RData.Description, fmt = RData.Format))
+
+
+    def ref_files(self):
+        """
+        Get reference files
+
+        Prerequisites:
+        
+        Input variables:
+        """
+        RefData = DataSets.Australia.ShapeFormat()
+        self.file_deploy(RefData)
+
+        RefData = DataSets.Australia.TabFormat()
+        self.file_deploy(RefData)
+        
+    def vrt_shape_and_size (self,dirname, file, shape, size, newfile):
+        infile = open("{dirname}{slash}{file}".format(dirname=dirname,file=file,slash=slash), "r")
+        infiletext = infile.read()
+        infile.close()
+    
+        outfile = open("{dirname}{slash}{file}".format(dirname=dirname,file=newfile,slash=slash),"w")
+        outfiletext = infiletext.replace('57', size).replace('hex', shape).replace('*slash*', slash)
+        outfile.write(outfiletext)
+        outfile.close() 
+        return outfiletext
+
+
+    def shape_and_size (self,dirname, file, shape, size, newfile):
+        infile = open("{dirname}{slash}{file}".format(dirname = dirname,\
+                                                      file = file,\
+                                                      slash = self.Slash), "r")
+        infiletext = infile.read()
+        infile.close()
+    
+        outfile = open("{dirname}{slash}{file}".\
+                       format(dirname = dirname,\
+                              file = newfile,\
+                              slash = self.slash),"w")
+        outfiletext = infiletext.replace('57', size).replace('hex', shape).replace('/', self.Slash)
+        outfile.write(outfiletext)
+        outfile.close() 
+        return outfiletext
+
+
+    def do_spatialite (self,sqlfile, dbfile):
+        db_text = '{SplitePath}{slash}{dbfile}.sqlite'.\
+                  format(dbfile = dbfile,\
+                         slash = self.Slash,
+                         Splite = self.SpatialitePath)   
+        sql_text = "{Splite}{slash}{sqlfile}".\
+                   format(sqlfile = sqlfile,\
+                          slash=self.Slash,
+                          SplitePath = self.SpatialitePath)
+        p1 = subprocess.Popen(["cat", sql_text], stdout=subprocess.PIPE)
+        p2 = subprocess.Popen([self.Spatialite, db_text], stdin= p1.stdout)
+        p2.communicate()
+      
+        
+    def geojson_to_shp (self,geojsonfile,shapefile,srid):
+    
+        shapefiles_text = '{SFiles}{slash}{shapefile}.shp'.\
+                          format(shapefile = shapefile, \
+                                 slash = self.Slash, \
+                                 SFiles = self.ShapefilesPath)
+        geojson_text = '{gFiles}{slash}{geojsonfile}.json'.\
+                       format(geojsonfile = geojsonfile,\
+                              slash = self.Slash,\
+                              gfiles = self.GeoJSONPath)
+        epsg_text = 'EPSG:{srid}'.format(srid=srid)  
+        shp_options = [cmd_text, '-f', 'ESRI Shapefile', shapefiles_text, '-t_srs', epsg_text, geojson_text]
+        try:
+            # record the output!        
+            subprocess.check_output(shp_options)
+            print('\nquery successful')
+        except FileNotFoundError:
+            print('No files processed')
+
+        
+    def sql_to_ogr (self,sqlfile, vrtfile, shapefile):
+        print('sqlfile: {0} vrt: {1} shapefile: {2}'.format(sqlfile,vrtfile,shapefile))
+        
+        shapefiles_text = '{SFiles}{slash}{shapefile}.shp'.\
+                          format(shapefile = shapefile,\
+                                 slash = self.slash,\
+                                 SFiles = self.ShapefilesPath)
+        vrt_text = '(VPath}{slash}{vrtfile}.vrt'.\
+                   format(vrtfile = vrtfile,\
+                          slash = self.Slash,\
+                          VPath = self.VRTPath)
+        sql_text = '@{SqlPath}{slash}{sqlfile}.sql'.\
+                   format(sqlfile = sqlfile,\
+                          slash = self.Slash, \
+                          SqlPath = self.SQLPath)
+
+        shp_options = [cmd_text,'-f', 'ESRI Shapefile', shapefiles_text , vrt_text , \
+                       '-dialect', 'sqlite','-sql', sql_text ]
+        #shp_options = [options_text]
+        try:
+            # record the output!        
+            subprocess.check_output(shp_options)
+            print('\nquery successful')
+        except FileNotFoundError:
+            print('No files processed')
+
+        
+    def sql_to_db (self,sqlfile,db):
+        file  = open("{SplitePath}{slash}{file}.txt".\
+                             format(db = db,\
+                                    slash = self.Slash,
+                                    SplitePath = self.SpatialitePath\
+                                    ),"r")
+        sqltext = file.read()
+        file.close()
+        with sqlite3.connect("{SplitePath}{slash}{db}.sqlite".\
+                             format(db = db,\
+                                    slash = self.Slash,
+                                    SplitePath = self.SpatialitePath\
+                                    )) as conn:
+            conn.enable_load_extension(True)
+            c = conn.cursor()
+            c.execute(self.Extn)
+            #c.execute("SELECT InitSpatialMetaData(1)")
+            c.execute(sqltext)
+            conn.commit()
+
+        
+    def shp_to_db (self,filename, db, tblname, srid):
+        with sqlite3.connect("{SplitePath}{slash}{db}.sqlite".\
+                             format(db = db,\
+                                    slash = self.Slash,
+                                    SPlitePath = self.SpatialitePath)\
+                             ) as conn:
+            conn.enable_load_extension(True)
+            c = conn.cursor()
+            c.execute(self.Extn)
+            #c.execute("SELECT InitSpatialMetaData(1)")
+            sql_statement="""DROP TABLE IF EXISTS "{table}";""".\
+                           format(table = tblname)
+            c.execute(sql_statement)
+            ## LOADING SHAPEFILE
+            sql_statement="SELECT ImportSHP({SFiles}{slash}{filename}', '{table}', '{charset}', {srid});".\
+                           format(filename = filename,\
+                            table = tblname,\
+                            charset = self.Charset,\
+                            srid = srid,\
+                            slash = self.Slash,\
+                            SFiles = self.ShapefilesPath)
+            c.execute(sql_statement)
+            conn.commit()
+
+        
+    def csv_to_db (self,filename, db, tblname):
+        cnx = sqlite3.connect('{SplitePath}{slash}{db}.sqlite'.\
+                              format(db = db,\
+                                     slash=self.Slash,\
+                                     SplitePath = self.SpatialitePath))
+        with sqlite3.connect("{SplitePath}{slash}{db}.sqlite".\
+                             format(db = db,\
+                                    slash = self.Slash,
+                                    SplitePath = self.Spatialite_Path\
+                                    )) as conn:
+            c = conn.cursor()
+            sql_statement="""DROP TABLE IF EXISTS "{table}";""".\
+                           format(table = tblname)
+            c.execute(sql_statement)
+            df = pd.read_csv('{csvPath}{slash}{filename}.csv'.\
+                             format(filename = filename,\
+                                    slash = self.Slash,\
+                                    csvPath = self.CSVPath))
+            df.to_sql(tblname, cnx)
+
+        
+    def cmds_to_db (self,cmdfile, db):
+        db_text = '{SplitePath}{slash}{db}.sqlite'.\
+                  format(db = db,\
+                         slash = self.Slash,\
+                         SplitePath = self.SpatialitePath)
+                                                      
+        cmd_text = '{vrtPath}{slash}{cmdfile}.vrt'.\
+                   format(cmdfile = cmdfile,\
+                          slash = self.Slash,\
+                          vrtPath = self.VRTPath)
+        options = [cmd_text,  db_text ,'<', cmd_text]
+
+        try:
+            # record the output!        
+            subprocess.check_output(options)
+            print('\ncommands successful')
+        except FileNotFoundError:
+            print('No commands processed')
+ 
+
+    def sql_to_db (self,sqlfile, db):
+        file  = open("{SplitePath}{slash}{sqlfile}.txt".\
+                     format(sqlfile = sqlfile, \
+                            slash=self.Slash,
+                            SplitePath = SpatialitePath), "r")
+        sqltext = file.read()
+        file.close()
+        with sqlite3.connect("{Splite}{slash}{db}.sqlite".\
+                             format(db = db,\
+                                    slash = self.Slash,\
+                                    Splite = self.SpatialitePath)) as conn:
+            conn.enable_load_extension(True)
+            c = conn.cursor()
+            c.execute(self.Extn)
+            #c.execute("SELECT InitSpatialMetaData(1)")
+            c.execute(sqltext)
+            conn.commit()
+
+    
 class Tiles():
     """
     Modules for map_polygons
@@ -39,16 +323,16 @@ class Tiles():
         
         my_os = str(os.name)
         print(my_os)
-        ntValues = OSVars.nt()
-        posixValues = OSVars.posix()
+        ntvars = OSVars.nt()
+        posixvars = OSVars.posix()
         offValues = Offsets()
         
         if (my_os is 'posix'):
-            self.cmdText = posixValues.ogr2ogr # '/usr/bin/ogr2ogr'
-            self.Slash = posixValues.Slash # '/'
+            self.cmdText = posixvars.Ogr2ogr # '/usr/bin/ogr2ogr'
+            self.Slash = posixvars.Slash # '/'
         else:
-            self.cmdText = ntValues.ogr2ogr # 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
-            self.Slash = ntValues.Slash # '\\'
+            self.cmdText = ntvars.Ogr2ogr # 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+            self.Slash = ntvars.Slash # '\\'
             gdal_vars = {'GDAL_DATA': 'C:\OSGeo4W64\share\gdal'}
             os.environ.update(gdal_vars)
 
@@ -63,6 +347,8 @@ class Tiles():
                            offValues.Long, offValues.Long]
             self.vertSeq = [offValues.Long, offValues.Long,
                             offValues.Long, offValues.Long]     
+
+
     def params(self):
         """
         Construct feedback of user variables for user
@@ -76,6 +362,33 @@ class Tiles():
         return 'Making {0} hex shapes starting from {1},{2} to {3},{4} with a radial length of {5} km' \
                 .format(self.Shape, self.North, self.West, self.South,
                         self.East, self.Radial)
+    def metadata(self):
+        layer_dict = {'Bounds': {'Australia': {'North': self.North,'South': self.South, \
+                                           'West': self.West,'East': self.East}}}
+        layer_dict['Param'] = {}
+        layer_dict['Param']['side_km'] = radial
+        layer_dict['Param']['epsg'] = 4326
+        layer_dict['Param']['shape'] = self.Shape
+        layer_dict['Boxes'] = {}
+        layer_dict['Boxes']['long'] = 1
+        hor_seq = [layer_dict['Boxes']['long'], layer_dict['Boxes']['long'], \
+                   layer_dict['Boxes']['long'], layer_dict['Boxes']['long']]
+        vert_seq = [layer_dict['Boxes']['long'], layer_dict['Boxes']['long'], \
+                    layer_dict['Boxes']['long'], layer_dict['Boxes']['long']]
+    
+        layer_dict['Bounds']['Dataset']['North'] = tabular_df['N'].max()
+        layer_dict['Bounds']['Dataset']['South'] = tabular_df['S'].min()
+        layer_dict['Bounds']['Dataset']['East'] = tabular_df['E'].max()
+        layer_dict['Bounds']['Dataset']['West'] = tabular_df['W'].min()
+    
+        print('\n7/7 boxes json metadata to written to file: {0}_metadata.json' \
+              .format(outfile))
+        myfile = open('metadata{slash}{outfile}_metadata.json' \
+                      .format(outfile = outfile, slash = slash), 'w')  # open file for writing geojson layer
+        myfile.write(str(json.dumps(layer_dict)))
+        #write geojson layer to open file
+        myfile.close()  # close file
+        
     def f_name(self):
         """
         Construct filename string
@@ -196,9 +509,7 @@ class Tiles():
 
         print('derived {0} points of intersection'.format(len(intersect_list)))
         return intersect_list
-
-
-
+    
 
     def hex_array(self,intersect_list,max_h, max_v):
         """
@@ -345,6 +656,7 @@ class Tiles():
         print('\n5/7 boxes geojson dataset of {0} derived polygons'.format(len(g_array)))
         return g_array
 
+
     def points_and_polygons(self,GArray):
         """
         Neighbouring Polygons derivation
@@ -368,6 +680,30 @@ class Tiles():
                      str(GArray[n]['geometry']['coordinates'][0][i][1])])
         return point_list
 
+    def tabular_dataframe(self,GArray):
+        tabular_list = []
+        num_coords = len(GArray[n]['geometry']['coordinates'][0])-2
+        for i in range(0, num_coords):
+            poly = GArray[n]['properties']['p']
+            centre_lat =  GArray[n]['properties']['lat']
+            centre_lon =  GArray[n]['properties']['long']
+            bounds_n =  GArray[n]['properties']['N']
+            bounds_s =  GArray[n]['properties']['S']
+            bounds_e =  GArray[n]['properties']['E']                
+            bounds_w =  GArray[n]['properties']['W']
+            tabular_line =[poly, centre_lat, centre_lon, \
+                           bounds_n, bounds_s, bounds_e, bounds_w]
+            tabular_list.append(tabular_line)
+        
+        tabular_df = pd.DataFrame(tabular_list)
+        #convert tabular array to tabular data frame
+        tabular_df.columns = ['poly', 'lat', 'long', 'N', 'S', 'E', 'W']
+        tabular_df.to_csv('csv{slash}{outfile}_dataset.csv' \
+                          .format(outfile = outfile, slash = slash), \
+                          sep = ',')
+        return tabular_df
+
+
     def to_geojson(self,gArray):
         """
         Convert Features to FeatureCollection
@@ -383,6 +719,7 @@ class Tiles():
         print('\n5/7 geojson dataset of {0} derived hexagon polygons' \
               .format(len(gArray)))
         return FeatureCollection(gArray)
+
 
     def geojson_to_file(self,content):
         """
@@ -468,41 +805,6 @@ class Tiles():
                                        slash = self.Slash), \
                                sep = ',', index = False)
 
-    def file_deploy(self,RData):
-        """
-        Deploy downloaded files
-        
-        Prerequisites:
-        ref_files
-        
-        Input variables:
-        """
-        if not os.path.isfile(RData.FilePath.format(slash = self.Slash)):
-            print('Downloading {descr} file in {fmt} file format'\
-                  .format(fmt = RData.Format, descr = RData.Description))
-            if RData.DownURL is not '':
-                urllib.request.urlretrieve(RData.DownURL, RData.ZipPath.format(slash = self.Slash))
-                print('Unzipping {descr} file in {fmt} file format'\
-                      .format(descr = RData.Description, fmt = RData.Format ))
-                Archive(RData.ZipPath.format(slash = self.Slash)).extractall(RData.ZipDir\
-                                                                             .format(slash = self.Slash))
-        else:
-            print('{descr} file in {fmt} file format exists'\
-                  .format(descr = RData.Description, fmt = RData.Format))
-
-    def ref_files(self):
-        """
-        Get reference files
-
-        Prerequisites:
-        
-        Input variables:
-        """
-        RefData = DataSets.Australia.ShapeFormat()
-        self.file_deploy(RefData)
-
-        RefData = DataSets.Australia.TabFormat()
-        self.file_deploy(RefData)
         
         
     def points_in_polygon(self, GArray, lat_longs, QLabel):
