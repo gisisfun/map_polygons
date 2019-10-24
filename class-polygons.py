@@ -1,13 +1,14 @@
 from isotiles.thecode import Tiles
+from isotiles.thecode import PostProcess
 import random
 
 def random_points(bounds_n,bounds_s,bounds_e,bounds_w,numpoints):
     """
     Create an array of random points
-    """
-    ...
-    
-    
+    """    
+
+
+
     ns_range = bounds_n - bounds_s
     ew_range = bounds_e - bounds_w
     coord_list=[]
@@ -28,6 +29,7 @@ def random_points(bounds_n,bounds_s,bounds_e,bounds_w,numpoints):
 
 #fred = test(north = -8, south = -45, east = 168, west = 96, radial = 45, shape ='hex')
 fred = Tiles()
+post = PostProcess()
 
 print(fred.params())
 
@@ -52,5 +54,5 @@ fred.to_shp_tab()
 
 intersect_poly = fred.neighbours(hex_points)
 
-fred.ref_files()
+post.ref_files()
 
