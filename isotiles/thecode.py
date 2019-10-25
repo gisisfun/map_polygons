@@ -525,7 +525,8 @@ class Tiles():
         max_v:
         """
         ...
-        
+        self.Shape = 'hex'
+        self.FName = self.f_name()
         
         (point_list,g_array, tabular_list) = ([],[],[])
         (lat_offset,top_left, poly_row_count) = (4, 0, int(max_v / len(self.horSeq)))
@@ -605,7 +606,7 @@ class Tiles():
         return g_array
 
 
-    def box_array(self):
+    def box_array(self,intersect_list,max_h, max_v):
         """
         Create array of box shaped polygons
         
@@ -616,6 +617,8 @@ class Tiles():
         Provided
         """
         ...
+        self.Shape = 'box'
+        self.FName = self.f_name()
         
         (top_left, g_array, tabular_list) = (0, [], [])  # g_array - array of geojson formatted geometry element
         print('\n4/7 deriving boxes polygons from intersection data')
