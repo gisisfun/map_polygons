@@ -1,4 +1,6 @@
 from isotiles.thecode import PostProcess
+import sys
+import os
 
 def process_sql(theshape, theradial):
     process = PostProcess(shape = theshape, radial = theradial)
@@ -159,4 +161,14 @@ def process_sql(theshape, theradial):
                               size = process.Radial),\
                        fname)
 
-process_sql("hex",57)
+process_sql("hex",57)print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
+print('Argument List: {0}'.format(str(sys.argv)))
+if len(sys.argv) is 1:
+    (shape, size) = ['hex', '57']
+    process_sql(shape, size)
+else:
+    if (len(sys.argv) < 3 ):
+        sys.exit("arguments are \nshape \n size (km)\n ")
+    else:
+        (blah, shape, size) = sys.argv
+        process_sql(shape, size)
