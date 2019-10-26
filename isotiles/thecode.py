@@ -49,17 +49,20 @@ class PostProcess():
         self.CSVPath = csv 
         self.SpatialitePath = spatialite
         self.SQLPath = sql
+        
         my_os = str(os.name)
         if (my_os is 'posix'):
-            self.Ogrogr = posixvars.Ogr2ogr # '/usr/bin/ogr2ogr'
+            self.Ogr2ogr = posixvars.Ogr2ogr # '/usr/bin/ogr2ogr'
             self.Slash = posixvars.Slash # '/'
             self.Extn = "SELECT load_extension('mod_spatialite.so');"
+            self.Spatialite = posixvars.Spatialite
         else:
             self.Ogr2ogr = ntvars.Ogr2ogr # 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
             self.Slash = ntvars.Slash # '\\'
             Gdal_vars = {'GDAL_DATA': 'C:\OSGeo4W64\share\gdal'}
-            os.environ.update(gdal_vars)
+            os.environ.update(Gdal_vars)
             self.Extn = "SELECT load_extension('mod_spatialite.dll');"
+            self.Spatialite = ntvars.Spatialite
 
         
     def file_deploy(self,RData):
@@ -100,21 +103,31 @@ class PostProcess():
         self.file_deploy(RefData)
         
     def vrt_shape_and_size (self,dirname, file, shape, size, newfile):
-        infile = open("{dirname}{slash}{file}".format(dirname=dirname,file=file,slash=slash), "r")
+        infile = open("{dirname}{slash}{file}".\
+                      format(dirname = dirname,\
+                             file = file,\
+                             slash=self.Slash), "r")
         infiletext = infile.read()
         infile.close()
     
-        outfile = open("{dirname}{slash}{file}".format(dirname=dirname,file=newfile,slash=slash),"w")
-        outfiletext = infiletext.replace('57', size).replace('hex', shape).replace('*slash*', slash)
+        outfile = open("{dirname}{slash}{file}".\
+                       format(dirname = dirname,\
+                              file = newfile,\
+                              slash = self.Slash),"w")
+        outfiletext = infiletext.\
+                      replace('57', str(self.Radial)).\
+                      replace('hex', self.Shape).\
+                      replace('*slash*', self.Slash)
         outfile.write(outfiletext)
         outfile.close() 
         return outfiletext
 
 
     def shape_and_size (self,dirname, file, shape, size, newfile):
-        infile = open("{dirname}{slash}{file}".format(dirname = dirname,\
-                                                      file = file,\
-                                                      slash = self.Slash), "r")
+        infile = open("{dirname}{slash}{file}".\
+                      format(dirname = dirname,\
+                             file = file,\
+                             slash = self.Slash), "r")
         infiletext = infile.read()
         infile.close()
     
@@ -122,7 +135,9 @@ class PostProcess():
                        format(dirname = dirname,\
                               file = newfile,\
                               slash = self.slash),"w")
-        outfiletext = infiletext.replace('57', size).replace('hex', shape).replace('/', self.Slash)
+        outfiletext = infiletext.replace('57', self.Radial).\
+                      replace('hex', self.Shape).\
+                      replace('/', self.Slash)
         outfile.write(outfiletext)
         outfile.close() 
         return outfiletext
@@ -132,8 +147,8 @@ class PostProcess():
         db_text = '{SplitePath}{slash}{dbfile}.sqlite'.\
                   format(dbfile = dbfile,\
                          slash = self.Slash,
-                         Splite = self.SpatialitePath)   
-        sql_text = "{Splite}{slash}{sqlfile}".\
+                         SplitePath = self.SpatialitePath)   
+        sql_text = "{SplitePath}{slash}{sqlfile}".\
                    format(sqlfile = sqlfile,\
                           slash=self.Slash,
                           SplitePath = self.SpatialitePath)
@@ -167,9 +182,9 @@ class PostProcess():
         
         shapefiles_text = '{SFiles}{slash}{shapefile}.shp'.\
                           format(shapefile = shapefile,\
-                                 slash = self.slash,\
+                                 slash = self.Slash,\
                                  SFiles = self.ShapefilesPath)
-        vrt_text = '(VPath}{slash}{vrtfile}.vrt'.\
+        vrt_text = '{VPath}{slash}{vrtfile}.vrt'.\
                    format(vrtfile = vrtfile,\
                           slash = self.Slash,\
                           VPath = self.VRTPath)
@@ -178,7 +193,7 @@ class PostProcess():
                           slash = self.Slash, \
                           SqlPath = self.SQLPath)
 
-        shp_options = [cmd_text,'-f', 'ESRI Shapefile', shapefiles_text , vrt_text , \
+        shp_options = [self.Ogr2ogr,'-f', 'ESRI Shapefile', shapefiles_text , vrt_text , \
                        '-dialect', 'sqlite','-sql', sql_text ]
         #shp_options = [options_text]
         try:
@@ -214,7 +229,7 @@ class PostProcess():
         with sqlite3.connect("{SplitePath}{slash}{db}.sqlite".\
                              format(db = db,\
                                     slash = self.Slash,
-                                    SPlitePath = self.SpatialitePath)\
+                                    SplitePath = self.SpatialitePath)\
                              ) as conn:
             conn.enable_load_extension(True)
             c = conn.cursor()
@@ -224,8 +239,8 @@ class PostProcess():
                            format(table = tblname)
             c.execute(sql_statement)
             ## LOADING SHAPEFILE
-            sql_statement="SELECT ImportSHP({SFiles}{slash}{filename}', '{table}', '{charset}', {srid});".\
-                           format(filename = filename,\
+            sql_statement = """SELECT ImportSHP('{SFiles}{slash}{filename}', '{table}', '{charset}', {srid});""". \
+                            format(filename = filename,\
                             table = tblname,\
                             charset = self.Charset,\
                             srid = srid,\
@@ -243,7 +258,7 @@ class PostProcess():
         with sqlite3.connect("{SplitePath}{slash}{db}.sqlite".\
                              format(db = db,\
                                     slash = self.Slash,
-                                    SplitePath = self.Spatialite_Path\
+                                    SplitePath = self.SpatialitePath\
                                     )) as conn:
             c = conn.cursor()
             sql_statement="""DROP TABLE IF EXISTS "{table}";""".\
