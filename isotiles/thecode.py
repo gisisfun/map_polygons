@@ -134,8 +134,8 @@ class PostProcess():
         outfile = open("{dirname}{slash}{file}".\
                        format(dirname = dirname,\
                               file = newfile,\
-                              slash = self.slash),"w")
-        outfiletext = infiletext.replace('57', self.Radial).\
+                              slash = self.Slash),"w")
+        outfiletext = infiletext.replace('57', str(self.Radial)).\
                       replace('hex', self.Shape).\
                       replace('/', self.Slash)
         outfile.write(outfiletext)
