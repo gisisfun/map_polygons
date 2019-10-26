@@ -2,8 +2,8 @@ from isotiles.thecode import PostProcess
 
 def process_sql(theshape, theradial):
     process = PostProcess(shape = theshape, radial = theradial)
-#    size='57'
-#    shape='hex'
+    size='57'
+    shape='hex'
     process.vrt_shape_and_size ('vrt', 'template.vrt', process.Shape, process.Radial, 'all_{shape}_{size}.vrt'.\
                                 format(shape = process.Shape,\
                                        size = process.Radial))
@@ -141,7 +141,7 @@ def process_sql(theshape, theradial):
                     size = process.Radial)
     process.shape_and_size ('spatialite_db',\
                             'tabular_place_wt.txt',\
-                            shape, size, sqlname)
+                            process.Shape, process.Radial, sqlname)
     process.do_spatialite(sqlname,'db_place_{shape}_{size}'.\
                           format(shape = process.Shape,\
                                  size = process.Radial))
