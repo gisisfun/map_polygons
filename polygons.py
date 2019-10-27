@@ -1,468 +1,415 @@
+from isotiles.thecode import Tiles
+from isotiles.thecode import PostProcess
+import random
 import sys
-import pandas as pd
-import json
-from geopy.distance import distance,geodesic
-from geojson import Polygon,Feature,FeatureCollection
-from math import pow,sqrt
-import subprocess
-import urllib.request
-from pyunpack import Archive
-import os
 
-#1 deg longitude is about 88 km, 1 deg latitude  is about 110 km
-
-def point_radial_distance(coords, brng, radial):
-    return geodesic(kilometers=radial).destination(point=coords, bearing=brng)
-
-
-def line_intersection(line1, line2):
-    # source: https://stackoverflow.com/questions/20677795/how-do-i-compute-the-intersection-between-two-lines-in-python
-    xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
-    ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
-
-    def det(a, b):
-        return a[0] * b[1] - a[1] * b[0]
-
-    div = det(xdiff, ydiff)
-    if div == 0:
-        raise Exception('lines do not intersect')
-
-    d = (det(*line1), det(*line2))
-    (x, y) = (det(d, xdiff) / div, det(d, ydiff) / div)
-    return x, y
-
-
-def horizontal(east,north,west,south,hor_seq,radial):
-    #1/7 deriving vertical list of reference points from north to south for longitudes or x axis
-    (angle, new_north, i, longitudes) = (180, north, 0, [])
-    #print(east,new_north,south,'\n')
-    longitudes.append([[north,west],[north,east]])
-
-    while new_north >= south:
-        if i > 3:
-            i = 0
-            
-        latlong = [new_north,east]
-        p = point_radial_distance(latlong,angle,radial * hor_seq[i]) 
-        new_north = p[0]
-        longitudes.append([[p[0],west],[p[0],east]])
-        i += 1
-    return longitudes
-
-
-def vertical(east,north,west,south,vert_seq,radial):
-    print('east {0} west {1}'.format(east,west))
-    #2/7 deriving horizontal list of reference points from east to west for latitudes or y axis
-    (angle, new_west, i, latitudes) = (90, west, 0, [])
-
-    latitudes.append([[north,west],[south,west]])
-    while new_west <= east:
-        if i > 3:
-            i = 0
-
-        latlong = [north,new_west]
-        p = point_radial_distance(latlong,angle,radial*vert_seq[i])
-        new_west = p[1]
-        latitudes.append([[north,p[1]],[south,p[1]]])    
-        i += 1
-    return latitudes
-
-
-def intersections(hor_line_list, vert_line_list):
-    print('\n3/7 deriving intersection point data between horizontal and \
-    vertical lines')
-    (intersect_list, hor_max, vert_max) = ([],len(hor_line_list), len(vert_line_list))
-    for h in range(0, hor_max):
-        for v in range(0, vert_max):
-            intersect_point = line_intersection(hor_line_list[h],
-            vert_line_list[v])
-            intersect_data = [intersect_point[1], intersect_point[0]]
-            intersect_list.append(intersect_data)
-
-    print('derived {0} points of intersection'.format(len(intersect_list)))
-    return intersect_list
-
-
-def params(theShape, north, south, east, west, radial):
-    print('Making {0} hex shapes starting from {1},{2} to {3},{4} with a \
-    radial length of {5} km'.format(theShape, north, west, south, east, radial))
-
-
-def to_shp_tab(theFname):
-    my_os = str(os.name)
-    if (my_os is 'posix'):
-        cmd_text = '/usr/bin/ogr2ogr'
-        slash = '/'
-    else:
-        cmd_text = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
-        slash = '\\'
-        gdal_vars = {'GDAL_DATA': 'C:\OSGeo4W64\share\gdal'}
-        os.environ.update(gdal_vars)
-
-    shp_fname = 'shapefiles{slash}{fname}_layer.shp'.format(fname=theFname
-    .replace(' ', '_'), slash=slash)
-    tab_fname = 'tabfiles{slash}{fname}_layer.tab'.format(fname=theFname
-    .replace(' ', '_'), slash=slash)
-    json_fname = 'geojson{slash}{fname}_layer.json'.format(fname=theFname
-    .replace(' ', '_'), slash=slash)
-    tab_options = [cmd_text, '-f', 'Mapinfo file', tab_fname,
-    '-t_srs', 'EPSG:4823', json_fname]
-    shp_options = [cmd_text, '-f', 'ESRI Shapefile', shp_fname,
-    '-t_srs', 'EPSG:4823', json_fname]
-    try:
-        # record the output!
-        print('\nwriting {0} shapefile {1}_layer.shp'.format(shape, f_name))
-        subprocess.check_call(shp_options)
-        print('\nwriting {0} shapefile {1}_layer.tab'.format(shape, f_name))
-        subprocess.check_call(tab_options)
-    except FileNotFoundError:
-        print('No files processed')
-
-
-def ref_files():
-    my_os = str(os.name)
-    if (my_os is 'posix'):
-        # cmd_text = '/usr/bin/ogr2ogr'
-        slash = '/'
-    else:
-        # cmd_text = 'C:\\OSGeo\\bin\\ogr2ogr.exe'
-        slash = '\\'
-    if not os.path.isfile('shapefiles{slash}AUS_2016_AUST.shp' \
-                          .format(slash=slash)):
-        print('Downloading ABS Australia file in Shape file format')
-        url = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&5503B37F8055BFFECA2581640014462C&0&July%202016&24.07.2017&Latest'
-        urllib.request.urlretrieve(url, 'shapefiles{slash}1270055001_aus_2016_aust_shape.zip'.format(slash=slash))
-        print('Unzipping ABS Australia file in Shape file format')
-        Archive('shapefiles{slash}1270055001_aus_2016_aust_shape.zip'.format(slash=slash)).extractall('shapefiles'.format(slash=slash))
-    else:
-        print('ABS Australia file in Shape file format exists')
-
-    if not os.path.isfile('tabfiles{slash}AUS_2016_AUST.tab' \
-                          .format(slash=slash)):
-        print('Downloading ABS Australia file in Tab file format')
-        url = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_tab.zip&1270.0.55.001&Data%20Cubes&F18065BF058615F9CA2581640014491B&0&July%202016&24.07.2017&Latest'
-        urllib.request.urlretrieve(url, 'tabfiles{slash}1270055001_aus_2016_aust_tab.zip'.format(slash=slash))
-        print('Unzipping ABS Australia file in Tab file format')
-        Archive('tabfiles{slash}1270055001_aus_2016_aust_tab.zip'.format(slash=slash)).extractall('tabfiles'.format(slash=slash))
-    else:
-        print('ABS Australia file in Tab file format exists')
-
-
-def boxes(north, south, east, west, radial, outfile):
-    params('boxes', north, south, east, west, radial)
-    my_os = str(os.name)
-    if (my_os is 'posix'):
-        # cmd_text = '/usr/bin/ogr2ogr'
-        slash = '/'
-    else:
-        # cmd_text = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
-        slash = '\\'
-    #init bits
-    # poly_list = []
-    (g_array, tabular_list) = ([], [])  # g_array - array of geojson formatted geometry element
-    layer_dict = {'Bounds': {'Australia': {'North': north,'South': south, \
-                                           'West': west,'East': east}}}
-    layer_dict['Param'] = {}
-    layer_dict['Param']['side_km'] = radial
-    layer_dict['Param']['epsg'] = 4326
-    layer_dict['Param']['shape'] = 'box'
-    layer_dict['Boxes'] = {}
-    layer_dict['Boxes']['long'] = 1
-    hor_seq = [layer_dict['Boxes']['long'], layer_dict['Boxes']['long'], \
-               layer_dict['Boxes']['long'], layer_dict['Boxes']['long']]
-    vert_seq = [layer_dict['Boxes']['long'], layer_dict['Boxes']['long'], \
-               layer_dict['Boxes']['long'], layer_dict['Boxes']['long']]
-
-    h_line_list = horizontal(east,north,west,south,hor_seq,radial)
-    (num_h, max_h) = (len(h_line_list), len(h_line_list)-1)
-    v_line_list = vertical(east,north,west,south,vert_seq,radial)
-    (num_v, max_v) = (len(v_line_list), len(v_line_list)-1)
-    intersect_list = intersections(h_line_list, v_line_list)
-
-    print('\n4/7 deriving boxes polygons from intersection data')
-    (top_left, vertex) = (0, [top_left + 0, top_left + 1, top_left + max_v + 1, top_left + max_v])
-
-    while (vertex[2] < (max_h) * (max_v)):
-        poly_coords = [intersect_list[vertex[0]] , \
-                       intersect_list[vertex[1]], intersect_list[vertex[2]], \
-                       intersect_list[vertex[3]], intersect_list[vertex[0]]]
-        centre_lat = intersect_list[vertex[0]][1] + \
-                                    (intersect_list[vertex[2]][1] - intersect_list[vertex[0]][1]) / 2
-        centre_lon = intersect_list[vertex[0]][0] + \
-                                    (intersect_list[vertex[2]][0] - intersect_list[vertex[0]][0]) / 2
-        bounds_n = intersect_list[vertex[0]][1]
-        bounds_s = intersect_list[vertex[3]][1]
-        bounds_e = intersect_list[vertex[1]][0]
-        bounds_w = intersect_list[vertex[0]][0]
-        if bounds_e > bounds_w:
-            geopoly = Polygon([poly_coords])
-            geopoly = Feature(geometry=geopoly, \
-            properties={"p": top_left, "lat": centre_lat, "lon": centre_lon, \
-                        "N": bounds_n, "S": bounds_s, "E": bounds_e, "W": bounds_w})
-            g_array.append(geopoly)
-            #append geojson geometry definition attributes to list
-            #tabular dataset
-            tabular_line = [top_left, centre_lat, centre_lon, \
-                            bounds_n, bounds_s, bounds_e, bounds_w]
-            tabular_list.append(tabular_line)
-            #array of polygon and tabular columns
-
-        #increment values
-        top_left += 1
-        vertex = [top_left + 0, top_left + 1, top_left + max_v + 1, top_left + max_v]
-
-    print('\n5/7 boxes geojson dataset of {0} derived polygons'
-    .format(len(g_array)))
-    boxes_geojson = FeatureCollection(g_array)
-    # convert merged geojson features
-    #to geojson feature geohex_geojson
-    g_array = []  # release g_array - array of geojson geometry elements
-
-    print('writing boxes geojson formatted dataset to file: {0}.json' \
-          .format(outfile))
-    myfile = open('geojson{slash}{outfile}_layer.json' \
-                  .format(outfile=outfile, slash=slash), 'w')
-    #open file for writing geojson layer in geojson format
-    myfile.write(str(boxes_geojson))  # write geojson layer to open file
-    myfile.close()  # close file
-
-    print('\n6/7 tabular dataset of {0} lines of boxes polygon data' \
-          .format(len(tabular_list)))
-    print('writing tabular dataset to file: {0}_dataset.csv' \
-          .format(outfile))
-    tabular_df = pd.DataFrame(tabular_list)
-    #convert tabular array to tabular data frame
-    tabular_df.columns = ['poly', 'lat', 'long', 'N', 'S', 'E', 'W']
-    layer_dict['Bounds']['Dataset'] = {}
-    #update layer_dict with dataset bounds
-    layer_dict['Bounds']['Dataset']['North'] = tabular_df['N'].max()
-    layer_dict['Bounds']['Dataset']['South'] = tabular_df['S'].min()
-    layer_dict['Bounds']['Dataset']['East'] = tabular_df['E'].max()
-    layer_dict['Bounds']['Dataset']['West'] = tabular_df['W'].min()
-    tabular_df.to_csv('csv{slash}{outfile}_dataset.csv' \
-                      .format(outfile = outfile, slash = slash), \
-                      sep = ',')
-
-
-    print('\n7/7 boxes json metadata to written to file: {0}_metadata.json' \
-          .format(outfile))
-    myfile = open('metadata{slash}{outfile}_metadata.json' \
-                  .format(outfile = outfile, slash = slash), 'w')  # open file for writing geojson layer
-    myfile.write(str(json.dumps(layer_dict)))
-    #write geojson layer to open file
-    myfile.close()  # close file
-    to_shp_tab(outfile)
-    ref_files()
-    print('\n')
-    print('The End')  # end boxes
-
-
-def hexagons(north, south, east, west, radial, outfile):
-
-    params('hexagons', north, south, east, west, radial)
-    my_os = str(os.name)
-    if (my_os is 'posix'):
-        # cmd_text = '/usr/bin/ogr2ogr'
-        slash = '/'
-    else:
-        # cmd_text = 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
-        slash = '\\'
-    # init bits
-    (point_list,g_array, tabular_list) = ([],[],[])
-      # g_array - array of geojson formatted geometry elements
-    # tabular_list - array of all polygons and tabular columns
-    layer_dict = {'Bounds': {'Australia': {'North': north, 'South': south, \
-                                           'West': west, 'East': east}}}
-    layer_dict['Param'] = {}
-    layer_dict['Param']['side_km'] = radial
-    layer_dict['Param']['epsg'] = 4326
-    layer_dict['Param']['shape'] = 'hexagon'
-    layer_dict['Hexagon'] = {}
-    layer_dict['Hexagon']['short'] = 0.707108
-    layer_dict['Hexagon']['long'] = 1
-
-    (short, long) = (layer_dict['Hexagon']['short'], layer_dict['Hexagon']['long'])
-    (hor_seq, vert_seq) = ([short, short,short, short], [short,long,short,long])
+def random_points(bounds_n,bounds_s,bounds_e,bounds_w,numpoints):
+    """
+    Create an array of random points
+    """
     
-    h_line_list = horizontal(east, north, west, south, hor_seq, radial)   
-    v_line_list = vertical(east, north, west, south, vert_seq, radial)
-    (max_h, max_v) = (len(h_line_list), len(v_line_list))
+    ns_range = bounds_n - bounds_s
+    ew_range = bounds_e - bounds_w
+    coord_list=[]
 
-    intersect_list = intersections(h_line_list, v_line_list)
+    x_coords_list=[]
+    y_coords_list=[]
     
-    (lat_offset,top_left, poly_row_count) = (4, 0, int(max_v / len(hor_seq)))
-    rem_lat = max_v % (lat_offset + len(hor_seq))
-    layer_dict['Row_1'] = {}
-    layer_dict['Row_1']['lat_offset'] = lat_offset
-    layer_dict['Row_1']['poly_row_count'] = poly_row_count
-    layer_dict['Row_1']['remain_lat'] = rem_lat
+    for i in range(0,numpoints):
+        y_coord = bounds_s+random.randrange(0, ns_range*10000)/10000
+        x_coord = bounds_w+random.randrange(0, ew_range*10000)/10000
+        coord=[x_coord,y_coord]
+        coord_list.append(coord)
+        x_coords_list.append(x_coord)
+        y_coords_list.append(y_coord)
+        
+        #print(layer_json)
+        return coord_list 
 
-    print('first row starting from {0}, {1} hexagons, {2} \
-    latitude line(s) remaining'.format(top_left, poly_row_count, rem_lat))
 
-    (inc_by_rem, in_adj) = (True,0)
-    p_tuple = ((False, True, True, True, False, True, True, True), \
-               (0, 0, -4, 0, 0, -4, -4, -4))
+def area_wt(shape,size):
+#    size='57'
+#    shape='hex'
+    p = PostProcess(shape = theshape, radial = theradial)
+    p.shape_and_size('vrt', 'template.vrt',\
+                     p.Shape, p.Radial,\
+                     'all_{shape}_{size}.vrt'.\
+                     format(shape = p.Shape,\
+                            size =p.Radial))
+    p.do_spatialite('table_goes_here.txt',\
+                  'db_{shape}_{size}'.\
+                  format(shape = p.Shape,\
+                         size = p.Radial))
+    print('aust_shape')
+    fname = 'aust_{shape}_shape_{size}km'.\
+            format(shape = p.Shape,\
+                   size = p.Radial)
+    p.sql_to_ogr('aust_shape', 'all',fname)
+    p.shp_to_db(fname,'db_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                fname,4823)
     
-    (inc_by_rem, inc_adj) = (p_tuple[0][rem_lat],p_tuple[1][rem_lat])
+    print('feat_aust_11_area')
+    fname='feat_aust_{size}km_sa1_11'.\
+           format(shape=p.Shape,\
+                  size = p.Radial)
+    p.sql_to_ogr('feat_aust_11',\
+                 'all_{shape}_{size}'.\
+                 format(shape=p.Shape,\
+                        size = p.Radial),\
+                 fname)
+    p.shp_to_db(fname,'db_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                fname, 4823)
+    
+    print('feat_aust_16_area')
+    fname='feat_aust_{size}km_sa1_16'.\
+           format(shape = p.Shape,\
+                  size = p.Radial)
+    p,sql_to_ogr('feat_aust_16',\
+                 'all_{shape}_{size}'.\
+                 format(shape = p.Shape,\
+                        size = p.Radial),\
+                 fname)
+    p.shp_to_db(fname,'db_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                fname, 4823)
+    
+    print('tabular_area_wt')   
+    p.csv_to_db('2011Census_B18_AUST_SA1_long',\
+                'db','2011Census_B18_AUST_SA1_long')
+    p.csv_to_db('2011Census_B21_AUST_SA1_long','db',\
+                '2011Census_B21_AUST_SA1_long')
+    p.csv_to_db('2011Census_B22B_AUST_SA1_long','db',\
+                '2011Census_B22B_AUST_SA1_long')
+    p.csv_to_db('2016Census_G18_AUS_SA1','db',\
+                '2016Census_G18_AUS_SA1')
+    p.csv_to_db('2016Census_G21_AUS_SA1','db',\
+                '2016Census_G21_AUS_SA1')
+    p.csv_to_db('2016Census_G22B_AUS_SA1','db',\
+                '2016Census_G22B_AUS_SA1')
+    fname='aust_{shape}_shape_{size}km'.\
+           format(shape = p.Shape,\
+                  size = p.Radial)
+    p.shp_to_db(fname, 'db_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                fname, 4823)
+    fname='feat_aust_{size}km_sa1_11'.\
+           format(shape = p.Shape,\
+                  size = p.Radial)
+    p.shp_to_db(fname, 'db_{shape}_{size}'.\
+                format(shape=p.Shape,\
+                       size = p.Radial),\
+                fname, 4823)
+    fname='feat_aust_{size}km_sa1_16'.\
+           format(shape = p.Shape,\
+                  size = p.Radial)
+    p.shp_to_db(fname,'db_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                fname, 4823)
+    p.shp_to_db('gis_osm_places_free_1', 'db',\
+                'gis_osm_places_free_1', 4823)
+    p.shp_to_db('gis_osm_roads_free_1', 'db',\
+                'gis_osm_roads_free_1', 4823)
+    p.sql_to_ogr('shape_pois_shp', 'all', 'POI')
+    p.shp_to_db('POI','db_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                'POI', 4823)
+    p.geojson_to_shp ('AGIL', 'agil', 4823)
+    p,shp_to_db('agil', 'db_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                'agil', 4823)
+    p,sql_to_ogr('shape_mbsp_shp', 'all', 'mbsp')
+    p.shp_to_db('mbsp', 'db_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                'mbsp', 4823)
 
-    print('\n4/7 deriving hexagon polygons from intersection data')
-    (row,last_lat_row, hexagon) = (1,0,0)
+    sqlname='tabular_area_wt_{shape}_{size}.txt'.\
+             format(shape = p.Shape,\
+                    size = p.Radial)
+    p.shape_and_size ('spatialite_db',\
+                      'tabular_area_wt.txt',\
+                      p.Shape, p.Size, sqlname)
+    p.do_spatialite(sqlname, 'db_{shape}_{size}'.\
+                  format(shape = p.Shape,\
+                         size = p.Radial))
+    
+    # spatialite ../spatialite_db/db.sqlite "vacuum;"
+    
+    
+    print('shape_11_16_area')
+    fname='shape_{size}km_area_11_16'.\
+           format(shape = p.Shape,\
+                  size = p.Radial)
+    p.sql_to_ogr('shape_11_16_area',\
+                 'all_{shape}_{size}'.\
+                 format(shape = p.Shape,\
+                        size = p.Radial),\
+                 fname)
 
-    while (top_left < (max_h) * (max_v)):
-        vertex = [1 + top_left, 2 + top_left, max_v + 3 + top_left, \
-                  (max_v * 2) + 2 + top_left, (max_v * 2) + \
-                  1 + top_left, max_v + top_left]
-        try:
-            poly_coords = [intersect_list[vertex[0]], \
-                           intersect_list[vertex[1]], \
-                           intersect_list[vertex[2]], \
-                           intersect_list[vertex[3]], \
-                           intersect_list[vertex[4]], \
-                           intersect_list[vertex[5]], \
-                           intersect_list[vertex[0]]]
-            (vertex00, vertex01, vertex20, vertex21, vertex50, vertex51) = \
-                       (intersect_list[vertex[0]][0], \
-                        intersect_list[vertex[0]][1], \
-                        intersect_list[vertex[2]][0], \
-                        intersect_list[vertex[2]][1], \
-                        intersect_list[vertex[5]][0], \
-                        intersect_list[vertex[5]][1])
-            centre_lat = vertex01 + (vertex51 - vertex01) / 2
-            centre_lon = vertex00 + (vertex50 - vertex00) / 2
+def place_wt(theshape, theradial):
+    p = PostProcess(shape = theshape, radial = theradial)
 
-            if (centre_lat is not last_lat_row) or last_lat_row is 0:
-                (bounds_n,bounds_s, bounds_e, bounds_w) = \
-                                    (vertex01, vertex21, vertex20, vertex50)
-                last_lat_row = centre_lat
-                geopoly = Polygon([poly_coords])
-                hexagon += 1
-                est_area = (((3 * sqrt(3)) / 2) * pow(radial, 2)) * 0.945
-                #estimate polygon area
-                geopoly = Feature(geometry = geopoly, properties = \
-                                  {"p": hexagon,"row": row, \
-                                   "lat": centre_lat, "lon": centre_lon, \
-                                   "N": bounds_n, "S": bounds_s, \
-                                   "E": bounds_e, "W": bounds_w, \
-                                   "est_area": est_area})
-                if  (bounds_e > bounds_w):
-                    for i in range(0, 5):
-                        point_list.append( \
-                            [hexagon, str(intersect_list[vertex[i]][0]) + \
-                             str(intersect_list[vertex[i]][1])])
-                    g_array.append(geopoly)
-                    #append geojson geometry definition attributes to list
-                    #tabular dataset
-                    tabular_line = [top_left, row, centre_lat, centre_lon, \
-                                    bounds_n, bounds_s, bounds_e, bounds_w, \
-                                    est_area]
-                    tabular_list.append(tabular_line)
-                    #array of polygon and tabular columns
-            else:
-                print('')
+    p.vrt_shape_and_size ('vrt', 'template.vrt', \
+                          p.Shape, p.Radial, \
+                          'all_{shape}_{size}.vrt'.\
+                          format(shape = p.Shape,\
+                                 size = p.Radial))
+    p.do_spatialite('table_goes_here.txt', \
+                    'db_place_{shape}_{size}'.\
+                    format(shape = p.Shape,\
+                           size = p.Radial))
+    
+    print('aust_shape')
 
-        except IndexError:
-            print('')
+    fname = 'aust_{shape}_shape_{size}km'.\
+            format(shape = p.Shape,\
+                   size = p.Radial)
+    p.sql_to_ogr('aust_shape', 'all', fname)
+    
+    p.shp_to_db(fname,'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                      fname, 4823)
+    
+    print('feat_aust_11_area')
+    fname = 'feat_aust_{size}km_sa1_11'.\
+            format(shape = p.Shape,\
+                   size = p.Radial)
+    p.sql_to_ogr('feat_aust_11','all_{shape}_{size}'.\
+                 format(shape = p.Shape,\
+                        size = p.Radial),\
+                 fname)
+    p.shp_to_db(fname,'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                fname, 4823)
+    
+    print('feat_aust_16_area')
+    fname = 'feat_aust_{size}km_sa1_16'.\
+            format(shape = p.Shape,\
+                   size = p.Radial)
+    p.sql_to_ogr('feat_aust_16','all_{shape}_{size}'.\
+                 format(shape = p.Shape,\
+                        size = p.Radial),\
+                 fname)
+    p.shp_to_db(fname,'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                      fname, 4823)
+    
+    print('tabular_place_wt')   
+    p.csv_to_db('2011Census_B18_AUST_SA1_long',\
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                '2011Census_B18_AUST_SA1_long')
+    p.csv_to_db('2011Census_B21_AUST_SA1_long',\
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                '2011Census_B21_AUST_SA1_long')
+    p.csv_to_db('2011Census_B22B_AUST_SA1_long',\
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                '2011Census_B22B_AUST_SA1_long')
+    p.csv_to_db('2016Census_G18_AUS_SA1',\
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                '2016Census_G18_AUS_SA1')
+    p.csv_to_db('2016Census_G21_AUS_SA1',\
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                '2016Census_G21_AUS_SA1')
+    p.csv_to_db('2016Census_G22B_AUS_SA1',\
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                '2016Census_G22B_AUS_SA1')
+    fname = 'aust_{shape}_shape_{size}km'.\
+            format(shape = p.Shape,\
+                   size = p.Radial)
+    p.shp_to_db(fname,\
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                fname, 4823)
+    fname='feat_aust_{size}km_sa1_11'.\
+           format(shape = p.Shape,\
+                  size = p.Radial)
+    p.shp_to_db(fname,'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                size = p.Radial),\
+                fname, 4823)
+    fname='feat_aust_{size}km_sa1_16'.\
+           format(shape = p.Shape,\
+                  size = p.Radial)
+    p.shp_to_db(fname,'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                fname, 4823)
+    p.shp_to_db('gis_osm_places_free_1',\
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                'gis_osm_places_free_1', 4823)
+    p.shp_to_db('gis_osm_roads_free_1',\
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                        size = p.Radial),\
+                'gis_osm_roads_free_1', 4823)
+    p.sql_to_ogr('shape_pois_shp', 'all_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                        size = p.Radial), 'POI')
+    p.shp_to_db('POI','db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                'POI', 4823)
+    p.sql_to_ogr('shape_agil_shp',\
+                 'all_{shape}_{size}'.\
+                 format(shape = p.Shape,\
+                        size = p.Radial),\
+                'agil')
+    p.shp_to_db('agil','db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                'agil', 4823)
+    p.sql_to_ogr('shape_mbsp_shp', 'all_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                 'mbsp')
+    p.shp_to_db('mbsp','db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                'mbsp', 4823)
 
-        (last_row, last_lat_row) = (row, centre_lat)
-        row = int(1 + int(hexagon / poly_row_count))
-        top_left += lat_offset
-        if row is not last_row:
-            top_left += inc_adj
-            if inc_by_rem:
-                top_left += rem_lat
-            if row % 2 is 0:
-                top_left += 2
-            if row & 1:
-                top_left += -2
+    sqlname='tabular_place_wt_{shape}_{size}.txt'.\
+             format(shape = p.Shape,\
+                    size = p.Radial)
+    p.shape_and_size ('spatialite_db',\
+                      'tabular_place_wt.txt',\
+                      p.Shape, p.Radial, sqlname)
+    p.do_spatialite(sqlname,'db_place_{shape}_{size}'.\
+                    format(shape = p.Shape,\
+                           size = p.Radial))
+    
+    # spatialite ../spatialite_db/db.sqlite "vacuum;"
 
-    print('\n5/7 geojson dataset of {0} derived hexagon polygons' \
-          .format(len(g_array)))
-    hex_geojson = FeatureCollection(g_array)
-    # convert merged geojson features to geojson feature geohex_geojson
-    g_array = []  # release g_array - array of geojson geometry elements
+    print('shape_11_16_place')
+    fname='{shape}_{size}km_place_11_16'.\
+           format(shape = p.Shape,\
+                  size = p.Radial)
 
-    print('writing geojson formatted hexagon dataset to file: {0}.json' \
-          .format(outfile))
-    myfile = open('geojson{slash}{outfile}_layer.json' \
-                  .format(outfile=outfile, slash=slash), 'w')
-    #open file for writing geojson layer in geojson format
-    myfile.write(str(hex_geojson))  # write geojson layer to open file
-    myfile.close()  # close file
+    p.sql_to_ogr('shape_11_16_place',\
+                 'all_{shape}_{size}'.\
+                 format(shape = p.Shape,\
+                        size = p.Radial),\
+                 fname)
 
-    print('\n6/7 tabular dataset of {0} lines of hexagon polygon data' \
-          .format(len(tabular_list)))
-    print('writing tabular dataset to file: {0}_dataset.csv' \
-          .format(outfile))
-    point_df = pd.DataFrame(point_list)
-    point_df.columns = ['poly', 'latlong']
-    point_df.to_csv('csv{slash}{outfile}_points.csv'\
-                    .format(outfile=outfile, slash=slash), sep=',')
-    point_df_a = point_df  # make copy of dataframe
-    process_point_df = pd.merge(point_df, point_df_a, on='latlong')
-    # merge columns of same dataframe on concatenated latlong
-    process_point_df = process_point_df[(process_point_df['poly_x']
-    != process_point_df['poly_y'])]  # remove self references
-    output_point_df = process_point_df[['poly_x', 'poly_y']].copy().sort_values(by=['poly_x']).drop_duplicates()
-    #just leave polygon greferences and filter output
+def hexagons(theshape,b_north, b_south, b_east, b_west, theradial):
+    fred = Tiles(shape = theshape, north = b_north ,
+                 south = b_south, east = b_east,
+                 west = b_west, radial = theradial)
+    post = PostProcess()
 
-    output_point_df.to_csv('csv{slash}{outfile}_neighbours.csv'.format(outfile=outfile, slash=slash), sep=',', index = False)
-    #print(output_point_df['poly_y',0])
+    print(fred.params())
+
+    hors = fred.horizontal()
+
+    verts = fred.vertical()
+
+    intersects = fred.intersections(hors,verts)
+
+    hexagon_array = fred.hex_array(intersects,len(hors),len(verts))
+    hex_points = fred.points_and_polygons(hexagon_array)
+
+    points = random_points(-8, -45, 168, 96,10)
+
+    new_hex_array = fred.points_in_polygon(hexagon_array,points,'Test')
+
+    gj_hexagon = fred.to_geojson(new_hex_array)
+
+    fred.geojson_to_file(gj_hexagon)
+
+    fred.to_shp_tab()
+
+    intersect_poly = fred.neighbours(hex_points)
+
+    post.ref_files()
 
 
-    tabular_df = pd.DataFrame(tabular_list)
-    #convert tabular array to tabular data frame
-    tabular_df.columns = ['poly', 'row', 'lat', 'long', 'N', \
-                          'S', 'E', 'W', 'area']
-    layer_dict['Bounds']['Dataset'] = {}
-    #update layer_dict with dataset bounds
-    layer_dict['Bounds']['Dataset']['North'] = tabular_df['N'].max()
-    layer_dict['Bounds']['Dataset']['South'] = tabular_df['S'].min()
-    layer_dict['Bounds']['Dataset']['East'] = tabular_df['E'].max()
-    layer_dict['Bounds']['Dataset']['West'] = tabular_df['W'].min()
-    tabular_df.to_csv('csv{slash}{outfile}_dataset.csv'.format(outfile=outfile,slash=slash), sep=',', index = False)
+def boxes(shape,b_north,south,east,west,theradial):
+    fred = Tiles(shape = 'box',north = b_north ,
+                 south = b_south, east = b_east,
+                 west = b_west, radial = theradial)
+    post = PostProcess()
 
-    print('\n7/7 hexagons json metadata to written to file: {0}_metadata.json'.format(outfile))
-    myfile = open('metadata{slash}{outfile}_metadata.json'.\
-                  format(outfile = outfile, slash = slash), 'w')
-    #open file for writing geojson layer
-    myfile.write(str(json.dumps(layer_dict)))
-    #write geojson layer to open file
-    myfile.close()  #close file
+    print(fred.params())
 
-    to_shp_tab(outfile)
-    ref_files()
+    hors = fred.horizontal()
 
-    print('\n')
-    print('The End')  # hexagons
+    verts = fred.vertical()
+
+    intersects = fred.intersections(hors,verts)
+
+    box_array = fred.box_array(intersects,len(hors),len(verts))
+    box_points = fred.points_and_polygons(box_array)
+
+    points = random_points(-8, -45, 168, 96,10)
+
+    new_box_array = fred.points_in_polygon(box_array,points,'Test')
+
+    gj_box = fred.to_geojson(new_box_array)
+
+    fred.geojson_to_file(gj_box)
+
+    fred.to_shp_tab()
+
+    intersect_poly = fred.neighbours(box_points)
+
+    post.ref_files()
+
 
 
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
 if len(sys.argv) is 1:
 
-    (shape, b_north, b_south, b_east, b_west, radial_d, f_name) =\
-    ['hex', -8, -45, 168, 96, 57, 'hex_57km']
-    hexagons(b_north, b_south, b_east, b_west, radial_d, f_name)
+    (shape, b_north, b_south, b_east, b_west, radial_d) =\
+    ['hex', -8, -45, 168, 96, 57]
+    hexagons('hex',b_north, b_south, b_east, b_west, radial_d)
 else:
-    if (len(sys.argv) < 8 ):
-        sys.exit("arguments are \nshape - hex or box \n bounding north\n \
-        bounding south \n bounding east \n bounding west \n radial in km\n \
-        filename for output\n\nfor hexagon\n\
-        python3 polygons.py hex -8 -45 168 96 212 hex_212km\n\nfor boxes\n\
-        python3 polygons.py box -8 -45 168 96 212 box_212km\n")
+    if (len(sys.argv) < 7 ):
+        msg = """arguments are \nshape - hex or box \n bounding north\n
+bounding south \n bounding east \n bounding west \n radial in km\n \
+filename for output\n\nfor hexagon\n 
+python3 polygons_new.py hex -8 -45 168 96 212\n\nfor boxes\n\
+python3 polygons_new.py box -8 -45 168 96 212\n
+"""
+        sys.exit(msg)
     else:
-        (blah, shape, b_north, b_south, b_east, b_west, radial_d, f_name) =\
+        (blah, shape, b_north, b_south, b_east, b_west, radial_d) =\
         sys.argv
         shape=str(shape)
         print(shape)
         if shape == "hex":
-            hexagons(float(b_north), float(b_south), float(b_east),
-            float(b_west), float(radial_d), f_name)
+            
+            fred.hexagons(float(b_north), float(b_south), float(b_east), \
+                     west = float(b_west), radial = float(radial_d))
         else:
             if shape == "box":
-                boxes(float(b_north), float(b_south), float(b_east),
-                float(b_west), float(radial_d), f_name)
+                boxes(float(b_north), float(b_south), float(b_east), \
+                      float(b_west), float(radial_d))
             else:
                 print('shape is hex or box')
-
