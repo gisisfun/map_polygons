@@ -102,7 +102,7 @@ class PostProcess():
         RefData = DataSets.Australia.TabFormat()
         self.file_deploy(RefData)
         
-    def vrt_shape_and_size (self,dirname, file, shape, size, newfile):
+    def vrt_shape_and_size (self,dirname, file, newfile):
         infile = open("{dirname}{slash}{file}".\
                       format(dirname = dirname,\
                              file = file,\
@@ -123,7 +123,7 @@ class PostProcess():
         return outfiletext
 
 
-    def shape_and_size (self,dirname, file, shape, size, newfile):
+    def shape_and_size (self,dirname, file, newfile):
         infile = open("{dirname}{slash}{file}".\
                       format(dirname = dirname,\
                              file = file,\
