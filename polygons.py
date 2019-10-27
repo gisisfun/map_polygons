@@ -27,7 +27,7 @@ def random_points(bounds_n,bounds_s,bounds_e,bounds_w,numpoints):
         return coord_list 
 
 
-def area_wt(shape,size):
+def area_wt(theshape, theradial):
 #    size='57'
 #    shape='hex'
     p = PostProcess(shape = theshape, radial = theradial)
