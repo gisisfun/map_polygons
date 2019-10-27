@@ -3,7 +3,7 @@ import sys
 import os
 
 
-def area_wt(shape,size):
+def area_wt(theshape, theradial):
 #    size='57'
 #    shape='hex'
     p = PostProcess(shape = theshape, radial = theradial)
