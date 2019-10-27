@@ -27,12 +27,11 @@ def random_points(bounds_n,bounds_s,bounds_e,bounds_w,numpoints):
         return coord_list 
 
 
-def area_wt(theshape, theradial):
+def area_wt(theshape,theradial):
 #    size='57'
 #    shape='hex'
     p = PostProcess(shape = theshape, radial = theradial)
     p.shape_and_size('vrt', 'template.vrt',\
-                     p.Shape, p.Radial,\
                      'all_{shape}_{size}.vrt'.\
                      format(shape = p.Shape,\
                             size =p.Radial))
@@ -137,7 +136,7 @@ def area_wt(theshape, theradial):
                     size = p.Radial)
     p.shape_and_size ('spatialite_db',\
                       'tabular_area_wt.txt',\
-                      p.Shape, p.Size, sqlname)
+                      sqlname)
     p.do_spatialite(sqlname, 'db_{shape}_{size}'.\
                   format(shape = p.Shape,\
                          size = p.Radial))
@@ -159,7 +158,6 @@ def place_wt(theshape, theradial):
     p = PostProcess(shape = theshape, radial = theradial)
 
     p.vrt_shape_and_size ('vrt', 'template.vrt', \
-                          p.Shape, p.Radial, \
                           'all_{shape}_{size}.vrt'.\
                           format(shape = p.Shape,\
                                  size = p.Radial))

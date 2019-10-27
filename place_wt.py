@@ -3,12 +3,11 @@ import sys
 import os
 
 
-def area_wt(theshape, theradial):
+def area_wt(theshape,theradial):
 #    size='57'
 #    shape='hex'
     p = PostProcess(shape = theshape, radial = theradial)
     p.shape_and_size('vrt', 'template.vrt',\
-                     p.Shape, p.Radial,\
                      'all_{shape}_{size}.vrt'.\
                      format(shape = p.Shape,\
                             size =p.Radial))
@@ -32,7 +31,7 @@ def area_wt(theshape, theradial):
                   size = p.Radial)
     p.sql_to_ogr('feat_aust_11',\
                  'all_{shape}_{size}'.\
-                 format(shape=p.Shape,\
+                 format(shape = p.Shape,\
                         size = p.Radial),\
                  fname)
     p.shp_to_db(fname,'db_{shape}_{size}'.\
@@ -117,7 +116,7 @@ def area_wt(theshape, theradial):
                     size = p.Radial)
     p.shape_and_size ('spatialite_db',\
                       'tabular_area_wt.txt',\
-                      p.Shape, p.Size, sqlname)
+                      sqlname)
     p.do_spatialite(sqlname, 'db_{shape}_{size}'.\
                   format(shape = p.Shape,\
                          size = p.Radial))
@@ -139,7 +138,6 @@ def place_wt(theshape, theradial):
     p = PostProcess(shape = theshape, radial = theradial)
 
     p.vrt_shape_and_size ('vrt', 'template.vrt', \
-                          p.Shape, p.Radial, \
                           'all_{shape}_{size}.vrt'.\
                           format(shape = p.Shape,\
                                  size = p.Radial))
@@ -279,7 +277,7 @@ def place_wt(theshape, theradial):
                     size = p.Radial)
     p.shape_and_size ('spatialite_db',\
                       'tabular_place_wt.txt',\
-                      p.Shape, p.Radial, sqlname)
+                      sqlname)
     p.do_spatialite(sqlname,'db_place_{shape}_{size}'.\
                     format(shape = p.Shape,\
                            size = p.Radial))
