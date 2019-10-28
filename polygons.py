@@ -1,5 +1,4 @@
-from isotiles.thecode import Tiles
-from isotiles.thecode import PostProcess
+from isotiles.thecode import Tiles, PostProcess, Visual
 import random
 import sys
 
@@ -26,6 +25,9 @@ def random_points(bounds_n,bounds_s,bounds_e,bounds_w,numpoints):
         #print(layer_json)
         return coord_list 
 
+def do_map(theshape,theradial):
+    v = Visual(shape = theshape, radial = theradial)
+    v.map_data()
 
 def area_wt(theshape,theradial):
 #    size='57'
@@ -386,7 +388,8 @@ if len(sys.argv) is 1:
 
     (shape, b_north, b_south, b_east, b_west, radial_d) =\
     ['hex', -8, -45, 168, 96, 57]
-    hexagons('hex',b_north, b_south, b_east, b_west, radial_d)
+    do_map('hex',radial_d)
+    #hexagons('hex',b_north, b_south, b_east, b_west, radial_d)
 else:
     if (len(sys.argv) < 7 ):
         msg = """arguments are \nshape - hex or box \n bounding north\n
