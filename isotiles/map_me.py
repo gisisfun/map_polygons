@@ -10,16 +10,20 @@ class Visual:
    
    defaults = Defaults()
    
-   def __init__(self,images: ):
-      self.imagesPath = default
+   def __init__(self,self,radial: Defaults = defaults.Radial,
+                 shape: Defaults = defaults.Shape,
+                 images: Defaults = defaults.ImagesPath,
+                 tabfiles: Defaults = defaults.TabfilesPath,
+                 shapefiles: Defaults = defaults.ShapefilesPath ):
+      self.imagesPath = images
               my_os = str(os.name)
-        if (my_os is 'posix'):
-            self.Ogr2ogr = posixvars.Ogr2ogr # '/usr/bin/ogr2ogr'
-            self.Slash = posixvars.Slash # '/'
-            self.Extn = "SELECT load_extension('mod_spatialite.so');"
-            self.Spatialite = posixvars.Spatialite
-        else:
-            self.Ogr2ogr = ntvars.Ogr2ogr # 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+      if (my_os is 'posix'):
+         self.Ogr2ogr = posixvars.Ogr2ogr # '/usr/bin/ogr2ogr'
+         self.Slash = posixvars.Slash # '/'
+         self.Extn = "SELECT load_extension('mod_spatialite.so');"
+         self.Spatialite = posixvars.Spatialite 
+     else
+   self.Ogr2ogr = ntvars.Ogr2ogr # 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
             self.Slash = ntvars.Slash # '\\'
             Gdal_vars = {'GDAL_DATA': 'C:\OSGeo4W64\share\gdal'}
             os.environ.update(Gdal_vars)
