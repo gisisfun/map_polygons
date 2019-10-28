@@ -1,7 +1,7 @@
 import geopandas as gpd
 import numpy as np
 import matplotlib as mpl
-mpl.use('Agg')
+
 import matplotlib.pyplot as plt
 import sys
 
@@ -17,8 +17,10 @@ def map_data(shape,size):
    sf.plot(column='rel_need_for_assistance', scheme = 'quantiles', k=5, linewidth=0,cmap='Reds',legend=True).set_title("2016 to 2011 Relative Change in Need For Assistance (Quantiles)") ;
    plt.annotate('Source: ABS Census of Population and Housing, 2016 and 2011',xy=(0.1, .08),  xycoords='figure fraction', horizontalalignment='left', verticalalignment='top', fontsize=12, color='#555555')
    plt.axis('off')
+   plt.show()
+   mpl.use('Agg')
    plt.savefig('images/rel_need_for_assistance.png',bbox_inches='tight')
-   #plt.show()  
+   #  
 
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
