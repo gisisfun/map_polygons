@@ -20,7 +20,6 @@ import geopandas as gpd
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import sys
 
 from isotiles.parameters import Bounding_Box, OSVars, Offsets, DataSets, Defaults
 
