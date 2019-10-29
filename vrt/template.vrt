@@ -90,8 +90,8 @@
         <SrcLayer>donor_feat_place_57km_16_G18_G21_G22</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shape11_16">
-        <SrcDataSource>shapefiles/shape_75km_11_16.shp</SrcDataSource>
-        <SrcLayer>shape_75km_11_16</SrcLayer>
+        <SrcDataSource>shapefiles/shape_57km_11_16.shp</SrcDataSource>
+        <SrcLayer>shape_57km_11_16</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>  
