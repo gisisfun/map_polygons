@@ -74,7 +74,6 @@ DROP TABLE if exists "shape_57km_service_count";
 DROP VIEW if exists "shape_57km_service_count";
 
 CREATE TABLE "shape_57km_service_count" AS
-CREATE TABLE "shape_57km_service_count" AS
 SELECT Shape_Aust.p as Poly,
 Count(*) as services
 FROM [aust_hex_shape_57km] as Shape_Aust, POI
@@ -89,7 +88,6 @@ GROUP BY Poly;
 DROP TABLE if exists "shape_57km_bstation_count";
 DROP VIEW if exists "shape_57km_bstation_count";
 
-CREATE TABLE  "shape_57km_bstation_count" AS
 CREATE TABLE  "shape_57km_bstation_count" AS
 SELECT Shape_Aust.p as Poly,
 Count(*) as bstations
@@ -113,9 +111,9 @@ GROUP BY Poly;
 .mode csv
 .headers on
 
-DROP TABLE if not exists "tabular_11_16_area";
+DROP TABLE if exists "tabular_11_16_area";
 
-CREATE TABLE if not exists tabular_11_16_area AS
+CREATE TABLE tabular_11_16_area AS
 SELECT CAST(Shape_Area11.Poly as INT) as Poly,
 CAST(Shape_Area11.NeedA11 as FLOAT) as NeedA11,
 CAST(Shape_Area11.NeedAT11 as FLOAT) as NeedAT11,
@@ -158,5 +156,4 @@ ON Shape_Aust.p = CAST(AGIL.Poly as INT);
 select * from tabular_57km_11_16_area;
 
 .quit
-
 
