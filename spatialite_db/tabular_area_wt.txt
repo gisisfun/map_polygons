@@ -111,9 +111,9 @@ GROUP BY Poly;
 .mode csv
 .headers on
 
-DROP TABLE if exists "tabular_11_16_area";
+DROP TABLE if exists "tabular_57km_11_16_area";
 
-CREATE TABLE tabular_11_16_area AS
+CREATE TABLE tabular_57km_11_16_area AS
 SELECT CAST(Shape_Area11.Poly as INT) as Poly,
 CAST(Shape_Area11.NeedA11 as FLOAT) as NeedA11,
 CAST(Shape_Area11.NeedAT11 as FLOAT) as NeedAT11,
