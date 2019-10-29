@@ -111,9 +111,9 @@ GROUP BY Poly;
 .mode csv
 .headers on
 
-DROP TABLE if exists "tabular_57km_11_16_area";
+DROP TABLE if exists "tabular_hex_57km_11_16_area";
 
-CREATE TABLE tabular_57km_11_16_area AS
+CREATE TABLE tabular_hex_57km_11_16_area AS
 SELECT CAST(Shape_Area11.Poly as INT) as Poly,
 CAST(Shape_Area11.NeedA11 as FLOAT) as NeedA11,
 CAST(Shape_Area11.NeedAT11 as FLOAT) as NeedAT11,
@@ -152,8 +152,8 @@ ON Shape_Aust.p = CAST(place.Poly as INT)
 LEFT JOIN [shape_57km_agil_count] as AGIL
 ON Shape_Aust.p = CAST(AGIL.Poly as INT);
 
-.output csv/tabular_57km_11_16_area.csv
-select * from tabular_57km_11_16_area;
+.output csv/tabular_hex_57km_11_16_area.csv
+select * from tabular_hex_57km_11_16_area;
 
 .quit
 
