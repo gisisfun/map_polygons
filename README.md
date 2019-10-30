@@ -134,9 +134,9 @@ For a population weighted correspondence file to a smaller polgons dataset, larg
 
 In this example the number of points of interest (POI) within and between interecting areas is used a proxy for a population weight.
 
-**place_wt.py or area_wt.py**
+**poly_wt.py**
 
-This program populate the shapes with demographic and POI based dataset content.
+This program populate the shapes with demographic and POI based dataset content dor the **aera** weighted analysis and include some of of this data to **place** weight values in larger overlalapping regions.
 
 **map_me.py**
 
