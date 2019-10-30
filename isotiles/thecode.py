@@ -75,7 +75,7 @@ class Visual:
                            imagePath = self.imagesPath,\
                            weight = self.Weight),\
                     bbox_inches='tight')
-        plt.show() #    
+        #plt.show() #    
 
 
 
