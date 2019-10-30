@@ -2,7 +2,9 @@ class Defaults:
     """
     """
     ...
-    
+    __slots__ = ("Radial","Shape","ShapefilesPath","TabfilesPath", "MetaDataPath", \
+                 "GeoJSONPath","CSVPath","ImagesPath","SQLPath","SpatialitePath", \
+                 "VRTPath","Weight")
     
     def __init__(self):
         self.Radial = 57
@@ -16,6 +18,7 @@ class Defaults:
         self.SQLPath = 'sql'
         self.SpatialitePath = 'spatialite_db'
         self.VRTPath = 'vrt'
+        self.Weight = "place"
         
 
 class Bounding_Box:
