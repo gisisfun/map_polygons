@@ -369,13 +369,17 @@ Larger volumes of data and newer SPARQL/GeoSPARQL and Discrete Global Grid Syste
 - http://redblobgames.com/grids/hexagons
 - https://geoawesomeness.com/discrete-global-grid-system-dggs-new-reference-system/
 
-## TO DO
+
 
 To finish things off it would be nice to be able to run multiple instances of the same code to process all of the different data sources and visualisation requirements. Containerisation allows for all of this to happen.
-
+## Done
 **Class and method conversion of Python code.**
-see **class-polygons.py** and **isotiles** for work on 'pythonisation' (classes) of polygons,py code to allow for Docker and API use cases.
+see **polygons.py**, **poly_wt.py**, **map_me.py** and **isotiles** directory for work on 'pythonisation' (classes) of polygons,py code to allow for Docker and API use cases. Fixed some buggy SQL code for area weighted calculations.
 
+## To Do
+
+**PostGIS** 
+PostgreSQL/Postgis does some really good things with spatial data and ogr2ogr handles the Nerd (DDL) content issues.
 
 **Docker/Containerisation**
 
