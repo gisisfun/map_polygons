@@ -2,7 +2,9 @@
 
 *A good visualisation is worth the wait(weight).*
 
-![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/rel_need_for_assistance.png)
+![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/rel_need_for_assistance_by_place_weight.png)
+
+![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/rel_need_for_assistance_by_area_weight.png)
 
 ## See for yourself ##
 
