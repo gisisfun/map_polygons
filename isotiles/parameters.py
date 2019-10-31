@@ -148,5 +148,5 @@ class DataSets:
                 self.FilePath = 'shapefiles{slash}gis_osm_places_free_1.shp'
                 self.DownURL = 'https://download.geofabrik.de/australia-oceania/australia-latest-free.shp.zip'
                 self.ZipDir = 'shapefiles'
-                self.ZiPath = 'shapefiles{slash}australia-latest-free.shp.zip'
+                self.ZipPath = 'shapefiles{slash}australia-latest-free.shp.zip'
         

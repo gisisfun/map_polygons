@@ -164,6 +164,20 @@ class PostProcess():
 
         RefData = DataSets.Australia.TabFormat()
         self.file_deploy(RefData)
+
+        RefData = DataSets.Statistical_Areas_Level_1_2011.ShapeFormat()
+        self.file_deploy(RefData)
+
+        RefData = DataSets.Statistical_Areas_Level_1_2016.ShapeFormat()
+        self.file_deploy(RefData)
+
+        RefData = DataSets.AGIL_Dataset.CSVFormat()
+        self.file_deploy(RefData)
+
+        RefData = DataSets.OpenStreetMaps.ShapeFormat()
+        self.file_deploy(RefData)
+
+
         
     def vrt_shape_and_size (self,dirname, file, newfile):
         infile = open("{dirname}{slash}{file}".\
