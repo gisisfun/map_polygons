@@ -142,6 +142,7 @@ def place_wt(theshape, theradial):
                      size = p.Radial)
     
     p.vrt_shape_and_size ('vrt', 'template.vrt',vrt_file)
+
     p.do_spatialite('table_goes_here.txt', db_name)
     
     print('aust_shape')
@@ -217,67 +218,66 @@ def place_wt(theshape, theradial):
     p.sql_to_ogr('shape_11_16_place', vrt_ref, fname)
 
 def hexagons(theshape,b_north, b_south, b_east, b_west, theradial):
-    fred = Tiles(shape = theshape, north = b_north ,
+    h = Tiles(shape = theshape, north = b_north ,
                  south = b_south, east = b_east,
                  west = b_west, radial = theradial)
-    post = PostProcess()
+    p = PostProcess()
 
-    print(fred.params())
+    print(h.params())
 
-    hors = fred.horizontal()
+    hors = h.horizontal()
 
-    verts = fred.vertical()
+    verts = h.vertical()
 
-    intersects = fred.intersections(hors,verts)
+    intersects = h.intersections(hors,verts)
 
-    hexagon_array = fred.hex_array(intersects,len(hors),len(verts))
-    hex_points = fred.points_and_polygons(hexagon_array)
+    hexagon_array = h.hex_array(intersects,len(hors),len(verts))
+    hex_points = h.points_and_polygons(hexagon_array)
 
     points = random_points(-8, -45, 168, 96,10)
 
-    new_hex_array = fred.points_in_polygon(hexagon_array,points,'Test')
+    new_hex_array = h.points_in_polygon(hexagon_array,points,'Test')
 
-    gj_hexagon = fred.to_geojson(new_hex_array)
+    gj_hexagon = h.to_geojson(new_hex_array)
 
-    fred.geojson_to_file(gj_hexagon)
+    h.geojson_to_file(gj_hexagon)
 
-    fred.to_shp_tab()
+    h.to_shp_tab()
 
-    intersect_poly = fred.neighbours(hex_points)
+    intersect_poly = h.neighbours(hex_points)
 
-    post.ref_files()
-
+    p.ref_files()
 
 def boxes(shape,b_north,south,east,west,theradial):
-    fred = Tiles(shape = 'box',north = b_north ,
+    b = Tiles(shape = 'box',north = b_north ,
                  south = b_south, east = b_east,
                  west = b_west, radial = theradial)
-    post = PostProcess()
+    p = PostProcess()
 
-    print(fred.params())
+    print(b.params())
 
-    hors = fred.horizontal()
+    hors = b.horizontal()
 
-    verts = fred.vertical()
+    verts = b.vertical()
 
-    intersects = fred.intersections(hors,verts)
+    intersects = b.intersections(hors,verts)
 
-    box_array = fred.box_array(intersects,len(hors),len(verts))
-    box_points = fred.points_and_polygons(box_array)
+    box_array = b.box_array(intersects,len(hors),len(verts))
+    box_points = b.points_and_polygons(box_array)
 
     points = random_points(-8, -45, 168, 96,10)
 
-    new_box_array = fred.points_in_polygon(box_array,points,'Test')
+    new_box_array = b.points_in_polygon(box_array,points,'Test')
 
-    gj_box = fred.to_geojson(new_box_array)
+    gj_box = b.to_geojson(new_box_array)
 
-    fred.geojson_to_file(gj_box)
+    b.geojson_to_file(gj_box)
 
-    fred.to_shp_tab()
+    b.to_shp_tab()
 
-    intersect_poly = fred.neighbours(box_points)
+    intersect_poly = b.neighbours(box_points)
 
-    post.ref_files()
+    p.ref_files()
 
 
 
@@ -287,8 +287,8 @@ if len(sys.argv) is 1:
 
     (shape, b_north, b_south, b_east, b_west, radial_d) =\
     ['hex', -8, -45, 168, 96, 57]
-    do_map('hex',radial_d)
-    #hexagons('hex',b_north, b_south, b_east, b_west, radial_d)
+    #do_map('hex',radial_d)
+    hexagons('hex',b_north, b_south, b_east, b_west, radial_d)
 else:
     if (len(sys.argv) < 7 ):
         msg = """arguments are \nshape - hex or box \n bounding north\n
@@ -305,7 +305,7 @@ python3 polygons_new.py box -8 -45 168 96 212\n
         print(shape)
         if shape == "hex":
             
-            fred.hexagons(float(b_north), float(b_south), float(b_east), \
+            b.hexagons(float(b_north), float(b_south), float(b_east), \
                      west = float(b_west), radial = float(radial_d))
         else:
             if shape == "box":
