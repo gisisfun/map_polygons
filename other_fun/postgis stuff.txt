@@ -1,0 +1,20 @@
+sudo -u postgres psql
+ALTER USER postgres PASSWORD 'newpassword';
+quit
+
+#igismap.com/import-shapefile-postgresql/
+#https://postgis.net/install/
+
+sudo -u postgres -h localhost createdb test
+
+sudo -u postgres -h localhost psql test
+CREATE EXTENSION postgis;
+\q
+
+
+sudo -u postgres ogr2ogr -append -f "PostgreSQL" PG:"host=localhost user=postgres dbname=test password=newpassword" Downloads/map_polygons-master/shapefiles/shape_57km_area_11_16.shp  -nln area
+
+
+
+SELECT * FROM pg_catalog.pg_tables
+WHERE schemaname != 'pg_catalog'AND schemaname != 'information_schema';
