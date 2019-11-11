@@ -7,6 +7,7 @@ from geopy.distance import geodesic
 from geojson import Polygon,Feature,FeatureCollection
 from math import pow,sqrt
 import shapely.geometry as shply
+import matplotlib.path as mpltPath
 
 #PostProcess
 import urllib.request
@@ -289,17 +290,26 @@ class PostProcess():
                                     ),"r")
         sqltext = file.read()
         file.close()
-        with sqlite3.connect("{SplitePath}{slash}{db}.sqlite".\
-                             format(db = db,\
-                                    slash = self.Slash,
-                                    SplitePath = self.SpatialitePath\
-                                    )) as conn:
-            conn.enable_load_extension(True)
-            c = conn.cursor()
-            c.execute(self.Extn)
-            #c.execute("SELECT InitSpatialMetaData(1)")
-            c.execute(sqltext)
-            conn.commit()
+        
+        thesql  = str(sqltext)
+            
+        subprocess.check_output(
+                ["sqlite3",
+                 "{Splite}{slash}{db}.sqlite".\
+                 format(db = db,\
+                        slash = self.Slash,\
+                        Splite = self.SpatialitePath)], input=bytes(thesql.encode("utf-8")))
+#        with sqlite3.connect("{SplitePath}{slash}{db}.sqlite".\
+#                             format(db = db,\
+#                                    slash = self.Slash,
+#                                    SplitePath = self.SpatialitePath\
+#                                    )) as conn:
+#            conn.enable_load_extension(True)
+#            c = conn.cursor()
+#            c.execute(self.Extn)
+#            #c.execute("SELECT InitSpatialMetaData(1)")
+#            c.execute(sqltext)
+#            conn.commit()
 
         
     def shp_to_db (self,filename, db, tblname, srid):
@@ -900,7 +910,7 @@ class Tiles():
                                        slash = self.Slash), \
                                sep = ',', index = False)
 
-        
+ 
         
     def points_in_polygon(self, GArray, lat_longs, QLabel):
         """
@@ -935,6 +945,8 @@ class Tiles():
                 i = 0
                 for index, row in bound_points_df.iterrows():
                     #p1 = shply.Point(query_points_list[i][0],query_points_list[i][1])
+                    #path = mpltPath.Path(polygon)
+                    #inside2 = path.contains_points(points)
                     p1 = shply.Point(row['longitude'], row['latitude'])
         
                     if poly.contains(p1) is True:
