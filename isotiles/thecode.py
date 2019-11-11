@@ -977,11 +977,11 @@ class Tiles():
                 poly = shply.Polygon(poly_coords)
                 i = 0
                 for index, row in bound_points_df.iterrows():
-                    #p1 = shply.Point(query_points_list[i][0],query_points_list[i][1])
+                    p1 = shply.Point(query_points_list[i][0],query_points_list[i][1])
                     #path = mpltPath.Path(polygon)
-                    #inside2 = path.contains_points(points)
+                    #inside2 = path.contains_points(p1)
                     p1 = shply.Point(row['longitude'], row['latitude'])
-        
+                    #if path.contains_points(p1):
                     if poly.contains(p1) is True:
                         p_count += 1 
                     i += 1
