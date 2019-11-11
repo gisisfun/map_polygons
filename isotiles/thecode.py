@@ -14,6 +14,7 @@ import urllib.request
 from pyunpack import Archive
 import sqlite3
 import subprocess
+import shapefile
 
 
 #Visual
@@ -808,6 +809,38 @@ class Tiles():
                           sep = ',')
         return tabular_df
 
+    def to_shp_f(self,GArray,fName):
+        #tabular_list = []
+        w = shapefile.Writer('{sfPath}{slash}{f_name}'.format(f_name = fNAme, slash = slash, sfPath = self.shapefilesPath)
+        w.field('p', 'N')
+        w.field('lat', 'N', decimal = 10)
+        w.field('long', 'N', decimal = 10)
+        w.field('N', 'N', decimal = 10)
+        w.field('S', 'F', decimal = 10)
+        w.field('E', 'N', decimal = 10)
+        w.field('W', 'N', decimal = 10)
+        
+        num_coords = len(GArray[n]['geometry']['coordinates'][0])-2
+        for i in range(0, num_coords):
+            poly = GArray[n]['properties']['p']
+            centre_lat =  GArray[n]['properties']['lat']
+            centre_lon =  GArray[n]['properties']['long']
+            bounds_n =  GArray[n]['properties']['N']
+            bounds_s =  GArray[n]['properties']['S']
+            bounds_e =  GArray[n]['properties']['E']                
+            bounds_w =  GArray[n]['properties']['W']
+            w.record(INT=nr, LOWPREC=nr, MEDPREC=nr, HIGHPREC=-3.2302e-25, FTYPE=nr, LARGENR=int(nr)*10**100)
+            #tabular_line =[poly, centre_lat, centre_lon, \
+            #               bounds_n, bounds_s, bounds_e, bounds_w]
+            #tabular_list.append(tabular_line)
+        w.close()    
+        #tabular_df = pd.DataFrame(tabular_list)
+        #convert tabular array to tabular data frame
+        #tabular_df.columns = ['poly', 'lat', 'long', 'N', 'S', 'E', 'W']
+        #tabular_df.to_csv('csv{slash}{outfile}_dataset.csv' \
+        #                  .format(outfile = outfile, slash = slash), \
+        #                  sep = ',')
+        #return tabular_df
 
     def to_geojson(self,gArray):
         """
