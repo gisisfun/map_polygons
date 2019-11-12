@@ -1,9 +1,9 @@
 import sys
-from isotiles.thecode import Visual
+from isotiles.visual import Visual
 
 def do_map(theshape,theradial,theweight):
     v = Visual(shape = theshape, radial = theradial, weight= theweight)
-    v.map_data()
+    v.map_data('hex',radial_d)
    
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
