@@ -15,13 +15,18 @@ Open one or both of these files in your preferred GIS tool of choice and have a 
 
 - **CPython 3.7** for list creation/management and construction of geometric shapes.
 - **pandas** for csv file outputs.
-- **geopandas**, **numpy** and **matplotlib** for making really good maps.
-- **pyunpack** for downloading and unzipping content from the ABS website.
+*Map Polygons* - polgons.py
 - **geopy** for projection based point calculations for list.
 - **geojson** for encoding of the geometric shapes.
+- **matplotlib** find points inside polygons.
+- **pyshp** for encoding ersri shapefiles.
+*Post Processing* - poly_wt.py
+- **pyunpack** for downloading and unzipping content from the ABS website.
 - **GDAL/ogr2ogr** for shapefile conversion, simple geometry SQL queries.
 - **PROJ** for reprojection.
 - **sqlite3** for accessing for **spatialite** content and processing large tables of tabular content.
+*Visulaisation* - map_me.py
+- **geopandas**, **numpy** and **matplotlib** for making really good maps.
 - **QGIS** or your favourite GIS Package.
 - **You** can contribute or make something better
 - Have a look in the shapefiles directory for the processed shape files for area weighted and place point of interest weighted files.
