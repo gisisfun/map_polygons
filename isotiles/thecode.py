@@ -991,13 +991,18 @@ class Tiles():
                         [GArray[n]['geometry']['coordinates'][0][i][0], \
                          GArray[n]['geometry']['coordinates'][0][i][1]])
                 poly = shply.Polygon(poly_coords)
+                path = mpltPath.Path(poly_coords)
+                #print(n, len(bound_points_df))
+
                 i = 0
                 for index, row in bound_points_df.iterrows():
                     #p1 = shply.Point(query_points_list[i][0],query_points_list[i][1])
                     p1 = shply.Point(row['longitude'], row['latitude'])
-        
-                    if poly.contains(p1) is True:
-                        p_count += 1 
+                    inside2 = path.contains_point([row['longitude'],row['latitude']])
+                    #if poly.contains(p1) is True:
+                    #print(inside2)
+                    if inside2 is True:
+                           p_count += 1 
                     i += 1
             
                 
