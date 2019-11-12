@@ -982,7 +982,7 @@ class Tiles():
                                            (lat_longs_df['longitude'] >=\
                                             GArray[n]['properties']['W'])]
 
-            (p_count, total_rows) = (0, len(bound_points_df))
+            (pcount, total_rows) = (0, len(bound_points_df)) 
             if (total_rows >= 1):
                 (p_count, poly_coords) = (0, [])
                 num_coords = len(GArray[n]['geometry']['coordinates'][0])-2
@@ -991,16 +991,14 @@ class Tiles():
                         [GArray[n]['geometry']['coordinates'][0][i][0], \
                          GArray[n]['geometry']['coordinates'][0][i][1]])
                 poly = shply.Polygon(poly_coords)
-                #i = 0
+                i = 0
                 for index, row in bound_points_df.iterrows():
                     #p1 = shply.Point(query_points_list[i][0],query_points_list[i][1])
-                    #path = mpltPath.Path(polygon)
-                    #inside2 = path.contains_points(p1)
                     p1 = shply.Point(row['longitude'], row['latitude'])
-                    #if path.contains_points(p1):
+        
                     if poly.contains(p1) is True:
                         p_count += 1 
-                    #i += 1
+                    i += 1
             
                 
             GArray[n]['properties'][QLabel] = float(p_count)
