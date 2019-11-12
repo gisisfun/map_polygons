@@ -19,6 +19,7 @@ def area_wt(theshape,theradial):
     
     p.vrt_shape_and_size ('vrt', 'template.vrt', vrt_file)
     p.do_spatialite('table_goes_here.txt', db_name)
+    p.ref_files()
     
     print('aust_shape')
     
@@ -115,6 +116,7 @@ def place_wt(theshape, theradial):
     
     p.vrt_shape_and_size ('vrt', 'template.vrt',vrt_file)
     p.do_spatialite('table_goes_here.txt', db_name)
+    p.ref_files()   
     
     print('aust_shape')
 
@@ -141,7 +143,7 @@ def place_wt(theshape, theradial):
     p.csv_to_db('2011Census_B18_AUST_SA1_long',\
                 db_name,'2011Census_B18_AUST_SA1_long')
     p.csv_to_db('2011Census_B21_AUST_SA1_long',\
-                db_name,'2011Census_B21_AUST_SA1_long')
+             db_name,'2011Census_B21_AUST_SA1_long')
     p.csv_to_db('2011Census_B22B_AUST_SA1_long',\
                 db_name,'2011Census_B22B_AUST_SA1_long')
     p.csv_to_db('2016Census_G18_AUS_SA1',\
