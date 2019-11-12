@@ -1,4 +1,4 @@
-from isotiles.thecode import PostProcess
+from isotiles.postprocess import PostProcess
 import sys
 
 def area_wt(theshape,theradial):
