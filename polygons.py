@@ -1,4 +1,6 @@
-from isotiles.thecode import Tiles, PostProcess, Visual
+from isotiles.tiles import Tiles
+from isotiles.postprocess import PostProcess
+from isotiles.visual import Visual
 import random
 import sys
 
@@ -33,180 +35,276 @@ def area_wt(theshape,theradial):
 #    size='57'
 #    shape='hex'
     p = PostProcess(shape = theshape, radial = theradial)
-    
-    vrt_file = 'all_{shape}_{size}.vrt'.\
-              format(shape = p.Shape,\
-                     size = p.Radial)
-    vrt_ref = 'all_{shape}_{size}'.\
-              format(shape = p.Shape,\
-                     size = p.Radial)
-    
-    db_name = 'db_area_{shape}_{size}.vrt'.\
-              format(shape = p.Shape,\
-                     size = p.Radial)
-    
-    p.vrt_shape_and_size ('vrt', 'template.vrt', vrt_file)
-    p.do_spatialite('table_goes_here.txt', db_name)
-    
+    p.shape_and_size('vrt', 'template.vrt',\
+                     'all_{shape}_{size}.vrt'.\
+                     format(shape = p.Shape,\
+                            size =p.Radial))
+    p.do_spatialite('table_goes_here.txt',\
+                  'db_{shape}_{size}'.\
+                  format(shape = p.Shape,\
+                         size = p.Radial))
     print('aust_shape')
-    
     fname = 'aust_{shape}_shape_{size}km'.\
             format(shape = p.Shape,\
                    size = p.Radial)
-    p.sql_to_ogr('aust_shape', vrt_ref, fname)
-    p.shp_to_db(fname,db_name,fname,4823)
+    p.sql_to_ogr('aust_shape', 'all',fname)
+    p.shp_to_db(fname,'db_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                fname,4823)
     
     print('feat_aust_11_area')
     fname='feat_aust_{size}km_sa1_11'.\
-           format(size = p.Radial)
-    p.sql_to_ogr('feat_aust_11', vrt_ref, fname)
-    p.shp_to_db(fname, db_name, fname, 4823)
+           format(shape=p.Shape,\
+                  size = p.Radial)
+    p.sql_to_ogr('feat_aust_11',\
+                 'all_{shape}_{size}'.\
+                 format(shape=p.Shape,\
+                        size = p.Radial),\
+                 fname)
+    p.shp_to_db(fname,'db_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                fname, 4823)
     
     print('feat_aust_16_area')
     fname='feat_aust_{size}km_sa1_16'.\
-           format(size = p.Radial)
-    
-    p.sql_to_ogr('feat_aust_16', vrt_ref, fname)
-    
-    p.shp_to_db(fname, db_name, fname, 4823)
+           format(shape = p.Shape,\
+                  size = p.Radial)
+    p,sql_to_ogr('feat_aust_16',\
+                 'all_{shape}_{size}'.\
+                 format(shape = p.Shape,\
+                        size = p.Radial),\
+                 fname)
+    p.shp_to_db(fname,'db_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                fname, 4823)
     
     print('tabular_area_wt')   
-    p.csv_to_db('2011Census_B18_AUST_SA1_long',db_name,\
-                '2011Census_B18_AUST_SA1_long')
-    p.csv_to_db('2011Census_B21_AUST_SA1_long',db_name,\
+    p.csv_to_db('2011Census_B18_AUST_SA1_long',\
+                'db','2011Census_B18_AUST_SA1_long')
+    p.csv_to_db('2011Census_B21_AUST_SA1_long','db',\
                 '2011Census_B21_AUST_SA1_long')
-    p.csv_to_db('2011Census_B22B_AUST_SA1_long',db_name,\
+    p.csv_to_db('2011Census_B22B_AUST_SA1_long','db',\
                 '2011Census_B22B_AUST_SA1_long')
-    p.csv_to_db('2016Census_G18_AUS_SA1',db_name,\
+    p.csv_to_db('2016Census_G18_AUS_SA1','db',\
                 '2016Census_G18_AUS_SA1')
-    p.csv_to_db('2016Census_G21_AUS_SA1',db_name,\
+    p.csv_to_db('2016Census_G21_AUS_SA1','db',\
                 '2016Census_G21_AUS_SA1')
-    p.csv_to_db('2016Census_G22B_AUS_SA1',db_name,\
+    p.csv_to_db('2016Census_G22B_AUS_SA1','db',\
                 '2016Census_G22B_AUS_SA1')
-    
     fname='aust_{shape}_shape_{size}km'.\
            format(shape = p.Shape,\
                   size = p.Radial)
-    p.shp_to_db(fname, db_name, fname, 4823)
-    
+    p.shp_to_db(fname, 'db_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                fname, 4823)
     fname='feat_aust_{size}km_sa1_11'.\
-           format(size = p.Radial)
-    p.shp_to_db(fname, db_name, fname, 4823)
-    
+           format(shape = p.Shape,\
+                  size = p.Radial)
+    p.shp_to_db(fname, 'db_{shape}_{size}'.\
+                format(shape=p.Shape,\
+                       size = p.Radial),\
+                fname, 4823)
     fname='feat_aust_{size}km_sa1_16'.\
-           format(size = p.Radial)
-    p.shp_to_db(fname, db_name, fname, 4823)
-    
-    p.shp_to_db('gis_osm_places_free_1', db_name,\
+           format(shape = p.Shape,\
+                  size = p.Radial)
+    p.shp_to_db(fname,'db_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                fname, 4823)
+    p.shp_to_db('gis_osm_places_free_1', 'db',\
                 'gis_osm_places_free_1', 4823)
-    p.shp_to_db('gis_osm_roads_free_1', db_name,\
+    p.shp_to_db('gis_osm_roads_free_1', 'db',\
                 'gis_osm_roads_free_1', 4823)
-    
-    p.sql_to_ogr('shape_pois_shp', vrt_ref, 'POI')
-    p.shp_to_db('POI', db_name, 'POI', 4823)
-    p.sql_to_ogr('shape_agil_shp', vrt_ref, 'agil')
-    p.shp_to_db('agil', db_name, 'agil', 4823)
-    p.sql_to_ogr('shape_mbsp_shp', vrt_ref, 'mbsp')
-    p.shp_to_db('mbsp', db_name, 'mbsp', 4823)
+    p.sql_to_ogr('shape_pois_shp', 'all', 'POI')
+    p.shp_to_db('POI','db_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                'POI', 4823)
+    p.geojson_to_shp ('AGIL', 'agil', 4823)
+    p,shp_to_db('agil', 'db_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                'agil', 4823)
+    p,sql_to_ogr('shape_mbsp_shp', 'all', 'mbsp')
+    p.shp_to_db('mbsp', 'db_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                'mbsp', 4823)
 
     sqlname='tabular_area_wt_{shape}_{size}.txt'.\
              format(shape = p.Shape,\
                     size = p.Radial)
-    p.shape_and_size ('spatialite_db', \
-                      'tabular_area_wt.txt', sqlname)
-    p.do_spatialite(sqlname, db_name)
+    p.shape_and_size ('spatialite_db',\
+                      'tabular_area_wt.txt',\
+                      sqlname)
+    p.do_spatialite(sqlname, 'db_{shape}_{size}'.\
+                  format(shape = p.Shape,\
+                         size = p.Radial))
     
     # spatialite ../spatialite_db/db.sqlite "vacuum;"
     
     
     print('shape_11_16_area')
-    fname='{shape}_{size}km_area_11_16'.\
+    fname='shape_{size}km_area_11_16'.\
            format(shape = p.Shape,\
                   size = p.Radial)
-    p.sql_to_ogr('shape_11_16_area', vrt_ref, fname)
-
+    p.sql_to_ogr('shape_11_16_area',\
+                 'all_{shape}_{size}'.\
+                 format(shape = p.Shape,\
+                        size = p.Radial),\
+                 fname)
 
 def place_wt(theshape, theradial):
     p = PostProcess(shape = theshape, radial = theradial)
-    
-    vrt_file = 'all_{shape}_{size}.vrt'.\
-              format(shape = p.Shape,\
-                     size = p.Radial)
-    
-    vrt_ref = 'all_{shape}_{size}'.\
-              format(shape = p.Shape,\
-                     size = p.Radial)
-    
-    db_name = 'db_area_{shape}_{size}.vrt'.\
-              format(shape = p.Shape,\
-                     size = p.Radial)
-    
-    p.vrt_shape_and_size ('vrt', 'template.vrt',vrt_file)
 
-    p.do_spatialite('table_goes_here.txt', db_name)
+    p.vrt_shape_and_size ('vrt', 'template.vrt', \
+                          'all_{shape}_{size}.vrt'.\
+                          format(shape = p.Shape,\
+                                 size = p.Radial))
+    p.do_spatialite('table_goes_here.txt', \
+                    'db_place_{shape}_{size}'.\
+                    format(shape = p.Shape,\
+                           size = p.Radial))
     
     print('aust_shape')
 
     fname = 'aust_{shape}_shape_{size}km'.\
             format(shape = p.Shape,\
                    size = p.Radial)
-    p.sql_to_ogr('aust_shape', vrt_ref, fname)
+    p.sql_to_ogr('aust_shape', 'all', fname)
     
-    p.shp_to_db(fname, db_name, fname, 4823)
+    p.shp_to_db(fname,'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                      fname, 4823)
     
     print('feat_aust_11_area')
     fname = 'feat_aust_{size}km_sa1_11'.\
-            format(size = p.Radial)
-    p.sql_to_ogr('feat_aust_11', vrt_ref, fname)
-    p.shp_to_db(fname, db_name, fname, 4823)
+            format(shape = p.Shape,\
+                   size = p.Radial)
+    p.sql_to_ogr('feat_aust_11','all_{shape}_{size}'.\
+                 format(shape = p.Shape,\
+                        size = p.Radial),\
+                 fname)
+    p.shp_to_db(fname,'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                fname, 4823)
     
     print('feat_aust_16_area')
     fname = 'feat_aust_{size}km_sa1_16'.\
-            format(size = p.Radial)
-    p.sql_to_ogr('feat_aust_16',vrt_ref,fname)
-    p.shp_to_db(fname, db_name, fname, 4823)
+            format(shape = p.Shape,\
+                   size = p.Radial)
+    p.sql_to_ogr('feat_aust_16','all_{shape}_{size}'.\
+                 format(shape = p.Shape,\
+                        size = p.Radial),\
+                 fname)
+    p.shp_to_db(fname,'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                      fname, 4823)
     
     print('tabular_place_wt')   
     p.csv_to_db('2011Census_B18_AUST_SA1_long',\
-                db_name,'2011Census_B18_AUST_SA1_long')
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                '2011Census_B18_AUST_SA1_long')
     p.csv_to_db('2011Census_B21_AUST_SA1_long',\
-                db_name,'2011Census_B21_AUST_SA1_long')
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                '2011Census_B21_AUST_SA1_long')
     p.csv_to_db('2011Census_B22B_AUST_SA1_long',\
-                db_name,'2011Census_B22B_AUST_SA1_long')
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                '2011Census_B22B_AUST_SA1_long')
     p.csv_to_db('2016Census_G18_AUS_SA1',\
-                db_name,'2016Census_G18_AUS_SA1')
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                '2016Census_G18_AUS_SA1')
     p.csv_to_db('2016Census_G21_AUS_SA1',\
-                db_name,'2016Census_G21_AUS_SA1')
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                '2016Census_G21_AUS_SA1')
     p.csv_to_db('2016Census_G22B_AUS_SA1',\
-                db_name,'2016Census_G22B_AUS_SA1')
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                '2016Census_G22B_AUS_SA1')
     fname = 'aust_{shape}_shape_{size}km'.\
             format(shape = p.Shape,\
                    size = p.Radial)
-    p.shp_to_db(fname, db_name, fname, 4823)
+    p.shp_to_db(fname,\
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                fname, 4823)
     fname='feat_aust_{size}km_sa1_11'.\
-           format(size = p.Radial)
-    p.shp_to_db(fname, db_name, fname, 4823)
+           format(shape = p.Shape,\
+                  size = p.Radial)
+    p.shp_to_db(fname,'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                size = p.Radial),\
+                fname, 4823)
     fname='feat_aust_{size}km_sa1_16'.\
-           format(size = p.Radial)
-    p.shp_to_db(fname, db_name, fname, 4823)
+           format(shape = p.Shape,\
+                  size = p.Radial)
+    p.shp_to_db(fname,'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                fname, 4823)
     p.shp_to_db('gis_osm_places_free_1',\
-                db_name, 'gis_osm_places_free_1', 4823)
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                'gis_osm_places_free_1', 4823)
     p.shp_to_db('gis_osm_roads_free_1',\
-                db_name, 'gis_osm_roads_free_1', 4823)
-    p.sql_to_ogr('shape_pois_shp', vrt_ref, 'POI')
-    p.shp_to_db('POI', db_name,'POI', 4823)
-    p.sql_to_ogr('shape_agil_shp', vrt_ref, 'agil')
-    p.shp_to_db('agil', db_name, 'agil', 4823)
-    p.sql_to_ogr('shape_mbsp_shp', vrt_ref, 'mbsp')
-    p.shp_to_db('mbsp', db_name, 'mbsp', 4823)
+                'db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                        size = p.Radial),\
+                'gis_osm_roads_free_1', 4823)
+    p.sql_to_ogr('shape_pois_shp', 'all_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                        size = p.Radial), 'POI')
+    p.shp_to_db('POI','db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                'POI', 4823)
+    p.sql_to_ogr('shape_agil_shp',\
+                 'all_{shape}_{size}'.\
+                 format(shape = p.Shape,\
+                        size = p.Radial),\
+                'agil')
+    p.shp_to_db('agil','db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                'agil', 4823)
+    p.sql_to_ogr('shape_mbsp_shp', 'all_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                 'mbsp')
+    p.shp_to_db('mbsp','db_place_{shape}_{size}'.\
+                format(shape = p.Shape,\
+                       size = p.Radial),\
+                'mbsp', 4823)
 
     sqlname='tabular_place_wt_{shape}_{size}.txt'.\
              format(shape = p.Shape,\
                     size = p.Radial)
     p.shape_and_size ('spatialite_db',\
                       'tabular_place_wt.txt',\
-                      sqlname)
-    p.do_spatialite(sqlname, db_name)
+                      p.Shape, p.Radial, sqlname)
+    p.do_spatialite(sqlname,'db_place_{shape}_{size}'.\
+                    format(shape = p.Shape,\
+                           size = p.Radial))
     
     # spatialite ../spatialite_db/db.sqlite "vacuum;"
 
@@ -215,69 +313,74 @@ def place_wt(theshape, theradial):
            format(shape = p.Shape,\
                   size = p.Radial)
 
-    p.sql_to_ogr('shape_11_16_place', vrt_ref, fname)
+    p.sql_to_ogr('shape_11_16_place',\
+                 'all_{shape}_{size}'.\
+                 format(shape = p.Shape,\
+                        size = p.Radial),\
+                 fname)
 
 def hexagons(theshape,b_north, b_south, b_east, b_west, theradial):
-    h = Tiles(shape = theshape, north = b_north ,
+    fred = Tiles(shape = theshape, north = b_north ,
                  south = b_south, east = b_east,
                  west = b_west, radial = theradial)
-    p = PostProcess()
+    post = PostProcess()
 
-    print(h.params())
+    print(fred.params())
 
-    hors = h.horizontal()
+    hors = fred.horizontal()
 
-    verts = h.vertical()
+    verts = fred.vertical()
 
-    intersects = h.intersections(hors,verts)
+    intersects = fred.intersections(hors,verts)
 
-    hexagon_array = h.hex_array(intersects,len(hors),len(verts))
-    hex_points = h.points_and_polygons(hexagon_array)
+    hexagon_array = fred.hex_array(intersects,len(hors),len(verts))
+    hex_points = fred.points_and_polygons(hexagon_array)
 
     points = random_points(-8, -45, 168, 96,10)
 
-    new_hex_array = h.points_in_polygon(hexagon_array,points,'Test')
+    new_hex_array = fred.points_in_polygon(hexagon_array,points,'Test')
 
-    gj_hexagon = h.to_geojson(new_hex_array)
+    gj_hexagon = fred.to_geojson(new_hex_array)
 
-    h.geojson_to_file(gj_hexagon)
+    fred.geojson_to_file(gj_hexagon)
 
-    h.to_shp_tab()
+    fred.to_shp_file(new_hex_array)
 
-    intersect_poly = h.neighbours(hex_points)
+    intersect_poly = fred.neighbours(hex_points)
 
-    p.ref_files()
+    post.ref_files()
+
 
 def boxes(shape,b_north,south,east,west,theradial):
-    b = Tiles(shape = 'box',north = b_north ,
+    fred = Tiles(shape = 'box',north = b_north ,
                  south = b_south, east = b_east,
                  west = b_west, radial = theradial)
-    p = PostProcess()
+    post = PostProcess()
 
-    print(b.params())
+    print(fred.params())
 
-    hors = b.horizontal()
+    hors = fred.horizontal()
 
-    verts = b.vertical()
+    verts = fred.vertical()
 
-    intersects = b.intersections(hors,verts)
+    intersects = fred.intersections(hors,verts)
 
-    box_array = b.box_array(intersects,len(hors),len(verts))
-    box_points = b.points_and_polygons(box_array)
+    box_array = fred.box_array(intersects,len(hors),len(verts))
+    box_points = fred.points_and_polygons(box_array)
 
     points = random_points(-8, -45, 168, 96,10)
 
-    new_box_array = b.points_in_polygon(box_array,points,'Test')
+    new_box_array = fred.points_in_polygon(box_array,points,'Test')
 
-    gj_box = b.to_geojson(new_box_array)
+    gj_box = fred.to_geojson(new_box_array)
 
-    b.geojson_to_file(gj_box)
+    fred.geojson_to_file(gj_box)
 
-    b.to_shp_tab()
+    fred.to_shp_file(new_hex_array)
 
-    intersect_poly = b.neighbours(box_points)
+    intersect_poly = fred.neighbours(box_points)
 
-    p.ref_files()
+    post.ref_files()
 
 
 
@@ -305,7 +408,7 @@ python3 polygons_new.py box -8 -45 168 96 212\n
         print(shape)
         if shape == "hex":
             
-            b.hexagons(float(b_north), float(b_south), float(b_east), \
+            fred.hexagons(float(b_north), float(b_south), float(b_east), \
                      west = float(b_west), radial = float(radial_d))
         else:
             if shape == "box":
@@ -313,4 +416,3 @@ python3 polygons_new.py box -8 -45 168 96 212\n
                       float(b_west), float(radial_d))
             else:
                 print('shape is hex or box')
-
