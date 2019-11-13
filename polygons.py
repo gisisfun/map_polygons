@@ -51,6 +51,8 @@ def hexagons(theshape,b_north, b_south, b_east, b_west, theradial):
 
     fred.to_shp_file(new_hex_array)
     
+    fred.to_kml_file(new_hex_array)
+
     hex_points = fred.points_and_polygons(new_hex_array)
     intersect_poly = fred.neighbours(hex_points)
 
