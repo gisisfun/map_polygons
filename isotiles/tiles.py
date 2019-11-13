@@ -609,43 +609,43 @@ class Tiles():
                                        slash = self.Slash), \
                                sep = ',', index = False)
 
- 
-        
-    def points_in_polygon(self, GArray, lat_longs, QLabel):
+  
+   def points_in_polygon(self, gArray, lat_longs, QLabel):
         """
         Counts for lat_longs generated
         """
         ...
         
-        (point_list, num_poly) = ([], len(GArray))
+        (point_list, num_poly) = ([], len(gArray))
         lat_longs_df=pd.DataFrame(lat_longs)
         lat_longs_df.columns = ['longitude','latitude']
-        for n in range (0, num_poly):
-            hexagon = GArray[n]['properties']['p']
+        for poly in range (0, num_poly):
+            hexagon = gArray[poly]['properties']['p']
             p_count = 0
             bound_points_df = lat_longs_df[(lat_longs_df['latitude'] >=\
-                                            GArray[n]['properties']['S']) & \
+                                            gArray[poly]['properties']['S']) & \
                                            (lat_longs_df['latitude'] <=\
-                                            GArray[n]['properties']['N']) & \
+                                            gArray[poly]['properties']['N']) & \
                                            (lat_longs_df['longitude'] <=\
-                                            GArray[n]['properties']['E']) & \
+                                            gArray[poly]['properties']['E']) & \
                                            (lat_longs_df['longitude'] >=\
-                                            GArray[n]['properties']['W'])]
+                                            gArray[poly]['properties']['W'])]
 
             total_rows = len(bound_points_df) 
             if (total_rows >= 1):
                 (p_count, poly_coords) = (0, [])
-                num_coords = len(GArray[n]['geometry']['coordinates'][0])-2
-                for i in range(0, num_coords):
+                num_coords = len(gArray[poly]['geometry']['coordinates'][0])-2
+                for coord in range(0, num_coords):
                     poly_coords.append( \
-                        [GArray[n]['geometry']['coordinates'][0][i][0], \
-                         GArray[n]['geometry']['coordinates'][0][i][1]])
+                        [gArray[poly]['geometry']['coordinates'][0][coord][0], \
+                         gArray[poly]['geometry']['coordinates'][0][coord][1]])
                 path = mpltPath.Path(poly_coords)
 
                 for index, row in bound_points_df.iterrows():
                     if path.contains_point([row['longitude'],row['latitude']]) is True:
                            p_count += 1 
                                     
-            GArray[n]['properties'][QLabel] = float(p_count)
+            gArray[poly]['properties'][QLabel] = float(p_count)
                 
-        return GArray
+        return gArray
+
