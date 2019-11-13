@@ -40,18 +40,18 @@ def hexagons(theshape,b_north, b_south, b_east, b_west, theradial):
     intersects = fred.intersections(hors,verts)
 
     hexagon_array = fred.hex_array(intersects,len(hors),len(verts))
-    hex_points = fred.points_and_polygons(hexagon_array)
 
     points = random_points(-8, -45, 168, 96,10)
 
     new_hex_array = fred.points_in_polygon(hexagon_array,points,'Test')
 
-    gj_hexagon = fred.to_geojson(new_hex_array)
-
-    fred.geojson_to_file(gj_hexagon)
+    the_geojson = fred.to_geojson_fmt(new_hex_array)
+    
+    fred.to_geojson_file(new_hex_array)
 
     fred.to_shp_file(new_hex_array)
-
+    
+    hex_points = fred.points_and_polygons(new_hex_array)
     intersect_poly = fred.neighbours(hex_points)
 
 
@@ -60,7 +60,6 @@ def boxes(shape,b_north,south,east,west,theradial):
     fred = Tiles(shape = 'box',north = b_north ,
                  south = b_south, east = b_east,
                  west = b_west, radial = theradial)
-    post = PostProcess()
 
     print(fred.params())
 
@@ -71,18 +70,18 @@ def boxes(shape,b_north,south,east,west,theradial):
     intersects = fred.intersections(hors,verts)
 
     box_array = fred.box_array(intersects,len(hors),len(verts))
-    box_points = fred.points_and_polygons(box_array)
 
     points = random_points(-8, -45, 168, 96,10)
 
     new_box_array = fred.points_in_polygon(box_array,points,'Test')
 
-    gj_box = fred.to_geojson(new_box_array)
+    gj_box = fred.to_geojson_fmt()
 
-    fred.geojson_to_file(gj_box)
+    fred.to_geojson_file(new_box_array)
 
-    fred.to_shp_file(new_hex_array)
+    fred.to_shp_file(new_box_array)
 
+    box_points = fred.points_and_polygons(new_box_array)
     intersect_poly = fred.neighbours(box_points)
 
     
