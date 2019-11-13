@@ -8,6 +8,7 @@ from geojson import Polygon,Feature,FeatureCollection
 from math import pow,sqrt
 import matplotlib.path as mpltPath
 import shapefile
+import simplekml
 
 from isotiles.parameters import Bounding_Box, OSVars, Offsets, DataSets, Defaults
 
@@ -472,24 +473,54 @@ class Tiles():
         prj.write(epsg)
         prj.close()
 
-    def to_geojson(self,gArray):
-        """
-        Convert Features to FeatureCollection
+    def to_kml_file(self,GArray):
+        #tabular_list = []
+        fPath = 'shapefiles{slash}{shape}_{size}km_layer'.format(shape = self.Shape, size = self.Radial, slash = self.Slash, sfPath = self.shapefilesPath)
+        prjPath = fPath + '.prj'
+        kml = simplekml.Kml()
+        #setup columns
+        props_dict = GArray[0]['properties']
         
-        Prerequisites:
-        hex_array or box_array, horizontal, vertical, Tiles
-        
-        Input variables:
-        gArray:
-        """
-        ...
-        
-        print('\n5/7 geojson dataset of {0} derived hexagon polygons' \
-              .format(len(gArray)))
-        return FeatureCollection(gArray)
+        key_names_array = []
+        for key in props_dict:
+            key_names_array.append(key)
+            
 
+        (point_list, num_poly) = ([], len(GArray))
+        for n in range (0, num_poly):
+            props_dict_rec = GArray[n]['properties']
+            key_values_array = []
+            rec_descr = ""
+            for key in props_dict:
+                key_values_array.append(props_dict_rec[key])
+                
+                if i is not len(props_dict)-1:
+                    rec_descr = rec_descr + key + ' = ' + str(props_dict_rec[key]) + '\n'
+                else:
+                    rec_descr = rec_descr + key + ' = ' + str(props_dict_rec[key]) + '\n'
 
-    def geojson_to_file(self,content):
+                i =+ 1
+                
+
+                points_str = "["
+                for points in [GArray[n]['geometry']['coordinates'][0]]:
+                    points_str = points_str + "("+str(points[0])+","+str(points[1])+"),"
+                
+                pol = kml.newpolygon(name = str(key_values_array[0]))
+            
+                outer = "pol.outerboundaryis = " + points_str[:-1] + "]"
+                eval(outer)
+
+                inner = "pol.innerboundaryis = " + points_str[:-1] + "]"
+                eval(outer)
+                pol.description = "This is a description of" + rec_str
+
+            kml.save("Polygon.kml")
+
+    def to_geojson_fmt(self,gArray):
+        return FeatureCollection(gArray) 
+
+    def to_geojson_file(self,gArray):
         """
         Write string to file
         
@@ -499,7 +530,7 @@ class Tiles():
         Input variables:
         """
         ...
-        
+        content = FeatureCollection(gArray)
         print('writing geojson formatted {shape} dataset to file: {fname}_layer.json'\
               .format(shape = self.Shape, fname = self.FName))
         myfile = open('geojson{slash}{fname}_layer.json'.format(fname = self.FName,slash = self.Slash), 'w')
