@@ -66,6 +66,7 @@ class Tiles():
                             offValues.Long, offValues.Long]
 
         self.shapefilesPath = 'shapefiles'
+        self.kmlfilesPath = 'kml'
 
 
     def params(self):
@@ -474,9 +475,7 @@ class Tiles():
         prj.close()
 
     def to_kml_file(self,GArray):
-        #tabular_list = []
-        fPath = 'shapefiles{slash}{shape}_{size}km_layer'.format(shape = self.Shape, size = self.Radial, slash = self.Slash, sfPath = self.shapefilesPath)
-        prjPath = fPath + '.prj'
+        fPath = '{kPath}{slash}{shape}_{size}km_layer.kml'.format(kPath = self.kmlfilesPath, shape = self.Shape, size = self.Radial, slash = self.Slash, sfPath = self.shapefilesPath)
         kml = simplekml.Kml()
         #setup columns
         props_dict = GArray[0]['properties']
@@ -487,9 +486,10 @@ class Tiles():
             
 
         (point_list, num_poly) = ([], len(GArray))
-        for n in range (0, num_poly):
-            props_dict_rec = GArray[n]['properties']
-            key_values_array = []
+        for poly in range (0, num_poly):
+            
+            props_dict_rec = GArray[poly]['properties']
+            (i,key_values_array) = (0,[])
             rec_descr = ""
             for key in props_dict:
                 key_values_array.append(props_dict_rec[key])
@@ -498,24 +498,28 @@ class Tiles():
                     rec_descr = rec_descr + key + ' = ' + str(props_dict_rec[key]) + '\n'
                 else:
                     rec_descr = rec_descr + key + ' = ' + str(props_dict_rec[key]) + '\n'
-
                 i =+ 1
-                
-
-                points_str = "["
-                for points in [GArray[n]['geometry']['coordinates'][0]]:
-                    points_str = points_str + "("+str(points[0])+","+str(points[1])+"),"
-                
-                pol = kml.newpolygon(name = str(key_values_array[0]))
+            ev_str = 'pol = kml.newpolygon(name ="'    
+            points_str = "["
+            points_t=[]
+            for points in GArray[poly]['geometry']['coordinates'][0]:
+                points_t.append(tuple(points))
+                points_str = points_str + "("\
+                             + str(points[0]) + ","\
+                             + str(points[1]) + "), "
+            #print(points_t)
+            #print(points_str)
+            pol = kml.newpolygon(name = str(key_values_array[0]))
+            pol.outerboundaryis=points_t
+            pol.innerpoundaryis=points_t
+            #outer = '",outerboundaryis=' + str(points_t) + ", "
+            #inner = "innerboundaryis=" + str(points_t) + ")"
+            #ev_str = ev_str + str(key_values_array[0]) + outer + inner
+            #eval(ev_str)
+            pol.description = rec_descr
             
-                outer = "pol.outerboundaryis = " + points_str[:-1] + "]"
-                eval(outer)
-
-                inner = "pol.innerboundaryis = " + points_str[:-1] + "]"
-                eval(outer)
-                pol.description = "This is a description of" + rec_str
-
-            kml.save("Polygon.kml")
+                
+        kml.save(fPath)
 
     def to_geojson_fmt(self,gArray):
         return FeatureCollection(gArray) 
