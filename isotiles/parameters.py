@@ -19,7 +19,46 @@ class Defaults:
         self.SpatialitePath = 'spatialite_db'
         self.VRTPath = 'vrt'
         self.Weight = "place"
-        
+
+class Projection:
+    """
+    Project Values
+    """
+    Class WGS84:
+        """
+        WGS 84 Projection
+        World Geodectic System 1984, used in GPS
+        """
+        __slots__ = ("EPSG","name","Perimeter","invFlat")
+        def __init__(self):
+            self.EPSG = '4326'
+            self.Name = 'WGS 84'
+            self.Perimeter = 6378137
+            self.invFlat = 298.257223563
+            
+    Class GDA94:
+        """
+        GDA 94 Projection
+        Geocentric Datum of Australia 1994
+        """
+        __slots__ = ("EPSG","name","Perimeter","Flatness")
+        def __init__(self):
+            self.EPSG = '4283'
+            self.Name = 'GDA 84'
+            self.Perimeter = 6378137
+            self.invFlat = 298.257222101         
+            
+    Class GDA2020:
+        """
+        GDA 94 Projection
+        Geocentric Datum of Australia 1994
+        """
+        __slots__ = ("EPSG","name","Perimeter","invFlat")
+        def __init__(self):
+            self.EPSG = '7844'
+            self.Name = 'GDA 2020'
+            self.Perimeter = 6378137
+            self.invFlat = 298.257222101  
 
 class Bounding_Box:
     """
