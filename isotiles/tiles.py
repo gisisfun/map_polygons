@@ -543,42 +543,6 @@ class Tiles():
         myfile.write(str(content))  # write geojson layer to open file
         myfile.close()  # close file
 
-
-#    def to_shp_tab(self):
-#        """
-#        Convert geojson file to shapfile and tab file
-#        
-#        Prerequisites:
-#        geojson_to_file, to_geojson, hex_array or box_array, horizontal, vertical, Tiles
-#        
-#        Input variables:
-#        Provided
-#        """
-#        ...
-#        
-#        shp_fname = 'shapefiles{slash}{fname}_layer.shp'.format(\
-#            fname = self.FName .replace(' ', '_'), \
-#            slash = self.Slash)
-#        tab_fname = 'tabfiles{slash}{fname}_layer.tab'.format( \
-#            fname = self.FName.replace(' ', '_'), \
-#            slash = self.Slash)
-#        json_fname = 'geojson{slash}{fname}_layer.json'.format( \
-#            fname = self.FName.replace(' ', '_'), \
-#            slash = self.Slash)
-#        tab_options = [self.cmdText, '-f', 'Mapinfo file', tab_fname, \
-#                       '-t_srs', 'EPSG:4823', json_fname]
-#        shp_options = [self.cmdText, '-f', 'ESRI Shapefile', shp_fname, \
-#                       '-t_srs', 'EPSG:4823', json_fname]
-#        try:
-#            # record the output!
-#            print('\nwriting {0} shapefile {1}_layer.shp'.format(self.Shape, self.FName))
-#            subprocess.check_call(shp_options)
-#            print('\nwriting {0} shapefile {1}_layer.tab'.format(self.Shape, self.FName))
-#            subprocess.check_call(tab_options)
-#        except FileNotFoundError:
-#            print('No files processed')
-
-
     def neighbours(self,pointsList):
         """
         Intersecting polygons list
@@ -658,9 +622,7 @@ class Tiles():
 
         # get the polygons
         (point_list, num_poly) = ([], len(gArray))
-        #num_coords = len(GArray[n]['geometry']['coordinates'][0])-2
-        #gArray_df=pd.DataFrame(gArray)
-        #gArray_df.columns = ['longitude','latitude']
+
         for poly in range (0, num_poly):
             props_dict_rec = gArray[poly]['properties']
             (i,key_values_array) = (0,[])
