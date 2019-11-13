@@ -649,3 +649,28 @@ class Tiles():
                 
         return gArray
 
+        def poly_overlap(self,gArray):
+        # load the shapefile
+        sf = shapefile.Reader("shapefiles/blockgroups")
+        shapes = sf.shapes()
+        big_coords = shapes[0].points
+        path = mpltPath.Path(big_coords)
+
+        # get the polygons
+        (point_list, num_poly) = ([], len(gArray))
+        #num_coords = len(GArray[n]['geometry']['coordinates'][0])-2
+        for poly in range (0, num_poly):
+            props_dict_rec = gArray[poly]['properties']
+            (i,key_values_array) = (0,[])
+            inPoly = False
+            
+            for point in gArray[poly]['geometry']['coordinates'][0]:
+                if path.contains_point([row['longitude'],row['latitude']]) is True:
+                    inPoly = True
+
+            if InPoly is True:
+                gArray[poly]['properties']['Aust'] = 1
+            else:
+                gArray[poly]['properties']['Aust'] = 0
+
+        return gArray
