@@ -517,6 +517,7 @@ class Tiles():
             #ev_str = ev_str + str(key_values_array[0]) + outer + inner
             #eval(ev_str)
             pol.description = rec_descr
+            pol.style.polystyle.fill = 0
             
                 
         kml.save(fPath)
