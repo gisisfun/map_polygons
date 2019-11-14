@@ -615,10 +615,10 @@ class Tiles():
 
     def poly_intersection(self,gArray):
         # load the shapefile
-        sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
+        sf = shapefile.Reader("shapefiles/STE_2011_AUST")
     # shapefile contains multipolygons
         shapes = sf.shapes()
-        big_coords = shapes[0].points
+        
 #https://gis.stackexchange.com/questions/208546/check-if-a-point-falls-within-a-multipolygon-with-python        
 #        polys = shapefile.Reader("multipol.shp")
 #        multi = shape(polys.shapeRecords()[0].shape.__geo_interface__) # 1 polygon
@@ -632,24 +632,27 @@ class Tiles():
 #            3 POINT (0.4993597951344431 -0.06017925736235585)
 #            5 POINT (-0.3764404609475033 -0.4750320102432779)
 #            6 POINT (-0.3098591549295775 -0.6312419974391805)
-        path = mpltPath.Path(big_coords)
-        print(len(new_coords))
+        
         # get the polygons
         (point_list, num_poly) = ([], len(gArray))
 
         for poly in range (0, num_poly):
-            props_dict_rec = gArray[poly]['properties']
-            (i,key_values_array) = (0,[])
             inPoly = False
+            for state in range(7):
+                big_coords = shapes[state].points
+                props_dict_rec = gArray[poly]['properties']
+                (i,key_values_array) = (0,[])
             
-            for point in gArray[poly]['geometry']['coordinates'][0]:
-                if path.contains_point([point[0],point[1]]) is True:
-                    inPoly = True
+            
+                for point in gArray[poly]['geometry']['coordinates'][0]:
+                    path = mpltPath.Path(big_coords)
+                    if path.contains_point([point[0],point[1]]) is True:
+                        inPoly = True
 
-            if inPoly is True:
-                gArray[poly]['properties']['Aust'] = 1
-            else:
-                gArray[poly]['properties']['Aust'] = 0
+                if inPoly is True:
+                    gArray[poly]['properties']['Aust'] = 1
+                else:
+                    gArray[poly]['properties']['Aust'] = 0
 
         return gArray
 
