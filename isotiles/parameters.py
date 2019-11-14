@@ -24,7 +24,7 @@ class Projection:
     """
     Project Values
     """
-    Class WGS84:
+    class WGS84:
         """
         WGS 84 Projection
         World Geodectic System 1984, used in GPS
@@ -36,7 +36,7 @@ class Projection:
             self.Perimeter = 6378137
             self.invFlat = 298.257223563
             
-    Class GDA94:
+    class GDA94:
         """
         GDA 94 Projection
         Geocentric Datum of Australia 1994
@@ -48,7 +48,7 @@ class Projection:
             self.Perimeter = 6378137
             self.invFlat = 298.257222101         
             
-    Class GDA2020:
+    class GDA2020:
         """
         GDA 94 Projection
         Geocentric Datum of Australia 1994
