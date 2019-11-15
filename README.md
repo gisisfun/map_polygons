@@ -82,7 +82,7 @@ Add to the PATH variable
 
 The processes applied to the datasets would normally be tasked to individual analysts and use software purchased for that purpose.
 There are software packages that work at a larger scale than the desktop analysis to perform more industrial scale processes. Again there is another set of personnel to achieve perform these tasks.
-Making the best use of both types of software is a challenge.
+Making the best use of both types of software is a challenge. Once you start coding the layer creation, post processing and visualisation you might figure how much is involved at a lower level and how affects the end product.
 
 The list of software is entirely open sourced. The coding and deployement of sub systems where chosen according to each software's ability to perform a given task in set period of time balancing out memory, storage and CPU access requirements.
 The data could be processed by running a single Python program (currently three) by one person. In an open source environment interoperability of automation, data format and operating system support is assumed.
