@@ -622,7 +622,8 @@ class Tiles():
         last_progress = -999
         hcount = 0
         # get the query polygons
-        (point_list, num_poly) = ([], len(gArray))
+        (point_list, num_poly,isectArray) = ([], len(gArray),[])
+        
 
         for poly in range (0, num_poly):
             inPoly = False
@@ -644,11 +645,13 @@ class Tiles():
                         if path.contains_point([c_lon,c_lat]) is True:
                             inPoly = True
                             gArray[poly]['properties']['Aust'] = 1
+                            isectArray.append.gArray[poly]
                             hcount += 1
                     if inPoly is False: 
                         if path.contains_point([point[0],point[1]]) is True:
                             inPoly = True
                             gArray[poly]['properties']['Aust'] = 1
+                            isectArray.append.gArray[poly]
                             hcount += 1
                     
 
@@ -656,4 +659,4 @@ class Tiles():
                 print(progress,'% Complete ',hcount,'intersecting polygons mapped to output file')
                 last_progress = progress
 
-        return gArray
+        return isectArray
