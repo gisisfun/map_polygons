@@ -629,18 +629,27 @@ class Tiles():
             progress = int((poly/num_poly)*100)
             gArray[poly]['properties']['Aust'] = 0
             # get the reference sub polygons
+            #try centroid
+            c_lon = gArray[poly]['properties']['lon']
+            c_lat = gArray[poly]['properties']['lat']
+            
             for point in gArray[poly]['geometry']['coordinates'][0]:
                 for subpolyptr in range(len(shapes[0].parts)-1):
                     sub_coords = big_coords[shapes[0].parts[subpolyptr]:shapes[0].parts[subpolyptr+1]]
                     path = mpltPath.Path(sub_coords)
 
-                    #props_dict_rec = gArray[poly]['properties']
+                    
                     (i,key_values_array) = (0,[])
-
-                    if path.contains_point([point[0],point[1]]) is True and inPoly is False:
-                        inPoly = True
-                        gArray[poly]['properties']['Aust'] = 1
-                        hcount += 1
+                    if inPoly is False:
+                        if path.contains_point([c_lon,c_lat]) is True:
+                            inPoly = True
+                            gArray[poly]['properties']['Aust'] = 1
+                            hcount += 1
+                    if inPoly is False: 
+                        if path.contains_point([point[0],point[1]]) is True:
+                            inPoly = True
+                            gArray[poly]['properties']['Aust'] = 1
+                            hcount += 1
                     
 
             if progress is not last_progress:
@@ -648,5 +657,3 @@ class Tiles():
                 last_progress = progress
 
         return gArray
-
-
