@@ -628,24 +628,24 @@ class Tiles():
             inPoly = False
             progress = int((poly/num_poly)*100)
             # get the reference sub polygons
-            for subpolyptr in range(len(shapes[0].parts)-1):
-                sub_coords = big_coords[shapes[0].parts[subpolyptr]:shapes[0].parts[subpolyptr+1]]
-                path = mpltPath.Path(sub_coords)
+            for point in gArray[poly]['geometry']['coordinates'][0]:
+                for subpolyptr in range(len(shapes[0].parts)-1):
+                    sub_coords = big_coords[shapes[0].parts[subpolyptr]:shapes[0].parts[subpolyptr+1]]
+                    path = mpltPath.Path(sub_coords)
 
-                props_dict_rec = gArray[poly]['properties']
-                (i,key_values_array) = (0,[])
-            
-            
-                for point in gArray[poly]['geometry']['coordinates'][0]:
-                    
+                    #props_dict_rec = gArray[poly]['properties']
+                    (i,key_values_array) = (0,[])
+
                     if path.contains_point([point[0],point[1]]) is True:
                         inPoly = True
                         gArray[poly]['properties']['Aust'] = 1                    
                     else:
                         gArray[poly]['properties']['Aust'] = 0
+
             if progress is not last_progress:
                 print(progress,'%')
                 last_progress = progress
 
         return gArray
+
 
