@@ -21,12 +21,13 @@ Open one or both of these files in your preferred GIS tool of choice and have a 
 - **geojson** for encoding of the geometric shapes.
 - **matplotlib** find points inside polygons.
 - **pyshp** for encoding ersri shapefiles.
+Note: additional operating system libraries are not required for the python modules listed above.
 
 *Post Processing* - poly_wt.py
 - **pyunpack** for downloading and unzipping content from the ABS website.
 - **GDAL/ogr2ogr** for shapefile conversion, simple geometry SQL queries.
-- **PROJ** for reprojection.
 - **sqlite3** for accessing for **spatialite** content and processing large tables of tabular content.
+Note: Operating system libraries are required for GDAL support.
 
 *Visulaisation* - map_me.py
 - **geopandas**, **numpy** and **matplotlib** for making really good maps.
