@@ -21,7 +21,7 @@ Open one or both of these files in your preferred GIS tool of choice and have a 
 - **geojson** for encoding of the geometric shapes.
 - **matplotlib** find points inside polygons.
 - **pyshp** for encoding ersri shapefiles.
-Note: additional operating system libraries are not required for the python modules listed above.
+Note: additional operating system libraries are not required for the python modules listed above. (Thank you @psmaAaron)
 
 *Post Processing* - poly_wt.py
 - **pyunpack** for downloading and unzipping content from the ABS website.
