@@ -615,44 +615,37 @@ class Tiles():
 
     def poly_intersection(self,gArray):
         # load the shapefile
-        sf = shapefile.Reader("shapefiles/STE_2011_AUST")
-    # shapefile contains multipolygons
+        sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
+        # shapefile contains multipolygons
         shapes = sf.shapes()
+        big_coords = shapes[0].points
+        last_progress = -999
         
-#https://gis.stackexchange.com/questions/208546/check-if-a-point-falls-within-a-multipolygon-with-python        
-#        polys = shapefile.Reader("multipol.shp")
-#        multi = shape(polys.shapeRecords()[0].shape.__geo_interface__) # 1 polygon
-#        print(multi)
-#        #MULTIPOLYGON (((-0.5275288092189501 0.5569782330345711, -0.117797695262484 0.2906530089628682, -0.2560819462227913 0.01920614596670933, -0.7093469910371319 -0.08834827144686286, -0.8629961587708066 0.1830985915492958, -0.734955185659411 0.3982074263764405, -0.5275288092189501 0.5569782330345711)), ((0.1997439180537772 0.06017925736235596, 0.5480153649167734 0.1293213828425096, 0.729833546734955 0.03969270166453265, 0.8143405889884763 -0.1395646606914211, 0.701664532650448 -0.3854033290653009, 0.4763124199743918 -0.5006402048655569, 0.2688860435339309 -0.4238156209987196, 0.1895006402048656 -0.2291933418693981, 0.1997439180537772 0.06017925736235596)), ((-0.3764404609475033 -0.295774647887324, -0.1152368758002562 -0.3597951344430217, -0.03329065300896294 -0.5800256081946222, -0.1152368758002562 -0.7413572343149808, -0.3072983354673495 -0.8591549295774648, -0.58898847631242 -0.6927016645326505, -0.6555697823303457 -0.4750320102432779, -0.3764404609475033 -0.295774647887324)))
-#        for i, pt in enumerate(points):
-#            point = shape(pt)
-#            if point.within(multi): 
-#                print i, shape(points[i])
-#            1 POINT (-0.58898847631242 0.17797695262484)
-#            3 POINT (0.4993597951344431 -0.06017925736235585)
-#            5 POINT (-0.3764404609475033 -0.4750320102432779)
-#            6 POINT (-0.3098591549295775 -0.6312419974391805)
-        
-        # get the polygons
+        # get the query polygons
         (point_list, num_poly) = ([], len(gArray))
 
         for poly in range (0, num_poly):
             inPoly = False
-            for state in range(7):
-                big_coords = shapes[state].points
+            progress = int((poly/num_poly)*100)
+            # get the reference sub polygons
+            for subpolyptr in range(len(shapes[0].parts)-1):
+                sub_coords = big_coords[shapes[0].parts[subpolyptr]:shapes[0].parts[subpolyptr+1]]
+                path = mpltPath.Path(sub_coords)
+
                 props_dict_rec = gArray[poly]['properties']
                 (i,key_values_array) = (0,[])
             
             
                 for point in gArray[poly]['geometry']['coordinates'][0]:
-                    path = mpltPath.Path(big_coords)
+                    
                     if path.contains_point([point[0],point[1]]) is True:
                         inPoly = True
-
-                if inPoly is True:
-                    gArray[poly]['properties']['Aust'] = 1
-                else:
-                    gArray[poly]['properties']['Aust'] = 0
+                        gArray[poly]['properties']['Aust'] = 1                    
+                    else:
+                        gArray[poly]['properties']['Aust'] = 0
+            if progress is not last_progress:
+                print(progress,'%')
+                last_progress = progress
 
         return gArray
 
