@@ -620,13 +620,14 @@ class Tiles():
         shapes = sf.shapes()
         big_coords = shapes[0].points
         last_progress = -999
-        
+        hcount = 0
         # get the query polygons
         (point_list, num_poly) = ([], len(gArray))
 
         for poly in range (0, num_poly):
             inPoly = False
             progress = int((poly/num_poly)*100)
+            gArray[poly]['properties']['Aust'] = 0
             # get the reference sub polygons
             for point in gArray[poly]['geometry']['coordinates'][0]:
                 for subpolyptr in range(len(shapes[0].parts)-1):
@@ -636,14 +637,14 @@ class Tiles():
                     #props_dict_rec = gArray[poly]['properties']
                     (i,key_values_array) = (0,[])
 
-                    if path.contains_point([point[0],point[1]]) is True:
+                    if path.contains_point([point[0],point[1]]) is True and inPoly is False:
                         inPoly = True
-                        gArray[poly]['properties']['Aust'] = 1                    
-                    else:
-                        gArray[poly]['properties']['Aust'] = 0
+                        gArray[poly]['properties']['Aust'] = 1
+                        hcount += 1
+                    
 
             if progress is not last_progress:
-                print(progress,'%')
+                print(progress,'% Complete ',hcount,'intersecting polygons mapped to output file')
                 last_progress = progress
 
         return gArray
