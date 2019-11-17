@@ -81,12 +81,12 @@ def boxes(shape,b_north,south,east,west,theradial):
     fred.to_kml_file(aus_box_array)
 #    points = random_points(-8, -45, 168, 96,10)
 #
-#    new_hex_array = fred.points_in_polygon(hexagon_array,points,'Test')
+#    new_box_array = fred.points_in_polygon(box_array,points,'Test')
 #
-#    the_geojson = fred.to_geojson_fmt(new_hex_array)
+#    the_geojson = fred.to_geojson_fmt(new_box_array)
 #
-#    hex_points = fred.points_and_polygons(new_hex_array)
-#    intersect_poly = fred.neighbours(hex_points)
+#    box_points = fred.points_and_polygons(new_box_array)
+#    intersect_poly = fred.neighbours(box_points)
 
     
 
