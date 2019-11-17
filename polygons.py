@@ -41,20 +41,20 @@ def hexagons(theshape,b_north, b_south, b_east, b_west, theradial):
 
     hexagon_array = fred.hex_array(intersects,len(hors),len(verts))
 
-    points = random_points(-8, -45, 168, 96,10)
+    aus_hex_array = fred.poly_intersection(heaxon_array)   
+    fred.to_geojson_file(aus_hex_array)
 
-    new_hex_array = fred.points_in_polygon(hexagon_array,points,'Test')
-
-    the_geojson = fred.to_geojson_fmt(new_hex_array)
+    fred.to_shp_file(aus_hex_array)
     
-    fred.to_geojson_file(new_hex_array)
-
-    fred.to_shp_file(new_hex_array)
-    
-    fred.to_kml_file(new_hex_array)
-
-    hex_points = fred.points_and_polygons(new_hex_array)
-    intersect_poly = fred.neighbours(hex_points)
+    fred.to_kml_file(auss_hex_array)
+#    points = random_points(-8, -45, 168, 96,10)
+#
+#    new_hex_array = fred.points_in_polygon(hexagon_array,points,'Test')
+#
+#    the_geojson = fred.to_geojson_fmt(new_hex_array)
+#
+#    hex_points = fred.points_and_polygons(new_hex_array)
+#    intersect_poly = fred.neighbours(hex_points)
 
 
 
