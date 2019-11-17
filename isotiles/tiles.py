@@ -657,7 +657,7 @@ class Tiles():
                     
 
             if progress is not last_progress:
-                print(progress,'% Complete ',hcount,'intersecting polygons mapped to output file')
+                print(progress,'% Complete ',poly,'polygons processed for',hcount,'of intersecting polygons mapped to output file')
                 last_progress = progress
 
         return isectArray
