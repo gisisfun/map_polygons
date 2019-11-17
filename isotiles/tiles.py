@@ -660,4 +660,4 @@ class Tiles():
                 print(progress,'% Complete ',hcount,'intersecting polygons mapped to output file')
                 last_progress = progress
 
-        return isectArray
+            return isectArray
