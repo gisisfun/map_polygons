@@ -624,7 +624,9 @@ class Tiles():
         hcount = 0
         # get the query polygons
         (point_list, num_poly,isectArray) = ([], len(gArray),[])
-        missing_islands = [['West Island Cocos Islands',96.8417393,-12.1708739],['Norfolk Island',167.9547,-29.0408]]
+        missing_islands = [['West Island Cocos Islands',96.8417393,-12.1708739],
+                           ['Home Island Cocos Islands',96.8975,-12.1178],
+                           ['Norfolk Island',167.9547,-29.0408]]
 
         for poly in range (0, num_poly):
             inPoly = False
