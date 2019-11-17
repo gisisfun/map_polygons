@@ -624,7 +624,7 @@ class Tiles():
         hcount = 0
         # get the query polygons
         (point_list, num_poly,isectArray) = ([], len(gArray),[])
-        
+        missing_islands = [['West Island Cocos Islands',96.8417393,-12.1708739],['Norfolk Island',167.9547,-29.0408]]
 
         for poly in range (0, num_poly):
             inPoly = False
@@ -643,6 +643,15 @@ class Tiles():
                     
                     (i,key_values_array) = (0,[])
 #                    G-NAF locaity centroids coming soon
+#                    This is a workaround :(
+                    for island in missing_islands:
+                        if inPoly is False:
+                            if path.contains_point([island[1],island[2]]) is True:
+                                inPoly = True
+                                gArray[poly]['properties']['Aust'] = 1
+                                isectArray.append(gArray[poly])
+                                hcount += 1
+                                
                     if inPoly is False:
                         if path.contains_point([c_lon,c_lat]) is True:
                             inPoly = True
