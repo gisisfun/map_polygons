@@ -642,17 +642,17 @@ class Tiles():
                     
                     (i,key_values_array) = (0,[])
 #                    G-NAF locaity centroids coming soon
-#                    if inPoly is False:
-#                        if path.contains_point([c_lon,c_lat]) is True:
-#                            inPoly = True
-#                            gArray[poly]['properties']['Aust'] = 1
-#                            isectArray.append.gArray[poly]
-#                            hcount += 1
+                    if inPoly is False:
+                        if path.contains_point([c_lon,c_lat]) is True:
+                            inPoly = True
+                            gArray[poly]['properties']['Aust'] = 1
+                            isectArray.append(gArray[poly])
+                            hcount += 1
                     if inPoly is False: 
                         if path.contains_point([point[0],point[1]]) is True:
                             inPoly = True
                             gArray[poly]['properties']['Aust'] = 1
-                            isectArray.append.gArray[poly]
+                            isectArray.append(gArray[poly])
                             hcount += 1
                     
 
