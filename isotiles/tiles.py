@@ -614,6 +614,7 @@ class Tiles():
         return gArray
 
     def poly_intersection(self,gArray):
+        #missing_islands = [['West Island Cocos Islands',96.8417393,-12.1708739],['Norfolk Island',167.9547,-29.0408]] 
         # load the shapefile
         sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
         # shapefile contains multipolygons
