@@ -190,13 +190,13 @@ class DataSets:
                 self.ZipPath = 'shapefiles{slash}australia-latest-free.shp.zip'
 
     class GNAFLocality:
-        class: List:
+        class List:
 
 	    def __init__(self):
                 self.Items ="""locality_name,state_abbreviation,postcode,latitude,longitude
 """
     class cities:
-        class: List:
+        class List:
 
 	    def __init__(self):
                 self.Items ="""locality_name,state_abbreviation,postcode,latitude,longitudecity,city_ascii,lat,lng,country,iso2,iso3,admin_name,capital,population,id
