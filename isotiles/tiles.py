@@ -614,7 +614,6 @@ class Tiles():
         return gArray
 
     def poly_intersection(self,gArray):
-        #missing_islands = [['West Island Cocos Islands',96.8417393,-12.1708739],['Norfolk Island',167.9547,-29.0408]] 
         # load the shapefile
         sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
         # shapefile contains multipolygons
@@ -624,50 +623,80 @@ class Tiles():
         hcount = 0
         # get the query polygons
         (point_list, num_poly,isectArray) = ([], len(gArray),[])
-        missing_islands = [['West Island Cocos Islands',96.8417393,-12.1708739],
-                           ['Home Island Cocos Islands',96.8975,-12.1178],
-                           ['Norfolk Island',167.9547,-29.0408]]
+        print('Adding Islands')
+        islands_list = [['West Island Cocos Islands',96.8417393,-12.1708739],['Home Island Cocos Islands',96.8975,-12.1178],
+                        ['Norfolk Island',167.9547,-29.0408],['Asmore and Cartier Islands',123.03833318,-12.25499898 ],
+                        ['Christmas Island',105.6229817,-10.4912311],['North Stradbroke Island',153.4626,-27.5323],
+                        ['South Stradbroke Island',153.4213,-27.8335],['Willis Island',149.9650,-16.2880],
+                        ['Renell Island',160.2646,-11.6633],['Makira',161.8097,-10.5737],
+                        ['Vanikoro',166.9000,-11.6500],['Aneityum',160.2646,-11.6633],
+                        ['Tagula Island',153.4626,-11.5150],['Nendo Island',165.9321,-11.6633],
+                        ['Utupia Island',166.5373,-11.2495],['Lomlom',166.2667,-10.2833],
+                        ['Pileni',166.2472,-10.1733],['Nifiloli',166.2993,-10.1865],
+                        ['Fenualoa',166.9701,-10.2500],['Nikapu',166.0503,-10.0818],
+                        ['Teanu',167.9701,-11.6304],['Makalom',166.1999,-10.1684],
+                        ['Pidgeon Island',166.2948,-10.3035],['Matema Island',166.1834,-10.2924],
+                        ['Ngandeli',166.2990,-10.3052],['Thursday Island',142.2194,-10.5799],
+                        ['Horn Island',142.2869,-10.6116],['Murray Island',144.0494,-0.9186],
+                        ['Badu Island',142.1275,-10.1164],['Sabai Island',142.2231,-9.4051],
+                        ['Boigu Island',143.7790,-9.2741],['Erub Island',166.2990,-9.4217],
+                        ['Dauan Island',142.5632,-9.4217],['Yorke Island',143.4082,-9.7516],
+                        ['Moa Island',142.2550,-10.1706],['Mabiuag Island',142.1833,-9.9553],
+                        ['Yam Island',142.7750,-9.9030],['Booby Island',141.9111,-10.6046],
+                        ['Poruma Island',143.0694,-10.0497],['Prince of Wales Island',142.1700,-10.6791],
+                        ['Bramble Cay',143.8761,-9.1425],['Turnagain Island',142.2922,-9.5621],
+                        ['Turtle Head Island',142.6761,-10.9239],['Sue Islet',142.8246,-10.2082],
+                        ['Gabba Island',142.6360,-9.7684],['Mount Adolphus Island',142.6520,-10.6320],
+                        ['Crab Island',142.1090,-10.9946],['Warul Kawa Indigenous Protected Area',141.5729,-9.5248],
+                        ['Halfway Island',143.3211,-10.1055],['Kerr Islet',141.5650,-9.6127],
+                        ['Port Lihou Island',142.2364,-10.7234],['Portlock Island TS',142.3590,-10.1165],
+                        ['Cap Islet*',0,0],['Middle Brother Islet QLD',142.6807,-10.7112],
+                        ['Whale Island*',0,0],['Castle Island*',0,0],
+                        ['Saddle Island',0,0],['Aukane Islet*',143.3940,-9.8694],
+                        ['Bush Islet*',0,0],['Layoak Islet',143.3090,-9.8622],
+                        ['Roberts Islet',0,0]]
+        
+        points = []
+        for island in islands_list:
+           points.append([island[1],island[2]])
 
+        isl_hex_array = self.points_in_polygon(gArray,points,'Island')
         for poly in range (0, num_poly):
             inPoly = False
             progress = int((poly/num_poly)*100)
-            gArray[poly]['properties']['Aust'] = 0
+            isl_hex_array[poly]['properties']['Aust'] = 0
             # get the reference sub polygons
             #try centroid
-            c_lon = gArray[poly]['properties']['lon']
-            c_lat = gArray[poly]['properties']['lat']
             
-            for point in gArray[poly]['geometry']['coordinates'][0]:
-                for subpolyptr in range(len(shapes[0].parts)-1):
-                    sub_coords = big_coords[shapes[0].parts[subpolyptr]:shapes[0].parts[subpolyptr+1]]
-                    path = mpltPath.Path(sub_coords)
+            c_lon = isl_hex_array[poly]['properties']['lon']
+            c_lat = isl_hex_array[poly]['properties']['lat']
+            if isl_hex_array[poly]['properties']['Island'] > 0:
+                inPoly = True
+                isl_hex_array[poly]['properties']['Aust'] = 1
+                hcount += 1
+            else:
+                
+                for point in isl_hex_array[poly]['geometry']['coordinates'][0]:
+                    for subpolyptr in range(len(shapes[0].parts)-1):
+                        sub_coords = big_coords[shapes[0].parts[subpolyptr]:shapes[0].parts[subpolyptr+1]]
+                        path = mpltPath.Path(sub_coords)
 
-                    
-                    (i,key_values_array) = (0,[])
-#                    G-NAF locaity centroids coming soon
-#                    This is a workaround :(
-                    for island in missing_islands:
+                        (i,key_values_array) = (0,[])
+                                                  
                         if inPoly is False:
-                            if path.contains_point([island[1],island[2]]) is True:
+                            if path.contains_point([c_lon,c_lat]) is True:
                                 inPoly = True
-                                gArray[poly]['properties']['Aust'] = 1
+                                isl_hex_array[poly]['properties']['Aust'] = 1
                                 isectArray.append(gArray[poly])
                                 hcount += 1
-                                
-                    if inPoly is False:
-                        if path.contains_point([c_lon,c_lat]) is True:
-                            inPoly = True
-                            gArray[poly]['properties']['Aust'] = 1
-                            isectArray.append(gArray[poly])
-                            hcount += 1
-                    if inPoly is False: 
-                        if path.contains_point([point[0],point[1]]) is True:
-                            inPoly = True
-                            gArray[poly]['properties']['Aust'] = 1
-                            isectArray.append(gArray[poly])
-                            hcount += 1
-                    
-
+                            
+                        if inPoly is False: 
+                            if path.contains_point([point[0],point[1]]) is True:
+                                inPoly = True
+                                isl_hex_array[poly]['properties']['Aust'] = 1
+                                isectArray.append(gArray[poly])
+                                hcount += 1
+                            
             if progress is not last_progress:
                 print(progress,'% progress -',poly,'polygons processed for',hcount,'intersecting polygons for output')
                 last_progress = progress
