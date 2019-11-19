@@ -40,19 +40,17 @@ def hexagons(theshape,b_north, b_south, b_east, b_west, theradial):
     intersects = fred.intersections(hors,verts)
 
     hexagon_array = fred.hex_array(intersects,len(hors),len(verts))
-
-    aus_hex_array = fred.poly_intersection(hexagon_array)   
-    fred.to_geojson_file(aus_hex_array)
-
-    fred.to_shp_file(aus_hex_array)
+    fred.to_geojson_file(hexagon_array,'{fname}_layer')
+    fred.to_kml_file(hexagon_array,'{fname}_layer')
+    fred.to_shp_file(hexagon_array,'{fname}_layer')
     
-    fred.to_kml_file(aus_hex_array)
-#    points = random_points(-8, -45, 168, 96,10)
-#
-#    new_hex_array = fred.points_in_polygon(hexagon_array,points,'Test')
-#
-#    the_geojson = fred.to_geojson_fmt(new_hex_array)
-#
+    #the_geojson = fred.to_geojson_fmt(new_hex_array)
+    aus_hex_array = fred.aus_poly_intersect(hexagon_array)
+    fred.to_geojson_file(aus_hex_array,'aus_{fname}_layer')
+    fred.to_kml_file(aus_hex_array,'aus_{fname}_layer')
+    fred.to_shp_file(aus_hex_array,'aus_{fname}_layer')
+
+
 #    hex_points = fred.points_and_polygons(new_hex_array)
 #    intersect_poly = fred.neighbours(hex_points)
 
@@ -73,22 +71,19 @@ def boxes(shape,b_north,south,east,west,theradial):
 
     box_array = fred.box_array(intersects,len(hors),len(verts))
 
-    aus_box_array = fred.poly_intersection(box_array)   
-    fred.to_geojson_file(aus_box_array)
-
-    fred.to_shp_file(aus_box_array)
+    box_array = fred.box_array(intersects,len(hors),len(verts))
+    fred.to_geojson_file(box_array,'{fname}_layer')
+    fred.to_kml_file(box_array,'{fname}_layer')
+    fred.to_shp_file(box_array,'{fname}_layer')
     
-    fred.to_kml_file(aus_box_array)
-#    points = random_points(-8, -45, 168, 96,10)
-#
-#    new_box_array = fred.points_in_polygon(box_array,points,'Test')
-#
-#    the_geojson = fred.to_geojson_fmt(new_box_array)
-#
-#    box_points = fred.points_and_polygons(new_box_array)
-#    intersect_poly = fred.neighbours(box_points)
+    #the_geojson = fred.to_geojson_fmt(new_hex_array)
+    aus_box_array = fred.aus_poly_intersect(box_array)
+    fred.to_geojson_file(aus_box_array,'aus_{fname}_layer')
+    fred.to_kml_file(aus_box_array,'aus_{fname}_layer')
+    fred.to_shp_file(aus_box_array,'aus_{fname}_layer')
 
-    
+#    box_points = fred.points_and_polygons(aus_box_array)
+#    intersect_poly = fred.neighbours(box_points)    
 
 
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
@@ -96,7 +91,7 @@ print('Argument List: {0}'.format(str(sys.argv)))
 if len(sys.argv) is 1:
 
     (shape, b_north, b_south, b_east, b_west, radial_d) =\
-    ['hex', -8, -45, 168, 96, 57]
+    ['hex', -8, -45, 169, 96, 57]
     #do_map('hex',radial_d)
     hexagons('hex',b_north, b_south, b_east, b_west, radial_d)
 else:
