@@ -2,13 +2,13 @@
 *A good visualisation is worth the wait(weight).*
 
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/polygons_output.png)
-*output of polygons.py*
+*output of polygons.py as png output and reference points for islands added in QGIS*
 
 
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/rel_need_for_assistance_by_place_weight.png)
 
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/rel_need_for_assistance_by_area_weight.png)
-*output of map_me.py with reference points for islands added in QGIS*
+*output of map_me.py *
 
 ## See for yourself ##
 
