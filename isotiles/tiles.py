@@ -10,7 +10,7 @@ import matplotlib.path as mpltPath
 import shapefile
 import simplekml
 
-from isotiles.parameters import Bounding_Box, OSVars, Offsets, DataSets, Defaults
+from isotiles.parameters import Bounding_Box, OSVars, Offsets, DataSets, Defaults, POI
 
 class Tiles():
     """
@@ -427,9 +427,14 @@ class Tiles():
                           sep = ',')
         return tabular_df
 
-    def to_shp_file(self,GArray):
+    def to_shp_file(self,GArray,fNameTempl):
         #tabular_list = []
-        fPath = 'shapefiles{slash}{shape}_{size}km_layer'.format(shape = self.Shape, size = self.Radial, slash = self.Slash, sfPath = self.shapefilesPath)
+        fName = 'shapefiles{slash}'+fNameTempl
+        fPath = fName.format(shape = self.Shape,
+                             size = self.Radial,
+                             slash = self.Slash,
+                             sfPath = self.shapefilesPath,
+                             fname = self.FName)
         prjPath = fPath + '.prj'
         w = shapefile.Writer(fPath) # , shapeType=3)
         #setup columns
@@ -465,6 +470,8 @@ class Tiles():
             #w.record(n)
         w.close()    
         # create the PRJ file
+        msg = 'writing shapefile formatted {shape} dataset to file:' + fNameTempl +'.shp'
+        print(msg.format(shape = self.Shape, fname = self.FName))  
         prj = open(prjPath, "w")
         epsg = 'GEOGCS["WGS 84",'
         epsg += 'DATUM["WGS_1984",'
@@ -474,8 +481,14 @@ class Tiles():
         prj.write(epsg)
         prj.close()
 
-    def to_kml_file(self,GArray):
-        fPath = '{kPath}{slash}{shape}_{size}km_layer.kml'.format(kPath = self.kmlfilesPath, shape = self.Shape, size = self.Radial, slash = self.Slash, sfPath = self.shapefilesPath)
+    def to_kml_file(self,GArray,fNameTempl):
+        fName = '{kPath}{slash}'+fNameTempl+'.kml'
+        fPath = fName.format(kPath = self.kmlfilesPath,
+                             shape = self.Shape,
+                             size = self.Radial,
+                             slash = self.Slash,
+                             sfPath = self.shapefilesPath,
+                             fname = self.FName)
         kml = simplekml.Kml()
         #setup columns
         props_dict = GArray[0]['properties']
@@ -519,13 +532,14 @@ class Tiles():
             pol.description = rec_descr
             pol.style.polystyle.fill = 0
             
-                
+        msg = 'writing kml formatted {shape} dataset to file:' + fNameTempl +'.kml'
+        print(msg.format(shape = self.Shape, fname = self.FName))       
         kml.save(fPath)
 
     def to_geojson_fmt(self,gArray):
         return FeatureCollection(gArray) 
 
-    def to_geojson_file(self,gArray):
+    def to_geojson_file(self,gArray,fNameTempl):
         """
         Write string to file
         
@@ -536,9 +550,10 @@ class Tiles():
         """
         ...
         content = FeatureCollection(gArray)
-        print('writing geojson formatted {shape} dataset to file: {fname}_layer.json'\
-              .format(shape = self.Shape, fname = self.FName))
-        myfile = open('geojson{slash}{fname}_layer.json'.format(fname = self.FName,slash = self.Slash), 'w')
+        msg = 'writing geojson formatted {shape} dataset to file:' + fNameTempl +'.json'
+        print(msg.format(shape = self.Shape, fname = self.FName))
+        fName = 'geojson{slash}'+fNameTempl+'.json'
+        myfile = open(fName.format(fname = self.FName,slash = self.Slash), 'w')
         #open file for writing geojson layer in geojson format
         myfile.write(str(content))  # write geojson layer to open file
         myfile.close()  # close file
@@ -613,9 +628,10 @@ class Tiles():
                 
         return gArray
 
-    def poly_intersection(self,gArray):
+    def new_poly_intersect(self,gArray):
         # load the shapefile
         sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
+        thePoints = POI.Islands()
         # shapefile contains multipolygons
         shapes = sf.shapes()
         big_coords = shapes[0].points
@@ -623,60 +639,91 @@ class Tiles():
         hcount = 0
         # get the query polygons
         (point_list, num_poly,isectArray) = ([], len(gArray),[])
-        print('Adding Islands')
-        islands_list = [['West Island Cocos Islands',96.8417393,-12.1708739],['Home Island Cocos Islands',96.8975,-12.1178],
-                        ['Norfolk Island',167.9547,-29.0408],['Asmore and Cartier Islands',123.03833318,-12.25499898 ],
-                        ['Christmas Island',105.6229817,-10.4912311],['North Stradbroke Island',153.4626,-27.5323],
-                        ['South Stradbroke Island',153.4213,-27.8335],['Willis Island',149.9650,-16.2880],
-                        ['Renell Island',160.2646,-11.6633],['Makira',161.8097,-10.5737],
-                        ['Vanikoro',166.9000,-11.6500],['Aneityum',160.2646,-11.6633],
-                        ['Tagula Island',153.4626,-11.5150],['Nendo Island',165.9321,-11.6633],
-                        ['Utupia Island',166.5373,-11.2495],['Lomlom',166.2667,-10.2833],
-                        ['Pileni',166.2472,-10.1733],['Nifiloli',166.2993,-10.1865],
-                        ['Fenualoa',166.9701,-10.2500],['Nikapu',166.0503,-10.0818],
-                        ['Teanu',167.9701,-11.6304],['Makalom',166.1999,-10.1684],
-                        ['Pidgeon Island',166.2948,-10.3035],['Matema Island',166.1834,-10.2924],
-                        ['Ngandeli',166.2990,-10.3052],['Thursday Island',142.2194,-10.5799],
-                        ['Horn Island',142.2869,-10.6116],['Murray Island',144.0494,-0.9186],
-                        ['Badu Island',142.1275,-10.1164],['Sabai Island',142.2231,-9.4051],
-                        ['Boigu Island',143.7790,-9.2741],['Erub Island',166.2990,-9.4217],
-                        ['Dauan Island',142.5632,-9.4217],['Yorke Island',143.4082,-9.7516],
-                        ['Moa Island',142.2550,-10.1706],['Mabiuag Island',142.1833,-9.9553],
-                        ['Yam Island',142.7750,-9.9030],['Booby Island',141.9111,-10.6046],
-                        ['Poruma Island',143.0694,-10.0497],['Prince of Wales Island',142.1700,-10.6791],
-                        ['Bramble Cay',143.8761,-9.1425],['Turnagain Island',142.2922,-9.5621],
-                        ['Turtle Head Island',142.6761,-10.9239],['Sue Islet',142.8246,-10.2082],
-                        ['Gabba Island',142.6360,-9.7684],['Mount Adolphus Island',142.6520,-10.6320],
-                        ['Crab Island',142.1090,-10.9946],['Warul Kawa Indigenous Protected Area',141.5729,-9.5248],
-                        ['Halfway Island',143.3211,-10.1055],['Kerr Islet',141.5650,-9.6127],
-                        ['Port Lihou Island',142.2364,-10.7234],['Portlock Island TS',142.3590,-10.1165],
-                        ['Cap Islet*',0,0],['Middle Brother Islet QLD',142.6807,-10.7112],
-                        ['Whale Island*',0,0],['Castle Island*',0,0],
-                        ['Saddle Island',0,0],['Aukane Islet*',143.3940,-9.8694],
-                        ['Bush Islet*',0,0],['Layoak Islet',143.3090,-9.8622],
-                        ['Roberts Islet',0,0]]
         
+        print('Adding Coastline')
+        points = []
+        for point in big_coords:
+            points.append(point[0],point[1])
+
+        loc_hex_array = self.points_in_polygon(gArray,points,'Poly')
+        
+        for poly in range (0, num_poly):
+            inPoly = False
+            progress = int((poly/num_poly)*100)
+            loc_hex_array[poly]['properties']['Aust'] = 0
+            # get the reference sub polygons
+            #try centroid
+            
+            c_lon = loc_hex_array[poly]['properties']['lon']
+            c_lat = loc_hex_array[poly]['properties']['lat']
+            if loc_hex_array[poly]['properties']['Poly'] > 0:
+                inPoly = True
+                loc_hex_array[poly]['properties']['Aust'] = 1
+                isectArray.append(loc_hex_array[poly])
+                hcount += 1
+                            
+            if progress is not last_progress:
+                print(progress,'% progress:',poly,'polygons processed for',hcount,'intersections for output')
+                last_progress = progress
+
+        return isectArray
+
+
+    def aus_poly_intersect(self,gArray):
+        # load the shapefile
+        sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
+        thePoints = POI.Islands()
+        # shapefile contains multipolygons
+        shapes = sf.shapes()
+        big_coords = shapes[0].points
+        last_progress = -999
+        hcount = 0
+        # get the query polygons
+        (point_list, num_poly,isectArray) = ([], len(gArray),[])
+
+        print('Adding the Boundary/Coast Line points')
+        points = []
+        for point in big_coords:
+            points.append([point[0],point[1]])
+
+        bdy_poly_array = self.points_in_polygon(gArray,points,'Boundary')
+
+        print('Adding Island points')
+
+        islands_list = thePoints.Coords
         points = []
         for island in islands_list:
            points.append([island[1],island[2]])
 
-        isl_hex_array = self.points_in_polygon(gArray,points,'Island')
+        isl_poly_array = self.points_in_polygon(bdy_poly_array,points,'Island')
+        
+        print('Adding GNAF Locality points')
+        thePoints = POI.GNAFLocalities()
+        localities_list = thePoints.Coords
+        points = []
+        for locality in localities_list:
+           points.append([locality[4],locality[3]])
+
+        loc_poly_array = self.points_in_polygon(isl_poly_array,points,'Locality')
+        poly_progress = []
         for poly in range (0, num_poly):
             inPoly = False
             progress = int((poly/num_poly)*100)
-            isl_hex_array[poly]['properties']['Aust'] = 0
+            loc_poly_array[poly]['properties']['Aust'] = 0
             # get the reference sub polygons
             #try centroid
             
-            c_lon = isl_hex_array[poly]['properties']['lon']
-            c_lat = isl_hex_array[poly]['properties']['lat']
-            if isl_hex_array[poly]['properties']['Island'] > 0:
+            c_lon = loc_poly_array[poly]['properties']['lon']
+            c_lat = loc_poly_array[poly]['properties']['lat']
+            if loc_poly_array[poly]['properties']['Island'] > 0 or loc_poly_array[poly]['properties']['Locality'] > 0 or loc_poly_array[poly]['properties']['Boundary'] > 0:
                 inPoly = True
-                isl_hex_array[poly]['properties']['Aust'] = 1
+                loc_poly_array[poly]['properties']['Aust'] = 1
+                isectArray.append(loc_poly_array[poly])
+                poly_progress.append(loc_poly_array[poly]['properties']['p'])
                 hcount += 1
             else:
                 
-                for point in isl_hex_array[poly]['geometry']['coordinates'][0]:
+                for point in loc_poly_array[poly]['geometry']['coordinates'][0]:
                     for subpolyptr in range(len(shapes[0].parts)-1):
                         sub_coords = big_coords[shapes[0].parts[subpolyptr]:shapes[0].parts[subpolyptr+1]]
                         path = mpltPath.Path(sub_coords)
@@ -686,19 +733,23 @@ class Tiles():
                         if inPoly is False:
                             if path.contains_point([c_lon,c_lat]) is True:
                                 inPoly = True
-                                isl_hex_array[poly]['properties']['Aust'] = 1
-                                isectArray.append(gArray[poly])
+                                loc_poly_array[poly]['properties']['Aust'] = 1
+                                isectArray.append(loc_poly_array[poly])
+                                poly_progress.append(loc_poly_array[poly]['properties']['p'])
                                 hcount += 1
                             
                         if inPoly is False: 
                             if path.contains_point([point[0],point[1]]) is True:
                                 inPoly = True
-                                isl_hex_array[poly]['properties']['Aust'] = 1
-                                isectArray.append(gArray[poly])
+                                loc_poly_array[poly]['properties']['Aust'] = 1
+                                isectArray.append(loc_poly_array[poly])
+                                poly_progress.append(loc_poly_array[poly]['properties']['p'])
                                 hcount += 1
                             
             if progress is not last_progress:
-                print(progress,'% progress -',poly,'polygons processed for',hcount,'intersecting polygons for output')
+                print(progress,'% progress:',poly,'polygons processed for',hcount,'intersections for output')
+                print(poly_progress)
                 last_progress = progress
-
+                poly_progress = []
         return isectArray
+
