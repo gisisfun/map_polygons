@@ -8,7 +8,7 @@
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/rel_need_for_assistance_by_place_weight.png)
 
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/rel_need_for_assistance_by_area_weight.png)
-*output of map_me.py*
+*output of map_me.py with reference points for islands added in QGIS*
 
 ## See for yourself ##
 
