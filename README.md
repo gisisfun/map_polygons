@@ -4,6 +4,8 @@
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/polygons_output.png)
 *output of polygons.py as png output and reference points for islands added in QGIS*
 
+**Why Wait?**
+The Python approach to cutting out the shape of 'australia' from the derived polygon dataset is not as efficient as using an SQL approach. SQL is efficient but no where near as flexible as Python. Using Python allows for the addition ut out the desired shape and point of interest attributes can be added and the SQL in the *poly_wt.py* code only has to perform the area and place weighting functions.  
 
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/rel_need_for_assistance_by_place_weight.png)
 
