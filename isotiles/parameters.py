@@ -232,7 +232,19 @@ class POI:
                             ['Vanderlin Island',137.033333,-15.733333],['South Island (South Australia)',136.83,-35.23],
                             ['Taylor Island',136.006687,-34.877966],['Thistle Island',136.141641,-34.998824],
                             ['Torrens Island',138.529276,-34.793225],['Troubridge Island',137.82733,-35.11766],
-                            ['Magnetic Island',146.833333,-19.133333],['Great Palm Island',146.617699,-18.73633]]
+                            ['Magnetic Island',146.833333,-19.133333],['Great Palm Island',146.617699,-18.73633],
+                            ['Fraser Island', 153.133333,-25.216667],['Moreton Island',153.4,-27.166667],
+                            ['Wilson Island (Queensland)',151.915628,-23.304464],['Crab Island (Queensland)',142.106,-10.973],
+                            ['Daydream Island',148.814,-20.2567],['Whitsunday Island',148.966667,-20.25],
+                            ['Lindeman Island',149.033333,-20.45],['South Molle Island',148.830253,-20.249569],
+                            ['Duncan Islands',142.077055,-10.235988],['Gore Island (Queensland)',143.249,-11.99],
+                            ['North West Island Reef',151.709763,-23.2954],['Dolphin Island',116.8525,-20.495278],
+                            ['Legendre Island',116.878889,-20.389167],['Gidley Island',116.819444,-20.449722],
+                            ['Hauy Island',116.966944,-20.435556],['Angel Island',116.807778,-20.4875],
+                            ['Hawk Island',136.899548,-13.668352],['Lane Island',136.92998,-13.66287],
+                            ['Unknown Island',143.7222,-13.4930],['Unknown Island',146.5703,-16.3789],
+                            ['Unknown Island',134.269,-33.949],['Unknown Island',142.9948,-11.0098],
+                            ['Unknown Island',143.0194,-11.1097]]
     class GeoNames:
         __slots__= ('Coords')
         def __init__(self):

@@ -258,7 +258,7 @@ class Tiles():
         (inc_by_rem, inc_adj) = (p_tuple[0][rem_lat],p_tuple[1][rem_lat])
 
         print('\n4/7 deriving hexagon polygons from intersection data')
-        (row,last_lat_row, hexagon) = (1,0,0)
+        (row,last_lat_row, poly_id) = (1,0,0)
 
         while (top_left < (max_h) * (max_v)):
             vertex = [1 + top_left, 2 + top_left, max_v + 3 + top_left, \
@@ -272,26 +272,24 @@ class Tiles():
                                intersect_list[vertex[4]], \
                                intersect_list[vertex[5]], \
                                intersect_list[vertex[0]]]
-                (vertex00, vertex01, vertex20, vertex21, vertex50, vertex51) = \
-                           (intersect_list[vertex[0]][0], \
-                            intersect_list[vertex[0]][1], \
-                            intersect_list[vertex[2]][0], \
-                            intersect_list[vertex[2]][1], \
-                            intersect_list[vertex[5]][0], \
-                            intersect_list[vertex[5]][1])
+                (vertex00, vertex01, vertex20, vertex21,vertex30, vertex31, vertex50, vertex51) = \
+                           (intersect_list[vertex[0]][0], intersect_list[vertex[0]][1], \
+                            intersect_list[vertex[2]][0], intersect_list[vertex[2]][1], \
+                            intersect_list[vertex[3]][0], intersect_list[vertex[3]][1], \
+                            intersect_list[vertex[5]][0], intersect_list[vertex[5]][1])
                 centre_lat = vertex01 + (vertex51 - vertex01) / 2
                 centre_lon = vertex00 + (vertex50 - vertex00) / 2
 
                 if (centre_lat is not last_lat_row) or last_lat_row is 0:
                     (bounds_n,bounds_s, bounds_e, bounds_w) = \
-                                        (vertex01, vertex21, vertex20, vertex50)
+                                        (vertex01, vertex31, vertex20, vertex50)
                     last_lat_row = centre_lat
                     geopoly = Polygon([poly_coords])
-                    hexagon += 1
+                    poly_id += 1
                     est_area = (((3 * sqrt(3)) / 2) * pow(self.Radial, 2)) * 0.945
                     #estimate polygon area
                     geopoly = Feature(geometry = geopoly, properties = \
-                                      {"p": hexagon,"row": row, \
+                                      {"p": poly_id,"row": row, \
                                        "lat": centre_lat, "lon": centre_lon, \
                                        "N": bounds_n, "S": bounds_s, \
                                        "E": bounds_e, "W": bounds_w, \
@@ -312,7 +310,7 @@ class Tiles():
                 donothing = True
 
             (last_row, last_lat_row) = (row, centre_lat)
-            row = int(1 + int(hexagon / poly_row_count))
+            row = int(1 + int(poly_id / poly_row_count))
             top_left += lat_offset
             if row is not last_row:
                 top_left += inc_adj
@@ -396,10 +394,10 @@ class Tiles():
 
         for n in range (0, num_poly):
             num_coords = len(GArray[n]['geometry']['coordinates'][0])-2
-            hexagon = GArray[n]['properties']['p']
+            poly_id = GArray[n]['properties']['p']
             for i in range(0, num_coords):
                 point_list.append( \
-                    [hexagon, str(GArray[n]['geometry']['coordinates'][0][i][0]) + \
+                    [poly_id, str(GArray[n]['geometry']['coordinates'][0][i][0]) + \
                      str(GArray[n]['geometry']['coordinates'][0][i][1])])
         return point_list
 
@@ -589,7 +587,7 @@ class Tiles():
                                sep = ',', index = False)
 
   
-    def points_in_polygon(self, gArray, lat_longs, QLabel):
+    def points_in_polygon(self, gArray, lat_longs, gLabel):
         """
         Counts for lat_longs generated
         """
@@ -599,7 +597,7 @@ class Tiles():
         lat_longs_df=pd.DataFrame(lat_longs)
         lat_longs_df.columns = ['longitude','latitude']
         for poly in range (0, num_poly):
-            hexagon = gArray[poly]['properties']['p']
+            poly_id = gArray[poly]['properties']['p']
             p_count = 0
             bound_points_df = lat_longs_df[(lat_longs_df['latitude'] >=\
                                             gArray[poly]['properties']['S']) & \
@@ -609,10 +607,12 @@ class Tiles():
                                             gArray[poly]['properties']['E']) & \
                                            (lat_longs_df['longitude'] >=\
                                             gArray[poly]['properties']['W'])]
+            #this is dodgy but it works for now
+            if bound_points_df.size is 2:
+                bound_points_df.append(bound_points_df)
 
-            total_rows = len(bound_points_df) 
-            if (total_rows >= 1):
-                (p_count, poly_coords) = (0, [])
+            if (bound_points_df.size > 0):
+                poly_coords = []
                 num_coords = len(gArray[poly]['geometry']['coordinates'][0])-2
                 for coord in range(0, num_coords):
                     poly_coords.append( \
@@ -622,51 +622,11 @@ class Tiles():
 
                 for index, row in bound_points_df.iterrows():
                     if path.contains_point([row['longitude'],row['latitude']]) is True:
-                           p_count += 1 
+                        p_count += 1 
                                     
-            gArray[poly]['properties'][QLabel] = float(p_count)
+            gArray[poly]['properties'][gLabel] = float(p_count)
                 
         return gArray
-
-    def new_poly_intersect(self,gArray):
-        # load the shapefile
-        sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
-        thePoints = POI.Islands()
-        # shapefile contains multipolygons
-        shapes = sf.shapes()
-        big_coords = shapes[0].points
-        last_progress = -999
-        hcount = 0
-        # get the query polygons
-        (point_list, num_poly,isectArray) = ([], len(gArray),[])
-        
-        print('Adding Coastline')
-        points = []
-        for point in big_coords:
-            points.append(point[0],point[1])
-
-        loc_hex_array = self.points_in_polygon(gArray,points,'Poly')
-        
-        for poly in range (0, num_poly):
-            inPoly = False
-            progress = int((poly/num_poly)*100)
-            loc_hex_array[poly]['properties']['Aust'] = 0
-            # get the reference sub polygons
-            #try centroid
-            
-            c_lon = loc_hex_array[poly]['properties']['lon']
-            c_lat = loc_hex_array[poly]['properties']['lat']
-            if loc_hex_array[poly]['properties']['Poly'] > 0:
-                inPoly = True
-                loc_hex_array[poly]['properties']['Aust'] = 1
-                isectArray.append(loc_hex_array[poly])
-                hcount += 1
-                            
-            if progress is not last_progress:
-                print(progress,'% progress:',poly,'polygons processed for',hcount,'intersections for output')
-                last_progress = progress
-
-        return isectArray
 
 
     def aus_poly_intersect(self,gArray):
@@ -705,21 +665,21 @@ class Tiles():
            points.append([locality[4],locality[3]])
 
         loc_poly_array = self.points_in_polygon(isl_poly_array,points,'Locality')
-        poly_progress = []
+
+        (poi_progress, cent_progress, poly_progress) = ([],[],[])
         for poly in range (0, num_poly):
             inPoly = False
             progress = int((poly/num_poly)*100)
             loc_poly_array[poly]['properties']['Aust'] = 0
             # get the reference sub polygons
             #try centroid
-            
             c_lon = loc_poly_array[poly]['properties']['lon']
             c_lat = loc_poly_array[poly]['properties']['lat']
             if loc_poly_array[poly]['properties']['Island'] > 0 or loc_poly_array[poly]['properties']['Locality'] > 0 or loc_poly_array[poly]['properties']['Boundary'] > 0:
                 inPoly = True
                 loc_poly_array[poly]['properties']['Aust'] = 1
                 isectArray.append(loc_poly_array[poly])
-                poly_progress.append(loc_poly_array[poly]['properties']['p'])
+                poi_progress.append(loc_poly_array[poly]['properties']['p'])
                 hcount += 1
             else:
                 
@@ -728,14 +688,14 @@ class Tiles():
                         sub_coords = big_coords[shapes[0].parts[subpolyptr]:shapes[0].parts[subpolyptr+1]]
                         path = mpltPath.Path(sub_coords)
 
-                        (i,key_values_array) = (0,[])
+                        #(i,key_values_array) = (0,[])
                                                   
                         if inPoly is False:
                             if path.contains_point([c_lon,c_lat]) is True:
                                 inPoly = True
                                 loc_poly_array[poly]['properties']['Aust'] = 1
                                 isectArray.append(loc_poly_array[poly])
-                                poly_progress.append(loc_poly_array[poly]['properties']['p'])
+                                cent_progress.append(loc_poly_array[poly]['properties']['p'])
                                 hcount += 1
                             
                         if inPoly is False: 
@@ -748,8 +708,13 @@ class Tiles():
                             
             if progress is not last_progress:
                 print(progress,'% progress:',poly,'polygons processed for',hcount,'intersections for output')
-                print(poly_progress)
+                print('1. poi:',poi_progress)
+                print('2. centroid:',cent_progress)
+                print('3. poly:',poly_progress)
+                
+                
                 last_progress = progress
-                poly_progress = []
+                (poi_progress, cent_progress, poly_progress) = ([],[],[])
+        #return loc_poly_array
         return isectArray
 
