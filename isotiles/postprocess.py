@@ -3,8 +3,6 @@ import os
 import pandas as pd
 
 #PostProcess
-import urllib.request
-from pyunpack import Archive
 import sqlite3
 import subprocess
 
@@ -59,55 +57,7 @@ class PostProcess():
             self.Spatialite = ntvars.Spatialite
 
         
-    def file_deploy(self,RData):
-        """
-        Deploy downloaded files
-        
-        Prerequisites:
-        ref_files
-        
-        Input variables:
-        """
-        if not os.path.isfile(RData.FilePath.format(slash = self.Slash)):
-            print('Downloading {descr} file in {fmt} file format'\
-                  .format(fmt = RData.Format, descr = RData.Description))
-            if RData.DownURL is not '':
-                urllib.request.urlretrieve(RData.DownURL, RData.ZipPath.format(slash = self.Slash))
-                print('Unzipping {descr} file in {fmt} file format'\
-                      .format(descr = RData.Description, fmt = RData.Format ))
-                Archive(RData.ZipPath.format(slash = self.Slash)).extractall(RData.ZipDir\
-                                                                             .format(slash = self.Slash))
-        else:
-            print('{descr} file in {fmt} file format exists'\
-                  .format(descr = RData.Description, fmt = RData.Format))
-
-
-    def ref_files(self):
-        """
-        Get reference files
-        Prerequisites:
-        
-        Input variables:
-        """
-        RefData = DataSets.Australia.ShapeFormat()
-        self.file_deploy(RefData)
-
-        RefData = DataSets.Australia.TabFormat()
-        self.file_deploy(RefData)
-
-        RefData = DataSets.Statistical_Areas_Level_1_2011.ShapeFormat()
-        self.file_deploy(RefData)
-
-        RefData = DataSets.Statistical_Areas_Level_1_2016.ShapeFormat()
-        self.file_deploy(RefData)
-
-        RefData = DataSets.AGIL_Dataset.CSVFormat()
-        self.file_deploy(RefData)
-
-        RefData = DataSets.OpenStreetMaps.ShapeFormat()
-        self.file_deploy(RefData)
-
-
+ 
         
     def vrt_shape_and_size (self,dirname, file, newfile):
         infile = open("{dirname}{slash}{file}".\
