@@ -7,7 +7,7 @@
 **Why Wait?**
 The Python approach to cutting out the shape of 'australia' from the derived polygon dataset is not as efficient as using an SQL approach. SQL is efficient but no where near as flexible as Python. If you are not blending region based statistics into the final data set then the 'aus_(hex or box)_(size in km)km_layer' file in kml, geojson and shapefile will meet your needs.
 
-If you in a hurry then skip the 'aus_poly_intersect' section of the code and proceed to **poly_wt.py**
+If you are in a hurry then skip the 'aus_poly_intersect' section of the code and proceed to **poly_wt.py**
 
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/rel_need_for_assistance_by_place_weight.png)
 
@@ -37,7 +37,7 @@ Note: additional operating system libraries are not required for the python modu
 - **sqlite3** for accessing for **spatialite** content and processing large tables of tabular content.
 Note: Operating system libraries are required for GDAL support.
 
-*Visulaisation* - map_me.py
+*Visulisation* - map_me.py
 - **geopandas**, **numpy** and **matplotlib** for making really good maps.
 - **QGIS** or your favourite GIS Package.
 - **You** can contribute or make something better
