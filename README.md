@@ -5,7 +5,7 @@
 *output of polygons.py as png output and reference points for islands added in QGIS*
 
 **Why Wait?**
-The Python approach to cutting out the shape of 'australia' from the derived polygon dataset is not as efficient as using an SQL approach. SQL is efficient but no where near as flexible as Python. Using Python allows for the addition ut out the desired shape and point of interest attributes can be added and the SQL in the *poly_wt.py* code only has to perform the area and place weighting functions.  
+The Python approach to cutting out the shape of 'australia' from the derived polygon dataset is not as efficient as using an SQL approach. SQL is efficient but no where near as flexible as Python. If you are not blending region based statistics into the final data set then the 'aus_(hex or box)_(size in km)km_layer' file in kml, geojson and shapefile will meet your needs.
 
 If you in a hurry then skip the 'aus_poly_intersect' section of the code and proceed to **poly_wt.py**
 
