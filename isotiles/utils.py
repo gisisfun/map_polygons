@@ -1,7 +1,6 @@
 
 import urllib.request
 from pyunpack import Archive
-import subprocess
 
 from isotiles.parameters import Bounding_Box, OSVars, Offsets, DataSets, Defaults
 
