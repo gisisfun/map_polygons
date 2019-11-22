@@ -46,7 +46,7 @@ Note: Operating system libraries are required for GDAL support.
 **Useful Python and R Libraries**
 Choropleths (Thematic mapping) choroplethr (R) pysal (Python)
 
-**The Python Code will switch between Linux and Windows Enviromments (under development)**
+**The Python Code will switch between Linux and Windows Enviromments**
 
 For full functionality with Windows OS, download the OSGeo4W package and install the 'express install'. The code will map to the standard installation location on C drive. The code was originally bult for Linux OS. Linux has pretty good package management so no worries here. All python modules are installed using pip3. **polygons.py** has been tested and works with Linux and Windows.
 
@@ -70,7 +70,6 @@ Create/add a GDAL_PATH variable
 - C:\OSGeo4W64\share\gdal
 
 to the Windows environment variables for 'PATH' and path c:\OSGeo4W\share\gdal for 'GDAL_PATH' .You can 'pip3 install' your modules.
-
 **pygeogrids**
 
 https://pygeogrids.readthedocs.io/en/v0.1/_rst/pygeogrids.html 
