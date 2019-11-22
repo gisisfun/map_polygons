@@ -6,7 +6,9 @@
 
 **Why Wait?**
 The Python approach to cutting out the shape of 'australia' from the derived polygon dataset is not as efficient as using an SQL approach. SQL is efficient but no where near as flexible as Python. If you are not blending region based statistics into the final data set then the 'aus_(hex or box)_(size in km)km_layer' file in kml, geojson and shapefile will meet your needs.
-Note: two islands have added to yhecmap : Cocos Keeping Islands and Norfolk Island. Using SQL query joins or modification of the base mapping is required.
+
+Note: two islands have added to the map : Cocos Keeping Islands and Norfolk Island. Using SQL query joins or modification of the base mapping is required.
+
 If you are in a hurry then skip the 'aus_poly_intersect' section of the code and proceed to **poly_wt.py**
 
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/rel_need_for_assistance_by_place_weight.png)
