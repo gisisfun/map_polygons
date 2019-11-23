@@ -6,7 +6,7 @@ import pandas as pd
 import sqlite3
 import subprocess
 
-from isotiles.parameters import Bounding_Box, OSVars, Offsets, DataSets, Defaults
+from isotiles.parameters import Bounding_Box, OSVars, Offsets, Defaults
 
 class PostProcess():
 
