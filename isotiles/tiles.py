@@ -437,7 +437,7 @@ class Tiles():
         fPath = fName.format(shape = self.Shape,
                              size = self.Radial,
                              slash = self.Slash,
-                             sfPath = self.shapefilesPath,
+                             sfPath = self.ShapefilesPath,
                              fname = self.FName)
         prjPath = fPath + '.prj'
         w = shapefile.Writer(fPath) # , shapeType=3)
@@ -487,11 +487,10 @@ class Tiles():
 
     def to_kml_file(self,GArray,fNameTempl):
         fName = '{kPath}{slash}'+fNameTempl+'.kml'
-        fPath = fName.format(kPath = self.kmlfilesPath,
+        fPath = fName.format(kPath = self.KMLfilesPath,
                              shape = self.Shape,
                              size = self.Radial,
                              slash = self.Slash,
-                             sfPath = self.shapefilesPath,
                              fname = self.FName)
         kml = simplekml.Kml()
         #setup columns
