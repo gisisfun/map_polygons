@@ -47,12 +47,12 @@ class DataSets:
             __slots__= ('Description','Format','FilePath', 'DownURL', 'ZipDir', 'ZipPath')
             
             def __init__(self):
-                self.Description = 'ABS Australia'
+                self.Description = '2015 ABS Statistical Areas Level 1'
                 self.Format = 'Shape'
-                self.FilePath = 'shapefiles{slash}SA1_2011_AUST.shp'
+                self.FilePath = 'shapefiles{slash}SA1_2016_AUST.shp'
                 self.DownURL = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_sa1_2016_aust_tab.zip&1270.0.55.001&Data%20Cubes&39A556A0197D8C02CA257FED00140567&0&July%202016&12.07.2016&Latest'
                 self.ZipDir = 'shapefiles'
-                self.ZipPath ='shapefiles{slash}1270055001_sa1_2011_aust_shape.zip'
+                self.ZipPath ='shapefiles{slash}1270055001_sa1_2016_aust_shape.zip'
                 
     class AGIL_Dataset:
         
