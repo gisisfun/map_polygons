@@ -55,7 +55,7 @@ class DataSets:
                 self.FilePath = 'csv{slash}agil_locations20190208.csv'
                 self.DownURL = 'https://data.gov.au/dataset/34b1c164-fbe8-44a0-84fd-467dba645aa7/resource/625e0a41-6a30-4c11-9a20-ac64ba5a1d1f/download/agil_locations20190208.csv'                
                 self.ZipDir = 'csv'
-                self.ZipPath =''
+                self.ZipPath ='csv{slash}agil_locations20190208.csv'
                 
     class OpenStreetMaps:
         
