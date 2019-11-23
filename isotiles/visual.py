@@ -17,8 +17,22 @@ class Visual:
                  radial: Defaults = defaults.Radial,
                  shape: Defaults = defaults.Shape,
                  weight: Defaults = defaults.Weight,
+                 radial: Defaults = defaults.Radial,
+                 shape: Defaults = defaults.Shape,
                  images: Defaults = defaults.ImagesPath,
-                 shapefiles: Defaults = defaults.ShapefilesPath):
+                 metadata: Defaults = defaults.MetaDataPath,
+                 logfiles: Defaults = defaults.LogfilesPath,
+                 kmlfiles: Defaults = defaults.KMLfilesPath,
+                 shapefiles: Defaults = defaults.ShapefilesPath,
+                 geojson: Defaults = defaults.GeoJSONPath,
+                 vrt: Defaults = defaults.VRTPath,
+                 csv: Defaults = defaults.CSVPath,
+                 spatialite: Defaults = defaults.SpatialitePath,
+                 sql: Defaults = defaults.SQLPath,
+				 slash: Defaults = defaults.Slash,
+				 ogr2ogr_com: Defaults = defaults.Ogr2ogr,
+				 spatialite_com: Defaults = defaults.Spatialite,
+				 extn: Defaults = defaults.Extn):
         posixvars = OSVars.posix()
         ntvars = OSVars.nt()
         self.imagesPath = images
@@ -26,14 +40,7 @@ class Visual:
         self.Radial = radial
         self.Weight = weight 
         self.ShapefilesPath = shapefiles
-        my_os = str(os.name)
-        if (my_os is 'posix'):
-            self.Slash = posixvars.Slash # '/'
-            
-        else:
-            self.Slash = ntvars.Slash # '\\'
-            Gdal_vars = {'GDAL_DATA': 'C:\OSGeo4W64\share\gdal'}
-            os.environ.update(Gdal_vars)
+        self.Slash = slash
             
     def map_data(self):
         shp_path = "{shapePath}{slash}{shape}_{size}km_{weight}_11_16.shp".\

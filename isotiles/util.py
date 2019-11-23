@@ -20,9 +20,12 @@ class Util():
                  vrt: Defaults = defaults.VRTPath,
                  csv: Defaults = defaults.CSVPath,
                  spatialite: Defaults = defaults.SpatialitePath,
-                 sql: Defaults = defaults.SQLPath):
-        posixvars = OSVars.posix()
-        ntvars = OSVars.nt()
+                 sql: Defaults = defaults.SQLPath,
+				 slash: Defaults = defaults.Slash,
+				 ogr2ogr: Defaults = defaults.Ogr2ogr,
+				 spatialite: Defaults = defaults.Spatialite,
+				 extn: Defaults = defaults.Extn):
+
         os.environ['SPATIALITE_SECURITY'] = 'relaxed'
         self.Radial = radial
         self.Shape = shape
@@ -40,21 +43,10 @@ class Util():
         self.CSVPath = csv 
         self.SpatialitePath = spatialite
         self.SQLPath = sql
-        
-        my_os = str(os.name)
-        if (my_os is 'posix'):
-            self.Ogr2ogr = posixvars.Ogr2ogr # '/usr/bin/ogr2ogr'
-            self.Slash = posixvars.Slash # '/'
-            self.Extn = "SELECT load_extension('mod_spatialite.so');"
-            self.Spatialite = posixvars.Spatialite
-        else:
-            self.Ogr2ogr = ntvars.Ogr2ogr # 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
-            self.Slash = ntvars.Slash # '\\'
-            Gdal_vars = {'GDAL_DATA': 'C:\OSGeo4W64\share\gdal'}
-            os.environ.update(Gdal_vars)
-            self.Extn = "SELECT load_extension('mod_spatialite.dll');"
-            self.Spatialite = ntvars.Spatialite
-
+		self.Slash = slash
+		self.Ogr2ogr = ogr2ogr
+		self.Spatialite = spatialite
+		self.Extn = extn
         
     def file_deploy(self,RData):
         """

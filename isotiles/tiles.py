@@ -27,7 +27,20 @@ class Tiles():
                  west: Bounding_Box = value.West,
                  radial: Defaults = defaults.Radial,
                  shape: Defaults = defaults.Shape,
-                 shapefiles: Defaults = defaults.ShapefilesPath):
+                 images: Defaults = defaults.ImagesPath,
+                 metadata: Defaults = defaults.MetaDataPath,
+                 logfiles: Defaults = defaults.LogfilesPath,
+                 kmlfiles: Defaults = defaults.KMLfilesPath,
+                 shapefiles: Defaults = defaults.ShapefilesPath,
+                 geojson: Defaults = defaults.GeoJSONPath,
+                 vrt: Defaults = defaults.VRTPath,
+                 csv: Defaults = defaults.CSVPath,
+                 spatialite: Defaults = defaults.SpatialitePath,
+                 sql: Defaults = defaults.SQLPath,
+				 slash: Defaults = defaults.Slash,
+				 ogr2ogr_com: Defaults = defaults.Ogr2ogr,
+				 spatialite_com: Defaults = defaults.Spatialite,
+				 extn: Defaults = defaults.Extn):
         """
         supply variables for map_polygons
         """
@@ -41,20 +54,11 @@ class Tiles():
         self.ShapefilesPath = shapefiles
         self.KMLfilesPath = kmlfiles
         
-        my_os = str(os.name)
-        print(my_os)
-        ntvars = OSVars.nt()
-        posixvars = OSVars.posix()
         offValues = Offsets()
-        
-        if (my_os is 'posix'):
-            self.cmdText = posixvars.Ogr2ogr # '/usr/bin/ogr2ogr'
-            self.Slash = posixvars.Slash # '/'
-        else:
-            self.cmdText = ntvars.Ogr2ogr # 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
-            self.Slash = ntvars.Slash # '\\'
-            gdal_vars = {'GDAL_DATA': 'C:\OSGeo4W64\share\gdal'}
-            os.environ.update(gdal_vars)
+        self.Ogr2ogr = ogr2ogr_com # '/usr/bin/ogr2ogr'
+        self.Slash = slash # '/'
+        self.Extn = extn
+        self.Spatialite = spatialite_com
 
         if self.Shape is 'hex':
             self.horSeq = [offValues.Short, offValues.Short,

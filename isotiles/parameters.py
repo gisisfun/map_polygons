@@ -1,10 +1,12 @@
+import os
+
 class Defaults:
     """
     """
     ...
     __slots__ = ("Radial","Shape","ShapefilesPath","LogfilesPath", "KMLFiles", "MetaDataPath", \
-                 "GeoJSONPath","CSVPath","ImagesPath","SQLPath","SpatialitePath", \
-                 "VRTPath","Weight")
+                 "GeoJSONPath","CSVPath","KMLfilesPath","ImagesPath","SQLPath","SpatialitePath", \
+                 "VRTPath","Weight","Ogr2ogr","Spatialite","Extn","Slash")
     
     def __init__(self):
         self.Radial = 57
@@ -20,6 +22,56 @@ class Defaults:
         self.SpatialitePath = 'spatialite_db'
         self.VRTPath = 'vrt'
         self.Weight = "place"
+        my_os = str(os.name)
+
+        self.Ogr2ogr = self.os_ogr2ogr(my_os) # '/usr/bin/ogr2ogr'
+        self.Slash = self.os_slash(my_os) # '/'
+        self.Extn = self.os_extn(my_os)
+        self.Spatialite = self.os_spatialite(my_os)
+        self.os_extn(my_os)
+
+    def os_ogr2ogr(self,my_os):
+        posixvars = OSVars.posix()
+        ntvars = OSVars.nt()
+        if (my_os is 'posix'):
+            ogr2ogr = posixvars.Ogr2ogr # '/usr/bin/ogr2ogr'
+        else:
+            ogr2ogr = ntvars.Ogr2ogr # 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
+        return ogr2ogr
+
+    def os_slash(self,my_os):
+        posixvars  = OSVars.posix()
+        ntvars = OSVars.nt()
+        if (my_os is 'posix'):
+            slash = posixvars.Slash  #  '/'
+        else:
+            slash = ntvars.Slash # '\\'
+        return slash
+
+    def os_gdal_vars(self,my_os):
+        ntvars = OSVars.nt()
+        if (my_os is 'nt'):
+            Gdal_vars = {'GDAL_DATA': 'C:\OSGeo4W64\share\gdal'}
+            os.environ.update(Gdal_vars)
+
+    def os_extn(self,my_os):
+        posixvars = OSVars.posix()
+        ntvars = OSVars.nt()
+        if (my_os is 'posix'):
+            extn = "SELECT load_extension('mod_spatialite.so');"
+        else:
+            extn = "SELECT load_extension('mod_spatialite.dll');"
+        return extn
+
+    def os_spatialite(self,my_os):
+        posixvars = OSVars.posix()
+        ntvars = OSVars.nt()
+        if (my_os is 'posix'):
+            spatialite = posixvars.Spatialite
+        else:
+            spatialite = ntvars.Spatialite
+        return spatialite
+
 
 class Projection:
     """

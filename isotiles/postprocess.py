@@ -16,16 +16,19 @@ class PostProcess():
                  shape: Defaults = defaults.Shape,
                  images: Defaults = defaults.ImagesPath,
                  metadata: Defaults = defaults.MetaDataPath,
+                 logfiles: Defaults = defaults.LogfilesPath,
                  kmlfiles: Defaults = defaults.KMLfilesPath,
                  shapefiles: Defaults = defaults.ShapefilesPath,
-                 logfiles: Defaults = defaults.LogfilesPath,
                  geojson: Defaults = defaults.GeoJSONPath,
                  vrt: Defaults = defaults.VRTPath,
                  csv: Defaults = defaults.CSVPath,
                  spatialite: Defaults = defaults.SpatialitePath,
-                 sql: Defaults = defaults.SQLPath):
-        posixvars = OSVars.posix()
-        ntvars = OSVars.nt()
+                 sql: Defaults = defaults.SQLPath,
+				 slash: Defaults = defaults.Slash,
+				 ogr2ogr_com: Defaults = defaults.Ogr2ogr,
+				 spatialite_com: Defaults = defaults.Spatialite,
+				 extn: Defaults = defaults.Extn):
+
         os.environ['SPATIALITE_SECURITY'] = 'relaxed'
         self.Radial = radial
         self.Shape = shape
@@ -44,20 +47,11 @@ class PostProcess():
         self.SpatialitePath = spatialite
         self.SQLPath = sql
         
-        my_os = str(os.name)
-        if (my_os is 'posix'):
-            self.Ogr2ogr = posixvars.Ogr2ogr # '/usr/bin/ogr2ogr'
-            self.Slash = posixvars.Slash # '/'
-            self.Extn = "SELECT load_extension('mod_spatialite.so');"
-            self.Spatialite = posixvars.Spatialite
-        else:
-            self.Ogr2ogr = ntvars.Ogr2ogr # 'c:\\OSGeo4W64\\bin\\ogr2ogr.exe'
-            self.Slash = ntvars.Slash # '\\'
-            Gdal_vars = {'GDAL_DATA': 'C:\OSGeo4W64\share\gdal'}
-            os.environ.update(Gdal_vars)
-            self.Extn = "SELECT load_extension('mod_spatialite.dll');"
-            self.Spatialite = ntvars.Spatialite
 
+        self.Ogr2ogr = ogr2ogr_com # '/usr/bin/ogr2ogr'
+        self.Slash = slash # '/'
+        self.Extn = extn
+        self.Spatialite = spatialite_com
         
  
         
