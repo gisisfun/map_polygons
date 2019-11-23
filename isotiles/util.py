@@ -47,8 +47,7 @@ class Util():
         self.Extn = extn
         self.Spatialite = spatialite_com
 
-
-        
+ 
     def file_deploy(self,RData):
         """
         Deploy downloaded files
@@ -58,20 +57,22 @@ class Util():
         
         Input variables:
         """
+
         if not os.path.isfile(RData.FilePath.format(slash = self.Slash)):
             print('Downloading {descr} file in {fmt} file format'\
                   .format(fmt = RData.Format, descr = RData.Description))
-            if RData.DownURL is not '':
-                urllib.request.urlretrieve(RData.DownURL, RData.ZipPath.format(slash = self.Slash))
-                if RData.ZipPath is not '':
-                    print('Unzipping {descr} file in {fmt} file format'\
-                        .format(descr = RData.Description, fmt = RData.Format ))
-                    Archive(RData.ZipPath.format(slash = self.Slash)).extractall(RData.ZipDir\
-                                                                             .format(slash = self.Slash))
+            
+            urllib.request.urlretrieve(RData.DownURL, RData.ZipPath.format(slash = self.Slash))
+            if RData.ZipPath[-3] is 'zip':
+                print('Unzipping {descr} file in {fmt} file format'\
+                    .format(descr = RData.Description, fmt = RData.Format ))
+                Archive(RData.ZipPath.format(slash = self.Slash)).extractall(RData.ZipDir\
+                                                                         .format(slash = self.Slash))
         else:
             print('{descr} file in {fmt} file format exists'\
                   .format(descr = RData.Description, fmt = RData.Format))
 
+	
     def ref_files_polygons(self):
         """
         Get reference files
