@@ -2,8 +2,8 @@
 import urllib.request
 from pyunpack import Archive
 
-from isotiles.parameters import Bounding_Box, OSVars, Offsets, DataSets, Defaults
-
+from isotiles.parameters import Bounding_Box, OSVars, Offsets, Defaults
+from isotiles.data import DataSets
 
 class Util():
 
