@@ -9,7 +9,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 mpl.use('Agg')
 
-from isotiles.parameters import Bounding_Box, OSVars, Offsets, DataSets, Defaults
+from isotiles.parameters import Bounding_Box, OSVars, Offsets, Defaults
 
 class Visual:
     defaults = Defaults()
