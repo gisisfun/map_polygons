@@ -37,10 +37,10 @@ class Tiles():
                  csv: Defaults = defaults.CSVPath,
                  spatialite: Defaults = defaults.SpatialitePath,
                  sql: Defaults = defaults.SQLPath,
-				 slash: Defaults = defaults.Slash,
-				 ogr2ogr_com: Defaults = defaults.Ogr2ogr,
-				 spatialite_com: Defaults = defaults.Spatialite,
-				 extn: Defaults = defaults.Extn):
+		 slash: Defaults = defaults.Slash,
+		 ogr2ogr_com: Defaults = defaults.Ogr2ogr,
+		 spatialite_com: Defaults = defaults.Spatialite,
+		 extn: Defaults = defaults.Extn):
         """
         supply variables for map_polygons
         """
