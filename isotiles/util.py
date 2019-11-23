@@ -63,9 +63,10 @@ class Util():
                   .format(fmt = RData.Format, descr = RData.Description))
             if RData.DownURL is not '':
                 urllib.request.urlretrieve(RData.DownURL, RData.ZipPath.format(slash = self.Slash))
-                print('Unzipping {descr} file in {fmt} file format'\
-                      .format(descr = RData.Description, fmt = RData.Format ))
-                Archive(RData.ZipPath.format(slash = self.Slash)).extractall(RData.ZipDir\
+                if RData.ZipPath is not '':
+                    print('Unzipping {descr} file in {fmt} file format'\
+                        .format(descr = RData.Description, fmt = RData.Format ))
+                    Archive(RData.ZipPath.format(slash = self.Slash)).extractall(RData.ZipDir\
                                                                              .format(slash = self.Slash))
         else:
             print('{descr} file in {fmt} file format exists'\
@@ -90,9 +91,6 @@ class Util():
         Input variables:
         """
         RefData = DataSets.Australia.ShapeFormat()
-        self.file_deploy(RefData)
-
-        RefData = DataSets.Australia.TabFormat()
         self.file_deploy(RefData)
 
         RefData = DataSets.Statistical_Areas_Level_1_2011.ShapeFormat()
