@@ -10,7 +10,8 @@ import matplotlib.path as mpltPath
 import shapefile
 import simplekml
 
-from isotiles.parameters import Bounding_Box, OSVars, Offsets, DataSets, Defaults, POI
+from isotiles.parameters import Bounding_Box, OSVars, Offsets, Defaults
+from isotiles.data import DataSets, POI
 
 class Tiles():
     """
@@ -671,18 +672,17 @@ class Tiles():
 
         loc_poly_array = self.points_in_polygon(isl_poly_array,points,'Locality')
 
-        (poi_progress, cent_progress, poly_progress) = ([],[],[])
+        (poi_progress, cent_progress, poly_progress, omit_progress) = ([],[],[],[])
         for poly in range (0, num_poly):
             inPoly = False
             progress = int((poly/num_poly)*100)
-            loc_poly_array[poly]['properties']['Aust'] = 0
+            #loc_poly_array[poly]['properties']['Aust'] = 0
             # get the reference sub polygons
             #try centroid
             c_lon = loc_poly_array[poly]['properties']['lon']
             c_lat = loc_poly_array[poly]['properties']['lat']
             if loc_poly_array[poly]['properties']['Island'] > 0 or loc_poly_array[poly]['properties']['Locality'] > 0 or loc_poly_array[poly]['properties']['Boundary'] > 0:
                 inPoly = True
-                loc_poly_array[poly]['properties']['Aust'] = 1
                 isectArray.append(loc_poly_array[poly])
                 poi_progress.append(loc_poly_array[poly]['properties']['p'])
                 hcount += 1
@@ -692,13 +692,10 @@ class Tiles():
                     for subpolyptr in range(len(shapes[0].parts)-1):
                         sub_coords = big_coords[shapes[0].parts[subpolyptr]:shapes[0].parts[subpolyptr+1]]
                         path = mpltPath.Path(sub_coords)
-
-                        #(i,key_values_array) = (0,[])
                                                   
                         if inPoly is False:
                             if path.contains_point([c_lon,c_lat]) is True:
                                 inPoly = True
-                                loc_poly_array[poly]['properties']['Aust'] = 1
                                 isectArray.append(loc_poly_array[poly])
                                 cent_progress.append(loc_poly_array[poly]['properties']['p'])
                                 hcount += 1
@@ -706,19 +703,22 @@ class Tiles():
                         if inPoly is False: 
                             if path.contains_point([point[0],point[1]]) is True:
                                 inPoly = True
-                                loc_poly_array[poly]['properties']['Aust'] = 1
                                 isectArray.append(loc_poly_array[poly])
                                 poly_progress.append(loc_poly_array[poly]['properties']['p'])
                                 hcount += 1
+
+            if inPoly is False:
+                omit_progress.append(loc_poly_array[poly]['properties']['p'])
                             
             if progress is not last_progress:
                 print(progress,'% progress:',poly,'polygons processed for',hcount,'intersections for output')
                 print('1. poi:',poi_progress)
                 print('2. centroid:',cent_progress)
                 print('3. poly:',poly_progress)
+                print('4. Omitted:',len(omit_progress), 'polygons')
                 
                 
                 last_progress = progress
-                (poi_progress, cent_progress, poly_progress) = ([],[],[])
+                (poi_progress, cent_progress, poly_progress, omit_progress) = ([],[],[],[])
         #return loc_poly_array
         return isectArray
