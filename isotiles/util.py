@@ -21,10 +21,10 @@ class Util():
                  csv: Defaults = defaults.CSVPath,
                  spatialite: Defaults = defaults.SpatialitePath,
                  sql: Defaults = defaults.SQLPath,
-				 slash: Defaults = defaults.Slash,
-				 ogr2ogr: Defaults = defaults.Ogr2ogr,
-				 spatialite: Defaults = defaults.Spatialite,
-				 extn: Defaults = defaults.Extn):
+		 slash: Defaults = defaults.Slash,
+		 ogr2ogr: Defaults = defaults.Ogr2ogr,
+		 spatialite: Defaults = defaults.Spatialite,
+		 extn: Defaults = defaults.Extn):
 
         os.environ['SPATIALITE_SECURITY'] = 'relaxed'
         self.Radial = radial
