@@ -23,12 +23,16 @@ def area_wt(theshape,theradial):
     p.vrt_shape_and_size ('vrt', 'template.vrt', vrt_file)
     p.do_spatialite('table_goes_here.txt', db_name)
     u.ref_files_poly_wt()
-    
+ 
     print('aust_shape')
     
     fname = 'aust_{shape}_shape_{size}km'.\
             format(shape = p.Shape,\
                    size = p.Radial)
+    gj_fname = '{shape}_{size}km_layer'.\
+            format(shape = p.Shape,\
+                   size = p.Radial)
+    p.geojson_to_shp (gj_fname,fname,4283)
     p.sql_to_ogr('aust_shape', vrt_ref, fname)
     p.shp_to_db(fname,db_name,fname,4823)
     
@@ -117,18 +121,24 @@ def place_wt(theshape, theradial):
     db_name = 'db_area_{shape}_{size}.vrt'.\
               format(shape = p.Shape,\
                      size = p.Radial)
-    
+
+        
     p.vrt_shape_and_size ('vrt', 'template.vrt',vrt_file)
     p.do_spatialite('table_goes_here.txt', db_name)
     u.ref_files_poly_wt()   
-    
+
+
     print('aust_shape')
 
     fname = 'aust_{shape}_shape_{size}km'.\
             format(shape = p.Shape,\
                    size = p.Radial)
+    gj_fname = '{shape}_{size}km_layer'.\
+            format(shape = p.Shape,\
+                   size = p.Radial)
+    p.geojson_to_shp (gj_fname,fname,4283)
     p.sql_to_ogr('aust_shape', vrt_ref, fname)
-    
+
     p.shp_to_db(fname, db_name, fname, 4823)
     
     print('feat_aust_11_area')
