@@ -18,7 +18,6 @@ class Visual:
                  shape: Defaults = defaults.Shape,
                  weight: Defaults = defaults.Weight,
                  images: Defaults = defaults.ImagesPath,
-                 tabfiles: Defaults = defaults.TabfilesPath,
                  shapefiles: Defaults = defaults.ShapefilesPath):
         posixvars = OSVars.posix()
         ntvars = OSVars.nt()

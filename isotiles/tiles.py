@@ -26,7 +26,8 @@ class Tiles():
                  east: Bounding_Box = value.East,
                  west: Bounding_Box = value.West,
                  radial: Defaults = defaults.Radial,
-                 shape: Defaults = defaults.Shape):
+                 shape: Defaults = defaults.Shape,
+                 shapefiles: Defaults = defaults.ShapefilesPath):
         """
         supply variables for map_polygons
         """
@@ -37,6 +38,8 @@ class Tiles():
         self.Radial = radial
         self.Shape = shape
         self.FName = self.f_name()
+        self.ShapefilesPath = shapefiles
+        self.KMLfilesPath = kmlfiles
         
         my_os = str(os.name)
         print(my_os)
@@ -64,9 +67,6 @@ class Tiles():
                            offValues.Long, offValues.Long]
             self.vertSeq = [offValues.Long, offValues.Long,
                             offValues.Long, offValues.Long]
-
-        self.shapefilesPath = 'shapefiles'
-        self.kmlfilesPath = 'kml'
 
 
     def params(self):
@@ -431,7 +431,7 @@ class Tiles():
         fPath = fName.format(shape = self.Shape,
                              size = self.Radial,
                              slash = self.Slash,
-                             sfPath = self.shapefilesPath,
+                             sfPath = self.ShapefilesPath,
                              fname = self.FName)
         prjPath = fPath + '.prj'
         w = shapefile.Writer(fPath) # , shapeType=3)
@@ -481,11 +481,11 @@ class Tiles():
 
     def to_kml_file(self,GArray,fNameTempl):
         fName = '{kPath}{slash}'+fNameTempl+'.kml'
-        fPath = fName.format(kPath = self.kmlfilesPath,
+        fPath = fName.format(kPath = self.KMLfilesPath,
                              shape = self.Shape,
                              size = self.Radial,
                              slash = self.Slash,
-                             sfPath = self.shapefilesPath,
+                             sfPath = self.ShapefilesPath,
                              fname = self.FName)
         kml = simplekml.Kml()
         #setup columns

@@ -2,7 +2,7 @@ class Defaults:
     """
     """
     ...
-    __slots__ = ("Radial","Shape","ShapefilesPath","TabfilesPath", "MetaDataPath", \
+    __slots__ = ("Radial","Shape","ShapefilesPath","LogfilesPath", "KMLFiles", "MetaDataPath", \
                  "GeoJSONPath","CSVPath","ImagesPath","SQLPath","SpatialitePath", \
                  "VRTPath","Weight")
     
@@ -10,7 +10,8 @@ class Defaults:
         self.Radial = 57
         self.Shape = 'hex'
         self.ShapefilesPath = 'shapefiles'
-        self.TabfilesPath  = 'tabfiles'
+        self.LogfilesPath  = 'logfiles'
+        self.KMLfilesPath  = 'kmlfiles'
         self.MetaDataPath = 'metadata'
         self.GeoJSONPath = 'geojson'
         self.CSVPath = 'csv'

@@ -16,8 +16,9 @@ class PostProcess():
                  shape: Defaults = defaults.Shape,
                  images: Defaults = defaults.ImagesPath,
                  metadata: Defaults = defaults.MetaDataPath,
-                 tabfiles: Defaults = defaults.TabfilesPath,
+                 kmlfiles: Defaults = defaults.KMLfilesPath,
                  shapefiles: Defaults = defaults.ShapefilesPath,
+                 logfiles: Defaults = defaults.LogfilesPath,
                  geojson: Defaults = defaults.GeoJSONPath,
                  vrt: Defaults = defaults.VRTPath,
                  csv: Defaults = defaults.CSVPath,
@@ -34,8 +35,9 @@ class PostProcess():
         self.SQLPath = sql
         self.ImagesPath = images
         self.MetaDataPath = metadata
-        self.TabfilesPath= tabfiles
+        self.LogfilesPath= logfiles
         self.ShapefilesPath = shapefiles
+        self.KMLfilesPath= kmlfiles
         self.GeoJSONPath = geojson
         self.VRTPath = vrt
         self.CSVPath = csv 

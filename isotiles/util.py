@@ -4,6 +4,7 @@ from pyunpack import Archive
 
 from isotiles.parameters import Bounding_Box, OSVars, Offsets, DataSets, Defaults
 
+
 class Util():
 
     defaults = Defaults()
@@ -12,7 +13,8 @@ class Util():
                  shape: Defaults = defaults.Shape,
                  images: Defaults = defaults.ImagesPath,
                  metadata: Defaults = defaults.MetaDataPath,
-                 tabfiles: Defaults = defaults.TabfilesPath,
+                 logfiles: Defaults = defaults.LogfilesPath,
+                 kmlfiles: Defaults = defaults.KMLfilesPath,
                  shapefiles: Defaults = defaults.ShapefilesPath,
                  geojson: Defaults = defaults.GeoJSONPath,
                  vrt: Defaults = defaults.VRTPath,
@@ -30,7 +32,8 @@ class Util():
         self.SQLPath = sql
         self.ImagesPath = images
         self.MetaDataPath = metadata
-        self.TabfilesPath= tabfiles
+        self.LogfilesPath = logfiles
+        self.KMLfilesPath= kmlfiles
         self.ShapefilesPath = shapefiles
         self.GeoJSONPath = geojson
         self.VRTPath = vrt
