@@ -43,7 +43,18 @@ class DataSets:
                 self.DownURL = 'https://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_sa1_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&6F308688D810CEF3CA257FED0013C62D&0&July%202016&12.07.2016&Latest'
                 self.ZipDir = 'shapefiles'
                 self.ZipPath = 'shapefiles{slash}1270055001_sa1_2016_aust_shape.zip'
-                
+    class MBSP:
+        class CSVFormat:
+            __slots__= ('Description','Format','FilePath', 'DownURL', 'ZipDir', 'ZipPath')
+            
+            def __init__(self):
+                self.Description = 'mbsp database'
+                self.Format = 'CSV'
+                self.FilePath = 'csv{slash}mbsp_database.csv'
+                self.DownURL = 'https://data.gov.au/dataset/7be6e3ee-043a-4c47-a6eb-a97702419ccd/resource/c6b211ad-3aa2-4f53-8427-01b52a6433a7/download/mbsp_database.csv'                
+                self.ZipDir = 'csv'
+                self.ZipPath ='csv{slash}mbsp_database.csv'
+            
     class AGIL_Dataset:
         
         class CSVFormat:
