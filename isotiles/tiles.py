@@ -73,6 +73,8 @@ class Tiles():
                             offValues.Long, offValues.Long]
 
 
+
+
     def params(self):
         """
         Construct feedback of user variables for user
@@ -435,7 +437,7 @@ class Tiles():
         fPath = fName.format(shape = self.Shape,
                              size = self.Radial,
                              slash = self.Slash,
-                             sfPath = self.ShapefilesPath,
+                             sfPath = self.shapefilesPath,
                              fname = self.FName)
         prjPath = fPath + '.prj'
         w = shapefile.Writer(fPath) # , shapeType=3)
@@ -485,11 +487,11 @@ class Tiles():
 
     def to_kml_file(self,GArray,fNameTempl):
         fName = '{kPath}{slash}'+fNameTempl+'.kml'
-        fPath = fName.format(kPath = self.KMLfilesPath,
+        fPath = fName.format(kPath = self.kmlfilesPath,
                              shape = self.Shape,
                              size = self.Radial,
                              slash = self.Slash,
-                             sfPath = self.ShapefilesPath,
+                             sfPath = self.shapefilesPath,
                              fname = self.FName)
         kml = simplekml.Kml()
         #setup columns
@@ -721,4 +723,3 @@ class Tiles():
                 (poi_progress, cent_progress, poly_progress) = ([],[],[])
         #return loc_poly_array
         return isectArray
-
