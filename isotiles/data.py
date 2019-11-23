@@ -18,16 +18,6 @@ class DataSets:
                 self.ZipDir = 'shapefiles'
                 self.ZipPath ='shapefiles{slash}1270055001_aus_2016_aust_shape.zip'
                 
-    
-        class TabFormat:
-            __slots__= ('Description','Format','FilePath', 'DownURL', 'ZipDir', 'ZipPath')
-            def __init__(self):
-                self.Description = 'ABS Australia'
-                self.Format = 'Tab'
-                self.FilePath = 'tabfiles{slash}AUS_2016_AUST.tab'
-                self.DownURL = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&5503B37F8055BFFECA2581640014462C&0&July%202016&24.07.2017&Latest'
-                self.ZipDir = 'tabfiles'
-                self.ZipPath ='tabfiles{slash}1270055001_aus_2016_aust_tab.zip'
                 
     class Statistical_Areas_Level_1_2011:
 
@@ -47,7 +37,7 @@ class DataSets:
             __slots__= ('Description','Format','FilePath', 'DownURL', 'ZipDir', 'ZipPath')
             
             def __init__(self):
-                self.Description = '2015 ABS Statistical Areas Level 1'
+                self.Description = '2016 ABS Statistical Areas Level 1'
                 self.Format = 'Shape'
                 self.FilePath = 'shapefiles{slash}SA1_2016_AUST.shp'
                 self.DownURL = 'http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_sa1_2016_aust_tab.zip&1270.0.55.001&Data%20Cubes&39A556A0197D8C02CA257FED00140567&0&July%202016&12.07.2016&Latest'
