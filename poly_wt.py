@@ -1,11 +1,14 @@
 from isotiles.postprocess import PostProcess
+from isotiles.util import Util
+
 import sys
 
 def area_wt(theshape,theradial):
 #    size='57'
 #    shape='hex'
     p = PostProcess(shape = theshape, radial = theradial)
-    
+    u = Util(shape = theshape, radial = theradial) 
+   
     vrt_file = 'all_{shape}_{size}.vrt'.\
               format(shape = p.Shape,\
                      size = p.Radial)
@@ -19,7 +22,7 @@ def area_wt(theshape,theradial):
     
     p.vrt_shape_and_size ('vrt', 'template.vrt', vrt_file)
     p.do_spatialite('table_goes_here.txt', db_name)
-    p.ref_files()
+    u.ref_files_poly_wt()
     
     print('aust_shape')
     
@@ -101,6 +104,7 @@ def area_wt(theshape,theradial):
 
 def place_wt(theshape, theradial):
     p = PostProcess(shape = theshape, radial = theradial)
+    u = Util(shape = theshape, radial = theradial)
     
     vrt_file = 'all_{shape}_{size}.vrt'.\
               format(shape = p.Shape,\
@@ -116,7 +120,7 @@ def place_wt(theshape, theradial):
     
     p.vrt_shape_and_size ('vrt', 'template.vrt',vrt_file)
     p.do_spatialite('table_goes_here.txt', db_name)
-    p.ref_files()   
+    u.ref_files_poly_wt()   
     
     print('aust_shape')
 
