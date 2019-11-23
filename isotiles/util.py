@@ -1,10 +1,9 @@
-
+import os
 import urllib.request
 from pyunpack import Archive
 
 from isotiles.parameters import Bounding_Box, OSVars, Offsets, Defaults
 from isotiles.data import DataSets
-
 class Util():
 
     defaults = Defaults()
@@ -21,11 +20,12 @@ class Util():
                  csv: Defaults = defaults.CSVPath,
                  spatialite: Defaults = defaults.SpatialitePath,
                  sql: Defaults = defaults.SQLPath,
-		 slash: Defaults = defaults.Slash,
-		 ogr2ogr: Defaults = defaults.Ogr2ogr,
-		 spatialite: Defaults = defaults.Spatialite,
-		 extn: Defaults = defaults.Extn):
-
+		         slash: Defaults = defaults.Slash,
+		         ogr2ogr_com: Defaults = defaults.Ogr2ogr,
+		         spatialite_com: Defaults = defaults.Spatialite,
+		         extn: Defaults = defaults.Extn):
+        posixvars = OSVars.posix()
+        ntvars = OSVars.nt()
         os.environ['SPATIALITE_SECURITY'] = 'relaxed'
         self.Radial = radial
         self.Shape = shape
@@ -35,18 +35,19 @@ class Util():
         self.SQLPath = sql
         self.ImagesPath = images
         self.MetaDataPath = metadata
-        self.LogfilesPath = logfiles
-        self.KMLfilesPath= kmlfiles
         self.ShapefilesPath = shapefiles
         self.GeoJSONPath = geojson
         self.VRTPath = vrt
         self.CSVPath = csv 
         self.SpatialitePath = spatialite
         self.SQLPath = sql
-		self.Slash = slash
-		self.Ogr2ogr = ogr2ogr
-		self.Spatialite = spatialite
-		self.Extn = extn
+ 
+        self.Ogr2ogr = ogr2ogr_com
+        self.Slash = slash 
+        self.Extn = extn
+        self.Spatialite = spatialite_com
+
+
         
     def file_deploy(self,RData):
         """
