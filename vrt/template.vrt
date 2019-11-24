@@ -17,14 +17,6 @@
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
-    <OGRVRTLayer name="Shape_SA1_11">
-        <SrcDataSource>csv/feat_aust_57km_sa1_11.csv</SrcDataSource>
-        <SrcLayer>feat_aust_57km_sa1_11</SrcLayer>
-    </OGRVRTLayer>
-    <OGRVRTLayer name="Shape_SA1_16">
-        <SrcDataSource>csv/feat_aust_57km_sa1_16.csv</SrcDataSource>
-        <SrcLayer>feat_aust_57km_sa1_16</SrcLayer>
-    </OGRVRTLayer>
     <OGRVRTLayer name="SA1_11">
         <SrcDataSource>shapefiles/SA1_2011_AUST.shp</SrcDataSource>
         <SrcLayer>SA1_2011_AUST</SrcLayer>
@@ -69,7 +61,7 @@
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="AGIL_Shape">
-        <SrcDataSource>shapefiles/AGIL.shp</SrcDataSource>
+        <SrcDataSource>shapefiles/agil.shp</SrcDataSource>
         <SrcLayer>agil</SrcLayer>
         <GeometryType>wkbPoint</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
