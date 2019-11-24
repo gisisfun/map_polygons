@@ -560,6 +560,29 @@ class Tiles():
     def to_geojson_fmt(self,gArray):
         return FeatureCollection(gArray) 
 
+    def from_geojson_file(self,fNameTempl):
+        """
+        Read GeoJSON from file
+        
+        Prerequisites:
+        
+        Input variables:
+        """
+        ...
+
+        msg = 'reading geojson formatted dataset from file:' + fNameTempl +'.json'
+        print(msg.format(shape = self.Shape, fname = self.FName))
+        fName = 'geojson{slash}'+fNameTempl+'.json'
+        myfile = open(fName.format(fname = self.FName,slash = self.Slash), 'r')
+        #open file for reading geojson layer in geojson format
+        gj_data = myfile.read()  # read geojson layer to open file
+        gj_dict = json.loads(gj_data)
+        gArray = []
+        for i in range(len(gj_dict['features'])):
+            gArray.append(gj_dict['features'][i])
+        myfile.close()  # close file
+        return gArray
+
     def to_geojson_file(self,gArray,fNameTempl):
         """
         Write string to file
