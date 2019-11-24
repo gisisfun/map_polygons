@@ -239,6 +239,8 @@ Performs the functions:
 |   | tabular_hex_57km_11_16_area.csv  | hex_57km_area_11_16.shp          |
 |   | tabular_hex_57km_place.csv  | hex_57km_place_11_16.shp             |
 
+*The Australian Bureau of Statistics (ABS) supplies Census demographic to the level to Statistical Area Level 2 (SA2) via a public facing Web API. Statistical Area Level 1 have the most detail and the lowest geographic classification. Truncated CSV files Census data pack tables have been used for this example.
+
 ### Table of feature data set counts and file sizes 
 
 | File                              | Feature count  | File size | Projection (EPSG) |
