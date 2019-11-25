@@ -63,14 +63,16 @@ class Util():
                   .format(fmt = RData.Format, descr = RData.Description))
             
             urllib.request.urlretrieve(RData.DownURL, RData.ZipPath.format(slash = self.Slash))
-            if RData.ZipPath[-3] is 'zip':
+            if RData.ZipPath.endswith('zip') is True:
                 print('Unzipping {descr} file in {fmt} file format'\
                     .format(descr = RData.Description, fmt = RData.Format ))
+                print('extracting files')
                 Archive(RData.ZipPath.format(slash = self.Slash)).extractall(RData.ZipDir\
                                                                          .format(slash = self.Slash))
         else:
             print('{descr} file in {fmt} file format exists'\
                   .format(descr = RData.Description, fmt = RData.Format))
+
 
 	
     def ref_files_polygons(self):
