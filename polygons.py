@@ -1,4 +1,6 @@
 from isotiles.tiles import Tiles
+from isotiles.util import Util
+
 #from isotiles.visual import Visual
 import random
 import sys
@@ -30,7 +32,9 @@ def hexagons(theshape,b_north, b_south, b_east, b_west, theradial):
     fred = Tiles(shape = theshape, north = b_north ,
                  south = b_south, east = b_east,
                  west = b_west, radial = theradial)
-
+    u = Util(shape = theshape, radial = theradial) 
+    u.ref_files_polygons()
+    
     print(fred.params())
 
     hors = fred.horizontal()
@@ -60,7 +64,9 @@ def boxes(shape,b_north,south,east,west,theradial):
     fred = Tiles(shape = 'box',north = b_north ,
                  south = b_south, east = b_east,
                  west = b_west, radial = theradial)
-
+    
+    u = Util(shape = theshape, radial = theradial) 
+    u.ref_files_polygons()
     print(fred.params())
 
     hors = fred.horizontal()
