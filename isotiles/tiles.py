@@ -733,9 +733,11 @@ class Tiles():
             #try centroid
             c_lon = gArray[poly]['properties']['lon']
             c_lat = gArray[poly]['properties']['lat']
+            gArray[poly]['properties']['Aust'] = 0
             if gArray[poly]['properties']['Island'] > 0 or gArray[poly]['properties']['Locality'] > 0 or gArray[poly]['properties']['Boundary'] > 0:
                 inPoly = True
                 poi_progress.append(gArray[poly]['properties']['p'])
+                gArray[poly]['properties']['Aust'] = 1
             else:
                 
                 
@@ -762,6 +764,7 @@ class Tiles():
                             inPoly = True
                             cent_progress.append(gArray[poly]['properties']['p'])
                             gArray[poly]['properties']['Cent'] = 1
+                            gArray[poly]['properties']['Aust'] = 1
                             hcount += 1
 
             if progress is not last_progress:
@@ -794,10 +797,7 @@ class Tiles():
             #try centroid
             c_lon = loc_poly_array[poly]['properties']['lon']
             c_lat = loc_poly_array[poly]['properties']['lat']
-            if loc_poly_array[poly]['properties']['Island'] > 0 or \
-            loc_poly_array[poly]['properties']['Locality'] > 0 or \
-            loc_poly_array[poly]['properties']['Boundary'] > 0 or \
-            loc_poly_array[poly]['properties']['Cent'] > 0:
+            if loc_poly_array[poly]['properties']['Aust'] > 0:
                 inPoly = True
                 isectArray.append(loc_poly_array[poly])
                 poi_progress.append(loc_poly_array[poly]['properties']['p'])
