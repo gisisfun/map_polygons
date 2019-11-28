@@ -404,7 +404,7 @@ class Tiles():
         return g_array
 
 
-    def points_and_polygons(self,GArray):
+    def points_and_polygons(self,g_array):
         """
         Neighbouring Polygons derivation
         
@@ -412,33 +412,33 @@ class Tiles():
         hex_array or box_array, horizontal, vertical ,Tiles
         
         Input variables:
-        GArray
+        g_array
         """
         ...
         
-        (point_list, num_poly) = ([], len(GArray))
+        (point_list, num_poly) = ([], len(g_array))
 
         for n in range (0, num_poly):
-            num_coords = len(GArray[n]['geometry']['coordinates'][0])-2
-            poly_id = GArray[n]['properties']['p']
+            num_coords = len(g_array[n]['geometry']['coordinates'][0])-2
+            poly_id = g_array[n]['properties']['p']
             for i in range(0, num_coords):
                 point_list.append( \
-                    [poly_id, str(GArray[n]['geometry']['coordinates'][0][i][0]) + \
-                     str(GArray[n]['geometry']['coordinates'][0][i][1])])
+                    [poly_id, str(g_array[n]['geometry']['coordinates'][0][i][0]) + \
+                     str(g_array[n]['geometry']['coordinates'][0][i][1])])
         return point_list
 
-    def tabular_dataframe(self,GArray):
+    def tabular_dataframe(self,g_array):
         tabular_list = []
-        (point_list, num_poly) = ([], len(GArray))
-        num_coords = len(GArray[n]['geometry']['coordinates'][0])-2
+        (point_list, num_poly) = ([], len(g_array))
+        num_coords = len(g_array[n]['geometry']['coordinates'][0])-2
         for i in range(0, num_coords):
-            poly = GArray[n]['properties']['p']
-            centre_lat =  GArray[n]['properties']['lat']
-            centre_lon =  GArray[n]['properties']['long']
-            bounds_n =  GArray[n]['properties']['N']
-            bounds_s =  GArray[n]['properties']['S']
-            bounds_e =  GArray[n]['properties']['E']                
-            bounds_w =  GArray[n]['properties']['W']
+            poly = g_array[n]['properties']['p']
+            centre_lat =  g_array[n]['properties']['lat']
+            centre_lon =  g_array[n]['properties']['long']
+            bounds_n =  g_array[n]['properties']['N']
+            bounds_s =  g_array[n]['properties']['S']
+            bounds_e =  g_array[n]['properties']['E']                
+            bounds_w =  g_array[n]['properties']['W']
             tabular_line =[poly, centre_lat, centre_lon, \
                            bounds_n, bounds_s, bounds_e, bounds_w]
             tabular_list.append(tabular_line)
@@ -451,7 +451,7 @@ class Tiles():
                           sep = ',')
         return tabular_df
 
-    def to_shp_file(self,GArray,fNameTempl):
+    def to_shp_file(self,g_array,fNameTempl):
         #tabular_list = []
         fName = 'shapefiles{slash}'+fNameTempl
         fPath = fName.format(shape = self.Shape,
@@ -462,7 +462,7 @@ class Tiles():
         prjPath = fPath + '.prj'
         w = shapefile.Writer(fPath) # , shapeType=3)
         #setup columns
-        props_dict = GArray[0]['properties']
+        props_dict = g_array[0]['properties']
         (i, props_list) = 0, []
         for key in props_dict:
             if i < 2 or i > 8:
@@ -471,9 +471,9 @@ class Tiles():
                 w.field(key, 'N', decimal = 10)
             i = i + 1
 
-        (point_list, num_poly) = ([], len(GArray))
+        (point_list, num_poly) = ([], len(g_array))
         for n in range (0, num_poly):
-            props_dict_rec = GArray[n]['properties']
+            props_dict_rec = g_array[n]['properties']
             rec_str = "w.record("
             i = 0
             #print('props_list',len(props_dict))
@@ -489,8 +489,8 @@ class Tiles():
             #print(rec_str)
             eval(rec_str)
                     
-            #print([GArray[n]['geometry']['coordinates'][0]]) 
-            w.poly([GArray[n]['geometry']['coordinates'][0]])
+            #print([g_array[n]['geometry']['coordinates'][0]]) 
+            w.poly([g_array[n]['geometry']['coordinates'][0]])
             #w.record(n)
         w.close()    
         # create the PRJ file
@@ -505,7 +505,7 @@ class Tiles():
         prj.write(epsg)
         prj.close()
 
-    def to_kml_file(self,GArray,fNameTempl):
+    def to_kml_file(self,g_array,fNameTempl):
         fName = '{kPath}{slash}'+fNameTempl+'.kml'
         fPath = fName.format(kPath = self.KMLfilesPath,
                              shape = self.Shape,
@@ -514,17 +514,17 @@ class Tiles():
                              fname = self.FName)
         kml = simplekml.Kml()
         #setup columns
-        props_dict = GArray[0]['properties']
+        props_dict = g_array[0]['properties']
         
         key_names_array = []
         for key in props_dict:
             key_names_array.append(key)
             
 
-        (point_list, num_poly) = ([], len(GArray))
+        (point_list, num_poly) = ([], len(g_array))
         for poly in range (0, num_poly):
             
-            props_dict_rec = GArray[poly]['properties']
+            props_dict_rec = g_array[poly]['properties']
             (i,key_values_array) = (0,[])
             rec_descr = ""
             for key in props_dict:
@@ -538,7 +538,7 @@ class Tiles():
             ev_str = 'pol = kml.newpolygon(name ="'    
             points_str = "["
             points_t=[]
-            for points in GArray[poly]['geometry']['coordinates'][0]:
+            for points in g_array[poly]['geometry']['coordinates'][0]:
                 points_t.append(tuple(points))
                 points_str = points_str + "("\
                              + str(points[0]) + ","\
@@ -559,8 +559,8 @@ class Tiles():
         print(msg.format(shape = self.Shape, fname = self.FName))       
         kml.save(fPath)
 
-    def to_geojson_fmt(self,gArray):
-        return FeatureCollection(gArray) 
+    def to_geojson_fmt(self,g_array):
+        return FeatureCollection(g_array) 
 
     def from_geojson_file(self,fNameTempl):
         """
@@ -579,13 +579,13 @@ class Tiles():
         #open file for reading geojson layer in geojson format
         gj_data = myfile.read()  # read geojson layer to open file
         gj_dict = json.loads(gj_data)
-        gArray = []
+        g_array = []
         for i in range(len(gj_dict['features'])):
-            gArray.append(gj_dict['features'][i])
+            g_array.append(gj_dict['features'][i])
         myfile.close()  # close file
-        return gArray
+        return g_array
 
-    def to_geojson_file(self,gArray,fNameTempl):
+    def to_geojson_file(self,g_array,fNameTempl):
         """
         Write string to file
         
@@ -595,7 +595,7 @@ class Tiles():
         Input variables:
         """
         ...
-        content = FeatureCollection(gArray)
+        content = FeatureCollection(g_array)
         msg = 'writing geojson formatted {shape} dataset to file:' + fNameTempl +'.json'
         print(msg.format(shape = self.Shape, fname = self.FName))
         fName = 'geojson{slash}'+fNameTempl+'.json'
@@ -635,48 +635,48 @@ class Tiles():
                                sep = ',', index = False)
 
   
-    def points_in_polygon(self, gArray, lat_longs, gLabel):
+    def points_in_polygon(self, g_array, lat_longs, g_label):
         """
         Counts for lat_longs generated
         """
         ...
         
-        (point_list, num_poly) = ([], len(gArray))
+        (point_list, num_poly) = ([], len(g_array))
         lat_longs_df=pd.DataFrame(lat_longs)
         lat_longs_df.columns = ['longitude','latitude']
         for poly in range (0, num_poly):
-            poly_id = gArray[poly]['properties']['p']
+            poly_id = g_array[poly]['properties']['p']
             p_count = 0
             bound_points_df = lat_longs_df[(lat_longs_df['latitude'] >=\
-                                            gArray[poly]['properties']['S']) & \
+                                            g_array[poly]['properties']['S']) & \
                                            (lat_longs_df['latitude'] <=\
-                                            gArray[poly]['properties']['N']) & \
+                                            g_array[poly]['properties']['N']) & \
                                            (lat_longs_df['longitude'] <=\
-                                            gArray[poly]['properties']['E']) & \
+                                            g_array[poly]['properties']['E']) & \
                                            (lat_longs_df['longitude'] >=\
-                                            gArray[poly]['properties']['W'])]
+                                            g_array[poly]['properties']['W'])]
             #this is dodgy but it works for now
             if bound_points_df.size is 2:
                 bound_points_df.append(bound_points_df)
 
             if (bound_points_df.size > 0):
                 poly_coords = []
-                num_coords = len(gArray[poly]['geometry']['coordinates'][0])-2
+                num_coords = len(g_array[poly]['geometry']['coordinates'][0])-2
                 for coord in range(0, num_coords):
                     poly_coords.append( \
-                        [gArray[poly]['geometry']['coordinates'][0][coord][0], \
-                         gArray[poly]['geometry']['coordinates'][0][coord][1]])
+                        [g_array[poly]['geometry']['coordinates'][0][coord][0], \
+                         g_array[poly]['geometry']['coordinates'][0][coord][1]])
                 path = mpltPath.Path(poly_coords)
 
                 for index, row in bound_points_df.iterrows():
                     if path.contains_point([row['longitude'],row['latitude']]) is True:
                         p_count += 1 
                                     
-            gArray[poly]['properties'][gLabel] = float(p_count)
+            g_array[poly]['properties'][g_label] = float(p_count)
                 
-        return gArray
+        return g_array
 
-    def add_poly_poi(self,gArray):
+    def add_poly_poi(self,g_array):
         # load the shapefile
         sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
         thePoints = POI.Islands()
@@ -684,14 +684,14 @@ class Tiles():
         shapes = sf.shapes()
         big_coords = shapes[0].points
         # get the query polygons
-        (point_list, num_poly,isectArray) = ([], len(gArray),[])
+        (point_list, num_poly,isectArray) = ([], len(g_array),[])
 
         print('Adding the Boundary/Coast Line points')
         points = []
         for point in big_coords:
             points.append([point[0],point[1]])
 
-        bdy_poly_array = self.points_in_polygon(gArray,points,'Boundary')
+        bdy_poly_array = self.points_in_polygon(g_array,points,'Boundary')
 
         print('Adding Island points')
 
@@ -708,11 +708,16 @@ class Tiles():
         points = []
         for locality in localities_list:
            points.append([locality[4],locality[3]])
+        # Add Aust flag value for Island, Locality and Boundary
+        g_array = self.points_in_polygon(isl_poly_array,points,'Locality')
+        for poly in range (0, len(g_array)):
+            g_array[poly]['properties']['Aust'] = 0
+            if g_array[poly]['properties']['Island'] > 0 or g_array[poly]['properties']['Locality'] > 0 or g_array[poly]['properties']['Boundary'] > 0:
+                g_array[poly]['properties']['Aust'] = 1
 
-        gArray = self.points_in_polygon(isl_poly_array,points,'Locality')
-        return gArray
+        return g_array
 
-    def add_poly_cent(self,gArray):
+    def add_poly_cent(self,g_array):
         # load the shapefile
         sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
         # shapefile contains multipolygons
@@ -721,26 +726,24 @@ class Tiles():
         last_progress = -999
         hcount = 0
         # get the query polygons
-        (point_list, num_poly) = ([], len(gArray))
+        (point_list, num_poly) = ([], len(g_array))
         
         (poi_progress, cent_progress) = ([],[])
         for poly in range (0, num_poly):
             inPoly = False
             inBBox = False
             progress = int((poly/num_poly)*100)
-            gArray[poly]['properties']['Cent'] = 0
+            g_array[poly]['properties']['Cent'] = 0
             # get the reference sub polygons
             #try centroid
-            c_lon = gArray[poly]['properties']['lon']
-            c_lat = gArray[poly]['properties']['lat']
-            gArray[poly]['properties']['Aust'] = 0
-            if gArray[poly]['properties']['Island'] > 0 or gArray[poly]['properties']['Locality'] > 0 or gArray[poly]['properties']['Boundary'] > 0:
+            c_lon = g_array[poly]['properties']['lon']
+            c_lat = g_array[poly]['properties']['lat']
+            if g_array[poly]['properties']['Aust'] > 0:
                 inPoly = True
-                poi_progress.append(gArray[poly]['properties']['p'])
-                gArray[poly]['properties']['Aust'] = 1
+                poi_progress.append(g_array[poly]['properties']['p'])
+                g_array[poly]['properties']['Aust'] = 1
             else:
-                
-                
+                                
                 for subpolyptr in range(len(shapes[0].parts)-1):
                     sub_coords = big_coords[shapes[0].parts[subpolyptr]:shapes[0].parts[subpolyptr+1]]
                     path = mpltPath.Path(sub_coords)
@@ -748,7 +751,7 @@ class Tiles():
                     np_arr = np.array(sub_coords)
                     arr_min = np.min(np_arr,axis=0)
                     arr_max = np.max(np_arr,axis=0)
-
+                    #N,S,E,W is
                     bounds_N = arr_max[1]
                     bounds_S = arr_min[1]
                     bounds_E = arr_max[0]
@@ -762,9 +765,9 @@ class Tiles():
                     if inBBox is True:
                         if path.contains_point([c_lon,c_lat]) is True:
                             inPoly = True
-                            cent_progress.append(gArray[poly]['properties']['p'])
-                            gArray[poly]['properties']['Cent'] = 1
-                            gArray[poly]['properties']['Aust'] = 1
+                            cent_progress.append(g_array[poly]['properties']['p'])
+                            g_array[poly]['properties']['Cent'] = 1
+                            g_array[poly]['properties']['Aust'] = 1
                             hcount += 1
 
             if progress is not last_progress:
@@ -775,9 +778,9 @@ class Tiles():
                 last_progress = progress
                 (poi_progress, cent_progress) = ([],[])
         #return loc_poly_array
-        return gArray
+        return g_array
 
-    def aus_poly_intersect(self,gArray):
+    def aus_poly_intersect(self,g_array):
         # load the shapefile
         sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
         thePoints = POI.Islands()
@@ -787,9 +790,9 @@ class Tiles():
         last_progress = -999
         hcount = 0
         # get the query polygons
-        (point_list, num_poly,isectArray) = ([], len(gArray),[])
+        (point_list, num_poly,isectArray) = ([], len(g_array),[])
 
-        loc_poly_array = gArray
+        loc_poly_array = g_array
         (poi_progress, poly_progress, omit_progress) = ([],[],[])
         for poly in range (0, num_poly):
             (inBBox,inPoly) = (False,False)
@@ -845,3 +848,4 @@ class Tiles():
                 (poi_progress, poly_progress, omit_progress) = ([],[],[])
         #return loc_poly_array
         return isectArray
+
