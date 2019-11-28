@@ -849,3 +849,25 @@ class Tiles():
         #return loc_poly_array
         return isectArray
 
+    def random_points_in_polygon(self,poly):
+        #path_contains_path, path_contains_points Doh! did not know about this
+        np.arr = np.array(poly)
+        arr_min = np.min(np_arr,axis=0)
+        arr_max = np.max(np.arr,axis=0)
+        min_x, min_y, max_x, max_y = (arr_min[0],arr_min[1],arr_max[0],arr_max[1])
+        
+        longs = np.arrange(min_x,max_x,0.002)
+        lats = np.arrange(min_y,max_y,0.002)
+        
+        longs = np.tile(longs,3).ravel()
+        lats - np.repeat(lats,3).ravel()
+        
+        coords = np.array([(x,y) for x,y in zip(longs,lats)])
+        
+        path = mpltPath.Path(poly)
+        r_coords = []
+        for coord in coords:
+            if path.contains_point([coord[0],coord[1]]) is True:
+                r_coords.append([coord[0],coord[1]])
+                
+        return r_coords
