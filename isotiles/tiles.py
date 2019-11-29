@@ -866,3 +866,98 @@ class Tiles():
                 r_coords.append([coord[0],coord[1]])
                 
         return r_coords
+    
+        def ru_my_neighbour(self, g_array,poly,row_count):
+        #(poly,row_count) = 121,41
+        ref_table = []
+        rec_count = 0
+        for record in range(0,len(g_array)):
+            g_rec = g_array[record]
+            ref_table.append([record,g_rec['properties']['p']])
+
+        
+        ref_table_df = pd.DataFrame(ref_table)
+        ref_table_df.columns = ['arr', 'poly']
+
+        poly_N = (poly - (row_count*2-(poly % row_count))-((poly % row_count)))
+        print('1. poly_N is',poly_N,'for poly',poly)
+        try:
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_N)]
+            arr_data = g_array[int(ref_q['arr'])]
+            print(arr_data['properties']['p'])
+            g_array[int(ref_q['arr'])]['properties']['poly_N'] = poly_N
+        except:
+            g_array[int(ref_q['arr'])]['properties']['poly_N'] = -99
+
+        poly_NE = (poly - (row_count*1-(poly % row_count))-((poly % row_count)))
+        print('2. poly_NE is',poly_NE,'for poly',poly)
+        try:
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_NE)]
+            arr_data = g_array[int(ref_q['arr'])]
+            print(arr_data['properties']['p'])
+            g_array[int(ref_q['arr'])]['properties']['poly_NE'] = poly_NE
+        except:
+            g_array[int(ref_q['arr'])]['properties']['poly_NE'] = -99
+
+        poly_E = poly + 1
+        print('3. poly_E is',poly_E,'for poly',poly)
+        try:
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_E)]
+            arr_data = g_array[int(ref_q['arr'])]
+            print(arr_data['properties']['p'])
+            g_array[int(ref_q['arr'])]['properties']['poly_E'] = poly_E
+        except:
+            g_array[int(ref_q['arr'])]['properties']['poly_E'] = -99
+           
+        poly_SE = (poly + (row_count*1-(poly % row_count))+((poly % row_count)))
+        print('4. poly_SE is',poly_SE,'for poly',poly)
+        try:
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_SE)]
+            arr_data = g_array[int(ref_q['arr'])]
+            print(arr_data['properties']['p'])
+            g_array[int(ref_q['arr'])]['properties']['poly_SE'] = poly_SE
+        except:
+            g_array[int(ref_q['arr'])]['properties']['poly_SE'] = -99
+
+        poly_S = (poly + (row_count*2-(poly % row_count))+((poly % row_count)))
+        print('5. poly_S is',poly_S,'for poly',poly)
+        try:
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_S)]
+            arr_data = g_array[int(ref_q['arr'])]
+            print(arr_data['properties']['p'])
+            g_array[int(ref_q['arr'])]['properties']['poly_S'] = poly_S
+        except:
+            g_array[int(ref_q['arr'])]['properties']['poly_S'] = -99
+        
+
+        poly_SW = (poly + (row_count*1-(poly % row_count))+((poly % row_count)))-1
+        print('6. poly_SW is',poly_SW,'for poly',poly)
+        try:
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_SW)]
+            arr_data = g_array[int(ref_q['arr'])]
+            print(arr_data['properties']['p'])
+            g_array[int(ref_q['arr'])]['properties']['poly_SW'] = poly_SW
+        except:
+            g_array[int(ref_q['arr'])]['properties']['poly_SW'] = -99
+     
+        poly_W = poly - 1
+        print('7. poly_W is',poly_W,'for poly',poly)
+        try:
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_W)]
+            arr_data = g_array[int(ref_q['arr'])]
+            print(arr_data['properties']['p'])
+            g_array[int(ref_q['arr'])]['properties']['poly_W'] = poly_W
+        except:
+            g_array[int(ref_q['arr'])]['properties']['poly_W'] = -99
+            
+        poly_NW = (poly - (row_count*1-(poly % row_count))-((poly % row_count)))-1
+        print('8. poly_NW is',poly_NW,'for poly',poly)
+        try:
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_NW)]
+            arr_data = g_array[int(ref_q['arr'])]
+            print(arr_data['properties']['p'])
+            g_array[int(ref_q['arr'])]['properties']['poly_NW'] = poly_NW
+        except:
+            g_array[int(ref_q['arr'])]['properties']['poly_NW'] = -99
+        
+        return g_array
