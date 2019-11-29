@@ -662,10 +662,14 @@ class Tiles():
             if (bound_points_df.size > 0):
                 poly_coords = []
                 num_coords = len(g_array[poly]['geometry']['coordinates'][0])-2
-                for coord in range(0, num_coords):
-                    poly_coords.append( \
-                        [g_array[poly]['geometry']['coordinates'][0][coord][0], \
-                         g_array[poly]['geometry']['coordinates'][0][coord][1]])
+                coords_list= g_array[poly]['geometry']['coordinates'][0]
+                longs = [item[0] for item in coords_list]
+                lats = [item[1] for item in coords_list]
+                poly_coords = [(x,y) for x,y in zip(longs,lats)]
+                #for coord in range(0, num_coords):
+                #    poly_coords.append( \
+                #        [g_array[poly]['geometry']['coordinates'][0][coord][0], \
+                #         g_array[poly]['geometry']['coordinates'][0][coord][1]])
                 path = mpltPath.Path(poly_coords)
 
                 for index, row in bound_points_df.iterrows():
@@ -679,7 +683,7 @@ class Tiles():
     def add_poly_poi(self,g_array):
         # load the shapefile
         sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
-        thePoints = POI.Islands()
+        
         # shapefile contains multipolygons
         shapes = sf.shapes()
         big_coords = shapes[0].points
@@ -688,28 +692,27 @@ class Tiles():
 
         print('Adding the Boundary/Coast Line points')
         points = []
-        for point in big_coords:
-            points.append([point[0],point[1]])
+        longs = [item[0] for item in big_coords]
+        lats = [item[1] for item in big_coords]
+        coords = [(x,y) for x,y in zip(longs,lats)]
 
-        bdy_poly_array = self.points_in_polygon(g_array,points,'Boundary')
+        bdy_poly_array = self.points_in_polygon(g_array,coords,'Boundary')
 
         print('Adding Island points')
-
+        thePoints = POI.Islands()
         islands_list = thePoints.Coords
-        points = []
-        for island in islands_list:
-           points.append([island[1],island[2]])
-
-        isl_poly_array = self.points_in_polygon(bdy_poly_array,points,'Island')
+        longs = [item[1] for item in islands_list]
+        lats = [item[2] for item in islands_list]
+        coords = [(x,y) for x,y in zip(longs,lats)]
+        isl_poly_array = self.points_in_polygon(bdy_poly_array,coords,'Island')
         
         print('Adding GNAF Locality points')
         thePoints = POI.GNAFLocalities()
         localities_list = thePoints.Coords
-        points = []
-        for locality in localities_list:
-           points.append([locality[4],locality[3]])
-        # Add Aust flag value for Island, Locality and Boundary
-        g_array = self.points_in_polygon(isl_poly_array,points,'Locality')
+        longs = [item[4] for item in localities_list]
+        lats = [item[3] for item in localities_list]
+        coords = [(x,y) for x,y in zip(longs,lats)]
+        g_array = self.points_in_polygon(isl_poly_array,coords,'Locality')
         for poly in range (0, len(g_array)):
             g_array[poly]['properties']['Aust'] = 0
             if g_array[poly]['properties']['Island'] > 0 or g_array[poly]['properties']['Locality'] > 0 or g_array[poly]['properties']['Boundary'] > 0:
@@ -780,10 +783,10 @@ class Tiles():
         #return loc_poly_array
         return g_array
 
+
     def aus_poly_intersect(self,g_array):
         # load the shapefile
         sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
-        thePoints = POI.Islands()
         # shapefile contains multipolygons
         shapes = sf.shapes()
         big_coords = shapes[0].points
@@ -810,22 +813,14 @@ class Tiles():
                     sub_coords = big_coords[shapes[0].parts[subpolyptr]:shapes[0].parts[subpolyptr+1]]
                     path = mpltPath.Path(sub_coords)
                     np_arr = np.array(sub_coords)
-                    arr_min = np.min(np_arr,axis=0)
-                    arr_max = np.max(np_arr,axis=0)
-
-                    bounds_N = arr_max[1]
-                    bounds_S = arr_min[1]
-                    bounds_E = arr_max[0]
-                    bounds_W = arr_min[0]
+                    (arr_min, arr_max) = (np.min(np_arr,axis=0),np.max(np_arr,axis=0))
+                    (bounds_N,bounds_S, bounds_E, bounds_W) = (arr_max[1], arr_min[1], arr_max[0], arr_min[0])
                                                  
                     if inPoly is False:
                         inBBox = False
                         for point in loc_poly_array[poly]['geometry']['coordinates'][0]:
-                            if point[1] < bounds_N:
-                                if point[1] > bounds_S:
-                                    if point[0] < bounds_E:
-                                        if point[0] > bounds_W:
-                                            inBBox = True
+                            if point[1] < bounds_N and point[1] > bounds_S and point[0] < bounds_E and point[0] > bounds_W:
+                                inBBox = True
 
                             if inBBox is True:
                                 if path.contains_point([point[0],point[1]]) is True:
