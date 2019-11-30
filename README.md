@@ -2,6 +2,7 @@
 *A good visualisation is worth the wait(weight).*
 
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/polygons_output.png)
+![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/neighbours.png)
 *output of polygons.py as png output and reference points for islands added in QGIS*
 
 **Why Wait?**
