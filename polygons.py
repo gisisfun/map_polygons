@@ -47,12 +47,13 @@ def hexagons(theshape,b_north, b_south, b_east, b_west, theradial):
     t.to_shp_file(poi_hex_array,'{fname}_layer')
     #poi_hex_array = t.from_geojson_file('{fname}_layer')
     (odd,even) = t.column_counts(poi_hex_array)
+    nb_hex_array = t.update_neighbours(poi_hex_array,odd,even)
     
-    cent_hex_array = t.add_poly_cent(poi_hex_array)
+    cent_hex_array = t.add_poly_cent(nb_hex_array)
     
     aus_hex_array = t.aus_poly_intersect(cent_hex_array)
     #aus_hex_array = t.from_geojson_file('aus_{fname}_layer')
-    nb_hex_array = t.update_hex_neighbours(aus_hex_array,odd,even)
+    
     t.to_geojson_file(nb_hex_array,'aus_{fname}_layer')
     t.to_kml_file(nb_hex_array,'aus_{fname}_layer')
     t.to_shp_file(nb_hex_array,'aus_{fname}_layer')
@@ -79,16 +80,16 @@ def boxes(shape,b_north,south,east,west,theradial):
     t.to_kml_file(poi_box_array,'{fname}_layer')
     t.to_shp_file(poi_box_array,'{fname}_layer')
     (odd,even) = t.column_counts(poi_box_array)
+    nb_box_array = t.update_neighbours(poi_box_array,odd,even)
     
-    cent_box_array = t.add_poly_cent(poi_box_array)
+    cent_box_array = t.add_poly_cent(nb_box_array)
     
-    #cent_hex_array = t.from_geojson_file('poi_{fname}_layer')
     aus_box_array = t.aus_poly_intersect(cent_box_array)
+    #aus_hex_array = t.from_geojson_file('aus_{fname}_layer')
     
-    # neighbours functionality not comple for boxes
-    t.to_geojson_file(aus_box_array,'aus_{fname}_layer')
-    t.to_kml_file(aus_box_array,'aus_{fname}_layer')
-    t.to_shp_file(aus_box_array,'aus_{fname}_layer')
+    t.to_geojson_file(nb_box_array,'aus_{fname}_layer')
+    t.to_kml_file(nb_box_array,'aus_{fname}_layer')
+    t.to_shp_file(nb_box_array,'aus_{fname}_layer')
 
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
