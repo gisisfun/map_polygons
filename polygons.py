@@ -39,24 +39,23 @@ def hexagons(theshape,b_north, b_south, b_east, b_west, theradial):
 
     intersects = t.intersections(hors,verts)
 
-    hexagon_array = t.hex_array(intersects,len(hors),len(verts))
+    hex_array = t.hex_array(intersects,len(hors),len(verts))
 
-    poi_hex_array = t.add_poly_poi(hexagon_array)
-    t.to_geojson_file(poi_hex_array,'{fname}_layer')
-    t.to_kml_file(poi_hex_array,'{fname}_layer')
-    t.to_shp_file(poi_hex_array,'{fname}_layer')
+    poi_hex_array = t.add_poly_poi(hex_array)
     #poi_hex_array = t.from_geojson_file('{fname}_layer')
     (odd,even) = t.column_counts(poi_hex_array)
     nb_hex_array = t.update_neighbours(poi_hex_array,odd,even)
+    t.to_geojson_file(nb_hex_array,'{fname}_layer')
+    t.to_kml_file(nb_hex_array,'{fname}_layer')
+    t.to_shp_file(nb_hex_array,'{fname}_layer')
     
     cent_hex_array = t.add_poly_cent(nb_hex_array)
     
     aus_hex_array = t.aus_poly_intersect(cent_hex_array)
     #aus_hex_array = t.from_geojson_file('aus_{fname}_layer')
-    
-    t.to_geojson_file(nb_hex_array,'aus_{fname}_layer')
-    t.to_kml_file(nb_hex_array,'aus_{fname}_layer')
-    t.to_shp_file(nb_hex_array,'aus_{fname}_layer')
+    t.to_geojson_file(aus_hex_array,'aus_{fname}_layer')
+    t.to_kml_file(aus_hex_array,'aus_{fname}_layer')
+    t.to_shp_file(aus_hex_array,'aus_{fname}_layer')
 
 def boxes(shape,b_north,south,east,west,theradial):
     t = Tiles(shape = 'box',north = b_north ,
@@ -72,25 +71,23 @@ def boxes(shape,b_north,south,east,west,theradial):
     intersects = t.intersections(hors,verts)
 
     box_array = t.box_array(intersects,len(hors),len(verts))
+    
+    poi_box_array = t.add_poly_poi(box_array)
 
-    box_array = t.box_array(intersects,len(hors),len(verts))
-
-    poi_box_array = t.add_poly_poi(hexagon_array)
-    t.to_geojson_file(poi_box_array,'{fname}_layer')
-    t.to_kml_file(poi_box_array,'{fname}_layer')
-    t.to_shp_file(poi_box_array,'{fname}_layer')
     (odd,even) = t.column_counts(poi_box_array)
     nb_box_array = t.update_neighbours(poi_box_array,odd,even)
+    t.to_geojson_file(nb_box_array,'{fname}_layer')
+    t.to_kml_file(nb_box_array,'{fname}_layer')
+    t.to_shp_file(nb_box_array,'{fname}_layer')
     
     cent_box_array = t.add_poly_cent(nb_box_array)
     
     aus_box_array = t.aus_poly_intersect(cent_box_array)
     #aus_hex_array = t.from_geojson_file('aus_{fname}_layer')
+    t.to_geojson_file(aus_box_array,'aus_{fname}_layer')
+    t.to_kml_file(aus_box_array,'aus_{fname}_layer')
+    t.to_shp_file(aus_box_array,'aus_{fname}_layer')
     
-    t.to_geojson_file(nb_box_array,'aus_{fname}_layer')
-    t.to_kml_file(nb_box_array,'aus_{fname}_layer')
-    t.to_shp_file(nb_box_array,'aus_{fname}_layer')
-
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
 if len(sys.argv) is 1:
@@ -125,3 +122,4 @@ python3 polygons_new.py box -8 -45 168 96 212\n
                       float(b_west), float(radial_d))
             else:
                 print('shape is hex or box')
+
