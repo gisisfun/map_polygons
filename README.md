@@ -109,24 +109,7 @@ OSGeo4W is a binary distribution of a broad set of open source geospatial softwa
 
 **polygons.py**
 
-This program is designed to demonstrate what is possible to achieve with a polyhedral, equal area mapping frameworks. 
-The Python program creates a custom mapping layer in geojson format. 
-The mapping layer can be made up of boxes or hexagons.
-
-for a 46 km radial hexagon values are:
-- shape: hex
-- bounding north: -8
-- bounding south: -45
-- bounding east: 168
-- bounding west: 96
-- radial in km: 46
-- filename for output: hex_46km
-
-at the WGS-84 Projection values for default values are:
-- 46 km from -8,96 offset is -7.999789221838243,96.41725883231395
-- At latitude of -8 latitude, radial distance is 46 km 
-- At latitude of -22.5 , radial distance is rounded to 43 km 
-- At latitude of -45 , radial distance is rounded to 33 km 
+This program was an attempt to replicate the Discrete Global Grid System (DGGS) standrd output . In attempting achieve this goal other options were able to explored and a lot of fun had while keeping the desired functionality of the DGGS with the functionality of existing boundary data sets. The polygons cover the same area as the boundary data. 
 
 command line arguments are: 
 - shape - hex or box 
