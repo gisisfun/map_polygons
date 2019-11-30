@@ -15,6 +15,52 @@ import simplekml
 from isotiles.parameters import Bounding_Box, OSVars, Offsets, Defaults
 from isotiles.data import DataSets, POI
 
+
+class Neighbours:
+    __slots_ = ("poly","row_count","g_array")
+    def __init__(self,poly,g_array,row_count):
+        self.poly = poly
+        self.row_count = row_count
+        self.g_array = g_array
+        
+    def row_counts(self):
+        row_counts = 41
+        return row_counts
+                
+    
+    def North(self):   
+        poly_N = (self.poly - (self.row_count*2-(self.poly % self.row_count))-((self.poly % self.row_count)))
+        return poly_N
+    
+    def North_East(self):   
+        poly_NE = (self.poly - (self.row_count*1-(self.poly % self.row_count))-((self.poly % self.row_count)))
+        return poly_NE
+
+    def East(self):   
+        poly_E = self.poly + 1
+        return poly_E
+    
+    def South_East(self):  
+        poly_SE = (self.poly + (self.row_count*1-(self.poly % self.row_count))+((self.poly % self.row_count)))
+        return poly_SE
+    
+    def South(self):   
+        poly_S = (self.poly + (self.row_count*2-(self.poly % self.row_count))+((self.poly % self.row_count)))
+        return poly_S
+
+    def South_West(self):
+        poly_SW = (self.poly + (self.row_count*1-(self.poly % self.row_count))+((self.poly % self.row_count)))-1
+        return poly_SW
+        
+    def West(self):
+        poly_W = self.poly - 1
+        return poly_W
+    
+    def North_West(self):
+        poly_NW = (self.poly - (self.row_count*1-(self.poly % self.row_count))-((self.poly % self.row_count)))-1
+        return poly_NW
+
+
 class Tiles():
     """
     Modules for map_polygons
@@ -319,7 +365,11 @@ class Tiles():
                                        "lat": centre_lat, "lon": centre_lon, \
                                        "N": bounds_n, "S": bounds_s, \
                                        "E": bounds_e, "W": bounds_w, \
-                                       "est_area": est_area})
+                                       "est_area": est_area,"Aust": 0, \
+                                       "a": poly_id-1,"p_N":-9, \
+                                       "p_NE":-9, "p_E":-9, \
+                                       "p_SE":-9, "p_S":-9, \
+                                       "p_SW":-9, "p_W":-9})
                     if  (bounds_e > bounds_w):
                         g_array.append(geopoly)
                         #append geojson geometry definition attributes to list
@@ -680,7 +730,14 @@ class Tiles():
                 
         return g_array
 
+    def update_poly_array_ref(self,g_array):
+        for g_ref in range(0,len(self.g_array)):
+            g_array[g_ref]['properties']['a'] = g_ref
+        return g_array
+    
+
     def add_poly_poi(self,g_array):
+        
         # load the shapefile
         sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
         
@@ -807,6 +864,7 @@ class Tiles():
                 inPoly = True
                 isectArray.append(loc_poly_array[poly])
                 poi_progress.append(loc_poly_array[poly]['properties']['p'])
+                loc_poly_array[poly]['properties']['a'] = poly
                 hcount += 1
             else:
                 for subpolyptr in range(len(shapes[0].parts)-1):
@@ -827,6 +885,7 @@ class Tiles():
                                     inPoly = True
                                     isectArray.append(loc_poly_array[poly])
                                     poly_progress.append(loc_poly_array[poly]['properties']['p'])
+                                    loc_poly_array[poly]['properties']['a'] = poly
                                     hcount += 1
 
             if inPoly is False:
@@ -867,97 +926,141 @@ class Tiles():
                 
         return r_coords
     
-        def ru_my_neighbour(self, g_array,poly,row_count):
-        #(poly,row_count) = 121,41
+    def column_counts(self,g_array):
         ref_table = []
-        rec_count = 0
+        for record in range(0,len(g_array)):
+            ref_table.append(g_array[record]['properties']['row'])
+        
+        ref_table_df = pd.DataFrame(ref_table)
+        ref_table_df.columns = ['row']
+        print(len(ref_table_df))        
+        
+        odd_columns = ref_table.count(1)
+        even_columns = ref_table.count(2)
+        print(int(odd_columns),int(even_columns))
+        return odd_columns,even_columns
+        
+    def update_hex_neighbours(self,g_array,odd_columns,even_columns):
+        ref_table = []
         for record in range(0,len(g_array)):
             g_rec = g_array[record]
-            ref_table.append([record,g_rec['properties']['p']])
+            ref_table.append([g_rec['properties']['a'],g_rec['properties']['p'],g_rec['properties']['row']])
 
         
         ref_table_df = pd.DataFrame(ref_table)
-        ref_table_df.columns = ['arr', 'poly']
+        ref_table_df.columns = ['arr', 'poly','row']
+        
 
-        poly_N = (poly - (row_count*2-(poly % row_count))-((poly % row_count)))
-        print('1. poly_N is',poly_N,'for poly',poly)
+        for g_ref in range(0,len(g_array)):
+            g_poly = g_array[g_ref]['properties']['p']
+            (pol_N,pol_NE,pol_E,pol_SE,pol_S,pol_SW,pol_W,pol_NW) = self.neighbours_hex(g_array,g_poly,ref_table_df,odd_columns)
+            g_array[g_ref]['properties']['p_N'] = pol_N
+            g_array[g_ref]['properties']['p_NE'] = pol_NE
+            g_array[g_ref]['properties']['p_E'] = pol_E
+            g_array[g_ref]['properties']['p_SE'] = pol_SE
+            g_array[g_ref]['properties']['p_S'] = pol_S
+            g_array[g_ref]['properties']['p_SW'] = pol_SW
+            g_array[g_ref]['properties']['p_W'] = pol_W
+            g_array[g_ref]['properties']['p_NW'] = pol_NW            
+        return g_array 
+
+    def neighbours_hex(self, g_array,poly,ref_table_df,column_count):
+        
+        # North Neighbour
+        poly_N = (poly - (column_count*2-(poly % column_count))-((poly % column_count)))
+        #print('1. poly_N is',poly_N,'for poly',poly)
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_N)]
             arr_data = g_array[int(ref_q['arr'])]
-            print(arr_data['properties']['p'])
-            g_array[int(ref_q['arr'])]['properties']['poly_N'] = poly_N
+            #print(arr_data['properties']['p'])
+            val_N = poly_N
         except:
-            g_array[int(ref_q['arr'])]['properties']['poly_N'] = -99
-
-        poly_NE = (poly - (row_count*1-(poly % row_count))-((poly % row_count)))
-        print('2. poly_NE is',poly_NE,'for poly',poly)
+            val_N = -9
+            
+        # North East Neighbour
+        poly_NE = (poly - (column_count*1-(poly % column_count))-((poly % column_count)))
+        #print('2. poly_NE is',poly_NE,'for poly',poly)
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_NE)]
             arr_data = g_array[int(ref_q['arr'])]
-            print(arr_data['properties']['p'])
-            g_array[int(ref_q['arr'])]['properties']['poly_NE'] = poly_NE
+            #print(arr_data['properties']['p'])
+            val_NE = poly_NE
         except:
-            g_array[int(ref_q['arr'])]['properties']['poly_NE'] = -99
-
+            val_NE = -9
+            
+        # East Neighbour
         poly_E = poly + 1
-        print('3. poly_E is',poly_E,'for poly',poly)
+        #print('3. poly_E is',poly_E,'for poly',poly)
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_E)]
             arr_data = g_array[int(ref_q['arr'])]
-            print(arr_data['properties']['p'])
-            g_array[int(ref_q['arr'])]['properties']['poly_E'] = poly_E
+            #print(arr_data['properties']['p'])
+            val_E = poly_E
         except:
-            g_array[int(ref_q['arr'])]['properties']['poly_E'] = -99
-           
-        poly_SE = (poly + (row_count*1-(poly % row_count))+((poly % row_count)))
-        print('4. poly_SE is',poly_SE,'for poly',poly)
+            val_E = -9
+            
+        # South East Neighbour
+        poly_SE = (poly + (column_count*1-(poly % column_count))+((poly % column_count)))
+        #print('4. poly_SE is',poly_SE,'for poly',poly)
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_SE)]
             arr_data = g_array[int(ref_q['arr'])]
-            print(arr_data['properties']['p'])
-            g_array[int(ref_q['arr'])]['properties']['poly_SE'] = poly_SE
+            #print(arr_data['properties']['p'])
+            val_SE = poly_SE
         except:
-            g_array[int(ref_q['arr'])]['properties']['poly_SE'] = -99
-
-        poly_S = (poly + (row_count*2-(poly % row_count))+((poly % row_count)))
-        print('5. poly_S is',poly_S,'for poly',poly)
+            val_SE = -9
+            
+        # South Neighbour
+        poly_S = (poly + (column_count*2-(poly % column_count))+((poly % column_count)))
+        #print('5. poly_S is',poly_S,'for poly',poly)
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_S)]
             arr_data = g_array[int(ref_q['arr'])]
-            print(arr_data['properties']['p'])
-            g_array[int(ref_q['arr'])]['properties']['poly_S'] = poly_S
+            #print(arr_data['properties']['p'])
+            val_S = poly_S
         except:
-            g_array[int(ref_q['arr'])]['properties']['poly_S'] = -99
+            val_S = -9
         
-
-        poly_SW = (poly + (row_count*1-(poly % row_count))+((poly % row_count)))-1
-        print('6. poly_SW is',poly_SW,'for poly',poly)
+        # South West Neighbour
+        poly_SW = (poly + (column_count*1-(poly % column_count))+((poly % column_count)))-1
+        #print('6. poly_SW is',poly_SW,'for poly',poly)
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_SW)]
             arr_data = g_array[int(ref_q['arr'])]
-            print(arr_data['properties']['p'])
-            g_array[int(ref_q['arr'])]['properties']['poly_SW'] = poly_SW
+            #print(arr_data['properties']['p'])
+            val_SW = poly_SW
         except:
-            g_array[int(ref_q['arr'])]['properties']['poly_SW'] = -99
-     
+            val_SW = -9
+            
+        # West Neighbour
         poly_W = poly - 1
-        print('7. poly_W is',poly_W,'for poly',poly)
+        #print('7. poly_W is',poly_W,'for poly',poly)
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_W)]
             arr_data = g_array[int(ref_q['arr'])]
-            print(arr_data['properties']['p'])
-            g_array[int(ref_q['arr'])]['properties']['poly_W'] = poly_W
+            #print(arr_data['properties']['p'])
+            val_W = poly_W
         except:
-            g_array[int(ref_q['arr'])]['properties']['poly_W'] = -99
+            val_W = -9
             
-        poly_NW = (poly - (row_count*1-(poly % row_count))-((poly % row_count)))-1
-        print('8. poly_NW is',poly_NW,'for poly',poly)
+        # North West Neighbour
+        poly_NW = (poly - (column_count*1-(poly % column_count))-((poly % column_count)))-1
+        #print('8. poly_NW is',poly_NW,'for poly',poly)
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_NW)]
             arr_data = g_array[int(ref_q['arr'])]
-            print(arr_data['properties']['p'])
-            g_array[int(ref_q['arr'])]['properties']['poly_NW'] = poly_NW
+            #print(arr_data['properties']['p'])
+            val_NW = poly_NW
         except:
-            g_array[int(ref_q['arr'])]['properties']['poly_NW'] = -99
+            val_NW = -9
         
+        return val_N,val_NE,val_E,val_SE,val_S,val_SW,val_W,val_NW
+    
+    def ru_my_neighbour_v1_test(self, g_array,poly,row_count):
+        #(poly,row_count) = 121,41
+        t = Tables(g_array)
+        g_table = t.ref_table()
+        n = Neighbours(poly,row_count,g_array,g_table)
+        print(n.North(),n.South())
+        #print(n.Update(n.North(),'poly_N'))
         return g_array
