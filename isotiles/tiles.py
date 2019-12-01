@@ -863,6 +863,7 @@ class Tiles():
         (point_list, num_poly,isectArray) = ([], len(g_array),[])
 
         loc_poly_array = g_array
+        
         (poi_progress, poly_progress, omit_progress) = ([],[],[])
         for poly in range (0, num_poly):
             (inBBox,inPoly) = (False,False)
@@ -874,7 +875,7 @@ class Tiles():
                 inPoly = True
                 isectArray.append(loc_poly_array[poly])
                 poi_progress.append(loc_poly_array[poly]['properties']['p'])
-                loc_poly_array[poly]['properties']['a'] = poly
+                loc_poly_array[poly]['properties']['a'] = h_count
                 hcount += 1
             else:
                 for subpolyptr in range(len(shapes[0].parts)-1):
@@ -896,7 +897,7 @@ class Tiles():
                                         inPoly = True
                                         isectArray.append(loc_poly_array[poly])
                                         poly_progress.append(loc_poly_array[poly]['properties']['p'])
-                                        loc_poly_array[poly]['properties']['a'] = poly
+                                        loc_poly_array[poly]['properties']['a'] = h_count
                                         hcount += 1
 
             if inPoly is False:
