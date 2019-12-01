@@ -403,7 +403,6 @@ class Tiles():
         print('created dataset of {0} derived hexagon polygons'.format(len(g_array)))
         return g_array
 
-
     def box_array(self,intersect_list,max_h, max_v):
         """
         Create array of box shaped polygons
@@ -418,7 +417,7 @@ class Tiles():
         self.Shape = 'box'
         self.FName = self.f_name()
         
-        (top_left, g_array) = (0, [])  # g_array - array of geojson formatted geometry element
+        (top_left, g_array, col, row) = (0, [], 1, 1)  # g_array - array of geojson formatted geometry element
         print('\n4/7 deriving boxes polygons from intersection data')
         vertex = [top_left + 0, top_left + 1, top_left + max_v + 1, top_left + max_v]
 
@@ -451,9 +450,13 @@ class Tiles():
                               "p_SW":-9, "p_W":-9})
                 g_array.append(geopoly)
                 #append geojson geometry definition attributes to list
+            else:
+                row += 1
+                col = 0
 
             #increment values
             top_left += 1
+            col += 1
             vertex = [top_left + 0, top_left + 1, top_left + max_v + 1, top_left + max_v]
 
         print('\n5/7 boxes geojson dataset of {0} derived polygons'.format(len(g_array)))
