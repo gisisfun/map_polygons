@@ -403,6 +403,7 @@ class Tiles():
         print('created dataset of {0} derived hexagon polygons'.format(len(g_array)))
         return g_array
 
+
     def box_array(self,intersect_list,max_h, max_v):
         """
         Create array of box shaped polygons
