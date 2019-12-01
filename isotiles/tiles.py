@@ -875,7 +875,7 @@ class Tiles():
                 inPoly = True
                 isectArray.append(loc_poly_array[poly])
                 poi_progress.append(loc_poly_array[poly]['properties']['p'])
-                loc_poly_array[poly]['properties']['a'] = h_count
+                loc_poly_array[poly]['properties']['a'] = hcount
                 hcount += 1
             else:
                 for subpolyptr in range(len(shapes[0].parts)-1):
@@ -897,7 +897,7 @@ class Tiles():
                                         inPoly = True
                                         isectArray.append(loc_poly_array[poly])
                                         poly_progress.append(loc_poly_array[poly]['properties']['p'])
-                                        loc_poly_array[poly]['properties']['a'] = h_count
+                                        loc_poly_array[poly]['properties']['a'] = hcount
                                         hcount += 1
 
             if inPoly is False:
