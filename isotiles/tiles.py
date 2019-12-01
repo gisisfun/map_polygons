@@ -890,12 +890,13 @@ class Tiles():
                                 inBBox = True
 
                             if inBBox is True:
-                                if path.contains_point([point[0],point[1]]) is True:
-                                    inPoly = True
-                                    isectArray.append(loc_poly_array[poly])
-                                    poly_progress.append(loc_poly_array[poly]['properties']['p'])
-                                    loc_poly_array[poly]['properties']['a'] = poly
-                                    hcount += 1
+                                if inPoly is False:
+                                    if path.contains_point([point[0],point[1]]) is True:
+                                        inPoly = True
+                                        isectArray.append(loc_poly_array[poly])
+                                        poly_progress.append(loc_poly_array[poly]['properties']['p'])
+                                        loc_poly_array[poly]['properties']['a'] = poly
+                                        hcount += 1
 
             if inPoly is False:
                 omit_progress.append(loc_poly_array[poly]['properties']['p'])
