@@ -868,9 +868,7 @@ class Tiles():
         for poly in range (0, num_poly):
             (inBBox,inPoly) = (False,False)
             progress = int((poly/num_poly)*100)
-            #try centroid
-            c_lon = loc_poly_array[poly]['properties']['lon']
-            c_lat = loc_poly_array[poly]['properties']['lat']
+
             if loc_poly_array[poly]['properties']['Aust'] > 0:
                 inPoly = True
                 isectArray.append(loc_poly_array[poly])
@@ -1129,7 +1127,7 @@ class Tiles():
         return val_N,val_NE,val_E,val_SE,val_S,val_SW,val_W,val_NW
 
 
-    def hexagons(self)
+    def hexagons(self):
         print(self.params())
         hors = self.horizontal()
 
