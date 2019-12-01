@@ -1129,11 +1129,68 @@ class Tiles():
         return val_N,val_NE,val_E,val_SE,val_S,val_SW,val_W,val_NW
 
 
-    def ru_my_neighbour_v1_test(self, g_array,poly,row_count):
-        #(poly,row_count) = 121,41
-        t = Tables(g_array)
-        g_table = t.ref_table()
-        n = Neighbours(poly,row_count,g_array,g_table)
-        print(n.North(),n.South())
-        #print(n.Update(n.North(),'poly_N'))
-        return g_array
+    def hexagons(self)
+        print(self.params())
+        hors = self.horizontal()
+
+        verts = self.vertical()
+
+        intersects = self.intersections(hors,verts)
+
+        hex_array = self.hex_array(intersects,len(hors),len(verts))
+
+        poi_hex_array = self.add_poly_poi(hex_array)
+        #poi_hex_array = t.from_geojson_file('{fname}_layer')
+        (odd,even) = self.column_counts(poi_hex_array)
+        nb_poi_hex_array = self.update_neighbours(poi_hex_array,odd,even)
+        self.to_geojson_file(nb_poi_hex_array,'{fname}_layer')
+        self.to_kml_file(nb_poi_hex_array,'{fname}_layer')
+        self.to_shp_file(nb_poi_hex_array,'{fname}_layer')
+    
+        #cent_hex_array = t.add_poly_cent(nb_hex_array)
+    
+        # uncomment to skip ahead
+        #nb_poi_hex_array = t.from_geojson_file('{fname}_layer')
+        #(odd,even) = t.column_counts(nb_poi_hex_array)
+        # cut out ocean polygons
+        aus_hex_array = self.aus_poly_intersect(nb_poi_hex_array)
+        # add neighbouur reference data
+        nb_aus_hex_array = self.update_neighbours(aus_hex_array,odd,even)
+        # write output to file formats
+        self.to_geojson_file(nb_aus_hex_array,'aus_{fname}_layer')
+        self.to_kml_file(nb_aus_hex_array,'aus_{fname}_layer')
+        self.to_shp_file(nb_aus_hex_array,'aus_{fname}_layer')
+        
+    def boxes(self):
+        print(self.params())
+
+        hors = self.horizontal()
+
+        verts = self.vertical()
+
+        intersects = self.intersections(hors,verts)
+
+        box_array = self.box_array(intersects,len(hors),len(verts))
+
+        poi_box_array = self.add_poly_poi(box_array)
+        #poi_hex_array = t.from_geojson_file('{fname}_layer')
+        (odd,even) = self.column_counts(poi_box_array)
+        nb_poi_box_array = self.update_neighbours(poi_box_array,odd,even)
+        self.to_geojson_file(nb_poi_box_array,'{fname}_layer')
+        self.to_kml_file(nb_poi_box_array,'{fname}_layer')
+        self.to_shp_file(nb_poi_box_array,'{fname}_layer')
+    
+        #cent_box_array = t.add_poly_cent(nb_box_array)
+    
+        # uncomment to skip ahead
+        #nb_poi_box_array = t.from_geojson_file('{fname}_layer')
+        #(odd,even) = t.column_counts(nb_poi_box_array)
+    
+        # cut out ocean polygons
+        aus_box_array = self.aus_poly_intersect(nb_poi_box_array)
+        # add neighbouur reference data
+        nb_aus_box_array = self.update_neighbours(aus_box_array,odd,even)
+        # write output to file formats
+        self.to_geojson_file(nb_aus_box_array,'aus_{fname}_layer')
+        self.to_kml_file(nb_aus_box_array,'aus_{fname}_layer')
+        self.to_shp_file(nb_aus_box_array,'aus_{fname}_layer')
