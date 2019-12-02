@@ -908,7 +908,7 @@ class Tiles():
         # add neighbouur reference data
         nb_aus_hex_array = self.update_neighbours(aus_hex_array,odd,even)
         # return output from function
-        print('100% progress: It's not over til it's over')
+        print("100% progress: It's not over til it's over")
         return nb_poi_hex_array, nb_aus_hex_array
 
     def boxes(self):
@@ -927,5 +927,5 @@ class Tiles():
         # add neighbouur reference data
         nb_aus_box_array = self.update_neighbours(aus_box_array,odd,even)
         # write output to file formats
-        print('100% progress: It's not over til it's over')
+        print("100% progress: It's not over til it's over")
         return nb_poi_box_array, nb_aus_box_array
