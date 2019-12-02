@@ -3,109 +3,39 @@ from isotiles.util import Util
 #from isotiles.visual import Visual
 import random
 import sys
-
-def random_points(bounds_n,bounds_s,bounds_e,bounds_w,numpoints):
-    """
-    Create an array of random points
-    """
-    
-    ns_range = bounds_n - bounds_s
-    ew_range = bounds_e - bounds_w
-    coord_list=[]
-
-    x_coords_list=[]
-    y_coords_list=[]
-    
-    for i in range(0,numpoints):
-        y_coord = bounds_s+random.randrange(0, ns_range*10000)/10000
-        x_coord = bounds_w+random.randrange(0, ew_range*10000)/10000
-        coord=[x_coord,y_coord]
-        coord_list.append(coord)
-        x_coords_list.append(x_coord)
-        y_coords_list.append(y_coord)
-        
-        #print(layer_json)
-        return coord_list 
+ 
 
 def hexagons(theshape,b_north, b_south, b_east, b_west, theradial):
-    t = Tiles(shape = theshape, north = b_north ,
+    t = Tiles(shape = 'hex', north = b_north ,
                  south = b_south, east = b_east,
                  west = b_west, radial = theradial)
     u = Util(shape = theshape, radial = theradial)
     u.ref_files_polygons()
-
-    print(t.params())
-
-    hors = t.horizontal()
-
-    verts = t.vertical()
-
-    intersects = t.intersections(hors,verts)
-
-    hex_array = t.hex_array(intersects,len(hors),len(verts))
-
-    poi_hex_array = t.add_poly_poi(hex_array)
-    #poi_hex_array = t.from_geojson_file('{fname}_layer')
-    (odd,even) = t.column_counts(poi_hex_array)
-    nb_poi_hex_array = t.update_neighbours(poi_hex_array,odd,even)
-    t.to_geojson_file(nb_poi_hex_array,'{fname}_layer')
-    t.to_kml_file(nb_poi_hex_array,'{fname}_layer')
-    t.to_shp_file(nb_poi_hex_array,'{fname}_layer')
     
-    #cent_hex_array = t.add_poly_cent(nb_hex_array)
-    
-    # uncomment to skip ahead
-    #nb_poi_hex_array = t.from_geojson_file('{fname}_layer')
-    #(odd,even) = t.column_counts(nb_poi_hex_array)
-    # cut out ocean polygons
-    aus_hex_array = t.aus_poly_intersect(nb_poi_hex_array)
-    # add neighbouur reference data
-    nb_aus_hex_array = t.update_neighbours(aus_hex_array,odd,even)
-    # write output to file formats
-    t.to_geojson_file(nb_aus_hex_array,'aus_{fname}_layer')
-    t.to_kml_file(nb_aus_hex_array,'aus_{fname}_layer')
-    t.to_shp_file(nb_aus_hex_array,'aus_{fname}_layer')
+    nb_poi_hex_array, nb_aus_hex_array = t.hexagons()
+    u.to_geojson_file(nb_poi_hex_array,'aus_{fname}_layer')
+    u.to_kml_file(nb_poi_hex_array,'aus_{fname}_layer')
+    u.to_shp_file(nb_poi_hex_array,'aus_{fname}_layer')
+
+    u.to_geojson_file(nb_aus_hex_array,'aus_{fname}_layer')
+    u.to_kml_file(nb_aus_hex_array,'aus_{fname}_layer')
+    u.to_shp_file(nb_aus_hex_array,'aus_{fname}_layer')
 
 def boxes(shape,b_north,south,east,west,theradial):
-    t = Tiles(shape = 'box',north = b_north ,
+    t = Tiles(shape = 'hex', north = b_north ,
                  south = b_south, east = b_east,
                  west = b_west, radial = theradial)
-    
     u = Util(shape = theshape, radial = theradial)
     u.ref_files_polygons()
-
-    print(t.params())
-
-    hors = t.horizontal()
-
-    verts = t.vertical()
-
-    intersects = t.intersections(hors,verts)
-
-    box_array = t.box_array(intersects,len(hors),len(verts))
-
-    poi_box_array = t.add_poly_poi(box_array)
-    #poi_hex_array = t.from_geojson_file('{fname}_layer')
-    (odd,even) = t.column_counts(poi_box_array)
-    nb_poi_box_array = t.update_neighbours(poi_box_array,odd,even)
-    t.to_geojson_file(nb_poi_box_array,'{fname}_layer')
-    t.to_kml_file(nb_poi_box_array,'{fname}_layer')
-    t.to_shp_file(nb_poi_box_array,'{fname}_layer')
     
-    #cent_box_array = t.add_poly_cent(nb_box_array)
-    
-    # uncomment to skip ahead
-    #nb_poi_box_array = t.from_geojson_file('{fname}_layer')
-    #(odd,even) = t.column_counts(nb_poi_box_array)
-    
-    # cut out ocean polygons
-    aus_box_array = t.aus_poly_intersect(nb_poi_box_array)
-    # add neighbouur reference data
-    nb_aus_box_array = t.update_neighbours(aus_box_array,odd,even)
-    # write output to file formats
-    t.to_geojson_file(nb_aus_box_array,'aus_{fname}_layer')
-    t.to_kml_file(nb_aus_box_array,'aus_{fname}_layer')
-    t.to_shp_file(nb_aus_box_array,'aus_{fname}_layer')
+    nb_poi_box_array, nb_aus_box_array = t.boxes()
+    u.to_geojson_file(nb_poi_box_array,'aus_{fname}_layer')
+    u.to_kml_file(nb_poi_box_array,'aus_{fname}_layer')
+    u.to_shp_file(nb_poi_box_array,'aus_{fname}_layer')
+
+    u.to_geojson_file(nb_aus_box_array,'aus_{fname}_layer')
+    u.to_kml_file(nb_aus_box_array,'aus_{fname}_layer')
+    u.to_shp_file(nb_aus_box_array,'aus_{fname}_layer')
     
     
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
