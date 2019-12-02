@@ -9,8 +9,7 @@ from geopy.distance import geodesic
 from geojson import Polygon,Feature,FeatureCollection
 from math import pow,sqrt
 import matplotlib.path as mpltPath
-import shapefile
-import simplekml
+import shapefile #to be moved to util from add_poly_poi
 
 from isotiles.parameters import Bounding_Box, OSVars, Offsets, Defaults
 from isotiles.data import DataSets, POI
@@ -121,9 +120,6 @@ class Tiles():
             self.vertSeq = [offValues.Long, offValues.Long,
                             offValues.Long, offValues.Long]
 
-
-
-
     def params(self):
         """
         Construct feedback of user variables for user
@@ -132,14 +128,10 @@ class Tiles():
         Tiles
         """
         ...
-
         
         return 'Making {0} hex shapes starting from {1},{2} to {3},{4} with a radial length of {5} km' \
                 .format(self.Shape, self.North, self.West, self.South,
                         self.East, self.Radial)
-    def metadata(self):
-        layer_dict = {'Bounds': {'Australia': {'North': self.North,'South': self.South, \
-                                           'West': self.West,'East': self.East}}}
 
     def params(self):
         """
@@ -253,6 +245,7 @@ class Tiles():
             i += 1
             
         return latitudes
+
 
     def line_intersection(self,line1, line2):
         """
@@ -403,7 +396,6 @@ class Tiles():
         print('created dataset of {0} derived hexagon polygons'.format(len(g_array)))
         return g_array
 
-
     def box_array(self,intersect_list,max_h, max_v):
         """
         Create array of box shaped polygons
@@ -464,29 +456,6 @@ class Tiles():
         return g_array
 
 
-    def points_and_polygons(self,g_array):
-        """
-        Neighbouring Polygons derivation
-        
-        Prerequisites:
-        hex_array or box_array, horizontal, vertical ,Tiles
-        
-        Input variables:
-        g_array
-        """
-        ...
-        
-        (point_list, num_poly) = ([], len(g_array))
-
-        for n in range (0, num_poly):
-            num_coords = len(g_array[n]['geometry']['coordinates'][0])-2
-            poly_id = g_array[n]['properties']['p']
-            for i in range(0, num_coords):
-                point_list.append( \
-                    [poly_id, str(g_array[n]['geometry']['coordinates'][0][i][0]) + \
-                     str(g_array[n]['geometry']['coordinates'][0][i][1])])
-        return point_list
-
     def tabular_dataframe(self,g_array):
         tabular_list = []
         (point_list, num_poly) = ([], len(g_array))
@@ -511,188 +480,8 @@ class Tiles():
                           sep = ',')
         return tabular_df
 
-    def to_shp_file(self,g_array,fNameTempl):
-        #tabular_list = []
-        fName = 'shapefiles{slash}'+fNameTempl
-        fPath = fName.format(shape = self.Shape,
-                             size = self.Radial,
-                             slash = self.Slash,
-                             sfPath = self.ShapefilesPath,
-                             fname = self.FName)
-        prjPath = fPath + '.prj'
-        w = shapefile.Writer(fPath) # , shapeType=3)
-        #setup columns
-        props_dict = g_array[0]['properties']
-        (i, props_list) = 0, []
-        for key in props_dict:
-            if i < 2 or i > 8:
-                w.field(key, 'N')
-            else:
-                w.field(key, 'N', decimal = 10)
-            i = i + 1
-
-        (point_list, num_poly) = ([], len(g_array))
-        for n in range (0, num_poly):
-            props_dict_rec = g_array[n]['properties']
-            rec_str = "w.record("
-            i = 0
-            #print('props_list',len(props_dict))
-            for key in props_dict_rec:
-                
-                rec_str = rec_str + key + ' = ' + str(props_dict_rec[key])
-                
-                if i is not len(props_dict)-1:
-                     rec_str = rec_str + ','
-                i = i +1
-                
-            rec_str = rec_str + ' )' 
-            #print(rec_str)
-            eval(rec_str)
-                    
-            #print([g_array[n]['geometry']['coordinates'][0]]) 
-            w.poly([g_array[n]['geometry']['coordinates'][0]])
-            #w.record(n)
-        w.close()    
-        # create the PRJ file
-        msg = 'writing shapefile formatted {shape} dataset to file:' + fNameTempl +'.shp'
-        print(msg.format(shape = self.Shape, fname = self.FName))  
-        prj = open(prjPath, "w")
-        epsg = 'GEOGCS["WGS 84",'
-        epsg += 'DATUM["WGS_1984",'
-        epsg += 'SPHEROID["WGS 84",6378137,298.257223563]]'
-        epsg += ',PRIMEM["Greenwich",0],'
-        epsg += 'UNIT["degree",0.0174532925199433]]'
-        prj.write(epsg)
-        prj.close()
-
-    def to_kml_file(self,g_array,fNameTempl):
-        fName = '{kPath}{slash}'+fNameTempl+'.kml'
-        fPath = fName.format(kPath = self.KMLfilesPath,
-                             shape = self.Shape,
-                             size = self.Radial,
-                             slash = self.Slash,
-                             fname = self.FName)
-        kml = simplekml.Kml()
-        #setup columns
-        props_dict = g_array[0]['properties']
-        
-        key_names_array = []
-        for key in props_dict:
-            key_names_array.append(key)
-            
-
-        (point_list, num_poly) = ([], len(g_array))
-        for poly in range (0, num_poly):
-            
-            props_dict_rec = g_array[poly]['properties']
-            (i,key_values_array) = (0,[])
-            rec_descr = ""
-            for key in props_dict:
-                key_values_array.append(props_dict_rec[key])
-                
-                if i is not len(props_dict)-1:
-                    rec_descr = rec_descr + key + ' = ' + str(props_dict_rec[key]) + '\n'
-                else:
-                    rec_descr = rec_descr + key + ' = ' + str(props_dict_rec[key]) + '\n'
-                i =+ 1
-            ev_str = 'pol = kml.newpolygon(name ="'    
-            points_str = "["
-            points_t=[]
-            for points in g_array[poly]['geometry']['coordinates'][0]:
-                points_t.append(tuple(points))
-                points_str = points_str + "("\
-                             + str(points[0]) + ","\
-                             + str(points[1]) + "), "
-            #print(points_t)
-            #print(points_str)
-            pol = kml.newpolygon(name = str(key_values_array[0]))
-            pol.outerboundaryis=points_t
-            pol.innerpoundaryis=points_t
-            #outer = '",outerboundaryis=' + str(points_t) + ", "
-            #inner = "innerboundaryis=" + str(points_t) + ")"
-            #ev_str = ev_str + str(key_values_array[0]) + outer + inner
-            #eval(ev_str)
-            pol.description = rec_descr
-            pol.style.polystyle.fill = 0
-            
-        msg = 'writing kml formatted {shape} dataset to file:' + fNameTempl +'.kml'
-        print(msg.format(shape = self.Shape, fname = self.FName))       
-        kml.save(fPath)
-
     def to_geojson_fmt(self,g_array):
         return FeatureCollection(g_array) 
-
-    def from_geojson_file(self,fNameTempl):
-        """
-        Read GeoJSON from file
-        
-        Prerequisites:
-        
-        Input variables:
-        """
-        ...
-
-        msg = 'reading geojson formatted dataset from file:' + fNameTempl +'.json'
-        print(msg.format(shape = self.Shape, fname = self.FName))
-        fName = 'geojson{slash}'+fNameTempl+'.json'
-        myfile = open(fName.format(fname = self.FName,slash = self.Slash), 'r')
-        #open file for reading geojson layer in geojson format
-        gj_data = myfile.read()  # read geojson layer to open file
-        gj_dict = json.loads(gj_data)
-        g_array = []
-        for i in range(len(gj_dict['features'])):
-            g_array.append(gj_dict['features'][i])
-        myfile.close()  # close file
-        return g_array
-
-    def to_geojson_file(self,g_array,fNameTempl):
-        """
-        Write string to file
-        
-        Prerequisites:
-        to_geojson, hex_array or box_array, horizontal, vertical, Tiles
-        
-        Input variables:
-        """
-        ...
-        content = FeatureCollection(g_array)
-        msg = 'writing geojson formatted {shape} dataset to file:' + fNameTempl +'.json'
-        print(msg.format(shape = self.Shape, fname = self.FName))
-        fName = 'geojson{slash}'+fNameTempl+'.json'
-        myfile = open(fName.format(fname = self.FName,slash = self.Slash), 'w')
-        #open file for writing geojson layer in geojson format
-        myfile.write(str(content))  # write geojson layer to open file
-        myfile.close()  # close file
-
-    def neighbours(self,pointsList):
-        """
-        Intersecting polygons list
-        
-        Prerequisites:
-        hex_array or box_array, horizontal, vertical, Tiles
-        
-        Input variables:
-        pointslist: array of points and metadata defining polygon shapes 
-        """
-        ...
-        
-        point_df = pd.DataFrame(pointsList)
-        point_df.columns = ['poly', 'latlong']
-        point_df.to_csv('csv{slash}{outfile}_points.csv' \
-                        .format(outfile = self.FName, \
-                                slash = self.Slash), sep = ',')
-        point_df_a = point_df  # make copy of dataframe
-        process_point_df = pd.merge(point_df, point_df_a, on = 'latlong')
-        # merge columns of same dataframe on concatenated latlong
-        process_point_df = process_point_df[(process_point_df['poly_x']
-    != process_point_df['poly_y'])]  # remove self references
-        output_point_df = process_point_df[['poly_x', 'poly_y']].copy().sort_values(by=['poly_x']).drop_duplicates()
-        #just leave polygon greferences and filter output
-
-        output_point_df.to_csv('csv{slash}{outfile}_neighbours.csv' \
-                               .format(outfile = self.FName, \
-                                       slash = self.Slash), \
-                               sep = ',', index = False)
 
   
     def points_in_polygon(self, g_array, lat_longs, g_label):
@@ -863,12 +652,13 @@ class Tiles():
         (point_list, num_poly,isectArray) = ([], len(g_array),[])
 
         loc_poly_array = g_array
-        
         (poi_progress, poly_progress, omit_progress) = ([],[],[])
         for poly in range (0, num_poly):
             (inBBox,inPoly) = (False,False)
             progress = int((poly/num_poly)*100)
-
+            #try centroid
+            c_lon = loc_poly_array[poly]['properties']['lon']
+            c_lat = loc_poly_array[poly]['properties']['lat']
             if loc_poly_array[poly]['properties']['Aust'] > 0:
                 inPoly = True
                 isectArray.append(loc_poly_array[poly])
@@ -913,28 +703,6 @@ class Tiles():
         #return loc_poly_array
         return isectArray
 
-    def random_points_in_polygon(self,poly):
-        #path_contains_path, path_contains_points Doh! did not know about this
-        np.arr = np.array(poly)
-        arr_min = np.min(np_arr,axis=0)
-        arr_max = np.max(np.arr,axis=0)
-        min_x, min_y, max_x, max_y = (arr_min[0],arr_min[1],arr_max[0],arr_max[1])
-        
-        longs = np.arrange(min_x,max_x,0.002)
-        lats = np.arrange(min_y,max_y,0.002)
-        
-        longs = np.tile(longs,3).ravel()
-        lats - np.repeat(lats,3).ravel()
-        
-        coords = np.array([(x,y) for x,y in zip(longs,lats)])
-        
-        path = mpltPath.Path(poly)
-        r_coords = []
-        for coord in coords:
-            if path.contains_point([coord[0],coord[1]]) is True:
-                r_coords.append([coord[0],coord[1]])
-                
-        return r_coords
     
     def column_counts(self,g_array):
         ref_table = []
@@ -955,11 +723,9 @@ class Tiles():
         for record in range(0,len(g_array)):
             g_rec = g_array[record]
             ref_table.append([g_rec['properties']['a'],g_rec['properties']['p'],g_rec['properties']['row']])
-
         
         ref_table_df = pd.DataFrame(ref_table)
-        ref_table_df.columns = ['arr', 'poly','row']
-        
+        ref_table_df.columns = ['arr', 'poly','row']        
 
         for g_ref in range(0,len(g_array)):
             g_poly = g_array[g_ref]['properties']['p']
@@ -1130,65 +896,36 @@ class Tiles():
     def hexagons(self):
         print(self.params())
         hors = self.horizontal()
-
         verts = self.vertical()
-
         intersects = self.intersections(hors,verts)
-
         hex_array = self.hex_array(intersects,len(hors),len(verts))
-
         poi_hex_array = self.add_poly_poi(hex_array)
-        #poi_hex_array = t.from_geojson_file('{fname}_layer')
         (odd,even) = self.column_counts(poi_hex_array)
-        nb_poi_hex_array = self.update_neighbours(poi_hex_array,odd,even)
-        self.to_geojson_file(nb_poi_hex_array,'{fname}_layer')
-        self.to_kml_file(nb_poi_hex_array,'{fname}_layer')
-        self.to_shp_file(nb_poi_hex_array,'{fname}_layer')
-    
+        nb_poi_hex_array = self.update_neighbours(poi_hex_array,odd,even)    
         #cent_hex_array = t.add_poly_cent(nb_hex_array)
-    
-        # uncomment to skip ahead
-        #nb_poi_hex_array = t.from_geojson_file('{fname}_layer')
-        #(odd,even) = t.column_counts(nb_poi_hex_array)
         # cut out ocean polygons
         aus_hex_array = self.aus_poly_intersect(nb_poi_hex_array)
         # add neighbouur reference data
         nb_aus_hex_array = self.update_neighbours(aus_hex_array,odd,even)
-        # write output to file formats
-        self.to_geojson_file(nb_aus_hex_array,'aus_{fname}_layer')
-        self.to_kml_file(nb_aus_hex_array,'aus_{fname}_layer')
-        self.to_shp_file(nb_aus_hex_array,'aus_{fname}_layer')
-        
+        # return output from function
+        print('100% progress: It's not over til it's over')
+        return nb_poi_hex_array, nb_aus_hex_array
+
     def boxes(self):
         print(self.params())
-
         hors = self.horizontal()
-
         verts = self.vertical()
-
         intersects = self.intersections(hors,verts)
-
         box_array = self.box_array(intersects,len(hors),len(verts))
 
         poi_box_array = self.add_poly_poi(box_array)
-        #poi_hex_array = t.from_geojson_file('{fname}_layer')
         (odd,even) = self.column_counts(poi_box_array)
         nb_poi_box_array = self.update_neighbours(poi_box_array,odd,even)
-        self.to_geojson_file(nb_poi_box_array,'{fname}_layer')
-        self.to_kml_file(nb_poi_box_array,'{fname}_layer')
-        self.to_shp_file(nb_poi_box_array,'{fname}_layer')
-    
-        #cent_box_array = t.add_poly_cent(nb_box_array)
-    
-        # uncomment to skip ahead
-        #nb_poi_box_array = t.from_geojson_file('{fname}_layer')
-        #(odd,even) = t.column_counts(nb_poi_box_array)
     
         # cut out ocean polygons
         aus_box_array = self.aus_poly_intersect(nb_poi_box_array)
         # add neighbouur reference data
         nb_aus_box_array = self.update_neighbours(aus_box_array,odd,even)
         # write output to file formats
-        self.to_geojson_file(nb_aus_box_array,'aus_{fname}_layer')
-        self.to_kml_file(nb_aus_box_array,'aus_{fname}_layer')
-        self.to_shp_file(nb_aus_box_array,'aus_{fname}_layer')
+        print('100% progress: It's not over til it's over')
+        return nb_poi_box_array, nb_aus_box_array
