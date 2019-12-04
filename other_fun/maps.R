@@ -2,7 +2,7 @@ library(geojsonR)
 library(maptools)
 library(raster)
 library(sp)
-
+##https://firms.modaps.eosdis.nasa.gov/active_fire/#firms-txt
 URL <- "https://raw.githubusercontent.com/gisisfun/map_polygons/master/geojson/aus_hex_57km_layer.json"
 
 basename(URL) # "abc.zip"
