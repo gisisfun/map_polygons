@@ -20,6 +20,11 @@ srs_list = list()
 crdref <- CRS('+proj=longlat +datum=WGS84')
 
 for (i in 1:length(file_js$features)) {
+  locality <- file_js$features[[i]]$properties$Locality
+  p <- file_js$features[[i]]$properties$p
+  data_bits <- data.frame("p" = p, "Locality" = locality)
+  #print(data_bits)
+  colnames(data_bits) <- c("p","locality")
   x <- file_js$features[[i]]$geometry$coordinates[,1]
   y <- file_js$features[[i]]$geometry$coordinates[,2]
   sr <- Polygon(cbind(x,y))
