@@ -19,10 +19,12 @@ length(file_js$features)
 srs_list = list()
 crdref <- CRS('+proj=longlat +datum=WGS84')
 
+data_bits <- data.frame(p=integer(),locality=integer)
+
 for (i in 1:length(file_js$features)) {
   locality <- file_js$features[[i]]$properties$Locality
   p <- file_js$features[[i]]$properties$p
-  data_bits <- data.frame("p" = p, "Locality" = locality)
+  data_bits[nrow(data_bits) + 1,] = list(p,locality)
   #print(data_bits)
   colnames(data_bits) <- c("p","locality")
   x <- file_js$features[[i]]$geometry$coordinates[,1]
@@ -34,7 +36,8 @@ for (i in 1:length(file_js$features)) {
 
     #points(pts, col='red', pch=20, cex=3)
 }
-SpP = SpatialPolygons(srs_list, 1:as.integer(length(file_js$features)),crdref)
+SpP = SpatialPolygonsDataFrame(data_bits,srs_list, 1:as.integer(length(file_js$features)),crdref)
+
 plot(SpP, border='blue', col='yellow', lwd=1)
 #Sr1 = Polygon(cbind(c(2,4,4,1,2),c(2,3,5,4,2)))
 #Srs1 = Polygons(list(Sr1), "s1")
