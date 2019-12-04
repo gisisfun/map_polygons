@@ -1,3 +1,4 @@
+library(geojsonR)
 library(geosphere)
 #library(geojson)
 library(sp)
@@ -506,11 +507,11 @@ close(fileConn)
 ###########
 
 #plot(pols, border='blue', col='yellow', lwd=3, add=TRUE)
-if(!file.exists(output8.json)){
+#if(!file.exists(output8.json)){
   # downloads to current directory:
-  download.file(URL, basename(URL))
-}
-file_js = FROM_GeoJson(url_file_string = "output8.json")
+#  download.file(URL, basename(URL))
+#}
+file_js = FROM_GeoJson(output)
 srs_list = list()
 crdref <- CRS('+proj=longlat +datum=WGS84')
 
