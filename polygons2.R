@@ -1,11 +1,11 @@
 library(geosphere)
 #library(geojson)
 library(sp)
-library(gdalUtils)
+#library(gdalUtils)
 #library(RSQLite)
-library(rgdal)
+#library(rgdal)
 
-library(geojsonio)
+#library(geojsonio)
 library(leaflet)
 library(magrittr)
 library(htmlwidgets)
@@ -69,12 +69,12 @@ new.map <- function () {
   # Add a legend
   map_with_legend <- map %>% 
     addLegend(pal = colorbins, 
-    values = output8$colname,
-    labFormat = labelFormat(suffix = "", 
-                            transform = function(colname) 1 * colname),
-    opacity = 0.1, 
-    title = "count of location", 
-    position = "topright"
+              values = output8$colname,
+              labFormat = labelFormat(suffix = "", 
+                                      transform = function(colname) 1 * colname),
+              opacity = 0.1, 
+              title = "count of location", 
+              position = "topright"
     )
   
   map_with_legend
@@ -89,7 +89,7 @@ new.map <- function () {
   tooltip <- sprintf("poly %s has %s locations"
                      ,output8$p
                      ,output8$colname
-                     ) %>% lapply(htmltools::HTML)
+  ) %>% lapply(htmltools::HTML)
   
   
   # Display map
@@ -106,7 +106,7 @@ new.map <- function () {
                   fillOpacity = 0.7, 
                   bringToFront = TRUE),
                 label = tooltip
-                )
+    )
   map_with_tooltip
   
   
@@ -214,7 +214,7 @@ makeHexagon <- function(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area
                        ,', "est_area": ',est_area,', "lat": ',centre_lat
                        ,', "lon": ',centre_lon,', "p": ',hexagon,', "row": '
                        ,rowno,', "colname": ',colvalue,'}, "type": "Feature"}, ')
-
+  
   return(out_hexagon)
 }
 
@@ -227,7 +227,7 @@ hexagons <- function(east,north,west,south,radial) {
   # New Bit Start
   #
   stringsAsFactors = FALSE
-
+  
   #point_coords
   MyData <- read.csv(file="csv/cities.csv", header=TRUE,colClasses=c("city"="character", "admin_name"="character"), sep=",")
   #sapply(MyData, typeof)
@@ -337,7 +337,7 @@ hexagons <- function(east,north,west,south,radial) {
     
     ref_points <- subset(MyData, lat >= bounds_s & lat <= bounds_n & lng <= bounds_e & lng >= bounds_w)
     #ref_points <- na.omit(points_df)
-
+    
     #
     # New Bit End
     #
@@ -351,7 +351,7 @@ hexagons <- function(east,north,west,south,radial) {
       p_count <- nrow(plist)
       geopoly <- makeHexagon(poly_coords,bounds_e,bounds_n,bounds_s,bounds_w,est_area,centre_lat,centre_lon,hexagon,rowno,'test',p_count)
       if (p_count > 0) 
-        { 
+      { 
         #i <- 0
         finalplist<- rbind(finalplist,plist)
         #for (row in 1:(nrow(plist)) )
@@ -365,7 +365,7 @@ hexagons <- function(east,north,west,south,radial) {
       #point_list <- rbind(point_list,poly_points)
       i <- 0
       for (row in 1:(nrow(poly_points)-1) )
-           {
+      {
         i <- i + 1
         latlong <- paste0(as.character(poly_points[i,1]),as.character(poly_points[i,2]),'b')
         point_list[nrow(point_list) + 1,] <- list(hexagon,latlong)
@@ -499,5 +499,30 @@ close(fileConn)
 #vectorImport <- readOGR(dsn="NUTS_BN_03M_2013.sqlite", layer="nuts_bn_03m_2013")
 #myShapeInR<-readOGR(".","output8")
 #plot(myShapeInR)
-new.map()
+#new.map()
 
+###########
+# New bit #
+###########
+
+#plot(pols, border='blue', col='yellow', lwd=3, add=TRUE)
+if(!file.exists(output8.json)){
+  # downloads to current directory:
+  download.file(URL, basename(URL))
+}
+file_js = FROM_GeoJson(url_file_string = "output8.json")
+srs_list = list()
+crdref <- CRS('+proj=longlat +datum=WGS84')
+
+for (i in 1:length(file_js$features)) {
+  x <- file_js$features[[i]]$geometry$coordinates[,1]
+  y <- file_js$features[[i]]$geometry$coordinates[,2]
+  sr <- Polygon(cbind(x,y))
+  ##pts <- SpatialPoints(lonlat)
+  #pols <- spPolygons(lonlat)
+  srs_list[[i]] = Polygons(list(sr), as.character(i))
+  
+  #points(pts, col='red', pch=20, cex=3)
+}
+SpP = SpatialPolygons(srs_list, 1:as.integer(length(file_js$features)),crdref)
+plot(SpP, border='blue', col='yellow', lwd=1)
