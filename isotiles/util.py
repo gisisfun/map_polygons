@@ -4,9 +4,10 @@ from pyunpack import Archive
 import numpy as np
 import shapefile
 import simplekml
+import csv
 
 from isotiles.parameters import Bounding_Box, OSVars, Offsets, Defaults
-from isotiles.data import DataSets
+from isotiles.datasets import DataSets
 from geojson import FeatureCollection
 
 class Util():
@@ -126,6 +127,24 @@ class Util():
         RefData = DataSets.OpenStreetMaps.ShapeFormat()
         self.file_deploy(RefData)
 
+    def coords_from_csv(self,fname,lon_c,lat_c):
+        #csv.Sniffer
+        csv.register_dialect(
+            'mydialect',
+            delimiter = ',',
+            quotechar = '\'',
+            doublequote = True,
+            skipinitialspace = True,
+            lineterminator = '\r\n',
+            quoting = csv.QUOTE_MINIMAL)
+        with open('{csvpath}/{fname}'.format(csvpath = self.CSVPath, fname = fname), newline='') as csvfile:
+            data = list(csv.reader(csvfile, dialect='mydialect'))
+        print(data[len(data)-1][lon_c])
+        longs = [float(item[lon_c]) for item in data[1:]]
+        lats = [float(item[lat_c]) for item in data[1:]]
+        coords = [(x,y) for x,y in zip(longs,lats)]
+        return coords
+    
     def from_geojson_file(self,fNameTempl):
         """
         Read GeoJSON from file

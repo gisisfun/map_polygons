@@ -12,8 +12,9 @@ import matplotlib.path as mpltPath
 import shapefile #to be moved to util from add_poly_poi
 
 from isotiles.parameters import Bounding_Box, OSVars, Offsets, Defaults
-from isotiles.data import DataSets, POI
-
+#from isotiles.poi import POI
+from isotiles.datasets import DataSets
+from isotiles.util import Util
 
 class Neighbours:
     __slots_ = ("poly","row_count","g_array")
@@ -536,7 +537,7 @@ class Tiles():
     
 
     def add_poly_poi(self,g_array):
-        
+        u = Util() 
         # load the shapefile
         sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
         
@@ -548,27 +549,22 @@ class Tiles():
 
         print('Adding the Boundary/Coast Line points')
         points = []
-        longs = [item[0] for item in big_coords]
-        lats = [item[1] for item in big_coords]
+        longs = [float(item[0]) for item in big_coords]
+        lats = [float(item[1]) for item in big_coords]
         coords = [(x,y) for x,y in zip(longs,lats)]
 
         bdy_poly_array = self.points_in_polygon(g_array,coords,'Boundary')
 
         print('Adding Island points')
-        thePoints = POI.Islands()
-        islands_list = thePoints.Coords
-        longs = [item[1] for item in islands_list]
-        lats = [item[2] for item in islands_list]
-        coords = [(x,y) for x,y in zip(longs,lats)]
+        coords = u.coords_from_csv('islands.csv',1,2)
+        
         isl_poly_array = self.points_in_polygon(bdy_poly_array,coords,'Island')
         
         print('Adding GNAF Locality points')
-        thePoints = POI.GNAFLocalities()
-        localities_list = thePoints.Coords
-        longs = [item[4] for item in localities_list]
-        lats = [item[3] for item in localities_list]
-        coords = [(x,y) for x,y in zip(longs,lats)]
+        coords = u.coords_from_csv('aug_gnaf_2019_locality.csv',4,3)
+        
         g_array = self.points_in_polygon(isl_poly_array,coords,'Locality')
+
         for poly in range (0, len(g_array)):
             g_array[poly]['properties']['Aust'] = 0
             if g_array[poly]['properties']['Island'] > 0 or g_array[poly]['properties']['Locality'] > 0 or g_array[poly]['properties']['Boundary'] > 0:
