@@ -1,0 +1,219 @@
+Name1,Name2,Latitude,Longitude,State,pop,unk2
+'Kingoonya','Kingoonya',-30.8996,135.3,'South Australia','',50,1036942792
+'Port Denison','Port Denison',-29.2828,114.9166,'Western Australia','',1213,1036873405
+'Cairns','Cairns',-16.8878,145.7633,'Queensland','',154225,1036016939
+'Kwinana','Kwinana',-32.2394,115.7702,'Western Australia','',20086,1036753478
+'Cranbourne','Cranbourne',-38.0996,145.2834,'Victoria','',460491,1036639986
+'Port Hedland','Port Hedland',-20.3104,118.606,'Western Australia','',14288,1036509606
+'Port Lincoln','Port Lincoln',-34.7332,135.8666,'South Australia','',13630,1036558150
+'Port Macquarie','Port Macquarie',-31.445,152.9187,'New South Wales','',48547,1036051032
+'Port Pirie','Port Pirie',-33.1911,137.99,'South Australia','',12506,1036571606
+'Portland','Portland',-38.34,141.59,'Victoria','',11808,1036439594
+'Proserpine','Proserpine',-20.4162,148.5835,'Queensland','',3976,1036150859
+'Busselton','Busselton',-33.6564,115.3487,'Western Australia','',10214,1036911902
+'Caboolture','Caboolture',-27.083,152.95,'Queensland','',31513,1036273434
+'Cooma','Cooma',-36.2396,149.12,'New South Wales','',6520,1036070931
+'Streaky Bay','Streaky Bay',-32.8119,134.2149,'South Australia','',1060,1036134944
+'Sunbury','Sunbury',-37.5696,144.71,'Victoria','',29925,1036519781
+'Sydney','Sydney',-33.92,151.1852,'New South Wales','admin',4630000,1036074917
+'Karumba','Karumba',-17.4833,140.8334,'Queensland','',173,1036926106
+'Esperance','Esperance',-33.8573,121.8889,'Western Australia','',7888,1036299314
+'Exmouth','Exmouth',-21.9311,114.1233,'Western Australia','',1085,1036006022
+'Forbes','Forbes',-33.3896,148.02,'New South Wales','',4838,1036523834
+'Morawa','Morawa',-29.2163,116,'Western Australia','',259,1036194388
+'Moree','Moree',-29.4699,149.8301,'New South Wales','',8203,1036377829
+'Katherine','Katherine',-14.4666,132.2666,'Northern Territory','',10141,1036323110
+'Katoomba','Katoomba',-33.7069,150.32,'New South Wales','',22076,1036674004
+'Launceston','Launceston',-41.4498,147.1302,'Tasmania','',72458,1036170383
+'Laverton','Laverton',-28.627,122.404,'Western Australia','',316,1036624366
+'Leeton','Leeton',-34.5449,146.3973,'New South Wales','',7299,1036102538
+'Leonara','Leonara',-28.8815,121.328,'Western Australia','',227,1036140404
+'Seymour','Seymour',-37.0342,145.1273,'Victoria','',3693,1036919223
+'Singleton','Singleton',-32.5695,151.16,'New South Wales','',13813,1036947514
+'Newcastle','Newcastle',-32.8453,151.815,'New South Wales','',1134616,1036468001
+'Norseman','Norseman',-32.2,121.7666,'Western Australia','',1004,1036257263
+'Batemans Bay','Batemans Bay',-35.6896,150.2073,'New South Wales','',10557,1036272805
+'Bathurst','Bathurst',-33.4196,149.57,'New South Wales','',6111,1036446465
+'Griffith','Griffith',-34.29,146.04,'New South Wales','',15455,1036563313
+'Whyalla','Whyalla',-33.025,137.5614,'South Australia','',22559,1036961366
+'Wilcannia','Wilcannia',-31.5662,143.3833,'New South Wales','',442,1036134474
+'Katanning','Katanning',-33.6996,117.5501,'Western Australia','',3934,1036411379
+'Bongaree','Bongaree',-27.0787,153.1509,'Queensland','',13649,1036269345
+'Bordertown','Bordertown',-36.3162,140.7666,'South Australia','',2583,1036115980
+'Boulia','Boulia',-22.8996,139.9,'Queensland','',600,1036512474
+'Bourke','Bourke',-30.1,145.9333,'New South Wales','',2475,1036074667
+'Mackay','Mackay',-21.1439,149.15,'Queensland','',75922,1036507374
+'Southern Cross','Southern Cross',-31.2161,119.3167,'Western Australia','',187,1036931490
+'Ulladulla','Ulladulla',-35.3495,150.47,'New South Wales','',9250,1036687220
+'Victor Harbor','Victor Harbor',-35.5596,138.6173,'South Australia','',7760,1036536547
+'Andamooka','Andamooka',-30.431,137.1656,'South Australia','',528,1036260794
+'Hervey Bay','Hervey Bay',-25.2887,152.8409,'Queensland','',25114,1036833938
+'Gunnedah','Gunnedah',-30.987,150.2623,'New South Wales','',7148,1036500021
+'Gympie','Gympie',-26.1886,152.6709,'Queensland','',11649,1036391013
+'Halls Creek','Halls Creek',-18.2667,127.7667,'Western Australia','',1209,1036444511
+'Hamilton','Hamilton',-37.7312,142.0234,'Victoria','',8869,1036699883
+'Winton','Winton',-22.3996,143.0333,'Queensland','',1157,1036031036
+'Mudgee','Mudgee',-32.5896,149.5801,'New South Wales','',5391,1036213564
+'Ivanhoe','Ivanhoe',-32.8996,144.3,'New South Wales','',265,1036571526
+'Pannawonica','Pannawonica',-21.6366,116.325,'Western Australia','',686,1036914573
+'Dubbo','Dubbo',-32.26,148.5973,'New South Wales','',31574,1036855042
+'Tom Price','Tom Price',-22.6935,117.7931,'Western Australia','',2723,1036464109
+'Parkes','Parkes',-33.1296,148.17,'New South Wales','',11137,1036977270
+'Sale','Sale',-38.1096,147.06,'Victoria','',22486,1036960753
+'Bendigo','Bendigo',-36.76,144.28,'Victoria','',81657,1036537913
+'Berri','Berri',-34.2829,140.6,'South Australia','',4716,1036554717
+'Adelaide','Adelaide',-34.935,138.6,'South Australia','admin',1145000,1036538171
+'Adelaide River','Adelaide River',-13.2495,131.1,'Northern Territory','',237,1036136750
+'Albany','Albany',-35.0169,117.8916,'Western Australia','',26445,1036047365
+'Burketown','Burketown',-17.7161,139.5666,'Queensland','',200,1036956849
+'Burnie','Burnie',-41.0666,145.9167,'Tasmania','',19972,1036394657
+'Penola','Penola',-37.383,140.8167,'South Australia','',1514,1036121853
+'Perth','Perth',-31.955,115.84,'Western Australia','admin',1532000,1036178956
+'Peterborough','Peterborough',-32.9662,138.8333,'South Australia','',1689,1036104272
+'Scone','Scone',-32.0796,150.8501,'New South Wales','',4624,1036918224
+'Scottsdale','Scottsdale',-41.1495,147.5167,'Tasmania','',2468,1036807079
+'Narrabri','Narrabri',-30.3319,149.7874,'New South Wales','',7082,1036714493
+'Narrogin','Narrogin',-32.9329,117.1666,'Western Australia','',4238,1036221961
+'Townsville','Townsville',-19.25,146.77,'Queensland','',138954,1036500020
+'Traralgon','Traralgon',-38.1996,146.53,'Victoria','',18226,1036938861
+'Central Coast','Central Coast',-33.42,151.3,'New South Wales','',3026,1036067845
+'Broome','Broome',-17.9618,122.2308,'Western Australia','',13218,1036047905
+'Bunbury','Bunbury',-33.3443,115.6502,'Western Australia','',26998,1036561011
+'Wyndham','Wyndham',-15.374,128.3601,'Western Australia','',800,1036474435
+'Yamba','Yamba',-29.423,153.3533,'New South Wales','',1806,1036259324
+'Tumby Bay','Tumby Bay',-34.3829,136.0833,'South Australia','',1791,1036529327
+'Forster-Tuncurry','Forster-Tuncurry',-32.1931,152.5266,'New South Wales','',17591,1036846186
+'Bundaberg','Bundaberg',-24.8791,152.3509,'Queensland','',52472,1036377333
+'Yulara','Yulara',-25.2405,130.9889,'Northern Territory','',930,1036245584
+'Richmond','Richmond',-33.5995,150.74,'New South Wales','',13880,1036934091
+'Richmond','Richmond',-20.7163,143.1333,'Queensland','',296,1036156498
+'Rockhampton','Rockhampton',-23.3639,150.52,'Queensland','',65850,1036768986
+'Roebourne','Roebourne',-20.7829,117.1333,'Western Australia','',19260,1036752479
+'Roma','Roma',-26.5594,148.7907,'Queensland','',5496,1036698836
+'Cloncurry','Cloncurry',-20.7,140.5,'Queensland','',1202,1036672657
+'Cobram','Cobram',-35.9196,145.65,'Victoria','',4659,1036438159
+'Coffs Harbour','Coffs Harbour',-30.3071,153.1123,'New South Wales','',62978,1036320442
+'Colac','Colac',-38.3395,143.58,'Victoria','',9089,1036633113
+'Alice Springs','Alice Springs',-23.701,133.88,'Northern Territory','',27710,1036830397
+'Ararat','Ararat',-37.2795,142.91,'Victoria','',6110,1036674088
+'Carnarvon','Carnarvon',-24.8998,113.6501,'Western Australia','',7392,1036344209
+'Ceduna','Ceduna',-32.0991,133.6623,'South Australia','',1586,1036725988
+'Charleville','Charleville',-26.4,146.25,'Queensland','',1900,1036575498
+'Charters Towers','Charters Towers',-20.0809,146.2587,'Queensland','',9573,1036733088
+'Kalbarri','Kalbarri',-27.6662,114.1667,'Western Australia','',1537,1036429141
+'Kununurra','Kununurra',-15.7666,128.7333,'Western Australia','',5679,1036556231
+'Dalby','Dalby',-27.1939,151.2657,'Queensland','',9847,1036053707
+'Lithgow','Lithgow',-33.4961,150.1528,'New South Wales','',11128,1036591538
+'Manjimup','Manjimup',-34.2333,116.15,'Western Australia','',4240,1036022434
+'Maitland','Maitland',-32.721,151.555,'New South Wales','',18625,1036034945
+'Mandurah','Mandurah',-32.5235,115.7471,'Western Australia','',73356,1036773118
+'Karratha','Karratha',-20.7304,116.87,'Western Australia','',16796,1036951388
+'Gawler','Gawler',-34.6074,138.7264,'South Australia','',16362,1036309493
+'Geelong','Geelong',-38.1675,144.3956,'Victoria','',160991,1036870987
+'Georgetown','Georgetown',-18.3,143.5333,'Queensland','',818,1036412066
+'Geraldton','Geraldton',-28.7666,114.6,'Western Australia','',27258,1036811875
+'Maryborough','Maryborough',-37.0496,143.73,'Victoria','',7046,1036781601
+'Maryborough','Maryborough',-25.5491,152.7209,'Queensland','',20678,1036205623
+'McMinns Lagoon','McMinns Lagoon',-12.5329,131.05,'Northern Territory','',5025,1036673821
+'Toowoomba','Toowoomba',-27.5645,151.9555,'Queensland','',92800,1036765315
+'Onslow','Onslow',-21.6576,115.0963,'Western Australia','',573,1036255184
+'Orange','Orange',-33.28,149.1,'New South Wales','',39329,1036760396
+'Stawell','Stawell',-37.0596,142.76,'Victoria','',6991,1036073093
+'Echuca','Echuca',-36.1296,144.75,'Victoria','',19457,1036292989
+'Eidsvold','Eidsvold',-25.3662,151.1333,'Queensland','',459,1036235197
+'Emerald','Emerald',-23.5122,148.1673,'Queensland','',9398,1036124660
+'Tamworth','Tamworth',-31.1026,150.9171,'New South Wales','',38551,1036233388
+'Taree','Taree',-31.8976,152.4618,'New South Wales','',44182,1036855717
+'Ballarat','Ballarat',-37.5596,143.84,'Victoria','',85109,1036567186
+'Ballina','Ballina',-28.8614,153.568,'New South Wales','',14242,1036040102
+'Barcaldine','Barcaldine',-23.5662,145.2834,'Queensland','',1068,1036284609
+'Mount Barker','Mount Barker',-34.6328,117.6666,'Western Australia','',1781,1036651498
+'Mount Gambier','Mount Gambier',-37.8313,140.765,'South Australia','',23209,1036932780
+'Mount Isa','Mount Isa',-20.7239,139.49,'Queensland','',33200,1036386100
+'Mount Magnet','Mount Magnet',-28.0662,117.8167,'Western Australia','',424,1036327720
+'Kempsey','Kempsey',-31.0874,152.822,'New South Wales','',11840,1036897003
+'Queanbeyan','Queanbeyan',-35.3546,149.2113,'New South Wales','',32602,1036846465
+'Queenstown','Queenstown',-42.0829,145.55,'Tasmania','',2352,1036082142
+'Quilpie','Quilpie',-26.6166,144.25,'Queensland','',560,1036696232
+'Ravensthorpe','Ravensthorpe',-33.5829,120.0333,'Western Australia','',1101,1036878618
+'Warrnambool','Warrnambool',-38.38,142.47,'Victoria','',29928,1036291219
+'Warwick','Warwick',-28.2292,152.0203,'Queensland','',12347,1036412726
+'Weipa','Weipa',-12.6666,141.8666,'Queensland','',2830,1036501067
+'Ouyen','Ouyen',-35.0662,142.3167,'Victoria','',1400,1036764173
+'Wollongong','Wollongong',-34.4154,150.89,'New South Wales','',260914,1036502269
+'Wonthaggi','Wonthaggi',-38.6095,145.59,'Victoria','',5985,1036415078
+'Kiama','Kiama',-34.7096,150.84,'New South Wales','',10379,1036754695
+'Kimba','Kimba',-33.1496,136.4334,'South Australia','',636,1036035341
+'Kingaroy','Kingaroy',-26.539,151.8406,'Queensland','',8573,1036463308
+'Pine Creek','Pine Creek',-13.8162,131.8167,'Northern Territory','',665,1036858004
+'Hobart','Hobart',-42.85,147.295,'Tasmania','admin',80870,1036679838
+'Darwin','Darwin',-12.4254,130.85,'Northern Territory','admin',93080,1036497565
+'Gingin','Gingin',-31.3496,115.9,'Western Australia','',1446,1036686561
+'Meekatharra','Meekatharra',-26.6,118.4833,'Western Australia','',654,1036608457
+'Melbourne','Melbourne',-37.82,144.975,'Victoria','admin',4170000,1036533631
+'Woomera','Woomera',-31.1496,136.8,'South Australia','',450,1036392822
+'Moranbah','Moranbah',-22.0016,148.038,'Queensland','',10000,1036916453
+'Port Augusta','Port Augusta',-32.49,137.77,'South Australia','',13897,1036945368
+'Port Douglas','Port Douglas',-16.4846,145.4587,'Queensland','',3000,1036053723
+'Gladstone','Gladstone',-23.8533,151.2467,'Queensland','',30489,1036070755
+'Gold Coast','Gold Coast',-28.0815,153.4482,'Queensland','',527660,1036153217
+'Horsham','Horsham',-36.7096,142.19,'Victoria','',12830,1036654340
+'Hughenden','Hughenden',-20.85,144.2,'Queensland','',421,1036738932
+'Northam','Northam',-31.6566,116.6534,'Western Australia','',5855,1036868267
+'Nowra','Nowra',-34.8828,150.6,'New South Wales','',94781,1036984536
+'Shepparton','Shepparton',-36.3746,145.3914,'Victoria','',33550,1036030548
+'Yeppoon','Yeppoon',-23.1329,150.7567,'Queensland','',10769,1036180170
+'Young','Young',-34.3096,148.29,'New South Wales','',7501,1036073044
+'Caloundra','Caloundra',-26.8,153.1333,'Queensland','',38706,1036266942
+'Ingham','Ingham',-18.6496,146.1666,'Queensland','',6127,1036238542
+'Innisfail','Innisfail',-17.5313,146.0387,'Queensland','',10143,1036930229
+'Inverell','Inverell',-29.7668,151.1126,'New South Wales','',8561,1036652902
+'Kingston','Kingston',-42.9911,147.3084,'Tasmania','',14371,1036297213
+'Kingston South East','Kingston South East',-36.8328,139.8501,'South Australia','',206,1036261175
+'Clare','Clare',-33.8329,138.6,'South Australia','',3061,1036842122
+'Bowen','Bowen',-20.0013,148.2087,'Queensland','',10983,1036979225
+'Melton','Melton',-37.6895,144.57,'Victoria','',32368,1036007778
+'Meningie','Meningie',-35.6995,139.3333,'South Australia','',1501,1036445634
+'Merimbula','Merimbula',-36.8996,149.9,'New South Wales','',6367,1036933197
+'Merredin','Merredin',-31.4828,118.2667,'Western Australia','',2668,1036578320
+'Mildura','Mildura',-34.185,142.1514,'Victoria','',47867,1036624348
+'Thargomindah','Thargomindah',-28,143.8167,'Queensland','',203,1036793708
+'Theodore','Theodore',-24.9495,150.0833,'Queensland','',246,1036423364
+'Three Springs','Three Springs',-29.5333,115.75,'Western Australia','',190,1036669084
+'Oatlands','Oatlands',-42.2996,147.3666,'Tasmania','',1157,1036926323
+'Wagin','Wagin',-33.2996,117.35,'Western Australia','',1598,1036851354
+'Armidale','Armidale',-30.5123,151.6675,'New South Wales','',22673,1036975829
+'Atherton','Atherton',-17.2703,145.4694,'Queensland','',6959,1036456869
+'Ayr','Ayr',-19.5702,147.3995,'Queensland','',9078,1036228772
+'Bairnsdale','Bairnsdale',-37.8296,147.61,'Victoria','',11005,1036432237
+'Camooweal','Camooweal',-19.9167,138.1167,'Queensland','',187,1036815011
+'Canberra','Canberra',-35.283,149.129,'Australian Capital Territory','primary',327700,1036142029
+'Longreach','Longreach',-23.4496,144.25,'Queensland','',2894,1036622618
+'Brisbane','Brisbane',-27.455,153.0351,'Queensland','admin',1860000,1036192929
+'Devonport','Devonport',-41.1927,146.3311,'Tasmania','',19317,1036033175
+'Wallaroo','Wallaroo',-33.9329,137.6333,'South Australia','',2779,1036743246
+'Wangaratta','Wangaratta',-36.36,146.3,'Victoria','',14022,1036395326
+'Cowell','Cowell',-33.6829,136.9166,'South Australia','',537,1036921929
+'Cowra','Cowra',-33.8296,148.68,'New South Wales','',6795,1036204877
+'Goondiwindi','Goondiwindi',-28.5548,150.3253,'Queensland','',4251,1036452066
+'Goulburn','Goulburn',-34.7496,149.7102,'New South Wales','',20940,1036347537
+'Grafton','Grafton',-29.712,152.9377,'New South Wales','',9955,1036615468
+'Murray Bridge','Murray Bridge',-35.1296,139.26,'South Australia','',18194,1036345943
+'Muswellbrook','Muswellbrook',-32.2696,150.89,'New South Wales','',11630,1036253543
+'Windorah','Windorah',-25.4332,142.6502,'Queensland','',158,1036272226
+'Bedourie','Bedourie',-24.3496,139.4666,'Queensland','',142,1036680924
+'Newman','Newman',-23.3666,119.7333,'Western Australia','',5138,1036587511
+'Birdsville','Birdsville',-25.8996,139.3666,'Queensland','',283,1036830335
+'Kalgoorlie','Kalgoorlie',-30.7354,121.46,'Western Australia','',36852,1036087904
+'Biloela','Biloela',-24.3936,150.4961,'Queensland','',6309,1036014905
+'Smithton','Smithton',-40.8329,145.1167,'Tasmania','',4202,1036207188
+'Bicheno','Bicheno',-41.8784,148.2886,'Tasmania','',177,1036189642
+'Deniliquin','Deniliquin',-35.5296,144.95,'New South Wales','',8024,1036325219
+'Broken Hill','Broken Hill',-31.95,141.4331,'New South Wales','',17395,1036216956
+'Swan Hill','Swan Hill',-35.3396,143.54,'Victoria','',9276,1036220501
+'Albury','Albury',-36.06,146.92,'New South Wales','',104258,1036076542
+'Wagga Wagga','Wagga Wagga',-35.1222,147.34,'New South Wales','',55381,1036273188
+'Tumut','Tumut',-35.3096,148.22,'New South Wales','',6526,1036777587
+'Lismore','Lismore',-28.8167,153.2931,'New South Wales','',31430,1036024174
+'Byron Bay','Byron Bay',-28.6565,153.6129,'New South Wales','',6764,1036606974
+'Tweed Heads','Tweed Heads',-28.1826,153.5466,'New South Wales','',33065,1036571941]]
