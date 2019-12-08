@@ -104,6 +104,14 @@ class Util():
         RefData = DataSets.Australia.ShapeFormat()
         self.file_deploy(RefData)
 
+        RefData = DataSets.AGIL_Dataset.CSVFormat()
+        self.file_deploy(RefData)
+
+        RefData = DataSets.MBSP.CSVFormat()
+        self.file_deploy(RefData)
+
+        RefData = DataSets.NASA_Active_Fire_Data.Modis_C6_1km.CSVFormat()
+        self.file_deploy(RefData)
 
     def ref_files_poly_wt(self):
         """
@@ -127,7 +135,36 @@ class Util():
         RefData = DataSets.OpenStreetMaps.ShapeFormat()
         self.file_deploy(RefData)
 
+    def coords_from_csv_latin1(self,fname,lon_c,lat_c):
+
+        csv.register_dialect(
+            'mydialect',
+            delimiter = ',',
+            quotechar = '\'',
+            doublequote = True,
+            skipinitialspace = True,
+            lineterminator = '\r\n',
+            quoting = csv.QUOTE_MINIMAL)
+
+        with open('{csvpath}{slash}{fname}'.format(csvpath = self.CSVPath, fname = fname, slash = self.Slash), encoding='latin1') as csvfile:
+            data = list(csv.reader(csvfile, dialect='mydialect'))
+
+        longs = []
+        lats = []
+
+        for i in range(1,len(data)-1):
+            print('')
+            try:
+                longs.append(float(data[i][lon_c]))
+                lats.append(float(data[i][lat_c]))
+            except:
+                print('error')
+
+        coords = [(x,y) for x,y in zip(longs,lats)]
+        return coords
+
     def coords_from_csv(self,fname,lon_c,lat_c):
+
         #csv.Sniffer
         csv.register_dialect(
             'mydialect',
@@ -137,9 +174,11 @@ class Util():
             skipinitialspace = True,
             lineterminator = '\r\n',
             quoting = csv.QUOTE_MINIMAL)
-        with open('{csvpath}/{fname}'.format(csvpath = self.CSVPath, fname = fname), newline='') as csvfile:
+
+
+        with open('{csvpath}{slash}{fname}'.format(csvpath = self.CSVPath, fname = fname, slash = self.Slash), newline='', encoding='utf-8') as csvfile:
             data = list(csv.reader(csvfile, dialect='mydialect'))
-        print(data[len(data)-1][lon_c])
+
         longs = [float(item[lon_c]) for item in data[1:]]
         lats = [float(item[lat_c]) for item in data[1:]]
         coords = [(x,y) for x,y in zip(longs,lats)]

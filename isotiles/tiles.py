@@ -553,17 +553,27 @@ class Tiles():
         lats = [float(item[1]) for item in big_coords]
         coords = [(x,y) for x,y in zip(longs,lats)]
 
-        bdy_poly_array = self.points_in_polygon(g_array,coords,'Boundary')
+        poly_array = self.points_in_polygon(g_array,coords,'Boundary')
 
         print('Adding Island points')
-        coords = u.coords_from_csv('islands.csv',1,2)
-        
-        isl_poly_array = self.points_in_polygon(bdy_poly_array,coords,'Island')
+        coords = u.coords_from_csv('islands.csv',1,2)       
+        next_poly_array = self.points_in_polygon(poly_array,coords,'Island')
         
         print('Adding GNAF Locality points')
         coords = u.coords_from_csv('aug_gnaf_2019_locality.csv',4,3)
-        
-        g_array = self.points_in_polygon(isl_poly_array,coords,'Locality')
+        poly_array = self.points_in_polygon(next_poly_array,coords,'Locality')
+
+        print('NASA Active fire Data MODIS C6 Australia and New Zealand 24h')
+        coords = u.coords_from_csv('MODIS_C6_Australia_and_New_Zealand_24h.csv',1,0)
+        next_poly_array = self.points_in_polygon(poly_array,coords,'Active_Fires')
+
+        print('National Mobile Blackspot program')
+        coords = u.coords_from_csv_latin1('mbsp_database.csv',6,5)
+        poly_array = self.points_in_polygon(next_poly_array,coords,'MBSP')
+
+        print('AGIL Locations')
+        coords = u.coords_from_csv('agil_locations20190208.csv',3,2)
+        g_array = self.points_in_polygon(poly_array,coords,'AGIL')
 
         for poly in range (0, len(g_array)):
             g_array[poly]['properties']['Aust'] = 0
