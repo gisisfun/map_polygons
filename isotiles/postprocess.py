@@ -113,14 +113,14 @@ class PostProcess():
         
     def geojson_to_shp (self,geojsonfile,shapefile,srid):
     
-        shapefiles_text = '{SFiles}{slash}{shapefile}.shp'.\
+        shapefiles_text = '{sFiles}{slash}{shapefile}.shp'.\
                           format(shapefile = shapefile, \
                                  slash = self.Slash, \
-                                 SFiles = self.ShapefilesPath)
+                                 sFiles = self.ShapefilesPath)
         geojson_text = '{gFiles}{slash}{geojsonfile}.json'.\
                        format(geojsonfile = geojsonfile,\
                               slash = self.Slash,\
-                              gfiles = self.GeoJSONPath)
+                              gFiles = self.GeoJSONPath)
         epsg_text = 'EPSG:{srid}'.format(srid=srid)  
         shp_options = [cmd_text, '-f', 'ESRI Shapefile', shapefiles_text, '-t_srs', epsg_text, geojson_text]
         try:
@@ -130,6 +130,24 @@ class PostProcess():
         except FileNotFoundError:
             print('No files processed')
 
+    def reproject_shp (self,shape_in,shape_out,srid):
+    
+        shape_in_text = '{SFiles}{slash}{shape_in}.shp'.\
+                          format(shapefile = shape_in, \
+                                 slash = self.Slash, \
+                                 SFiles = self.ShapefilesPath)
+        shape_out_text = '{SFiles}{slash}{shape_out}.shp'.\
+                          format(shapefile = shape_out, \
+                                 slash = self.Slash, \
+                                 SFiles = self.ShapefilesPath)
+        epsg_text = 'EPSG:{srid}'.format(srid=srid)  
+        shp_options = [cmd_text, '-f', 'ESRI Shapefile', shape_out_text, '-t_srs', epsg_text, shape_in_text]
+        try:
+            # record the output!        
+            subprocess.check_output(shp_options)
+            print('\nquery successful')
+        except FileNotFoundError:
+            print('No files processed')
         
     def sql_to_ogr (self,sqlfile, vrtfile, shapefile):
         print('sqlfile: {0} vrt: {1} shapefile: {2}'.format(sqlfile,vrtfile,shapefile))
