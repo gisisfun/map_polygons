@@ -25,16 +25,17 @@ def area_wt(theshape,theradial):
     u.ref_files_poly_wt()
  
     print('aust_shape')
-    
+
     fname = 'aust_{shape}_shape_{size}km'.\
             format(shape = p.Shape,\
                    size = p.Radial)
-    gj_fname = '{shape}_{size}km_layer'.\
+    gj_fname = 'aus_{shape}_{size}km_layer'.\
             format(shape = p.Shape,\
                    size = p.Radial)
-    p.geojson_to_shp (gj_fname,fname,4283)
-    p.sql_to_ogr('aust_shape', vrt_ref, fname)
-    p.shp_to_db(fname,db_name,fname,4823)
+    p.geojson_to_shp(gj_fname,fname,4283)
+    #p.sql_to_ogr('aust_shape', vrt_ref, fname)
+
+    p.shp_to_db(fname, db_name, fname, 4823)
     
     print('feat_aust_11_area')
     fname='feat_aust_{size}km_sa1_11'.\
@@ -84,10 +85,10 @@ def area_wt(theshape,theradial):
     
     p.sql_to_ogr('shape_pois_shp', vrt_ref, 'POI')
     p.shp_to_db('POI', db_name, 'POI', 4823)
-    p.sql_to_ogr('shape_agil_shp', vrt_ref, 'agil')
-    p.shp_to_db('agil', db_name, 'agil', 4823)
-    p.sql_to_ogr('shape_mbsp_shp', vrt_ref, 'mbsp')
-    p.shp_to_db('mbsp', db_name, 'mbsp', 4823)
+    #p.sql_to_ogr('shape_agil_shp', vrt_ref, 'agil')
+    #p.shp_to_db('agil', db_name, 'agil', 4823)
+    #p.sql_to_ogr('shape_mbsp_shp', vrt_ref, 'mbsp')
+    #p.shp_to_db('mbsp', db_name, 'mbsp', 4823)
 
     sqlname='tabular_area_wt_{shape}_{size}.txt'.\
              format(shape = p.Shape,\
@@ -121,8 +122,7 @@ def place_wt(theshape, theradial):
     db_name = 'db_area_{shape}_{size}.vrt'.\
               format(shape = p.Shape,\
                      size = p.Radial)
-
-        
+       
     p.vrt_shape_and_size ('vrt', 'template.vrt',vrt_file)
     p.do_spatialite('table_goes_here.txt', db_name)
     u.ref_files_poly_wt()   
@@ -133,11 +133,11 @@ def place_wt(theshape, theradial):
     fname = 'aust_{shape}_shape_{size}km'.\
             format(shape = p.Shape,\
                    size = p.Radial)
-    gj_fname = '{shape}_{size}km_layer'.\
+    gj_fname = 'aus_{shape}_{size}km_layer'.\
             format(shape = p.Shape,\
                    size = p.Radial)
-    p.geojson_to_shp (gj_fname,fname,4283)
-    p.sql_to_ogr('aust_shape', vrt_ref, fname)
+    p.geojson_to_shp(gj_fname,fname,4283)
+    #p.sql_to_ogr('aust_shape', vrt_ref, fname)
 
     p.shp_to_db(fname, db_name, fname, 4823)
     
@@ -183,10 +183,10 @@ def place_wt(theshape, theradial):
                 db_name, 'gis_osm_roads_free_1', 4823)
     p.sql_to_ogr('shape_pois_shp', vrt_ref, 'POI')
     p.shp_to_db('POI', db_name,'POI', 4823)
-    p.sql_to_ogr('shape_agil_shp', vrt_ref, 'agil')
-    p.shp_to_db('agil', db_name, 'agil', 4823)
-    p.sql_to_ogr('shape_mbsp_shp', vrt_ref, 'mbsp')
-    p.shp_to_db('mbsp', db_name, 'mbsp', 4823)
+    #p.sql_to_ogr('shape_agil_shp', vrt_ref, 'agil')
+    #p.shp_to_db('agil', db_name, 'agil', 4823)
+    #p.sql_to_ogr('shape_mbsp_shp', vrt_ref, 'mbsp')
+    #p.shp_to_db('mbsp', db_name, 'mbsp', 4823)
 
     sqlname='tabular_place_wt_{shape}_{size}.txt'.\
              format(shape = p.Shape,\
@@ -211,7 +211,7 @@ print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
 if len(sys.argv) is 1:
     (wtg,shape, size) = ['place','hex', '57']
-    area_wt(shape, size)
+    place_wt(shape, size)
 else:
     if (len(sys.argv) < 4 ):
         sys.exit("arguments are \nshape \n size (km)\n ")
