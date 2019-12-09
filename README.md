@@ -372,6 +372,7 @@ Larger volumes of data and newer SPARQL/GeoSPARQL and Discrete Global Grid Syste
 
 - http://redblobgames.com/grids/hexagons
 - https://geoawesomeness.com/discrete-global-grid-system-dggs-new-reference-system/
+- https://wiki.openstreetmap.org/wiki/Australian_data_catalogue
 
 
 
