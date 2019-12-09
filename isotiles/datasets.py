@@ -82,7 +82,7 @@ class DataSets:
                 self.ZipPath = 'shapefiles{slash}australia-latest-free.shp.zip'
 
 
-    class NASAActiveFireData:
+    class NASA_Active_Fire_Data:
 
         class VIIRS_375m:
         
@@ -140,7 +140,7 @@ class DataSets:
                     self.Description = 'NASA Active Fire Data Modis C6 1km'
                     self.Format = 'CSV'
                     self.FilePath = 'csv{slash}MODIS_C6_Australia_and_New_Zealand_24h.csv'
-                    self.DownURL = 'https://firms.modaps.eosdis.nasa.gov/active_fire/c6/text/MODIS_C6_Aus   tralia_and_New_Zealand_24h.csv'                
+                    self.DownURL = 'https://firms.modaps.eosdis.nasa.gov/active_fire/c6/text/MODIS_C6_Australia_and_New_Zealand_24h.csv'                
                     self.ZipDir = 'csv'
                     self.ZipPath ='csv{slash}MODIS_C6_Australia_and_New_Zealand_24h.csv'
 
