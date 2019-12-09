@@ -5,8 +5,14 @@
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
+    <OGRVRTLayer name="Shape_JSON">
+        <SrcDataSource>shapefiles/aus_hex_57km_layer.json</SrcDataSource>
+        <SrcLayer>hex_57km_layer</SrcLayer>
+        <GeometryType>wkbPolygon</GeometryType>
+        <LayerSRS>EPSG:4326</LayerSRS>
+    </OGRVRTLayer>
     <OGRVRTLayer name="Shape">
-        <SrcDataSource>shapefiles/hex_57km_layer.shp</SrcDataSource>
+        <SrcDataSource>shapefiles/aus_hex_57km_layer.shp</SrcDataSource>
         <SrcLayer>hex_57km_layer</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
