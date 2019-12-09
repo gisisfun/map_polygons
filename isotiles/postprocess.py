@@ -122,7 +122,7 @@ class PostProcess():
                               slash = self.Slash,\
                               gFiles = self.GeoJSONPath)
         epsg_text = 'EPSG:{srid}'.format(srid=srid)  
-        shp_options = [cmd_text, '-f', 'ESRI Shapefile', shapefiles_text, '-t_srs', epsg_text, geojson_text]
+        shp_options = [self.Ogr2ogr, '-f', 'ESRI Shapefile', shapefiles_text, '-t_srs', epsg_text, geojson_text]
         try:
             # record the output!        
             subprocess.check_output(shp_options)
