@@ -8,9 +8,9 @@
 **Why Wait?**
 The Python approach to cutting out the shape of 'australia' from the derived polygon dataset is not as efficient as using an SQL approach. SQL is efficient but no where near as flexible as Python. If you are not blending region based statistics into the final data set then the 'aus_(hex or box)_(size in km)km_layer' file in kml, geojson and shapefile will meet your needs.
 
-Note: Python joins allow for two islands have added to the map (mapping layer) : Ashmore Reef and Norfolk Island. Complex SQL joins or modification of the base mapping layer arw required to achieve the same effect.
+Note: Python joins allow for two islands have added to the map (mapping layer) : Ashmore Reef and Norfolk Island. Complex SQL joins or modification of the base mapping layer are normally required to achieve the same effect.
 
-If you are in a hurry then skip the 'aus_poly_intersect' section of the code and proceed to **poly_wt.py**
+Proceed to **poly_wt.py** to add the demographic data of your choice. In this case ABS Statistical Area Level 1 data sets are merged together to mease the 'relative change in need for assistance'.
 
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/rel_need_for_assistance_by_place_weight.png)
 
