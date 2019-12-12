@@ -10,14 +10,16 @@ The Python approach to cutting out the shape of 'australia' from the derived pol
 
 Note: Python joins allow for two islands have added to the map (mapping layer) : Ashmore Reef and Norfolk Island. Complex SQL joins or modification of the base mapping layer are normally required to achieve the same effect.
 
-| Format    | File              | Download Link|
-|:-----------------|:------------------|:--------------|
-| ESRI .prj | aus_hex_57km_layer|https://www.github.com/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.prj|
-| ESRI .shp | aus_hex_57km_layer|https://www.github.com/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.shp|
-| ESRI .shx | aus_hex_57km_layer|https://www.github.com/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.shx|
-| ESRI .dbf | aus_hex_57km_layer|https://www.github.com/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.dbf|
-| GeoJSON | aus_hex_57km_layer|https://www.github.com/gisisfun/map_polygons/geojson/aus_hex_57km_layer.json|
-| KML | aus_hex_57km_layer|https://www.github.com/gisisfun/map_polygons/kmlfiles/aus_hex_57km_layer.kml|
+ *aus_hex_57km_layer*
+
+| Format    | Download Link|
+|:-----------------|:------------------|
+| ESRI .prj |https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.prj|
+| ESRI .shp |https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.shp|
+| ESRI .shx |https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.shx|
+| ESRI .dbf |https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.dbf|
+| GeoJSON |https://github.com/downloads/gisisfun/map_polygons/geojson/aus_hex_57km_layer.json|
+| KML |https://github.com/downloads/gisisfun/map_polygons/kmlfiles/aus_hex_57km_layer.kml|
 
 Proceed to **poly_wt.py** to add the demographic data of your choice. In this case ABS Statistical Area Level 1 data sets are merged together to mease the 'relative change in need for assistance'.
 
