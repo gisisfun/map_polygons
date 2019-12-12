@@ -138,7 +138,7 @@ In this example the number of points of interest (POI) within and between intere
 
 **poly_wt.py**
 
-This program populate the shapes with demographic and POI based dataset content dor the **aera** weighted analysis and include some of of this data to **place** weight values in larger overlalapping regions.
+This program populate the shapes with demographic and POI based dataset content dor the **area** weighted analysis and include some of of this data to **place** weight values in larger overlalapping regions.
 
 **map_me.py**
 
