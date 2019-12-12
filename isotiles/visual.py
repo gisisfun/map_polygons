@@ -17,8 +17,6 @@ class Visual:
                  radial: Defaults = defaults.Radial,
                  shape: Defaults = defaults.Shape,
                  weight: Defaults = defaults.Weight,
-                 radial: Defaults = defaults.Radial,
-                 shape: Defaults = defaults.Shape,
                  images: Defaults = defaults.ImagesPath,
                  metadata: Defaults = defaults.MetaDataPath,
                  logfiles: Defaults = defaults.LogfilesPath,
@@ -29,10 +27,10 @@ class Visual:
                  csv: Defaults = defaults.CSVPath,
                  spatialite: Defaults = defaults.SpatialitePath,
                  sql: Defaults = defaults.SQLPath,
-		 slash: Defaults = defaults.Slash,
-		 ogr2ogr_com: Defaults = defaults.Ogr2ogr,
-		 spatialite_com: Defaults = defaults.Spatialite,
-		 extn: Defaults = defaults.Extn):
+         slash: Defaults = defaults.Slash,
+         ogr2ogr_com: Defaults = defaults.Ogr2ogr,
+         spatialite_com: Defaults = defaults.Spatialite,
+         extn: Defaults = defaults.Extn):
         posixvars = OSVars.posix()
         ntvars = OSVars.nt()
         self.imagesPath = images
@@ -57,7 +55,7 @@ class Visual:
         sf = sf.sort_values(['rel_need_for_assistance'], ascending = [1])
         sf=sf[sf.replace([np.inf, -np.inf], np.nan).notnull().all(axis=1)]  # .astype(np.float64)
         plt.rcParams["figure.figsize"] = (10,6)
-        thetitle = "2016 to 2011 Relative Change in Need For Assistance (Quantiles)\n{weight} Weighted".format(weight = self.Weight.title())
+        thetitle = "2016 to 2011 Relative Change in Need For Assistance (Quantiles) for Statistical Area Level 1\n{weight} Weighted".format(weight = self.Weight.title())
         sf.plot(column='rel_need_for_assistance', scheme = 'quantiles', k=5, linewidth=0,cmap='Reds',legend=True).set_title(thetitle) ;
         plt.annotate('Source: ABS Census of Population and Housing, 2016 and 2011',xy=(0.1, .08),  xycoords='figure fraction', horizontalalignment='left', verticalalignment='top', fontsize=12, color='#555555')
         plt.axis('off')
