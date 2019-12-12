@@ -8,9 +8,9 @@
  *aus_hex_57km_layer*
 
 Download Links
-- Shapefile Format: [ESRI .prj](https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.prj), [ESRI .shp ](https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.shp), [ESRI .shx](https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.shx), [ESRI .dbf](https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.dbf)
-- [GeoJSON](https://github.com/downloads/gisisfun/map_polygons/geojson/aus_hex_57km_layer.json)
-- [KML](https://github.com/downloads/gisisfun/map_polygons/kmlfiles/aus_hex_57km_layer.kml)
+- Shapefile Format: [ESRI .prj](https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.prj), [ESRI .shp ](https://raw.githubusercontent.com//gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.shp), [ESRI .shx](https://raw.githubusercontent.com/s/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.shx), [ESRI .dbf](https://raw.githubusercontent.com/s/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.dbf)
+- [GeoJSON](https://raw.githubusercontent.com//gisisfun/map_polygons/geojson/aus_hex_57km_layer.json)
+- [KML](https://raw.githubusercontent.com/s/gisisfun/map_polygons/kmlfiles/aus_hex_57km_layer.kml)
 
 **Why Wait?**
 The Python approach to cutting out the shape of 'australia' from the derived polygon dataset is not as efficient as using an SQL approach. SQL is efficient but no where near as flexible as Python. If you are not blending region based statistics into the final data set then the 'aus_(hex or box)_(size in km)km_layer' file in kml, geojson and shapefile will meet your needs.
