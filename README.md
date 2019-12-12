@@ -8,10 +8,7 @@
  *aus_hex_57km_layer*
 
 Download Links
-- [ESRI .prj](https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.prj)
-- [ESRI .shp ](https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.shp)
-- [ESRI .shx](https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.shx)
-- [ESRI .dbf](https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.dbf)
+- Shapefile Format: [ESRI .prj](https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.prj), [ESRI .shp ](https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.shp), [ESRI .shx](https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.shx), [ESRI .dbf](https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.dbf)
 - [GeoJSON](https://github.com/downloads/gisisfun/map_polygons/geojson/aus_hex_57km_layer.json)
 - [KML](https://github.com/downloads/gisisfun/map_polygons/kmlfiles/aus_hex_57km_layer.kml)
 
@@ -29,10 +26,7 @@ Proceed to **poly_wt.py** to add the demographic data of your choice. In this ca
  *hex_57km_place_11_16*
 
 Download Links
-- [ESRI .prj](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_place_11_16.prj)
-- [ESRI .shp](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_place_11_16.shp)
-- [ESRI .shx](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_place_11_16.shx)
-- [ESRI .dbf](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_place_11_16.dbf)
+- Shapefile Format: [ESRI .prj](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_place_11_16.prj), [ESRI .shp](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_place_11_16.shp), [ESRI .shx](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_place_11_16.shx), [ESRI .dbf](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_place_11_16.dbf)
 - [GeoJSON](https://github.com/downloads/gisisfun/map_polygons/geojson/hex_57km_place_11_16.json)
 - [KML](https://github.com/downloads/gisisfun/map_polygons/kmlfiles/hex_57km_place_11_16.kml)
 
@@ -40,10 +34,7 @@ Download Links
 
  *hex_57km_area_11_16*
 Download Links
-- [ESRI .prj](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_area_11_16.prj)
-- [ESRI .shp](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_area_11_16.shp)
-- [ESRI .shx](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_area_11_16.shx)
-- [ESRI .dbf](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_area_11_16.dbf)
+- Shapefile format: [ESRI .prj](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_area_11_16.prj), [ESRI .shp](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_area_11_16.shp), [ESRI .shx](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_area_11_16.shx), [ESRI .dbf](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_area_11_16.dbf)
 - [GeoJSON](https://github.com/downloads/gisisfun/map_polygons/geojson/hex_57km_area_11_16.json)
 - [KML](https://github.com/downloads/gisisfun/map_polygons/kmlfiles/hex_57km_area_11_16.kml)
 
