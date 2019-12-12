@@ -5,6 +5,19 @@
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/neighbours.png)
 *output of polygons.py as png output and reference points for islands added in QGIS*
 
+ *aus_hex_57km_layer*
+
+| Format    | Download Link|
+|:-----------------|:------------------|
+| ESRI .prj |https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.prj|
+| ESRI .shp |https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.shp|
+| ESRI .shx |https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.shx|
+| ESRI .dbf |https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.dbf|
+| GeoJSON |https://github.com/downloads/gisisfun/map_polygons/geojson/aus_hex_57km_layer.json|
+| KML |https://github.com/downloads/gisisfun/map_polygons/kmlfiles/aus_hex_57km_layer.kml|
+
+
+
 **Why Wait?**
 The Python approach to cutting out the shape of 'australia' from the derived polygon dataset is not as efficient as using an SQL approach. SQL is efficient but no where near as flexible as Python. If you are not blending region based statistics into the final data set then the 'aus_(hex or box)_(size in km)km_layer' file in kml, geojson and shapefile will meet your needs.
 
@@ -13,6 +26,7 @@ Note: Python joins allow for two islands have added to the map (mapping layer) :
 
 Proceed to **poly_wt.py** to add the demographic data of your choice. In this case ABS Statistical Area Level 1 data sets are merged together to mease the 'relative change in need for assistance'.
 
+**output of map_me.py**
 ![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/rel_need_for_assistance_by_place_weight.png)
 
  *hex_57km_place_11_16*
@@ -39,23 +53,9 @@ Proceed to **poly_wt.py** to add the demographic data of your choice. In this ca
 | GeoJSON |https://github.com/downloads/gisisfun/map_polygons/geojson/hex_57km_area_11_16.json|
 | KML |https://github.com/downloads/gisisfun/map_polygons/kmlfiles/hex_57km_area_11_16.kml|
 
-*output of map_me.py*
 
- *hex_57km_layer*
 
-| Format    | Download Link|
-|:-----------------|:------------------|
-| ESRI .prj |https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.prj|
-| ESRI .shp |https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.shp|
-| ESRI .shx |https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.shx|
-| ESRI .dbf |https://github.com/downloads/gisisfun/map_polygons/shapefiles/aus_hex_57km_layer.dbf|
-| GeoJSON |https://github.com/downloads/gisisfun/map_polygons/geojson/aus_hex_57km_layer.json|
-| KML |https://github.com/downloads/gisisfun/map_polygons/kmlfiles/aus_hex_57km_layer.kml|
 
-## See for yourself ##
-
-In the *shapefiles* subdirectory you wll find two shapefiles: *hex_35km_place_11_16.shp* and *hex_57km_place_11_16.shp*.
-Open one or both of these files in your preferred GIS tool of choice and have a look at the end product for yourself.
 
 ## How does it work ##
 
