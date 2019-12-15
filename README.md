@@ -475,7 +475,7 @@ Categories:
 ### Conclusion
 If you have read down to this point in the documemtation then you can see the end result is worth the wait. The benefits of using a Discrete Global Grid System (DGGC) like visualisation is better on the eye once you see it for yourself. But this depends on how your data is made and how fast you want it made. If your data is like this then a traditional SQL server will do just fine, with a bit of extra work. You will have access to all of the viewing and map production software that the current generation of software going back to the 1990s will provide. 
 
-Larger volumes of data and newer SPARQL/GeoSPARQL and Discrete Global Grid System (DGGC) enabled systems and and data sets provide a much better end product for the real users of this data. Not the Geospatial Anaysts, staticians but the people who benefit from decisions informed from data.  
+Larger volumes of data and newer SPARQL/GeoSPARQL and Discrete Global Grid System (DGGC) enabled systems and and data sets provide a much better end product for the real users of this data. Not the Geospatial Anaysts, statistcians but the people who benefit from decisions informed from data.  
 
 **Further Reading**
 
