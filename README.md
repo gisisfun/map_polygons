@@ -276,6 +276,15 @@ Performs the functions:
 | **hex_57km_area_11_16.shp**              | 1,262          | 377 KB    | 4283 |
 | **hex_57km_place_11_16.shp**              | 1,262          | 377 KB    | 4283 |
 
+### Labour Force Status (LFSP)
+
+### Type of Non-Private Dwelling (NPDD)
+
+### Residential status in a non-private dwelling
+
+### Dwelling Type (DWTD)
+
+### Level of Highest Educational Attainment (HEAP)
 
 ### Disability, Need for Assistance and Carers (Census Data Dictionary)
 - ASSNP Core Activity Need for Assistance
