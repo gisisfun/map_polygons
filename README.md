@@ -352,6 +352,8 @@ Categories:
 
 ### Census Data Pack Metadata
 
+*Health/Child Care*
+
 |Year|Profile table|Data Pack file|Short       |Long      |Column heading description in profile|Type|
 |:---|:-----------|:---------|:-----------------------|:-------------------------------------|:----------|:------|
 |2011|B18|B18|P_Tot_Need_for_assistance|***Persons_Total_Has_need_for_assistance***|Need for assistance|PERSONS|
@@ -378,6 +380,39 @@ Categories:
 | |||P_Tot_DNPCC|Persons_Total_Did_not_provide_child_care|Did not provide child care|PERSONS|
 | |||P_Tot_UCC_NS|Persons_Total_Unpaid_child_care_not_stated|Unpaid child care not stated|PERSONS|
 | |||***P_Tot_Total***|Persons_Total_Total|Total|PERSONS|
+
+*Housing*
+
+|Year|Profile table|Data Pack file|Short       |Long      |Column heading description in profile|Type|
+|:---|:-----------|:---------|:-----------------------|:-------------------------------------|:----------|:------|
+|2011|B32|B32|OPDs_Separate_house_Dwellings|Occupied_private_dwellings_Separate_house_Dwellings|Separate house|DWELLINGS|
+| | | |Total OPDs_SD_r_t_h_th_Tot_Dwgs|Occupied_private_dwellings_Semi_detached_row_or_terrace_house_townhouse_etc_with_Total_Dwellings|Semi-detached, row or terrace house, townhouse etc.|DWELLINGS|
+| | | |OPDs_Flt_apart_Tot_Dwgs|Persons_Total_Need_for_assistance_not_stated|Flat or apartment|DWELLINGS|
+| | | |OPDs_Other_dwelling_Tot_Dwgs|Occupied_private_dwellings_Other_dwelling_Total_Dwellings|Other dwelling|DWELLINGS|
+| |||OPDs_Dwlling_structur_NS_Dwgs|Occupied_private_dwellings_Dwelling_structure_not_stated_Dwellings|Dwelling structure not stated|DWELLINGS|
+| | | |Total_PDs_Dwellings|Total_private_dwellings_Dwellings|Total occupied private dwellings|DWELLINGS|
+| | | |Unoccupied_PDs_Dwgs|Unoccupied_private_dwellings_Dwellings|Unoccupied private dwellings|DWELLINGS|
+| | | |OPDs_Tot_OPDs_Dwellings|Occupied_private_dwellings_Total_occupied_private_dwellings_Dwellings|DWELLINGS|
+| |B33|B33|R_RE_Agt_Total|Rented_Real_Estate_Agent_Total|Real estate agent|DWELLINGS|
+| | | |R_ST_h_auth_Total|Rented_State_or_territory_housing_authority_Total|State or territory housing authority|DWELLINGS|
+| | | |R_Psn_not_in_s_hh_Total|Rented_Person_not_in_same_household_Total|Person not in same household|DWELLINGS|
+| | | |R_Hse_coop_cty_ch_gp_Total|Rented_Housing_co_operative_community_church_group_Total|Housing co-operative/community/church group|DWELLINGS|
+| | | |R_Ot_landld_typ_Total|Rented_Other_landlord_type_Total|Other landlord type|DWELLINGS|
+| | | |R_Landld_typ_NS_Total|Rented_Landlord_type_not_stated_Total|Landlord type not stated|DWELLINGS|
+|2016|G32|G32|OPDs_Separate_house_Dwellings|Occupied_private_dwellings_Separate_house_Dwellings|Separate house|DWELLINGS|
+| | | |Total OPDs_SD_r_t_h_th_Tot_Dwgs|Occupied_private_dwellings_Semi_detached_row_or_terrace_house_townhouse_etc_with_Total_Dwellings|Semi-detached, row or terrace house, townhouse etc.|DWELLINGS|
+| | | |OPDs_Flt_apart_Tot_Dwgs|Persons_Total_Need_for_assistance_not_stated|Flat or apartment|DWELLINGS|
+| | | |OPDs_Other_dwelling_Tot_Dwgs|Occupied_private_dwellings_Other_dwelling_Total_Dwellings|Other dwelling|DWELLINGS|
+| |||OPDs_Dwlling_structur_NS_Dwgs|Occupied_private_dwellings_Dwelling_structure_not_stated_Dwellings|Dwelling structure not stated|DWELLINGS|
+| | | |Total_PDs_Dwellings|Total_private_dwellings_Dwellings|Total occupied private dwellings|DWELLINGS|
+| | | |Unoccupied_PDs_Dwgs|Unoccupied_private_dwellings_Dwellings|Unoccupied private dwellings|DWELLINGS|
+| | | |OPDs_Tot_OPDs_Dwellings|Occupied_private_dwellings_Total_occupied_private_dwellings_Dwellings|DWELLINGS|
+| |G33|G33|R_RE_Agt_Total|Rented_Real_Estate_Agent_Total|Real estate agent|DWELLINGS|
+| | | |R_ST_h_auth_Total|Rented_State_or_territory_housing_authority_Total|State or territory housing authority|DWELLINGS|
+| | | |R_Psn_not_in_s_hh_Total|Rented_Person_not_in_same_household_Total|Person not in same household|DWELLINGS|
+| | | |R_Hse_coop_cty_ch_gp_Total|Rented_Housing_co_operative_community_church_group_Total|Housing co-operative/community/church group|DWELLINGS|
+| | | |R_Ot_landld_typ_Total|Rented_Other_landlord_type_Total|Other landlord type|DWELLINGS|
+| | | |R_Landld_typ_NS_Total|Rented_Landlord_type_not_stated_Total|Landlord type not stated|DWELLINGS|
 
 ### Conclusion
 If you have read down to this point in the documemtation then you can see the end result is worth the wait. The benefits of using a Discrete Global Grid System (DGGC) like visualisation is better on the eye once you see it for yourself. But this depends on how your data is made and how fast you want it made. If your data is like this then a traditional SQL server will do just fine, with a bit of extra work. You will have access to all of the viewing and map production software that the current generation of software going back to the 1990s will provide. 
