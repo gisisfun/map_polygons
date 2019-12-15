@@ -381,6 +381,27 @@ Categories:
 | |||P_Tot_UCC_NS|Persons_Total_Unpaid_child_care_not_stated|Unpaid child care not stated|PERSONS|
 | |||***P_Tot_Total***|Persons_Total_Total|Total|PERSONS|
 
+*Education*
+
+|Year|Profile table|Data Pack file|Short       |Long      |Column heading description in profile|Type|
+|:---|:-----------|:---------|:-----------------------|:-------------------------------------|:----------|:------|
+|2011|B40|B40|Non_sch_quals_PostGrad_Dgre_P|Non_school_qualifications_Postgraduate_Degree_Level_Persons|Postgraduate Degree Level|PERSONS|
+| | | |Non_sch_quals_Gr_Dip_Gr_Crt_P|Non_school_qualifications_Graduate_Diploma_and_Graduate_Certificate_Level_Persons|Graduate Diploma and Graduate Certificate Level|PERSONS|
+| | | |Non_sch_quals_Bchelr_Degree_P|Non_school_qualifications_Bachelor_Degree_Level_Persons|Bachelor Degree Level|PERSONS|
+| | | |Non_sch_quls_Advncd_Dip_Dip_P|Non_school_qualifications_Advanced_Diploma_and_Diploma_Level_Persons|Advanced Diploma and Diploma Level|PERSONS|
+| |||Non_sch_quls_Cert3a4_Level_P	|Non_school_qualifications_Certificate_Level_Certificate_III_and_IV_Level_Persons|Certificate III & IV Level|PERSONS|
+| | | |Non_sch_quls_Cert1a2_Level_P|Non_school_qualifications_Certificate_Level_Certificate_I_and_II_Level_Persons|Certificate I & II Level|PERSONS|
+| | | |Non_sch_quls_Certnfd_Level_P|Non_school_qualifications_Certificate_Level_Certificate_Level_nfd_Persons|Certificate Level, nfd|PERSONS
+| | | |Non_sch_quls_CertTot_Level_P|Non_school_qualifications_Certificate_Level_Total_Persons|Total|PERSONS|
+|2016|G40|G40|Non_sch_quals_PostGrad_Dgre_P|Non_school_qualifications_Postgraduate_Degree_Level_Persons|Postgraduate Degree Level|PERSONS|
+| | | |Non_sch_quals_Gr_Dip_Gr_Crt_P|Non_school_qualifications_Graduate_Diploma_and_Graduate_Certificate_Level_Persons|Graduate Diploma and Graduate Certificate Level|PERSONS|
+| | | |Non_sch_quals_Bchelr_Degree_P|Non_school_qualifications_Bachelor_Degree_Level_Persons|Bachelor Degree Level|PERSONS|
+| | | |Non_sch_quls_Advncd_Dip_Dip_P|Non_school_qualifications_Advanced_Diploma_and_Diploma_Level_Persons|Advanced Diploma and Diploma Level|PERSONS|
+| |||Non_sch_quls_Cert3a4_Level_P	|Non_school_qualifications_Certificate_Level_Certificate_III_and_IV_Level_Persons|Certificate III & IV Level|PERSONS|
+| | | |Non_sch_quls_Cert1a2_Level_P|Non_school_qualifications_Certificate_Level_Certificate_I_and_II_Level_Persons|Certificate I & II Level|PERSONS|
+| | | |Non_sch_quls_Certnfd_Level_P|Non_school_qualifications_Certificate_Level_Certificate_Level_nfd_Persons|Certificate Level, nfd|PERSONS
+| | | |Non_sch_quls_CertTot_Level_P|Non_school_qualifications_Certificate_Level_Total_Persons|Total|PERSONS|
+
 *Housing*
 
 |Year|Profile table|Data Pack file|Short       |Long      |Column heading description in profile|Type|
