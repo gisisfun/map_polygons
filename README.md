@@ -441,17 +441,36 @@ Categories:
 |:---|:-----------|:---------|:-----------------------|:-------------------------------------|:----------|:------|
 |2011|B40|B40|lfs_Tot_LF_P|Labour_force_status_Total_labour_force_Persons|Total labour force |PERSONS|
 | | | |lfs_N_the_labour_force_P|Labour_force_status_Not_in_the_labour_force_Persons|Not in the labour force |PERSONS|
-| | | |Percent_Unem_loyment_P|Labour_force_status_Percent_Unemployment_Persons|% Unemployment|PERSONS|
+| | | |Percent_Unemployment_P|Labour_force_status_Percent_Unemployment_Persons|% Unemployment|PERSONS|
 | | | |Non_sch_quls_Advncd_Dip_Dip_P|Non_school_qualifications_Advanced_Diploma_and_Diploma_Level_Persons|Advanced Diploma and Diploma Level|PERSONS|
-| |||Percnt_LabForc_prticipation_P	|Labour_force_status_Percent_Labour_force_participation_Persons|% Labour force participation|PERSONS|
+| |||Percnt_LabForc_prticipation_P|Labour_force_status_Percent_Labour_force_participation_Persons|% Labour force participation|PERSONS|
 | | | |Percnt_Employment_to_populn_P|Labour_force_status_Percent_Employment_to_population_Persons|% Employment to population|PERSONS|
+| | B43|B43b|Persons_Employed_worked_Full_time_Total|Full-time|PERSONS|
+| | | |P_Emp_PartT_Tot|Persons_Employed_worked_Part_time_Total|Part-time|PERSONS|
+| | | |P_Hours_wkd_NS_Tot|Persons_Hours_worked_not_stated_Total|Hours worked not stated|PERSONS|
+| | | |P_Tot_Emp_Tot|Persons_Total_employed_Total|Total employed|PERSONS|
+| | | |P_Unem_look_FTW_Tot|Persons_Unemployed_looking_for_Full_time_work_Total|Full-time work|PERSONS|
+| | | |P_Unem_look_PTW_Tot|Persons_Unemployed_looking_for_Part_time_work_Total|Part-time work|PERSONS|
+| | | |P_Tot_Unemp_Tot|Persons_Total_unemployed_Total|Total unemployed|PERSONS|
+| | | |P_Tot_Emp_Tot|Persons_Total_employed_Total|Total employed|PERSONS|
+| | | |P_LFS_NS_Tot|Persons_Labour_force_status_not_stated_Total|Total labour force not stated|PERSONS|
+| | | |P_Not_in_LF_Tot|Persons_Not_in_the_labour_force_Total|Not in the labour force|PERSONS|
 |2016|G40|G40|lfs_Tot_LF_P|Labour_force_status_Total_labour_force_Persons|Total labour force |PERSONS|
 | | | |lfs_N_the_labour_force_P|Labour_force_status_Not_in_the_labour_force_Persons|Not in the labour force |PERSONS|
 | | | |Percent_Unem_loyment_P|Labour_force_status_Percent_Unemployment_Persons|% Unemployment|PERSONS|
 | | | |Non_sch_quls_Advncd_Dip_Dip_P|Non_school_qualifications_Advanced_Diploma_and_Diploma_Level_Persons|Advanced Diploma and Diploma Level|PERSONS|
 | |||Percnt_LabForc_prticipation_P	|Labour_force_status_Percent_Labour_force_participation_Persons|% Labour force participation|PERSONS|
 | | | |Percnt_Employment_to_populn_P|Labour_force_status_Percent_Employment_to_population_Persons|% Employment to population|PERSONS|
-
+| | G43|G43b|Persons_Employed_worked_Full_time_Total|Full-time|PERSONS|
+| | | |P_Emp_PartT_Tot|Persons_Employed_worked_Part_time_Total|Part-time|PERSONS|
+| | | |P_Hours_wkd_NS_Tot|Persons_Hours_worked_not_stated_Total|Hours worked not stated|PERSONS|
+| | | |P_Tot_Emp_Tot|Persons_Total_employed_Total|Total employed|PERSONS|
+| | | |P_Unem_look_FTW_Tot|Persons_Unemployed_looking_for_Full_time_work_Total|Full-time work|PERSONS|
+| | | |P_Unem_look_PTW_Tot|Persons_Unemployed_looking_for_Part_time_work_Total|Part-time work|PERSONS|
+| | | |P_Tot_Unemp_Tot|Persons_Total_unemployed_Total|Total unemployed|PERSONS|
+| | | |P_Tot_Emp_Tot|Persons_Total_employed_Total|Total employed|PERSONS|
+| | | |P_LFS_NS_Tot|Persons_Labour_force_status_not_stated_Total|Total labour force not stated|PERSONS|
+| | | |P_Not_in_LF_Tot|Persons_Not_in_the_labour_force_Total|Not in the labour force|PERSONS|
 
 ### Conclusion
 If you have read down to this point in the documemtation then you can see the end result is worth the wait. The benefits of using a Discrete Global Grid System (DGGC) like visualisation is better on the eye once you see it for yourself. But this depends on how your data is made and how fast you want it made. If your data is like this then a traditional SQL server will do just fine, with a bit of extra work. You will have access to all of the viewing and map production software that the current generation of software going back to the 1990s will provide. 
