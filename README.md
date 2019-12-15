@@ -435,6 +435,24 @@ Categories:
 | | | |R_Ot_landld_typ_Total|Rented_Other_landlord_type_Total|Other landlord type|DWELLINGS|
 | | | |R_Landld_typ_NS_Total|Rented_Landlord_type_not_stated_Total|Landlord type not stated|DWELLINGS|
 
+*Employment*
+
+|Year|Profile table|Data Pack file|Short       |Long      |Column heading description in profile|Type|
+|:---|:-----------|:---------|:-----------------------|:-------------------------------------|:----------|:------|
+|2011|B40|B40|lfs_Tot_LF_P|Labour_force_status_Total_labour_force_Persons|Total labour force |PERSONS|
+| | | |lfs_N_the_labour_force_P|Labour_force_status_Not_in_the_labour_force_Persons|Not in the labour force |PERSONS|
+| | | |Percent_Unem_loyment_P|Labour_force_status_Percent_Unemployment_Persons|% Unemployment|PERSONS|
+| | | |Non_sch_quls_Advncd_Dip_Dip_P|Non_school_qualifications_Advanced_Diploma_and_Diploma_Level_Persons|Advanced Diploma and Diploma Level|PERSONS|
+| |||Percnt_LabForc_prticipation_P	|Labour_force_status_Percent_Labour_force_participation_Persons|% Labour force participation|PERSONS|
+| | | |Percnt_Employment_to_populn_P|Labour_force_status_Percent_Employment_to_population_Persons|% Employment to population|PERSONS|
+|2016|G40|G40|lfs_Tot_LF_P|Labour_force_status_Total_labour_force_Persons|Total labour force |PERSONS|
+| | | |lfs_N_the_labour_force_P|Labour_force_status_Not_in_the_labour_force_Persons|Not in the labour force |PERSONS|
+| | | |Percent_Unem_loyment_P|Labour_force_status_Percent_Unemployment_Persons|% Unemployment|PERSONS|
+| | | |Non_sch_quls_Advncd_Dip_Dip_P|Non_school_qualifications_Advanced_Diploma_and_Diploma_Level_Persons|Advanced Diploma and Diploma Level|PERSONS|
+| |||Percnt_LabForc_prticipation_P	|Labour_force_status_Percent_Labour_force_participation_Persons|% Labour force participation|PERSONS|
+| | | |Percnt_Employment_to_populn_P|Labour_force_status_Percent_Employment_to_population_Persons|% Employment to population|PERSONS|
+
+
 ### Conclusion
 If you have read down to this point in the documemtation then you can see the end result is worth the wait. The benefits of using a Discrete Global Grid System (DGGC) like visualisation is better on the eye once you see it for yourself. But this depends on how your data is made and how fast you want it made. If your data is like this then a traditional SQL server will do just fine, with a bit of extra work. You will have access to all of the viewing and map production software that the current generation of software going back to the 1990s will provide. 
 
