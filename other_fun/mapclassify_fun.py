@@ -1,8 +1,8 @@
 from mapclassify import EqualInterval,NaturalBreaks,MaximumBreaks,BoxPlot,Quantiles,Percentiles
-
+import simplekml
 list_n = [1,2,3,3,3,10,12,65,99,88,100]
 sq=MaximumBreaks(list_n,5)
-print(sq,'\n',sq.bins,'\n')
+print(sq,'[print(i) for i in dir(simplekml.Color)]\n',sq.bins,'\n')
 list_n.sort()
 class_n = []
 for i in range(0,len(list_n)):
@@ -30,3 +30,6 @@ print(class_n,len(class_n))
 ##
 ##sq=Percentiles(list)
 ##print(sq,'\n',sq.bins,'\n')
+
+print('simplekml colours')
+[print(i) for i in dir(simplekml.Color)]
