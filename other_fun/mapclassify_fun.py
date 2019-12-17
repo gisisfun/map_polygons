@@ -25,7 +25,7 @@ for i in range(0,len(list_n)):
                    
 print(list_n,len(list_n))
 print(class_n,len(class_n))
-
+colours = ['#000000', '#f0f0f0', '#e4c85e', '#e9ab00', '#f79130', '#ec8115', '#ff6733', '#d04955', '8a0000', '99182e']
 ##sq=NaturalBreaks(list,5)
 ##print(sq,'\n',sq.bins,'\n')
 ##
