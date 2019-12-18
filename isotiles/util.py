@@ -277,13 +277,15 @@ class Util():
         parts_count = []
         points_len = []
         for i  in range(len(tab_data_val)):
-            parts_list.append(shapes[tab_data_val[i][0]].parts)
+            the_list = shapes[tab_data_val[i][0]].parts
+            parts_list.append(the_list)
             parts_count.append(len(shapes[tab_data_val[i][0]].parts))
             points_len.append(len(shapes[tab_data_val[i][0]].points))
                 
         thing = []          
         for i in range(len(geojson_properties_list)):
-            thing.append([geojson_properties_list[i],parts_list[i],parts_count[i],points_len[i]])
+            parts_list[i].append(points_len[i])
+            thing.append([geojson_properties_list[i],parts_count[i],parts_list[i]])
                 
         sf.close()
 
