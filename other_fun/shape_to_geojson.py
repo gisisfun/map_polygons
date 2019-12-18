@@ -1,6 +1,6 @@
 import shapefile
 class test():
-    def me():
+    def me(self):
         sf = shapefile.Reader("shapefiles/SA3_2016_AUST") # , shapeType=3)
         shapes = sf.shapes()
         print(len(sf))
@@ -50,8 +50,10 @@ class test():
                 parts_list.append(geom_data.parts)
                 points_len.append(len(geom_data.points))
                 
-        return points_len 
+                
+        return geojson_list
             
             
-fred = test.me()
+testing = test()
+fred = testing.me()
 print(fred[0])
