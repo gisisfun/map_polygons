@@ -287,7 +287,7 @@ class Util():
             parts_count.append(len(shapes[row_ref[i]].parts))
             points_len.append(len(shapes[row_ref[i]].points))
                 
-        thing = []          
+        g_array = []          
         for i in range(len(geojson_properties_list)):
             parts_list[i].append(points_len[i])
             shapes_ref = row_ref[i]
