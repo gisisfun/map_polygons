@@ -63,11 +63,15 @@ class test():
             parts_list[i].append(points_len[i])
             shapes_ref = row_ref[i]
             #thing.append([geojson_properties_list[i],parts_count[i],parts_list[i]])
+            
             for j in range(0,parts_count[i]):
-                geojson_polygon = shapes[shapes_ref].points[parts_list[i][j]:parts_list[i][j+1]]
-                thing.append([geojson_properties_list[i],parts_count[i],geojson_polygon])
-        print(thing[100])
-        return thing
+                geojson_polygon = {}
+                
+                geopoly = Polygon([shapes[shapes_ref].points[parts_list[i][j]:parts_list[i][j+1]]])
+                geopoly= Feature(geometry = geopoly, properties = geojson_properties_list[i])
+                
+                g_array.append(geopoly)
+        return g_array
             
             
 testing = test()
