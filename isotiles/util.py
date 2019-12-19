@@ -249,19 +249,23 @@ class Util():
         #get the field names
         fields = sf.fields
         column_list = []
-        [column_list.append(x[0]) for x in fields]
+        [column_list.append(x[0]) for x in fields[1:]]
 
         # data values with null geography
         tab_data = sf.records()
 
         tab_data_val = []
+        row_ref = []
+        i = 0
         for tab_row in range(len(shapes_list_no_null)): # all rows
             #for column_name in column_list:
-            row_data = [shapes_list_no_null[tab_row][0]]
+            row_data = [] #shapes_list_no_null[tab_row][0]]
+            
             for tab_val in tab_data[shapes_list_no_null[tab_row][0]]: # each row of tab data (y)
-                #row_data.append(tab_row)
+                row_ref.append(i)
                 row_data.append(tab_val) #,len(shapes[tab_row].points)])
                 #column_dict[column_name] = str(tab_col)
+            i += 1 
             tab_data_val.append(row_data) # column_dict)
     
         geojson_properties_list = []
@@ -277,17 +281,26 @@ class Util():
         parts_count = []
         points_len = []
         for i  in range(len(tab_data_val)):
-            the_list = shapes[tab_data_val[i][0]].parts
+            the_list = shapes[row_ref[i]].parts
             parts_list.append(the_list)
-            parts_count.append(len(shapes[tab_data_val[i][0]].parts))
-            points_len.append(len(shapes[tab_data_val[i][0]].points))
+            the_list = shapes[row_ref[i]].parts
+            parts_count.append(len(shapes[row_ref[i]].parts))
+            points_len.append(len(shapes[row_ref[i]].points))
                 
         thing = []          
         for i in range(len(geojson_properties_list)):
             parts_list[i].append(points_len[i])
-            thing.append([geojson_properties_list[i],parts_count[i],parts_list[i]])
+            shapes_ref = row_ref[i]
+            #thing.append([geojson_properties_list[i],parts_count[i],parts_list[i]])
+            
+            for j in range(0,parts_count[i]):
+                geojson_polygon = {}
                 
-        sf.close()
+                geopoly = Polygon([shapes[shapes_ref].points[parts_list[i][j]:parts_list[i][j+1]]])
+                geopoly= Feature(geometry = geopoly, properties = geojson_properties_list[i])
+                
+                g_array.append(geopoly)
+        return g_array
 
     def to_shp_file(self,g_array,fNameTempl):
         #tabular_list = []
