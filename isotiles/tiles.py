@@ -456,13 +456,13 @@ class Tiles():
         print('\n5/7 boxes geojson dataset of {0} derived polygons'.format(len(g_array)))
         return g_array
 
-    
+
     def update_poly_array_ref(self,g_array):
         for g_ref in range(0,len(self.g_array)):
             g_array[g_ref]['properties']['a'] = g_ref
         return g_array
     
-    
+
     def add_poly_poi(self,g_array):
         u = Util() 
         # load the shapefile
@@ -500,141 +500,61 @@ class Tiles():
 
         print('AGIL Locations')
         coords = u.coords_from_csv('agil_locations20190208.csv',3,2)
-        g_array = u.points_in_polygon(poly_array,coords,'AGIL')
+        next_poly_array = u.points_in_polygon(poly_array,coords,'AGIL')
+        
+        print('Polygons Centroids and Offset Vertices')
+        coords = self.aus_poly_coords(next_poly_array)
+        poly_array = u.points_in_polygon(next_poly_array,coords,'Fred')
+        out_array = []
+        for poly in range (0, len(poly_array)):
+            poly_array[poly]['properties']['Aust'] = 0
+            if poly_array[poly]['properties']['Fred'] > 0 \
+               or poly_array[poly]['properties']['Island'] > 0 or \
+               poly_array[poly]['properties']['Locality'] > 0 or \
+               poly_array[poly]['properties']['Boundary'] > 0:
+                poly_array[poly]['properties']['Aust'] = 1
+                #out_array.append(poly_array[poly])
+            
+        return poly_array
 
-        for poly in range (0, len(g_array)):
-            g_array[poly]['properties']['Aust'] = 0
-            if g_array[poly]['properties']['Island'] > 0 or g_array[poly]['properties']['Locality'] > 0 or g_array[poly]['properties']['Boundary'] > 0:
-                g_array[poly]['properties']['Aust'] = 1
-
-        return g_array
-
-
-    def add_poly_cent(self,g_array):
+    def aus_poly_coords(self,g_array):
         # load the shapefile
         sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
         # shapefile contains multipolygons
         shapes = sf.shapes()
         big_coords = shapes[0].points
-        last_progress = -999
-        hcount = 0
-        # get the query polygons
-        (point_list, num_poly) = ([], len(g_array))
-        
-        (poi_progress, cent_progress) = ([],[])
-        for poly in range (0, num_poly):
-            inPoly = False
-            inBBox = False
-            progress = int((poly/num_poly)*100)
-            g_array[poly]['properties']['Cent'] = 0
-            # get the reference sub polygons
-            #try centroid
-            c_lon = g_array[poly]['properties']['lon']
-            c_lat = g_array[poly]['properties']['lat']
-            if g_array[poly]['properties']['Aust'] > 0:
-                inPoly = True
-                poi_progress.append(g_array[poly]['properties']['p'])
-                g_array[poly]['properties']['Aust'] = 1
-            else:
-                                
-                for subpolyptr in range(len(shapes[0].parts)-1):
-                    sub_coords = big_coords[shapes[0].parts[subpolyptr]:shapes[0].parts[subpolyptr+1]]
-                    path = mpltPath.Path(sub_coords)
-                    
-                    np_arr = np.array(sub_coords)
-                    arr_min = np.min(np_arr,axis=0)
-                    arr_max = np.max(np_arr,axis=0)
-                    #N,S,E,W is
-                    bounds_N = arr_max[1]
-                    bounds_S = arr_min[1]
-                    bounds_E = arr_max[0]
-                    bounds_W = arr_min[0]
-                    if c_lat < bounds_N:
-                        if c_lat > bounds_S:
-                            if c_lon < bounds_E:
-                                if c_lon > bounds_W:
-                                    inBBox = True
-                                                  
-                    if inBBox is True:
-                        if path.contains_point([c_lon,c_lat]) is True:
-                            inPoly = True
-                            cent_progress.append(g_array[poly]['properties']['p'])
-                            g_array[poly]['properties']['Cent'] = 1
-                            g_array[poly]['properties']['Aust'] = 1
-                            hcount += 1
-
-            if progress is not last_progress:
-                print(progress,'% progress:',poly,'polygons processed for',hcount,' centroids for output')
-                print('1. other poi:',poi_progress)
-                print('2. centroid:',cent_progress)                
-                
-                last_progress = progress
-                (poi_progress, cent_progress) = ([],[])
-        #return loc_poly_array
-        return g_array
+        loc_poly_array = g_array
+        coords = []
+        for poly in range (0, len(g_array)):
+            c_lon = loc_poly_array[poly]['properties']['lon']
+            c_lat = loc_poly_array[poly]['properties']['lat']
+            coords.append((c_lon,c_lat))
+            for point in loc_poly_array[poly]['geometry']['coordinates'][0]:
+                coords.append((point[0],point[1]))
+            unique_coords = np.unique(coords, axis = 0) # remove duplicate coordinates
+        in_coords = []
+        for subpolyptr in range(len(shapes[0].parts)-1):
+            sub_coords = big_coords[shapes[0].parts[subpolyptr]:shapes[0].parts[subpolyptr+1]]
+            path = mpltPath.Path(sub_coords)
+            np_arr = np.array(sub_coords)
+            (arr_min, arr_max) = (np.min(np_arr,axis=0),np.max(np_arr,axis=0))
+            (bounds_N,bounds_S, bounds_E, bounds_W) = (arr_max[1], arr_min[1], arr_max[0], arr_min[0])
+            inBBox = False                       
+            for point in unique_coords:
+                if point[1] < bounds_N and point[1] > bounds_S and point[0] < bounds_E and point[0] > bounds_W:
+                    inBBox = True
+                if inBBox is True:
+                    if path.contains_point([point[0],point[1]-0.0001]) is True:
+                        in_coords.append((point[0],point[1]-0.0001))
+        return in_coords
 
 
     def aus_poly_intersect(self,g_array):
-        # load the shapefile
-        sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
-        # shapefile contains multipolygons
-        shapes = sf.shapes()
-        big_coords = shapes[0].points
-        last_progress = -999
-        hcount = 0
-        # get the query polygons
-        (point_list, num_poly,isectArray) = ([], len(g_array),[])
+        (num_poly,isectArray) = (len(g_array),[])
 
-        loc_poly_array = g_array
-        (poi_progress, poly_progress, omit_progress) = ([],[],[])
         for poly in range (0, num_poly):
-            (inBBox,inPoly) = (False,False)
-            progress = int((poly/num_poly)*100)
-            #try centroid
-            c_lon = loc_poly_array[poly]['properties']['lon']
-            c_lat = loc_poly_array[poly]['properties']['lat']
-            if loc_poly_array[poly]['properties']['Aust'] > 0:
-                inPoly = True
-                isectArray.append(loc_poly_array[poly])
-                poi_progress.append(loc_poly_array[poly]['properties']['p'])
-                loc_poly_array[poly]['properties']['a'] = hcount
-                hcount += 1
-            else:
-                for subpolyptr in range(len(shapes[0].parts)-1):
-                    sub_coords = big_coords[shapes[0].parts[subpolyptr]:shapes[0].parts[subpolyptr+1]]
-                    path = mpltPath.Path(sub_coords)
-                    np_arr = np.array(sub_coords)
-                    (arr_min, arr_max) = (np.min(np_arr,axis=0),np.max(np_arr,axis=0))
-                    (bounds_N,bounds_S, bounds_E, bounds_W) = (arr_max[1], arr_min[1], arr_max[0], arr_min[0])
-                                                 
-                    if inPoly is False:
-                        inBBox = False
-                        for point in loc_poly_array[poly]['geometry']['coordinates'][0]:
-                            if point[1] < bounds_N and point[1] > bounds_S and point[0] < bounds_E and point[0] > bounds_W:
-                                inBBox = True
-
-                            if inBBox is True:
-                                if inPoly is False:
-                                    if path.contains_point([point[0],point[1]]) is True:
-                                        inPoly = True
-                                        isectArray.append(loc_poly_array[poly])
-                                        poly_progress.append(loc_poly_array[poly]['properties']['p'])
-                                        loc_poly_array[poly]['properties']['a'] = hcount
-                                        hcount += 1
-
-            if inPoly is False:
-                omit_progress.append(loc_poly_array[poly]['properties']['p'])
-                            
-            if progress is not last_progress:
-                print(progress,'% progress:',poly,'polygons processed for',hcount,'intersections for output')
-                print('1. other poi:',poi_progress)
-                print('2. poly:',poly_progress)
-                print('3. Omitted:',len(omit_progress), 'polygons')
-                
-                
-                last_progress = progress
-                (poi_progress, poly_progress, omit_progress) = ([],[],[])
-        #return loc_poly_array
+            if g_array[poly]['properties']['Aust'] > 0:
+                isectArray.append(g_array[poly])
         return isectArray
 
     
@@ -677,8 +597,8 @@ class Tiles():
     def neighbours_hex(self, g_array,poly,ref_table_df,column_count):
         
         # North Neighbour
-        poly_N = (poly - (column_count*2-(poly % column_count))-((poly % column_count)))
         try:
+            poly_N = (poly - (column_count*2-(poly % column_count))-((poly % column_count)))
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_N)]
             arr_data = g_array[int(ref_q['arr'])]
             val_N = poly_N
@@ -834,16 +754,15 @@ class Tiles():
         intersects = self.intersections(hors,verts)
         hex_array = self.hex_array(intersects,len(hors),len(verts))
         poi_hex_array = self.add_poly_poi(hex_array)
+        
         (odd,even) = self.column_counts(poi_hex_array)
         nb_poi_hex_array = self.update_neighbours(poi_hex_array,odd,even)    
-        #cent_hex_array = t.add_poly_cent(nb_hex_array)
         # cut out ocean polygons
         aus_hex_array = self.aus_poly_intersect(nb_poi_hex_array)
         # add neighbouur reference data
         nb_aus_hex_array = self.update_neighbours(aus_hex_array,odd,even)
         # return output from function
-        print("100% progress: It's not over til it's over")
-        return nb_poi_hex_array, nb_aus_hex_array
+        return nb_aus_hex_array
 
     def boxes(self):
         print(self.params())
@@ -860,6 +779,5 @@ class Tiles():
         aus_box_array = self.aus_poly_intersect(nb_poi_box_array)
         # add neighbouur reference data
         nb_aus_box_array = self.update_neighbours(aus_box_array,odd,even)
-        # write output to file formats
-        print("100% progress: It's not over til it's over")
-        return nb_poi_box_array, nb_aus_box_array
+        #print("100% progress: It's not over til it's over")
+        return nb_aus_box_array
