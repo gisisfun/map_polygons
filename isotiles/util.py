@@ -183,6 +183,79 @@ class Util():
         lats = [float(item[lat_c]) for item in data[1:]]
         coords = [(x,y) for x,y in zip(longs,lats)]
         return coords
+   
+    def tabular_dataframe(self,g_array):
+        tabular_list = []
+        (point_list, num_poly) = ([], len(g_array))
+        num_coords = len(g_array[n]['geometry']['coordinates'][0])-2
+        for i in range(0, num_coords):
+            poly = g_array[n]['properties']['p']
+            centre_lat =  g_array[n]['properties']['lat']
+            centre_lon =  g_array[n]['properties']['long']
+            bounds_n =  g_array[n]['properties']['N']
+            bounds_s =  g_array[n]['properties']['S']
+            bounds_e =  g_array[n]['properties']['E']                
+            bounds_w =  g_array[n]['properties']['W']
+            tabular_line =[poly, centre_lat, centre_lon, \
+                           bounds_n, bounds_s, bounds_e, bounds_w]
+            tabular_list.append(tabular_line)
+        
+        tabular_df = pd.DataFrame(tabular_list)
+        #convert tabular array to tabular data frame
+        tabular_df.columns = ['poly', 'lat', 'long', 'N', 'S', 'E', 'W']
+        tabular_df.to_csv('csv{slash}{outfile}_dataset.csv' \
+                          .format(outfile = outfile, slash = slash), \
+                          sep = ',')
+        return tabular_df
+
+    def to_geojson_fmt(self,g_array):
+        return FeatureCollection(g_array) 
+
+  
+    def points_in_polygon(self, g_array, lat_longs, g_label):
+        """
+        Counts for lat_longs generated
+        """
+        ...
+        
+        (point_list, num_poly) = ([], len(g_array))
+        lat_longs_df=pd.DataFrame(lat_longs)
+        lat_longs_df.columns = ['longitude','latitude']
+        for poly in range (0, num_poly):
+            poly_id = g_array[poly]['properties']['p']
+            p_count = 0
+            bound_points_df = lat_longs_df[(lat_longs_df['latitude'] >=\
+                                            g_array[poly]['properties']['S']) & \
+                                           (lat_longs_df['latitude'] <=\
+                                            g_array[poly]['properties']['N']) & \
+                                           (lat_longs_df['longitude'] <=\
+                                            g_array[poly]['properties']['E']) & \
+                                           (lat_longs_df['longitude'] >=\
+                                            g_array[poly]['properties']['W'])]
+            #this is dodgy but it works for now
+            if bound_points_df.size is 2:
+                bound_points_df.append(bound_points_df)
+
+            if (bound_points_df.size > 0):
+                poly_coords = []
+                num_coords = len(g_array[poly]['geometry']['coordinates'][0])-2
+                coords_list= g_array[poly]['geometry']['coordinates'][0]
+                longs = [item[0] for item in coords_list]
+                lats = [item[1] for item in coords_list]
+                poly_coords = [(x,y) for x,y in zip(longs,lats)]
+                #for coord in range(0, num_coords):
+                #    poly_coords.append( \
+                #        [g_array[poly]['geometry']['coordinates'][0][coord][0], \
+                #         g_array[poly]['geometry']['coordinates'][0][coord][1]])
+                path = mpltPath.Path(poly_coords)
+
+                for index, row in bound_points_df.iterrows():
+                    if path.contains_point([row['longitude'],row['latitude']]) is True:
+                        p_count += 1 
+                                    
+            g_array[poly]['properties'][g_label] = float(p_count)
+                
+        return g_array
     
     def from_geojson_file(self,fNameTempl):
         """
