@@ -13,9 +13,6 @@ def hexagons(theshape,b_north, b_south, b_east, b_west, theradial):
     u.ref_files_polygons()
     
     nb_aus_hex_array = t.hexagons()
-    #u.to_geojson_file(nb_poi_hex_array,'{fname}_layer')
-    #u.to_kml_file(nb_poi_hex_array,'{fname}_layer')
-    #u.to_shp_file(nb_poi_hex_array,'{fname}_layer')
 
     u.to_geojson_file(nb_aus_hex_array,'aus_{fname}_layer')
     u.to_kml_file(nb_aus_hex_array,'aus_{fname}_layer')
@@ -28,10 +25,8 @@ def boxes(shape,b_north,south,east,west,theradial):
     u = Util(shape = theshape, radial = theradial)
     u.ref_files_polygons()
     
-    nb_poi_box_array, nb_aus_box_array = t.boxes()
-    u.to_geojson_file(nb_poi_box_array,'aus_{fname}_layer')
-    u.to_kml_file(nb_poi_box_array,'aus_{fname}_layer')
-    u.to_shp_file(nb_poi_box_array,'aus_{fname}_layer')
+    nb_aus_box_array = t.boxes()
+
 
     u.to_geojson_file(nb_aus_box_array,'aus_{fname}_layer')
     u.to_kml_file(nb_aus_box_array,'aus_{fname}_layer')
