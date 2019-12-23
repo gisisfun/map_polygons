@@ -1,196 +1,226 @@
+"""
+Map_polygons tiles module
+"""
+
 #all
-import os
+from math import pow, sqrt
 import pandas as pd
 import numpy as np
-import json
-
-#Tiles
 from geopy.distance import geodesic
-from geojson import Polygon,Feature,FeatureCollection
-from math import pow,sqrt
 import matplotlib.path as mpltPath
 import shapefile #to be moved to util from add_poly_poi
+from geojson import Polygon, Feature #,FeatureCollection
 
-from isotiles.parameters import Bounding_Box, OSVars, Offsets, Defaults
+
+
+from isotiles.parameters import BoundingBox, Offsets, Defaults
 #from isotiles.poi import POI
-from isotiles.datasets import DataSets
 from isotiles.util import Util
 
 class Neighbours:
-    __slots_ = ("poly","row_count","g_array")
-    def __init__(self,poly,g_array,row_count):
+    """
+    Neighbour cell calculations for hexagons
+    """
+
+    __slots_ = ("poly", "row_count", "g_array")
+    def __init__(self, poly, g_array, row_count):
         self.poly = poly
         self.row_count = row_count
         self.g_array = g_array
-        
+
     def row_counts(self):
+        """
+        Row Counts
+        """
         row_counts = 41
         return row_counts
-                
-    
-    def North(self):   
-        poly_N = (self.poly - (self.row_count*2-(self.poly % self.row_count))-((self.poly % self.row_count)))
-        return poly_N
-    
-    def North_East(self):   
-        poly_NE = (self.poly - (self.row_count*1-(self.poly % self.row_count))-((self.poly % self.row_count)))
-        return poly_NE
 
-    def East(self):   
-        poly_E = self.poly + 1
-        return poly_E
-    
-    def South_East(self):  
-        poly_SE = (self.poly + (self.row_count*1-(self.poly % self.row_count))+((self.poly % self.row_count)))
-        return poly_SE
-    
-    def South(self):   
-        poly_S = (self.poly + (self.row_count*2-(self.poly % self.row_count))+((self.poly % self.row_count)))
-        return poly_S
 
-    def South_West(self):
-        poly_SW = (self.poly + (self.row_count*1-(self.poly % self.row_count))+((self.poly % self.row_count)))-1
-        return poly_SW
-        
-    def West(self):
-        poly_W = self.poly - 1
-        return poly_W
-    
-    def North_West(self):
-        poly_NW = (self.poly - (self.row_count*1-(self.poly % self.row_count))-((self.poly % self.row_count)))-1
-        return poly_NW
+    def north(self):
+        """
+        North
+        """
+        poly_n = (self.poly - (self.row_count*2-(self.poly % self.row_count))\
+                  -((self.poly % self.row_count)))
+        return poly_n
+
+    def north_east(self):
+        """
+        North East
+        """
+        poly_ne = (self.poly - (self.row_count*1-(self.poly % self.row_count))\
+                   -((self.poly % self.row_count)))
+        return poly_ne
+
+    def east(self):
+        """
+        East
+        """
+        poly_e = self.poly + 1
+        return poly_e
+
+    def south_east(self):
+        """
+        South East
+        """
+        poly_se = (self.poly + (self.row_count*1-(self.poly % self.row_count))\
+                   +((self.poly % self.row_count)))
+        return poly_se
+
+    def south(self):
+        """
+        South
+        """
+        poly_s = (self.poly + (self.row_count*2-(self.poly % self.row_count))\
+                  +((self.poly % self.row_count)))
+        return poly_s
+
+    def south_west(self):
+        """
+        South West
+        """
+        poly_sw = (self.poly + (self.row_count*1-(self.poly % self.row_count))\
+                   +((self.poly % self.row_count)))-1
+        return poly_sw
+
+    def west(self):
+        """
+        West
+        """
+        poly_w = self.poly - 1
+        return poly_w
+
+    def north_west(self):
+        """
+        North West
+        """
+        poly_nw = (self.poly - (self.row_count*1-(self.poly % self.row_count))\
+                   -((self.poly % self.row_count)))-1
+        return poly_nw
 
 
 class Tiles():
     """
     Modules for map_polygons
     """
-    ...
-    
-    value = Bounding_Box.Australia()
+
+
+    value = BoundingBox.Australia()
     defaults = Defaults()
-    
-    def __init__(self, north: Bounding_Box = value.North,
-                 south: Bounding_Box = value.South,
-                 east: Bounding_Box = value.East,
-                 west: Bounding_Box = value.West,
-                 radial: Defaults = defaults.Radial,
-                 shape: Defaults = defaults.Shape,
-                 images: Defaults = defaults.ImagesPath,
-                 metadata: Defaults = defaults.MetaDataPath,
-                 logfiles: Defaults = defaults.LogfilesPath,
-                 kmlfiles: Defaults = defaults.KMLfilesPath,
-                 shapefiles: Defaults = defaults.ShapefilesPath,
-                 geojson: Defaults = defaults.GeoJSONPath,
-                 vrt: Defaults = defaults.VRTPath,
-                 csv: Defaults = defaults.CSVPath,
-                 spatialite: Defaults = defaults.SpatialitePath,
-                 sql: Defaults = defaults.SQLPath,
-                 slash: Defaults = defaults.Slash,
-                 ogr2ogr_com: Defaults = defaults.Ogr2ogr,
-                 spatialite_com: Defaults = defaults.Spatialite,
-                 extn: Defaults = defaults.Extn):
+
+    def __init__(self, north: BoundingBox = value.north,
+                 south: BoundingBox = value.south,
+                 east: BoundingBox = value.east,
+                 west: BoundingBox = value.west,
+                 radial: Defaults = defaults.radial,
+                 shape: Defaults = defaults.shape,
+                 images: Defaults = defaults.images_path,
+                 metadata: Defaults = defaults.metadata_path,
+                 logfiles: Defaults = defaults.log_files_path,
+                 kmlfiles: Defaults = defaults.kml_files_path,
+                 shapefiles: Defaults = defaults.shape_files_path,
+                 geojson: Defaults = defaults.geojson_path,
+                 vrt: Defaults = defaults.vrt_files_path,
+                 csv: Defaults = defaults.csv_files_path,
+                 spatialite: Defaults = defaults.spatialite_path,
+                 sql: Defaults = defaults.sql_files_path,
+                 slash: Defaults = defaults.slash,
+                 ogr2ogr_com: Defaults = defaults.ogr2ogr,
+                 spatialite_com: Defaults = defaults.spatialite,
+                 extn: Defaults = defaults.extn):
         """
         supply variables for map_polygons
         """
-        self.North = north
-        self.South = south
-        self.East = east
-        self.West = west
-        self.Radial = radial
-        self.Shape = shape
-        self.FName = self.f_name()
-        self.ShapefilesPath = shapefiles
-        self.KMLfilesPath = kmlfiles
-        
-        offValues = Offsets()
-        self.Ogr2ogr = ogr2ogr_com # '/usr/bin/ogr2ogr'
-        self.Slash = slash # '/'
-        self.Extn = extn
-        self.Spatialite = spatialite_com
+        self.north = north
+        self.south = south
+        self.east = east
+        self.west = west
+        self.radial = radial
+        self.shape = shape
+        self.filename = self.f_name()
+        self.shape_files_path = shapefiles
+        self.kml_files_path = kmlfiles
 
-        if self.Shape is 'hex':
-            self.horSeq = [offValues.Short, offValues.Short,
-                           offValues.Short, offValues.Short]
-            self.vertSeq = [offValues.Short, offValues.Long,
-                           offValues.Short, offValues.Long]
-            
+        off_values = Offsets()
+        self.ogr2ogr = ogr2ogr_com # '/usr/bin/ogr2ogr'
+        self.slash = slash # '/'
+        self.extn = extn
+        self.spatialite = spatialite_com
+
+        if self.shape == 'hex':
+            self.hor_seq = [off_values.short, off_values.short,
+                            off_values.short, off_values.short]
+            self.vert_seq = [off_values.short, off_values.long,
+                             off_values.short, off_values.long]
+
         else:
-            self.horSeq = [offValues.Long, offValues.Long,
-                           offValues.Long, offValues.Long]
-            self.vertSeq = [offValues.Long, offValues.Long,
-                            offValues.Long, offValues.Long]
+            self.hor_seq = [off_values.long, off_values.long,
+                            off_values.long, off_values.long]
+            self.vert_seq = [off_values.long, off_values.long,
+                             off_values.long, off_values.long]
 
     def params(self):
         """
         Construct feedback of user variables for user
-        
+
         Dependencies:
         Tiles
         """
-        ...
-        
-        return 'Making {0} hex shapes starting from {1},{2} to {3},{4} with a radial length of {5} km' \
-                .format(self.Shape, self.North, self.West, self.South,
-                        self.East, self.Radial)
 
-    def params(self):
-        """
-        Construct feedback of user variables for user
-        
-        Dependencies:
-        Tiles
-        """
-        ...
+        part_1 = 'Making {0} shapes starting from {1},{2} to {3},{4} with'
+        part_2 = 'a radial length of {5} km'
+        parts = part_1 + part_2
+        return  parts.format(self.shape, self.north, self.west, self.south,
+                             self.east, self.radial)
 
-        
-        return 'Making {0} hex shapes starting from {1},{2} to {3},{4} with a radial length of {5} km' \
-                .format(self.Shape, self.North, self.West, self.South,
-                        self.East, self.Radial)
+
     def metadata(self):
-        layer_dict = {'Bounds': {'Australia': {'North': self.North,'South': self.South, \
-                                           'West': self.West,'East': self.East}}}
-        layer_dict['Param'] = {}
-        layer_dict['Param']['side_km'] = radial
-        layer_dict['Param']['epsg'] = 4326
-        layer_dict['Param']['shape'] = self.Shape
-        layer_dict['Boxes'] = {}
-        layer_dict['Boxes']['long'] = 1
-        hor_seq = [layer_dict['Boxes']['long'], layer_dict['Boxes']['long'], \
-                   layer_dict['Boxes']['long'], layer_dict['Boxes']['long']]
-        vert_seq = [layer_dict['Boxes']['long'], layer_dict['Boxes']['long'], \
-                    layer_dict['Boxes']['long'], layer_dict['Boxes']['long']]
-    
-        layer_dict['Bounds']['Dataset']['North'] = tabular_df['N'].max()
-        layer_dict['Bounds']['Dataset']['South'] = tabular_df['S'].min()
-        layer_dict['Bounds']['Dataset']['East'] = tabular_df['E'].max()
-        layer_dict['Bounds']['Dataset']['West'] = tabular_df['W'].min()
-    
-        print('\n7/7 boxes json metadata to written to file: {0}_metadata.json' \
-              .format(outfile))
-        myfile = open('metadata{slash}{outfile}_metadata.json' \
-                      .format(outfile = outfile, slash = slash), 'w')  # open file for writing geojson layer
-        myfile.write(str(json.dumps(layer_dict)))
-        #write geojson layer to open file
-        myfile.close()  # close file
-        
+        """
+        Not Implemented to date
+#        """
+#        layer_dict = {'Bounds': {'Australia': {'North': self.north, 'South': self.south, \
+#                                           'West': self.west, 'East': self.east}}}
+#        layer_dict['Param'] = {}
+#        layer_dict['Param']['side_km'] = self.radial
+#        layer_dict['Param']['epsg'] = 4326
+#        layer_dict['Param']['shape'] = self.shape
+#        layer_dict['Boxes'] = {}
+#        layer_dict['Boxes']['long'] = 1
+#        hor_seq = [layer_dict['Boxes']['long'], layer_dict['Boxes']['long'], \
+#                   layer_dict['Boxes']['long'], layer_dict['Boxes']['long']]
+#        vert_seq = [layer_dict['Boxes']['long'], layer_dict['Boxes']['long'], \
+#                    layer_dict['Boxes']['long'], layer_dict['Boxes']['long']]
+#
+#        layer_dict['Bounds']['Dataset']['North'] = tabular_df['N'].max()
+#        layer_dict['Bounds']['Dataset']['South'] = tabular_df['S'].min()
+#        layer_dict['Bounds']['Dataset']['East'] = tabular_df['E'].max()
+#        layer_dict['Bounds']['Dataset']['West'] = tabular_df['W'].min()
+#
+#        print('\n7/7 boxes json metadata to written to file: {0}_metadata.json' \
+#              .format(outfile))
+#        myfile = open('metadata{slash}{outfile}_metadata.json' \
+#                      .format(outfile=outfile, slash=slash), 'w')
+#        # open file for writing geojson layer
+#        myfile.write(str(json.dumps(layer_dict)))
+#        #write geojson layer to open file
+#        myfile.close()  # close file
+
     def f_name(self):
         """
         Construct filename string
-        
+
         Dependencies:
         Tiles
         """
-        ...
 
-        
-        print(self.Shape + '_' + str(self.Radial) + 'km')
-        return self.Shape + '_' + str(self.Radial) + 'km'
 
-    def point_radial_distance(self,coords, brng, radial):
+        print(self.shape + '_' + str(self.radial) + 'km')
+        return self.shape + '_' + str(self.radial) + 'km'
+
+    def point_radial_distance(self, coords, brng, radial):
         """
         Calulate next point from coordinates and bearing
-        
+
         Dependencies:
         None
         """
@@ -199,108 +229,113 @@ class Tiles():
     def horizontal(self):
         """
         Horizontal Reference Points
-        
+
         Dependencies:
         Tiles
         """
         #1/7 deriving vertical list of reference points from north to south for longitudes or x axis
-        (angle, new_north, i, longitudes) = (180, self.North, 0, [])
+        (angle, new_north, i, longitudes) = (180, self.north, 0, [])
         #print(east,new_north,south,'\n')
-        longitudes.append([[self.North,self.West],[self.North,self.East]])
+        longitudes.append([[self.north, self.west], [self.north, self.east]])
 
-        while new_north >= self.South:
+        while new_north >= self.south:
             if i > 3:
                 i = 0
-            
-            latlong = [new_north,self.East]
-            p = self.point_radial_distance(latlong,angle,self.Radial * self.horSeq[i]) 
-            new_north = p[0]
-            longitudes.append([[p[0],self.West],[p[0],self.East]])
+
+            latlong = [new_north, self.east]
+            p_val = self.point_radial_distance(latlong, angle, self.radial *\
+                                           self.hor_seq[i])
+            new_north = p_val[0]
+            longitudes.append([[p_val[0], self.west], [p_val[0], self.east]])
             i += 1
         return longitudes
 
-    
+
     def vertical(self):
         """
         #2/7 deriving horizontal list of reference points from east to west for latitudes or y axis
-        
+
         Prerequisites:
         Tiles
-        
+
         Input variables:
         Provided
         """
-        print('east {0} west {1}'.format(self.East,self.West))
+        print('east {0} west {1}'.format(self.east, self.west))
 
-        (angle, new_west, i, latitudes) = (90, self.West, 0, [])
+        (angle, new_west, i, latitudes) = (90, self.west, 0, [])
 
-        latitudes.append([[self.North,self.West],[self.South,self.West]])
-        while new_west <= self.East:
+        latitudes.append([[self.north, self.west], [self.south, self.west]])
+        while new_west <= self.east:
             if i > 3:
                 i = 0
 
-            latlong = [self.North,new_west]
-            p = self.point_radial_distance(latlong,angle, self.Radial*self.vertSeq[i])
-            new_west = p[1]
-            latitudes.append([[self.North,p[1]],[self.South,p[1]]])    
+            latlong = [self.north, new_west]
+            p_val = self.point_radial_distance(latlong, angle, \
+                                               self.radial*self.vert_seq[i])
+            new_west = p_val[1]
+            latitudes.append([[self.north, p_val[1]], [self.south, p_val[1]]])
             i += 1
-            
+
         return latitudes
 
 
-    def line_intersection(self,line1, line2):
+    def line_intersection(self, line1, line2):
         """
-        source: https://stackoverflow.com/questions/20677795/how-do-i-compute-the-intersection-between-two-lines-in-python
-        
+        source: https://stackoverflow.com/questions/20677795/
+        how-do-i-compute-the-intersection-between-two-lines-in-python
+
         Dependencies:
         intersections,horizontal,vertical,Tiles
         """
-        ...
-        
+
+
         xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
         ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
 
-        def det(a, b):
-            return a[0] * b[1] - a[1] * b[0]
+        def det(a_val, b_val):
+            return a_val[0] * b_val[1] - a_val[1] * b_val[0]
 
         div = det(xdiff, ydiff)
         if div == 0:
             raise Exception('lines do not intersect')
 
-        d = (det(*line1), det(*line2))
-        (x, y) = (det(d, xdiff) / div, det(d, ydiff) / div)
-        return x, y
-    
-    def intersections(self,hor_line_list, vert_line_list):
+        d_val = (det(*line1), det(*line2))
+        (x_val, y_val) = (det(d_val, xdiff) / div, det(d_val, ydiff) / div)
+        return x_val, y_val
+
+    def intersections(self, hor_line_list, vert_line_list):
         """
         Intersecting Lines as points
-        
+
         Dependencies:
         horizontal,vertical,Tiles
-        
+
         Input variables:
         hor_line_list:
         vert_line_list:
         """
-        ...
-        
+
+
         print('\n3/7 deriving intersection point data between horizontal and vertical lines')
-        (intersect_list, hor_max, vert_max) = ([],len(hor_line_list), len(vert_line_list))
-        for h in range(0, hor_max):
-            for v in range(0, vert_max):
-                intersect_point = self.line_intersection(hor_line_list[h],
-                vert_line_list[v])
+        (intersect_list, hor_max, vert_max) = ([], len(hor_line_list), \
+         len(vert_line_list))
+        for h_val in range(0, hor_max):
+            for v_val in range(0, vert_max):
+                intersect_point = self.line_intersection(hor_line_list[h_val],
+                                                         vert_line_list[v_val])
                 intersect_data = [intersect_point[1], intersect_point[0]]
                 intersect_list.append(intersect_data)
 
         print('derived {0} points of intersection'.format(len(intersect_list)))
         return intersect_list
-    
 
-    def hex_array(self,intersect_list,max_h, max_v):
+
+
+    def hex_array(self, intersect_list, max_h, max_v):
         """
         Put it all together - deriving hexagon polygons from intersection data
-        
+
         
         Prerequisites:
         intersections, horizontal, vertical, Tiles
@@ -315,8 +350,8 @@ class Tiles():
         self.FName = self.f_name()
         
         (point_list,g_array, tabular_list) = ([],[],[])
-        (lat_offset,top_left, poly_row_count) = (4, 0, int(max_v / len(self.horSeq)))
-        rem_lat = max_v % (lat_offset + len(self.horSeq))
+        (lat_offset,top_left, poly_row_count) = (4, 0, int(max_v / len(self.hor_seq)))
+        rem_lat = max_v % (lat_offset + len(self.hor_seq))
         (inc_by_rem, in_adj) = (True,0)
         p_tuple = ((False, True, True, True, False, True, True, True), \
                    (0, 0, -4, 0, 0, -4, -4, -4))
@@ -352,9 +387,9 @@ class Tiles():
                     last_lat_row = centre_lat
                     geopoly = Polygon([poly_coords])
                     poly_id += 1
-                    est_area = (((3 * sqrt(3)) / 2) * pow(self.Radial, 2)) * 0.945
+                    est_area = (((3 * sqrt(3)) / 2) * pow(self.radial, 2)) * 0.945
                     #estimate polygon area
-                    geopoly = Feature(geometry = geopoly, properties = \
+                    geopoly = Feature(geometry=geopoly, properties= \
                                       {"p": poly_id,"row": row, \
                                        "col": col, "lat": centre_lat, \
                                        "lon": centre_lon, "N": bounds_n, \
@@ -397,6 +432,7 @@ class Tiles():
         print('created dataset of {0} derived hexagon polygons'.format(len(g_array)))
         return g_array
 
+
     def box_array(self,intersect_list,max_h, max_v):
         """
         Create array of box shaped polygons
@@ -408,9 +444,9 @@ class Tiles():
         Provided
         """
         ...
-        self.Shape = 'box'
-        self.FName = self.f_name()
-        
+        self.shape = 'box'
+        self.filename = self.f_name()
+        poly_id = 0
         (top_left, g_array, col, row) = (0, [], 1, 1)  # g_array - array of geojson formatted geometry element
         print('\n4/7 deriving boxes polygons from intersection data')
         vertex = [top_left + 0, top_left + 1, top_left + max_v + 1, top_left + max_v]
@@ -432,6 +468,7 @@ class Tiles():
             bounds_w = vertex00
             if bounds_e > bounds_w:
                 geopoly = Polygon([poly_coords])
+                poly_id += 1
                 geopoly = Feature(geometry=geopoly, \
                 properties = {"p": top_left, "a": poly_id-1, \
                               "lat": centre_lat, "lon": centre_lon, \
@@ -456,328 +493,355 @@ class Tiles():
         print('\n5/7 boxes geojson dataset of {0} derived polygons'.format(len(g_array)))
         return g_array
 
-
-    def update_poly_array_ref(self,g_array):
-        for g_ref in range(0,len(self.g_array)):
-            g_array[g_ref]['properties']['a'] = g_ref
-        return g_array
-    
-
-    def add_poly_poi(self,g_array):
-        u = Util() 
+    def add_poly_poi(self, g_array):
+        """
+        Polulates polygons with poi to identifiy contental features without gdal
+        """
+        u_mod = Util()
         # load the shapefile
-        sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
-        
+        shape_file = shapefile.Reader("shapefiles/AUS_2016_AUST")
+
         # shapefile contains multipolygons
-        shapes = sf.shapes()
+        shapes = shape_file.shapes()
         big_coords = shapes[0].points
         # get the query polygons
-        (point_list, num_poly,isectArray) = ([], len(g_array),[])
 
         print('Adding the Boundary/Coast Line points')
-        points = []
         longs = [float(item[0]) for item in big_coords]
         lats = [float(item[1]) for item in big_coords]
-        coords = [(x,y) for x,y in zip(longs,lats)]
+        coords = [(x, y) for x, y in zip(longs, lats)]
 
-        poly_array = u.points_in_polygon(g_array,coords,'Boundary')
+        poly_array = u_mod.points_in_polygon(g_array, coords, 'Boundary')
 
         print('Adding Island points')
-        coords = u.coords_from_csv('islands.csv',1,2)       
-        next_poly_array = u.points_in_polygon(poly_array,coords,'Island')
-        
+        coords = u_mod.coords_from_csv('islands.csv', 1, 2)
+        next_poly_array = u_mod.points_in_polygon(poly_array, coords, 'Island')
+
         print('Adding GNAF Locality points')
-        coords = u.coords_from_csv('aug_gnaf_2019_locality.csv',4,3)
-        poly_array = u.points_in_polygon(next_poly_array,coords,'Locality')
+        coords = u_mod.coords_from_csv('aug_gnaf_2019_locality.csv', 4, 3)
+        poly_array = u_mod.points_in_polygon(next_poly_array, coords, 'Locality')
 
         print('NASA Active fire Data MODIS C6 Australia and New Zealand 24h')
-        coords = u.coords_from_csv('MODIS_C6_Australia_and_New_Zealand_24h.csv',1,0)
-        next_poly_array = u.points_in_polygon(poly_array,coords,'Active_Fires')
+        coords = u_mod.\
+                 coords_from_csv('MODIS_C6_Australia_and_New_Zealand_24h.csv',\
+                                 1, 0)
+        next_poly_array = u_mod.points_in_polygon(poly_array, coords, \
+                                                  'Active_Fires')
 
         print('National Mobile Blackspot program')
-        coords = u.coords_from_csv_latin1('mbsp_database.csv',6,5)
-        poly_array = u.points_in_polygon(next_poly_array,coords,'MBSP')
+        coords = u_mod.coords_from_csv_latin1('mbsp_database.csv', 6, 5)
+        poly_array = u_mod.points_in_polygon(next_poly_array, coords, 'MBSP')
 
         print('AGIL Locations')
-        coords = u.coords_from_csv('agil_locations20190208.csv',3,2)
-        next_poly_array = u.points_in_polygon(poly_array,coords,'AGIL')
-        
+        coords = u_mod.coords_from_csv('agil_locations20190208.csv', 3, 2)
+        next_poly_array = u_mod.points_in_polygon(poly_array, coords, 'AGIL')
+
         print('Polygons Centroids and Offset Vertices')
         coords = self.aus_poly_coords(next_poly_array)
-        poly_array = u.points_in_polygon(next_poly_array,coords,'Fred')
-        out_array = []
-        for poly in range (0, len(poly_array)):
+        print(len(coords))
+        poly_array = u_mod.points_in_polygon(next_poly_array, coords, 'Poly')
+        for poly in range(0, len(poly_array)):
             poly_array[poly]['properties']['Aust'] = 0
-            if poly_array[poly]['properties']['Fred'] > 0 \
+            if poly_array[poly]['properties']['Poly'] > 0 \
                or poly_array[poly]['properties']['Island'] > 0 or \
                poly_array[poly]['properties']['Locality'] > 0 or \
                poly_array[poly]['properties']['Boundary'] > 0:
                 poly_array[poly]['properties']['Aust'] = 1
                 #out_array.append(poly_array[poly])
-            
+
         return poly_array
 
-    def aus_poly_coords(self,g_array):
+    def aus_poly_coords(self, g_array):
+        """
+        generate coords inside map layer polygons to fill continent
+        """
         # load the shapefile
-        sf = shapefile.Reader("shapefiles/AUS_2016_AUST")
+        shape_file = shapefile.Reader("shapefiles/AUS_2016_AUST")
         # shapefile contains multipolygons
-        shapes = sf.shapes()
+        shapes = shape_file.shapes()
         big_coords = shapes[0].points
         loc_poly_array = g_array
         coords = []
-        for poly in range (0, len(g_array)):
+        for poly in range(0, len(g_array)):
             c_lon = loc_poly_array[poly]['properties']['lon']
             c_lat = loc_poly_array[poly]['properties']['lat']
-            coords.append((c_lon,c_lat))
+            coords.append((c_lon, c_lat))
             for point in loc_poly_array[poly]['geometry']['coordinates'][0]:
-                coords.append((point[0],point[1]))
-            unique_coords = np.unique(coords, axis = 0) # remove duplicate coordinates
+                coords.append((point[0], point[1]))
+            unique_coords = np.unique(coords, axis=0) # remove duplicate coordinates
         in_coords = []
         for subpolyptr in range(len(shapes[0].parts)-1):
             sub_coords = big_coords[shapes[0].parts[subpolyptr]:shapes[0].parts[subpolyptr+1]]
             path = mpltPath.Path(sub_coords)
             np_arr = np.array(sub_coords)
-            (arr_min, arr_max) = (np.min(np_arr,axis=0),np.max(np_arr,axis=0))
-            (bounds_N,bounds_S, bounds_E, bounds_W) = (arr_max[1], arr_min[1], arr_max[0], arr_min[0])
-            inBBox = False                       
+            (arr_min, arr_max) = (np.min(np_arr, axis=0), np.max(np_arr, \
+                                 axis=0))
+            (bounds_n, bounds_s, bounds_e, bounds_w) = (arr_max[1], \
+            arr_min[1], arr_max[0], arr_min[0])
+            in_bbox = False
             for point in unique_coords:
-                if point[1] < bounds_N and point[1] > bounds_S and point[0] < bounds_E and point[0] > bounds_W:
-                    inBBox = True
-                if inBBox is True:
-                    if path.contains_point([point[0],point[1]-0.0001]) is True:
-                        in_coords.append((point[0],point[1]-0.0001))
+                if point[1] < bounds_n and point[1] > bounds_s and \
+                   point[0] < bounds_e and point[0] > bounds_w:
+                    in_bbox = True
+                if in_bbox is True:
+                    if path.contains_point([point[0], point[1]-0.0001]) is True:
+                        in_coords.append((point[0], point[1]-0.0001))
         return in_coords
 
 
-    def aus_poly_intersect(self,g_array):
-        (num_poly,isectArray) = (len(g_array),[])
+    def aus_poly_intersect(self, g_array):
+        """
+        Separate continental polygons from non continental
+        """
+        (num_poly, isect_array) = (len(g_array), [])
 
-        for poly in range (0, num_poly):
+        for poly in range(0, num_poly):
             if g_array[poly]['properties']['Aust'] > 0:
-                isectArray.append(g_array[poly])
-        return isectArray
+                isect_array.append(g_array[poly])
+        return isect_array
 
-    
-    def column_counts(self,g_array):
+
+    def column_counts(self, g_array):
+        """
+        column counts for neighbour update
+        """
         ref_table = []
-        for record in range(0,len(g_array)):
+        for record in range(0, len(g_array)):
             ref_table.append(g_array[record]['properties']['row'])
-        
+
         ref_table_df = pd.DataFrame(ref_table)
         ref_table_df.columns = ['row']
-        print(len(ref_table_df))        
-        
+        print(len(ref_table_df))
+
         odd_columns = ref_table.count(1)
         even_columns = ref_table.count(2)
-        print(int(odd_columns),int(even_columns))
-        return odd_columns,even_columns
-        
-    def update_neighbours(self,g_array,odd_columns,even_columns):
+        print(int(odd_columns), int(even_columns))
+        return odd_columns, even_columns
+
+    def update_neighbours(self, g_array, odd_columns, even_columns):
+        """
+        neighbour update of geojson Polygon array
+        """
         ref_table = []
-        for record in range(0,len(g_array)):
+        for record in range(0, len(g_array)):
             g_rec = g_array[record]
-            ref_table.append([g_rec['properties']['a'],g_rec['properties']['p'],g_rec['properties']['row']])
-        
+            ref_table.append([g_rec['properties']['a'], \
+                              g_rec['properties']['p'], \
+                              g_rec['properties']['row']])
+
         ref_table_df = pd.DataFrame(ref_table)
-        ref_table_df.columns = ['arr', 'poly','row']        
+        ref_table_df.columns = ['arr', 'poly', 'row']
 
-        for g_ref in range(0,len(g_array)):
+        for g_ref in range(0, len(g_array)):
             g_poly = g_array[g_ref]['properties']['p']
-            (pol_N,pol_NE,pol_E,pol_SE,pol_S,pol_SW,pol_W,pol_NW) = self.neighbours_hex(g_array,g_poly,ref_table_df,odd_columns)
-            g_array[g_ref]['properties']['p_N'] = pol_N
-            g_array[g_ref]['properties']['p_NE'] = pol_NE
-            g_array[g_ref]['properties']['p_E'] = pol_E
-            g_array[g_ref]['properties']['p_SE'] = pol_SE
-            g_array[g_ref]['properties']['p_S'] = pol_S
-            g_array[g_ref]['properties']['p_SW'] = pol_SW
-            g_array[g_ref]['properties']['p_W'] = pol_W
-            g_array[g_ref]['properties']['p_NW'] = pol_NW            
-        return g_array 
+            (pol_n, pol_ne, pol_e, pol_se, pol_s, pol_sw, pol_w, pol_nw) = \
+            self.neighbours_hex(g_array, g_poly, ref_table_df, odd_columns)
+            g_array[g_ref]['properties']['p_N'] = pol_n
+            g_array[g_ref]['properties']['p_NE'] = pol_ne
+            g_array[g_ref]['properties']['p_E'] = pol_e
+            g_array[g_ref]['properties']['p_SE'] = pol_se
+            g_array[g_ref]['properties']['p_S'] = pol_s
+            g_array[g_ref]['properties']['p_SW'] = pol_sw
+            g_array[g_ref]['properties']['p_W'] = pol_w
+            g_array[g_ref]['properties']['p_NW'] = pol_nw
+        return g_array
 
-    def neighbours_hex(self, g_array,poly,ref_table_df,column_count):
-        
+    def neighbours_hex(self, g_array, poly, ref_table_df, column_count):
+        """
+        neighbour update of geojson hex Polygon array
+        """
         # North Neighbour
         try:
-            poly_N = (poly - (column_count*2-(poly % column_count))-((poly % column_count)))
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_N)]
+            poly_n = (poly - (column_count*2-(poly % column_count))-((poly % column_count)))
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_n)]
             arr_data = g_array[int(ref_q['arr'])]
-            val_N = poly_N
+            val_n = poly_n
         except:
-            val_N = -9
-            
-        # North East Neighbour
-        poly_NE = (poly - (column_count*1-(poly % column_count))-((poly % column_count)))
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_NE)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_NE = poly_NE
-        except:
-            val_NE = -9
-            
-        # East Neighbour
-        poly_E = poly + 1
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_E)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_E = poly_E
-        except:
-            val_E = -9
-            
-        # South East Neighbour
-        poly_SE = (poly + (column_count*1-(poly % column_count))+((poly % column_count)))
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_SE)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_SE = poly_SE
-        except:
-            val_SE = -9
-            
-        # South Neighbour
-        poly_S = (poly + (column_count*2-(poly % column_count))+((poly % column_count)))
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_S)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_S = poly_S
-        except:
-            val_S = -9
-        
-        # South West Neighbour
-        poly_SW = (poly + (column_count*1-(poly % column_count))+((poly % column_count)))-1
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_SW)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_SW = poly_SW
-        except:
-            val_SW = -9
-            
-        # West Neighbour
-        poly_W = poly - 1
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_W)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_W = poly_W
-        except:
-            val_W = -9
-            
-        # North West Neighbour
-        poly_NW = (poly - (column_count*1-(poly % column_count))-((poly % column_count)))-1
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_NW)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_NW = poly_NW
-        except:
-            val_NW = -9
-        
-        return val_N,val_NE,val_E,val_SE,val_S,val_SW,val_W,val_NW
+            val_n = -9
 
-    def neighbours_box(self, g_array,poly,ref_table_df,column_count):
-        
-        # North Neighbour
-        poly_N = (poly - (column_count*1-(poly % column_count))-((poly % column_count)))
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_N)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_N = poly_N
-        except:
-            val_N = -9
-            
         # North East Neighbour
-        poly_NE = (poly - (column_count*1-(poly % column_count))-((poly % column_count)))+1
+        poly_ne = (poly - (column_count*1-(poly % column_count))-((poly % column_count)))
         try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_NE)]
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_ne)]
             arr_data = g_array[int(ref_q['arr'])]
-            val_NE = poly_NE
+            val_ne = poly_ne
         except:
-            val_NE = -9
-            
+            val_ne = -9
+
         # East Neighbour
-        poly_E = poly + 1
+        poly_e = poly + 1
         try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_E)]
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_e)]
             arr_data = g_array[int(ref_q['arr'])]
-            val_E = poly_E
+            val_e = poly_e
         except:
-            val_E = -9
-            
+            val_e = -9
+
         # South East Neighbour
-        poly_SE = (poly + (column_count*1-(poly % column_count))+((poly % column_count)))+1
+        poly_se = (poly + (column_count*1-(poly % column_count))+((poly % column_count)))
         try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_SE)]
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_se)]
             arr_data = g_array[int(ref_q['arr'])]
-            val_SE = poly_SE
+            val_se = poly_se
         except:
-            val_SE = -9
-            
+            val_se = -9
+
         # South Neighbour
-        poly_S = (poly + (column_count*1-(poly % column_count))+((poly % column_count)))
+        poly_s = (poly + (column_count*2-(poly % column_count))+((poly % column_count)))
         try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_S)]
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_s)]
             arr_data = g_array[int(ref_q['arr'])]
-            val_S = poly_S
+            val_s = poly_s
         except:
-            val_S = -9
-        
+            val_s = -9
+
         # South West Neighbour
-        poly_SW = (poly + (column_count*1-(poly % column_count))+((poly % column_count)))-1
+        poly_sw = (poly + (column_count*1-(poly % column_count))+((poly % column_count)))-1
         try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_SW)]
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_sw)]
             arr_data = g_array[int(ref_q['arr'])]
-            val_SW = poly_SW
+            val_sw = poly_sw
         except:
-            val_SW = -9
-            
+            val_sw = -9
+
         # West Neighbour
-        poly_W = poly - 1
+        poly_w = poly - 1
         try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_W)]
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_w)]
             arr_data = g_array[int(ref_q['arr'])]
-            val_W = poly_W
+            val_w = poly_w
         except:
-            val_W = -9
-            
+            val_w = -9
+
         # North West Neighbour
-        poly_NW = (poly - (column_count*1-(poly % column_count))-((poly % column_count)))-1
+        poly_nw = (poly - (column_count*1-(poly % column_count))-((poly % column_count)))-1
         try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_NW)]
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_nw)]
             arr_data = g_array[int(ref_q['arr'])]
-            val_NW = poly_NW
+            val_nw = poly_nw
         except:
-            val_NW = -9
-        
-        return val_N,val_NE,val_E,val_SE,val_S,val_SW,val_W,val_NW
+            val_nw = -9
+
+        return val_n, val_ne, val_e, val_se, val_s, val_sw, val_w, val_nw
+
+    def neighbours_box(self, g_array, poly, ref_table_df, column_count):
+        """
+        neighbour update of geojson box Polygon array
+        """
+        # North Neighbour
+        poly_n = (poly - (column_count*1-(poly % column_count))-((poly % column_count)))
+        try:
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_n)]
+            arr_data = g_array[int(ref_q['arr'])]
+            val_n = poly_n
+        except:
+            val_n = -9
+
+        # North East Neighbour
+        poly_ne = (poly - (column_count*1-(poly % column_count))-((poly % column_count)))+1
+        try:
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_ne)]
+            arr_data = g_array[int(ref_q['arr'])]
+            val_ne = poly_ne
+        except:
+            val_ne = -9
+
+        # East Neighbour
+        poly_e = poly + 1
+        try:
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_e)]
+            arr_data = g_array[int(ref_q['arr'])]
+            val_e = poly_e
+        except:
+            val_e = -9
+
+        # South East Neighbour
+        poly_se = (poly + (column_count*1-(poly % column_count))+((poly % column_count)))+1
+        try:
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_se)]
+            arr_data = g_array[int(ref_q['arr'])]
+            val_se = poly_se
+        except:
+            val_se = -9
+
+        # South Neighbour
+        poly_s = (poly + (column_count*1-(poly % column_count))+((poly % column_count)))
+        try:
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_s)]
+            arr_data = g_array[int(ref_q['arr'])]
+            val_s = poly_s
+        except:
+            val_s = -9
+
+        # South West Neighbour
+        poly_sw = (poly + (column_count*1-(poly % column_count))+((poly % column_count)))-1
+        try:
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_sw)]
+            arr_data = g_array[int(ref_q['arr'])]
+            val_sw = poly_sw
+        except:
+            val_sw = -9
+
+        # West Neighbour
+        poly_w = poly - 1
+        try:
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_w)]
+            arr_data = g_array[int(ref_q['arr'])]
+            val_w = poly_w
+        except:
+            val_w = -9
+
+        # North West Neighbour
+        poly_nw = (poly - (column_count*1-(poly % column_count))-((poly % column_count)))-1
+        try:
+            ref_q = ref_table_df[(ref_table_df['poly'] == poly_nw)]
+            arr_data = g_array[int(ref_q['arr'])]
+            val_nw = poly_nw
+        except:
+            val_nw = -9
+
+        return val_n, val_ne, val_e, val_se, val_s, val_sw, val_w, val_nw
 
 
     def hexagons(self):
+        """
+        Process geojson Polygon array
+        """
+
         print(self.params())
         hors = self.horizontal()
         verts = self.vertical()
-        intersects = self.intersections(hors,verts)
-        hex_array = self.hex_array(intersects,len(hors),len(verts))
+        intersects = self.intersections(hors, verts)
+        hex_array = self.hex_array(intersects, len(hors), len(verts))
         poi_hex_array = self.add_poly_poi(hex_array)
-        
-        (odd,even) = self.column_counts(poi_hex_array)
-        nb_poi_hex_array = self.update_neighbours(poi_hex_array,odd,even)    
+
+        (odd, even) = self.column_counts(poi_hex_array)
+        nb_poi_hex_array = self.update_neighbours(poi_hex_array, odd, even)
         # cut out ocean polygons
         aus_hex_array = self.aus_poly_intersect(nb_poi_hex_array)
         # add neighbouur reference data
-        nb_aus_hex_array = self.update_neighbours(aus_hex_array,odd,even)
+        nb_aus_hex_array = self.update_neighbours(aus_hex_array, odd, even)
         # return output from function
         return nb_aus_hex_array
 
     def boxes(self):
+        """
+        Process geojson Polygon array
+        """
+
         print(self.params())
         hors = self.horizontal()
         verts = self.vertical()
-        intersects = self.intersections(hors,verts)
-        box_array = self.box_array(intersects,len(hors),len(verts))
+        intersects = self.intersections(hors, verts)
+        box_array = self.box_array(intersects, len(hors), len(verts))
 
         poi_box_array = self.add_poly_poi(box_array)
-        (odd,even) = self.column_counts(poi_box_array)
-        nb_poi_box_array = self.update_neighbours(poi_box_array,odd,even)
-    
+        (odd, even) = self.column_counts(poi_box_array)
+        nb_poi_box_array = self.update_neighbours(poi_box_array, odd, even)
+
         # cut out ocean polygons
         aus_box_array = self.aus_poly_intersect(nb_poi_box_array)
         # add neighbouur reference data
-        nb_aus_box_array = self.update_neighbours(aus_box_array,odd,even)
+        nb_aus_box_array = self.update_neighbours(aus_box_array, odd, even)
         #print("100% progress: It's not over til it's over")
         return nb_aus_box_array
