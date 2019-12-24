@@ -64,7 +64,7 @@ class Defaults:
         """
         OS Specific values for gdal file directory tree
         """
-        ntvars = OSVars.NTWindows()
+        #ntvars = OSVars.NTWindows()
         if my_os == 'nt':
             gdal_vars = {'GDAL_DATA': 'C:\OSGeo4W64\share\gdal'}
             os.environ.update(gdal_vars)
@@ -73,8 +73,8 @@ class Defaults:
         """
         OS Specific values for sqlite3 extension for Spatialite
         """
-        posixvars = OSVars.Posix()
-        ntvars = OSVars.NTWindows()
+        #posixvars = OSVars.Posix()
+        #ntvars = OSVars.NTWindows()
         if my_os == 'posix':
             extn = "SELECT load_extension('mod_spatialite.so');"
         else:
