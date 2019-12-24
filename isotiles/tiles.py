@@ -479,7 +479,7 @@ class Tiles():
                               "p_NE":-9, "p_E":-9, \
                               "p_SE":-9, "p_S":-9, \
                               "p_SW":-9, "p_W":-9,\
-                              "est_area": 0})
+                              "est_area": self.tadial ** 2})
                 g_array.append(geopoly)
                 #append geojson geometry definition attributes to list
             else:
