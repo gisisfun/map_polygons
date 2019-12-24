@@ -2,7 +2,10 @@
 Support module PostProcess for poly_wt.py
 
 This code uses comnd line resources from the Gesopatial Dara Abstraction
-Library (GDAL) available for Linux, Mac OS x and Windows
+Library (GDAL) available for Linux, Mac OS x and Windows.
+
+This module is primarily used for adding data items to output from different
+shaped regions with data to be used in the polygon mapping layer.
 """
 import os
 import sqlite3
@@ -266,6 +269,10 @@ class PostProcess():
 
     def shp_to_db(self, filename, db_name, tbl_name, srid):
         """
+
+        db_name:
+        tbl_name:
+        srid:
         """
         with sqlite3.connect("{SplitePath}{slash}{db}.sqlite".\
                              format(db=db_name,\
@@ -295,6 +302,9 @@ class PostProcess():
 
     def csv_to_db(self, filename, db_name, tbl_name):
         """
+
+        db_name:
+        tbl_name:
         """
         cnx = sqlite3.connect('{SplitePath}{slash}{db}.sqlite'.\
                               format(db=db_name,\
@@ -318,6 +328,9 @@ class PostProcess():
 
     def cmds_to_db(self, cmd_file, db_name):
         """
+
+        cmd_file:
+        db_name:
         """
         db_text = '{SplitePath}{slash}{db}.sqlite'.\
                   format(db=db_name,\
@@ -337,21 +350,47 @@ class PostProcess():
         except FileNotFoundError:
             print('No commands processed')
 
-#
-#    def sql_to_db(self, sqlfile, db):
-#        file  = open("{SplitePath}{slash}{sqlfile}.txt".\
-#                     format(sqlfile = sqlfile, \
-#                            slash=self.slash,
-#                            SplitePath=self.spatialite_path), "r")
-#        sqltext = file.read()
-#        file.close()
-#        with sqlite3.connect("{Splite}{slash}{db}.sqlite".\
-#                             format(db = db,\
-#                                    slash = self.slash,\
-#                                    Splite = self.spatialite_path)) as conn:
-#            conn.enable_load_extension(True)
-#            c = conn.cursor()
-#            c.execute(self.Extn)
-#            #c.execute("SELECT InitSpatialMetaData(1)")
-#            c.execute(sqltext)
-#            conn.commit()
+    def shp_to_geojson(self, shape_file, geojson_file):
+        """
+        shape_file:
+        geojson_file:
+        """
+        shape_files_text = '{sFiles}{slash}{shapefile}.shp'.\
+                          format(shapefile=shape_file, \
+                                 slash=self.slash, \
+                                 sFiles=self.shape_files_path)
+        geojson_text = '{gFiles}{slash}{geojsonfile}.json'.\
+                       format(geojsonfile=geojson_file,\
+                              slash=self.slash,\
+                              gFiles=self.geojson_path)
+        #epsg_text = 'EPSG:{srid}'.format(srid=srid)
+        shp_options = [self.ogr2ogr, '-f', 'GeoJSON', geojson_text, \
+                       shape_files_text]
+        try:
+            # record the output!
+            subprocess.check_output(shp_options)
+            print('\nGeoJSON file processed')
+        except FileNotFoundError:
+            print('No files processed')
+
+    def shp_to_kml(self, shape_file, kml_file):
+        """
+        shape_file:
+        kml_file:
+        """
+        shape_files_text = '{sFiles}{slash}{shapefile}.shp'.\
+                          format(shapefile=shape_file, \
+                                 slash=self.slash, \
+                                 sFiles=self.shape_files_path)
+        kml_text = '{kFiles}{slash}{kmlfile}.kml'.\
+                       format(kmlfile=kml_file,\
+                              slash=self.slash,\
+                              kFiles=self.kml_files_path)
+        #epsg_text = 'EPSG:{srid}'.format(srid=srid)
+        shp_options = [self.ogr2ogr, '-f', 'KML', kml_text, shape_files_text]
+        try:
+            # record the output!
+            subprocess.check_output(shp_options)
+            print('\nKML file processed')
+        except FileNotFoundError:
+            print('No files processed')
