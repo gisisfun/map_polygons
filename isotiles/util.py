@@ -5,17 +5,19 @@ General file and data suport for geospatial text and binary data
 import os
 import csv
 import urllib.request
+import json
 from pyunpack import Archive
 import numpy as np
 import shapefile
 import simplekml
+
 
 import pandas as pd
 import matplotlib.path as mpltPath
 
 from isotiles.parameters import Defaults
 from isotiles.datasets import DataSets
-from geojson import FeatureCollection
+from geojson import FeatureCollection, Polygon, Feature
 
 class Util():
     """
@@ -67,7 +69,6 @@ class Util():
         """
         Construct filename string
         """
-        ...
 
         print(self.shape + '_' + str(self.radial) + 'km')
         return self.shape + '_' + str(self.radial) + 'km'
@@ -92,8 +93,8 @@ class Util():
                                        format(slash=self.slash))
             if resource_data.zip_path.endswith('zip') is True:
                 print('Unzipping {descr} file in {fmt} file format'\
-                    .format(descr=resource_data.Description, \
-                            fmt=resource_data.Format))
+                    .format(descr=resource_data.description, \
+                            fmt=resource_data.format))
                 print('extracting files')
                 Archive(\
                         resource_data.zip_path.format(\
@@ -142,7 +143,7 @@ class Util():
         ref_data = DataSets.StatisticalAreasLevel12016.ShapeFormat()
         self.file_deploy(ref_data)
 
-        ref_data = DataSets.AGIL_Dataset.CSVFormat()
+        ref_data = DataSets.AGILDataset.CSVFormat()
         self.file_deploy(ref_data)
 
         ref_data = DataSets.OpenStreetMaps.ShapeFormat()
@@ -212,7 +213,6 @@ class Util():
         """
         Counts for lat_longs generated
         """
-        ...
 
         num_poly = len(g_array)
         lat_longs_df = pd.DataFrame(lat_longs)
@@ -257,7 +257,6 @@ class Util():
 
         Input variables:
         """
-        ...
 
         msg = 'reading geojson formatted dataset from file:' + file_name +'.json'
         print(msg.format(shape=self.shape, fname=self.filename))
@@ -283,7 +282,6 @@ class Util():
 
         Input variables:
         """
-        ...
         content = FeatureCollection(g_array)
         msg = 'writing geojson formatted {shape} dataset to file:' +\
                file_name +'.json'
@@ -307,7 +305,7 @@ class Util():
 
         shape_file_full_path = '{fPath}{slash}{fName}'.\
                                 format(slash=self.slash, \
-                                       sfPath=shape_file_path, \
+                                       fPath=shape_file_path, \
                                        fName=shape_file_name)
         #prjPath = fPath + '.prj'
         shape_file = shapefile.Reader(shape_file_full_path) # , shapeType=3)
@@ -420,7 +418,7 @@ class Util():
                 rec_str = rec_str + key + ' = ' + str(props_dict_rec[key])
 
                 if i is not len(props_dict)-1:
-                     rec_str = rec_str + ','
+                    rec_str = rec_str + ','
                 i = i + 1
 
             rec_str = rec_str + ' )'
@@ -504,7 +502,6 @@ class Util():
         Input variables:
         g_array
         """
-        ...
 
         (point_list, num_poly) = ([], len(g_array))
 
@@ -528,7 +525,6 @@ class Util():
         Input variables:
         pointslist: array of points and metadata defining polygon shapes
         """
-        ...
 
         point_df = pd.DataFrame(points_list)
         point_df.columns = ['poly', 'latlong']
@@ -546,7 +542,7 @@ class Util():
                           copy().sort_values(by=['poly_x']).drop_duplicates()
         #just leave polygon greferences and filter output
 
-        output_point_df.to_csv('csv{slash}{outfile}_neighbours.csv' \
+        output_point_df.to_csv('{csv}{slash}{outfile}_neighbours.csv' \
                                .format(outfile=self.filename, \
                                 slash=self.slash,
                                        csv=self.csv_files_path), \
@@ -565,11 +561,11 @@ def random_points_in_polygon(self, poly):
     min_x, min_y, max_x, max_y = (arr_min[0], arr_min[1], \
                                   arr_max[0], arr_max[1])
 
-    longs = np.arrange(min_x, max_x, 0.002)
-    lats = np.arrange(min_y, max_y, 0.002)
+    longs = np.arange(min_x, max_x, 0.002)
+    lats = np.arange(min_y, max_y, 0.002)
 
     longs = np.tile(longs, 3).ravel()
-    lats - np.repeat(lats, 3).ravel()
+    lats = np.repeat(lats, 3).ravel()
 
     coords = np.array([(x, y) for x, y in zip(longs, lats)])
 
@@ -581,7 +577,7 @@ def random_points_in_polygon(self, poly):
 
     return r_coords
 
-def tabular_dataframe(self, g_array):
+def tabular_dataframe(g_array):
     """
     Not Implemented to date
 
@@ -612,7 +608,7 @@ def tabular_dataframe(self, g_array):
 
 
 
-def to_geojson_fmt(self, g_array):
+def to_geojson_fmt(g_array):
     """
     converts geojson Polygon data in array to FeatureCollection
     """
