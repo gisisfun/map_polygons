@@ -123,19 +123,26 @@ def place_wt(the_shape, the_radial):
     """
     p_mod = PostProcess(shape=the_shape, radial=the_radial)
     u_mod = Util(shape=the_shape, radial=the_radial)
-    shape_and_size = '{shape}_{size}'
 
-    vrt_file = 'all_' + shape_and_size + '.vrt'.\
-              format(shape=p_mod.shape,\
-                     size=p_mod.radial)
+    shape_and_size = '{shape}_{size}'.format(shape=p_mod.shape, \
+                                             size=p_mod.radial)
 
-    vrt_ref = 'all_' +shape_and_size.\
-              format(shape=p_mod.shape,\
-                     size=p_mod.radial)
+    aust_shape_file_name = 'aust_{shape}_shape_{size}km'.\
+            format(shape=p_mod.shape,\
+                   size=p_mod.radial)
+    gj_name = 'aus_' + shape_and_size + 'km_layer'
 
-    db_name = 'db_area_' + shape_and_size + '.vrt'.\
-              format(shape=p_mod.shape,\
-                     size=p_mod.radial)
+    vrt_ref = 'all_' +shape_and_size
+
+    vrt_file = 'all_' + shape_and_size + '.vrt'
+
+    feat_sa1_11 = 'feat_aust_{size}km_sa1_11'.format(size=p_mod.radial)
+
+    feat_sa1_16 = 'feat_aust_{size}km_sa1_16'.format(size=p_mod.radial)
+
+    db_name = 'db_area_' + shape_and_size + '.vrt'
+
+    tabular_sql_name  = 'tabular_place_wt_' + shape_and_size + '.txt'
 
     p_mod.vrt_shape_and_size('vrt', 'template.vrt', vrt_file)
     p_mod.do_spatialite('table_goes_here.txt', db_name)
@@ -144,28 +151,18 @@ def place_wt(the_shape, the_radial):
 
     print('aust_shape')
 
-    shape_file_name = 'aust_{shape}_shape_{size}km'.\
-            format(shape=p_mod.shape,\
-                   size=p_mod.radial)
-    gj_name = 'aus_' + shape_and_size + 'km_layer'.\
-            format(shape=p_mod.shape,\
-                   size=p_mod.radial)
-    p_mod.geojson_to_shp(gj_name, shape_file_name, 4283)
+    p_mod.geojson_to_shp(gj_name, aust_shape_file_name, 4283)
     #p.sql_to_ogr('aust_shape', vrt_ref, fname)
 
-    p_mod.shp_to_db(shape_file_name, db_name, shape_file_name, 4823)
+    p_mod.shp_to_db(aust_shape_file_name, db_name, aust_shape_file_name, 4823)
 
     print('feat_aust_11_area')
-    file_name = 'feat_aust_{size}km_sa1_11'.\
-            format(size=p_mod.radial)
-    p_mod.sql_to_ogr('feat_aust_11', vrt_ref, file_name)
-    p_mod.shp_to_db(file_name, db_name, file_name, 4823)
+    p_mod.sql_to_ogr('feat_aust_11', vrt_ref, feat_sa1_11)
+    p_mod.shp_to_db(feat_sa1_11, db_name, feat_sa1_11, 4823)
 
     print('feat_aust_16_area')
-    file_name = 'feat_aust_{size}km_sa1_16'.\
-                 format(size=p_mod.radial)
-    p_mod.sql_to_ogr('feat_aust_16', vrt_ref, file_name)
-    p_mod.shp_to_db(file_name, db_name, file_name, 4823)
+    p_mod.sql_to_ogr('feat_aust_16', vrt_ref, feat_sa1_16)
+    p_mod.shp_to_db(feat_sa1_16, db_name, feat_sa1_16, 4823)
 
     print('tabular_place_wt')
     p_mod.csv_to_db('2011Census_B18_AUST_SA1_long',\
@@ -184,12 +181,10 @@ def place_wt(the_shape, the_radial):
                  format(shape=p_mod.shape,\
                    size=p_mod.radial)
     p_mod.shp_to_db(file_name, db_name, file_name, 4823)
-    file_name = 'feat_aust_{size}km_sa1_11'.\
-           format(size=p_mod.radial)
-    p_mod.shp_to_db(file_name, db_name, file_name, 4823)
-    file_name = 'feat_aust_{size}km_sa1_16'.\
-                format(size=p_mod.radial)
-    p_mod.shp_to_db(file_name, db_name, file_name, 4823)
+
+    p_mod.shp_to_db(feat_sa1_11, db_name, feat_sa1_11, 4823)
+
+    p_mod.shp_to_db(feat_sa1_16, db_name, feat_sa1_16, 4823)
     p_mod.shp_to_db('gis_osm_places_free_1',\
                     db_name, 'gis_osm_places_free_1', 4823)
     p_mod.shp_to_db('gis_osm_roads_free_1',\
@@ -201,13 +196,11 @@ def place_wt(the_shape, the_radial):
     #p.sql_to_ogr('shape_mbsp_shp', vrt_ref, 'mbsp')
     #p.shp_to_db('mbsp', db_name, 'mbsp', 4823)
 
-    sql_name = 'tabular_place_wt_{shape}_{size}.txt'.\
-             format(shape=p_mod.shape,\
-                    size=p_mod.radial)
+
     p_mod.shape_and_size('spatialite_db',\
                      'tabular_place_wt.txt',\
-                     sql_name)
-    p_mod.do_spatialite(sql_name, db_name)
+                     tabular_sql_name)
+    p_mod.do_spatialite(tabular_sql_name, db_name)
 
     # spatialite ../spatialite_db/db.sqlite "vacuum;"
 
