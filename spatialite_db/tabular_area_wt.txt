@@ -60,16 +60,6 @@ FROM [aust_hex_shape_57km] as Shape,[gis_osm_roads_free_1] as Road
 WHERE ST_Within(Road.geometry,Shape.geometry) or ST_Intersects(Road.geometry,Shape.geometry)
 GROUP BY Poly;
 
-DROP TABLE if exists "shape_57km_agil_count";
-DROP VIEW if exists "shape_57km_agil_count";
-
-CREATE TABLE shape_57km_agil_count AS
-SELECT Shape_Aust.p as Poly,
-Count(*) as AGILplaces
-FROM [aust_hex_shape_57km] as Shape_Aust,[agil] as AGiL
-WHERE ST_Intersects(AGIL.geometry,Shape_Aust.geometry)
-GROUP BY Poly;
-
 DROP TABLE if exists "shape_57km_service_count";
 DROP VIEW if exists "shape_57km_service_count";
 
@@ -96,18 +86,6 @@ WHERE ST_Within(POI.geometry,Shape_Aust.geometry)
 and (POI.fclass= 'comms_tower')
 GROUP BY Poly;
 
-DROP TABLE if exists "shape_57km_mbsp_count";
-DROP VIEW if exists "shape_57km_mbsp_count";
-
-CREATE TABLE  "shape_57km_mbsp_count" AS
-SELECT Shape.p as Poly,
-Count(*) as MBSPplaces
-FROM [aust_hex_shape_57km] as Shape,[mbsp] as MBSP
-WHERE ST_Within(MBSP.geometry,Shape.geometry) 
-GROUP BY Poly;
-
-
-
 .mode csv
 .headers on
 
@@ -128,11 +106,23 @@ CAST(Shape_Area16.PUnPAT16 as FLOAT) as PUnPAT16,
 CAST(Shape_Area16.PUnPCC16 as FLOAT) as PUnPCC16,
 CAST(Shape_Area16.PUnPCCT16 as FLOAT) as PUnPCCT16,
 CAST(place.places AS FLOAT) as places,
-CAST(AGIL.AGILplaces AS FLOAT) as AGILplaces,
 CAST(service.services AS FLOAT) as services ,
 CAST(bstation.bstations AS FLOAT) as bstations ,
 CAST(road.roads AS FLOAT) as roads,
-CAST(MBSP.MBSPplaces AS FLOAT) as MBSPplaces,
+CAST(Shape_Aust.Island AS FLOAT) as Island,
+CAST(Shape_Aust.Locality AS FLOAT) as Locality,
+CAST(Shape_Aust.AGIL AS FLOAT) as AGIL,
+CAST(Shape_Aust.MBSP AS FLOAT) as MBSP,
+CAST(Shape_Aust.p_N AS FLOAT) as p_N,
+CAST(Shape_Aust.p_NE AS FLOAT) as p_NE,
+CAST(Shape_Aust.p_E AS FLOAT) as p_E,
+CAST(Shape_Aust.p_SE AS FLOAT) as p_SE,
+CAST(Shape_Aust.p_S AS FLOAT) as p_S,
+CAST(Shape_Aust.p_SW AS FLOAT) as p_SW,
+CAST(Shape_Aust.p_W AS FLOAT) as p_W,
+CAST(Shape_Aust.p_NW AS FLOAT) as p_NW,
+CAST(Shape_Aust.row AS FLOAT) as row,
+CAST(Shape_Aust.col AS FLOAT) as col,
 CAST(Shape_Aust.est_area AS FLOAT) as est_area
 FROM [aust_hex_shape_57km] as Shape_Aust 
 LEFT JOIN [donor_feat_area_57km_11_B18_B21_B22] as Shape_Area11

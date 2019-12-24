@@ -118,15 +118,6 @@ FROM [aust_hex_shape_57km] as Shape,[gis_osm_roads_free_1] as Road
 WHERE ST_Within(Road.geometry,Shape.geometry) or ST_Intersects(Road.geometry,Shape.geometry)
 GROUP BY Poly;
 
-DROP TABLE if exists "shape_57km_agil_count";
-
-CREATE TABLE "shape_57km_agil_count" AS
-SELECT Shape_Aust.p as Poly,
-Count(*) as AGILplaces
-FROM [aust_hex_shape_57km] as Shape_Aust,[agil] as AGiL
-WHERE ST_Intersects(AGIL.geometry,Shape_Aust.geometry)
-GROUP BY Poly;
-
 DROP TABLE if exists "shape_57km_service_count";
 
 CREATE TABLE "shape_57km_service_count" AS
@@ -151,16 +142,6 @@ WHERE ST_Within(POI.geometry,Shape_Aust.geometry)
 and (POI.fclass= 'comms_tower')
 GROUP BY Poly;
 
-DROP TABLE if exists "shape_57km_mbsp_count";
-DROP VIEW if exists "shape_57km_mbsp_count";
-
-CREATE TABLE "shape_57km_mbsp_count" AS
-SELECT Shape.p as Poly,
-Count(*) as MBSPplaces
-FROM [aust_hex_shape_57km] as Shape,[mbsp] as MBSP
-WHERE ST_Within(MBSP.geometry,Shape.geometry) 
-GROUP BY Poly;
-
 .mode csv
 .headers on
 
@@ -181,19 +162,29 @@ CAST(Shape_Place16.PUnPAT16 AS FLOAT) as PUnPAT16,
 CAST(Shape_Place16.PUnPCC16 AS FLOAT) as PUnPCC16,
 CAST(Shape_Place16.PUnPCCT16 AS FLOAT) as PUnPCCT16,
 CAST(place.places AS FLOAT) as places,
-CAST(AGIL.AGILplaces AS FLOAT) as AGILplaces,
 CAST(service.services AS FLOAT) as services ,
 CAST(bstation.bstations AS FLOAT) as bstations ,
 CAST(road.roads AS FLOAT) as roads,
-CAST(MBSP.MBSPplaces AS FLOAT) as MBSPplaces,
+CAST(Shape_Aust.Island AS FLOAT) as Island,
+CAST(Shape_Aust.Locality AS FLOAT) as Locality,
+CAST(Shape_Aust.AGIL AS FLOAT) as AGIL,
+CAST(Shape_Aust.MBSP AS FLOAT) as MBSP,
+CAST(Shape_Aust.p_N AS FLOAT) as p_N,
+CAST(Shape_Aust.p_NE AS FLOAT) as p_NE,
+CAST(Shape_Aust.p_E AS FLOAT) as p_E,
+CAST(Shape_Aust.p_SE AS FLOAT) as p_SE,
+CAST(Shape_Aust.p_S AS FLOAT) as p_S,
+CAST(Shape_Aust.p_SW AS FLOAT) as p_SW,
+CAST(Shape_Aust.p_W AS FLOAT) as p_W,
+CAST(Shape_Aust.p_NW AS FLOAT) as p_NW,
+CAST(Shape_Aust.row AS FLOAT) as row,
+CAST(Shape_Aust.col AS FLOAT) as col,
 CAST(Shape_Aust.est_area AS FLOAT) as est_area
 FROM [aust_hex_shape_57km] as Shape_Aust 
 LEFT JOIN [donor_feat_place_57km_11_B18_B21_B22] as Shape_Place11
 ON Shape_Aust.p=CAST(Shape_Place11.Poly as INT)
 LEFT JOIN [donor_feat_place_57km_16_G18_G21_G22] as Shape_Place16
 ON Shape_Aust.p=CAST(Shape_Place16.Poly as INT)
-LEFT JOIN [shape_57km_mbsp_count] as MBSP 
-ON Shape_Aust.p = CAST(MBSP.Poly as INT)
 LEFT JOIN [shape_57km_bstation_count] as bstation
 ON Shape_Aust.p = CAST(bstation.Poly as INT)
 LEFT JOIN [shape_57km_road_count] as road
@@ -201,9 +192,7 @@ ON Shape_Aust.p = CAST(road.Poly as INT)
 LEFT JOIN [shape_57km_service_count] as service
 ON Shape_Aust.p = CAST(service.Poly as INT)
 LEFT JOIN [shape_57km_place_count] as place
-ON Shape_Aust.p = CAST(place.Poly as INT)
-LEFT JOIN [shape_57km_agil_count] as AGIL
-ON Shape_Aust.p = CAST(AGIL.Poly as INT);
+ON Shape_Aust.p = CAST(place.Poly as INT);
 
 .output csv/tabular_hex_57km_11_16_place.csv
 select * from tabular_hex_57km_11_16_place;
