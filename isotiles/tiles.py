@@ -478,7 +478,8 @@ class Tiles():
                               "Aust": 0,"p_N":-9, \
                               "p_NE":-9, "p_E":-9, \
                               "p_SE":-9, "p_S":-9, \
-                              "p_SW":-9, "p_W":-9})
+                              "p_SW":-9, "p_W":-9,\
+                              "est_area": 0})
                 g_array.append(geopoly)
                 #append geojson geometry definition attributes to list
             else:
