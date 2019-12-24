@@ -185,7 +185,7 @@ def place_wt(the_shape, the_radial):
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
 if len(sys.argv) == 1:
-    (WEIGHT_FACTOR, THE_SHAPE, THE_SIZE) = ['place', 'box', '57']
+    (WEIGHT_FACTOR, THE_SHAPE, THE_SIZE) = ['place', 'hex', '57']
     place_wt(THE_SHAPE, THE_SIZE)
 else:
     if len(sys.argv) < 4:
