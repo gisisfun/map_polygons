@@ -28,14 +28,14 @@ class Neighbours:
         self.row_count = row_count
         self.g_array = g_array
 
-    class hexagon:
-    """
-    """
+    class box:
+        """
+        """
 
 
         def north(self):
            """
-           North hexagon neighbour
+           North box neighbour
            """
            poly_n = (self.poly - (self.row_count*2-(self.poly % self.row_count))\
                   -((self.poly % self.row_count)))
@@ -43,7 +43,7 @@ class Neighbours:
 
         def north_east(self):
            """
-           North East hexagon neighbour
+           North East box neighbour
            """
                poly_ne = (self.poly - (self.row_count*1-(self.poly % self.row_count))\
                           -((self.poly % self.row_count)))
@@ -51,7 +51,7 @@ class Neighbours:
 
         def east(self):
             """
-            East hexagon neighbour
+            Easth box neighbour
             """
             poly_e = self.poly + 1
             return poly_e
@@ -66,7 +66,7 @@ class Neighbours:
 
         def south(self):
             """
-            South hexagon neighbour
+            South box neighbour
             """
              poly_s = (self.poly + (self.row_count*2-(self.poly % self.row_count))\
                        +((self.poly % self.row_count)))
@@ -74,7 +74,7 @@ class Neighbours:
 
         def south_west(self):
             """
-            South West hexagon neighbour
+            South West box neighbour
             """
             poly_sw = (self.poly + (self.row_count*1-(self.poly % self.row_count))\
                        +((self.poly % self.row_count)))-1
@@ -82,7 +82,7 @@ class Neighbours:
 
         def west(self):
             """
-            West hexagon neighbour
+            West box neighbour
             """
             poly_w = self.poly - 1
         return poly_w
@@ -90,6 +90,73 @@ class Neighbours:
         def north_west(self):
             """
             North West hexagon neighbour
+            """
+            poly_nw = (self.poly - (self.row_count*1-(self.poly % self.row_count))\
+                       -((self.poly % self.row_count)))-1
+            return poly_nw    
+
+    class box:
+       """
+       """
+
+
+        def north(self):
+           """
+           North box neighbour
+           """
+           poly_n = (self.poly - (self.row_count*2-(self.poly % self.row_count))\
+                  -((self.poly % self.row_count)))
+           return poly_n
+
+        def north_east(self):
+           """
+           North East box neighbour
+           """
+               poly_ne = (self.poly - (self.row_count*1-(self.poly % self.row_count))\
+                          -((self.poly % self.row_count)))
+           return poly_ne
+
+        def east(self):
+            """
+            East boc neighbour
+            """
+            poly_e = self.poly + 1
+            return poly_e
+
+        def south_east(self):
+            """
+            South East box neighbour
+            """
+            poly_se = (self.poly + (self.row_count*1-(self.poly % self.row_count))\
+                       +((self.poly % self.row_count)))
+            return poly_se
+
+        def south(self):
+            """
+            South box neighbour
+            """
+             poly_s = (self.poly + (self.row_count*2-(self.poly % self.row_count))\
+                       +((self.poly % self.row_count)))
+             return poly_s
+
+        def south_west(self):
+            """
+            South West box neighbour
+            """
+            poly_sw = (self.poly + (self.row_count*1-(self.poly % self.row_count))\
+                       +((self.poly % self.row_count)))-1
+            return poly_sw
+
+        def west(self):
+            """
+            West box neighbour
+            """
+            poly_w = self.poly - 1
+        return poly_w
+
+        def north_west(self):
+            """
+            North West box neighbour
             """
             poly_nw = (self.poly - (self.row_count*1-(self.poly % self.row_count))\
                        -((self.poly % self.row_count)))-1
