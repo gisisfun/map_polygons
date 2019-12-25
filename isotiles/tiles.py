@@ -104,7 +104,6 @@ class Tiles():
     Modules for map_polygons
     """
 
-
     value = BoundingBox.Australia()
     defaults = Defaults()
 
@@ -114,20 +113,8 @@ class Tiles():
                  west: BoundingBox = value.west,
                  radial: Defaults = defaults.radial,
                  shape: Defaults = defaults.shape,
-                 images: Defaults = defaults.images_path,
-                 metadata: Defaults = defaults.metadata_path,
-                 logfiles: Defaults = defaults.log_files_path,
                  kmlfiles: Defaults = defaults.kml_files_path,
-                 shapefiles: Defaults = defaults.shape_files_path,
-                 geojson: Defaults = defaults.geojson_path,
-                 vrt: Defaults = defaults.vrt_files_path,
-                 csv: Defaults = defaults.csv_files_path,
-                 spatialite: Defaults = defaults.spatialite_path,
-                 sql: Defaults = defaults.sql_files_path,
-                 slash: Defaults = defaults.slash,
-                 ogr2ogr_com: Defaults = defaults.ogr2ogr,
-                 spatialite_com: Defaults = defaults.spatialite,
-                 extn: Defaults = defaults.extn):
+                 shapefiles: Defaults = defaults.shape_files_path):
         """
         supply variables for map_polygons
         """
@@ -140,12 +127,9 @@ class Tiles():
         self.filename = self.f_name()
         self.shape_files_path = shapefiles
         self.kml_files_path = kmlfiles
-
         off_values = Offsets()
-        self.ogr2ogr = ogr2ogr_com # '/usr/bin/ogr2ogr'
-        self.slash = slash # '/'
-        self.extn = extn
-        self.spatialite = spatialite_com
+
+
 
         if self.shape == 'hex':
             self.hor_seq = [off_values.short, off_values.short,
@@ -336,30 +320,27 @@ class Tiles():
         """
         Put it all together - deriving hexagon polygons from intersection data
 
-        
         Prerequisites:
         intersections, horizontal, vertical, Tiles
-        
+
         Input variables:
         intersect_list:
         max_h:
         max_v:
         """
-        ...
-        self.Shape = 'hex'
-        self.FName = self.f_name()
-        
-        (point_list,g_array, tabular_list) = ([],[],[])
-        (lat_offset,top_left, poly_row_count) = (4, 0, int(max_v / len(self.hor_seq)))
+
+
+        (g_array, tabular_list) = ([], [])
+        (lat_offset, top_left, poly_row_count) = \
+        (4, 0, int(max_v / len(self.hor_seq)))
         rem_lat = max_v % (lat_offset + len(self.hor_seq))
-        (inc_by_rem, in_adj) = (True,0)
         p_tuple = ((False, True, True, True, False, True, True, True), \
                    (0, 0, -4, 0, 0, -4, -4, -4))
-    
-        (inc_by_rem, inc_adj) = (p_tuple[0][rem_lat],p_tuple[1][rem_lat])
+
+        (inc_by_rem, inc_adj) = (p_tuple[0][rem_lat], p_tuple[1][rem_lat])
 
         print('\n4/7 deriving hexagon polygons from intersection data')
-        (row,col,last_lat_row, poly_id) = (1,1,0,0)
+        (row, col, last_lat_row, poly_id) = (1, 1, 0, 0)
 
         while (top_left < (max_h) * (max_v)):
             vertex = [1 + top_left, 2 + top_left, max_v + 3 + top_left, \
@@ -373,24 +354,27 @@ class Tiles():
                                intersect_list[vertex[4]], \
                                intersect_list[vertex[5]], \
                                intersect_list[vertex[0]]]
-                (vertex00, vertex01, vertex20, vertex21,vertex30, vertex31, vertex50, vertex51) = \
-                           (intersect_list[vertex[0]][0], intersect_list[vertex[0]][1], \
-                            intersect_list[vertex[2]][0], intersect_list[vertex[2]][1], \
-                            intersect_list[vertex[3]][0], intersect_list[vertex[3]][1], \
-                            intersect_list[vertex[5]][0], intersect_list[vertex[5]][1])
+                (vertex00, vertex01, vertex20, vertex31, vertex50, vertex51) = \
+                           (intersect_list[vertex[0]][0], \
+                            intersect_list[vertex[0]][1], \
+                            intersect_list[vertex[2]][0], \
+                            intersect_list[vertex[3]][1], \
+                            intersect_list[vertex[5]][0], \
+                            intersect_list[vertex[5]][1])
                 centre_lat = vertex01 + (vertex51 - vertex01) / 2
                 centre_lon = vertex00 + (vertex50 - vertex00) / 2
 
                 if (centre_lat is not last_lat_row) or last_lat_row is 0:
-                    (bounds_n,bounds_s, bounds_e, bounds_w) = \
+                    (bounds_n, bounds_s, bounds_e, bounds_w) = \
                                         (vertex01, vertex31, vertex20, vertex50)
                     last_lat_row = centre_lat
                     geopoly = Polygon([poly_coords])
                     poly_id += 1
-                    est_area = (((3 * sqrt(3)) / 2) * pow(self.radial, 2)) * 0.945
+                    est_area = (((3 * sqrt(3)) / 2) * pow(self.radial, 2)) * \
+                    0.945
                     #estimate polygon area
                     geopoly = Feature(geometry=geopoly, properties= \
-                                      {"p": poly_id,"row": row, \
+                                      {"p": poly_id, "row": row, \
                                        "col": col, "lat": centre_lat, \
                                        "lon": centre_lon, "N": bounds_n, \
                                        "S": bounds_s, "E": bounds_e, \
@@ -410,10 +394,10 @@ class Tiles():
                         tabular_list.append(tabular_line)
                         #array of polygon and tabular columns
                 else:
-                    donothing = True
+                    pass
 
             except IndexError:
-                donothing = True
+                pass
 
             (last_row, last_lat_row) = (row, centre_lat)
             row = int(1 + int(poly_id / poly_row_count))
@@ -423,43 +407,49 @@ class Tiles():
                 top_left += inc_adj
                 if inc_by_rem:
                     top_left += rem_lat
-                if row % 2 is 0:
+                if row % 2 == 0:
                     top_left += 2
                 if row & 1:
                     top_left += -2
             else:
                 col += 1
-        print('created dataset of {0} derived hexagon polygons'.format(len(g_array)))
+        print('created dataset of {0} derived hexagon polygons'.\
+              format(len(g_array)))
         return g_array
 
 
-    def box_array(self,intersect_list,max_h, max_v):
+    def box_array(self, intersect_list, max_h, max_v):
         """
         Create array of box shaped polygons
-        
+
         Prerequisites:
         horizontal, vertical, Tiles
-        
+
         Input variables:
         Provided
         """
-        ...
+
         self.shape = 'box'
         self.filename = self.f_name()
         poly_id = 0
-        (top_left, g_array, col, row) = (0, [], 1, 1)  # g_array - array of geojson formatted geometry element
+        (top_left, g_array, col, row) = (0, [], 1, 1)
+        # g_array - array of geojson formatted geometry element
         print('\n4/7 deriving boxes polygons from intersection data')
         vertex = [top_left + 0, top_left + 1, top_left + max_v + 1, top_left + max_v]
 
-        while (vertex[2] < (max_h) * (max_v)):
-            poly_coords = [intersect_list[vertex[0]] , \
-                           intersect_list[vertex[1]], intersect_list[vertex[2]], \
-                           intersect_list[vertex[3]], intersect_list[vertex[0]]]
-            (vertex00, vertex01, vertex10, vertex11, vertex20, vertex21, vertex30, vertex31) = \
-                       (intersect_list[vertex[0]][0], intersect_list[vertex[0]][1], \
-                        intersect_list[vertex[1]][0], intersect_list[vertex[1]][1], \
-                        intersect_list[vertex[2]][0], intersect_list[vertex[2]][1],
-                        intersect_list[vertex[3]][0], intersect_list[vertex[3]][1])
+        while vertex[2] < max_h * max_v:
+            poly_coords = [intersect_list[vertex[0]], \
+                           intersect_list[vertex[1]], \
+                           intersect_list[vertex[2]], \
+                           intersect_list[vertex[3]], \
+                           intersect_list[vertex[0]]]
+            (vertex00, vertex01, vertex10, vertex20, vertex21, vertex31) = \
+                       (intersect_list[vertex[0]][0], \
+                        intersect_list[vertex[0]][1], \
+                        intersect_list[vertex[1]][0], \
+                        intersect_list[vertex[2]][0], \
+                        intersect_list[vertex[2]][1], \
+                        intersect_list[vertex[3]][1])
             centre_lat = vertex01 + (vertex21 - vertex01) / 2
             centre_lon = vertex00 + (vertex20 - vertex00) / 2
             bounds_n = vertex01
@@ -470,16 +460,16 @@ class Tiles():
                 geopoly = Polygon([poly_coords])
                 poly_id += 1
                 geopoly = Feature(geometry=geopoly, \
-                properties = {"p": top_left, "a": poly_id-1, \
+                properties={"p": top_left, "a": poly_id-1, \
                               "lat": centre_lat, "lon": centre_lon, \
                               "N": bounds_n, "S": bounds_s, \
                               "E": bounds_e, "W": bounds_w, \
                               "row": row, "col": col, \
-                              "Aust": 0,"p_N":-9, \
+                              "Aust": 0, "p_N":-9, \
                               "p_NE":-9, "p_E":-9, \
                               "p_SE":-9, "p_S":-9, \
-                              "p_SW":-9, "p_W":-9,\
-                              "est_area": self.tadial ** 2})
+                              "p_SW":-9, "p_W":-9, \
+                              "est_area": self.radial ** 2})
                 g_array.append(geopoly)
                 #append geojson geometry definition attributes to list
             else:
@@ -595,10 +585,12 @@ class Tiles():
         Separate continental polygons from non continental
         """
         (num_poly, isect_array) = (len(g_array), [])
-
+        h_count = 0
         for poly in range(0, num_poly):
             if g_array[poly]['properties']['Aust'] > 0:
+                g_array[poly]['properties']['a'] = h_count
                 isect_array.append(g_array[poly])
+                h_count += 1 
         return isect_array
 
 
@@ -651,23 +643,30 @@ class Tiles():
         """
         neighbour update of geojson hex Polygon array
         """
+        (val_n, val_ne, val_e, val_se, val_s, val_sw, val_w, val_nw) = \
+        (-9, -9, -9, -9, -9, -9, -9, -9)
         # North Neighbour
         try:
-            poly_n = (poly - (column_count*2-(poly % column_count))-((poly % column_count)))
+            poly_n = (poly - (column_count*2-(poly % column_count))-\
+                      ((poly % column_count)))
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_n)]
             arr_data = g_array[int(ref_q['arr'])]
             val_n = poly_n
-        except:
-            val_n = -9
-
+        except IndexError:
+            pass
+        except TypeError:
+            pass
         # North East Neighbour
-        poly_ne = (poly - (column_count*1-(poly % column_count))-((poly % column_count)))
+        poly_ne = (poly - (column_count*1-(poly % column_count))-\
+                   ((poly % column_count)))
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_ne)]
             arr_data = g_array[int(ref_q['arr'])]
             val_ne = poly_ne
-        except:
-            val_ne = -9
+        except IndexError:
+            pass
+        except TypeError:
+            pass
 
         # East Neighbour
         poly_e = poly + 1
@@ -675,35 +674,46 @@ class Tiles():
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_e)]
             arr_data = g_array[int(ref_q['arr'])]
             val_e = poly_e
-        except:
-            val_e = -9
+        except IndexError:
+            pass
+        except TypeError:
+            pass
 
         # South East Neighbour
-        poly_se = (poly + (column_count*1-(poly % column_count))+((poly % column_count)))
+        poly_se = (poly + (column_count*1-(poly % column_count))+\
+                   ((poly % column_count)))
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_se)]
             arr_data = g_array[int(ref_q['arr'])]
             val_se = poly_se
-        except:
-            val_se = -9
+        except IndexError:
+            pass
+        except TypeError:
+            pass
 
         # South Neighbour
-        poly_s = (poly + (column_count*2-(poly % column_count))+((poly % column_count)))
+        poly_s = (poly + (column_count*2-(poly % column_count))+\
+                  ((poly % column_count)))
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_s)]
             arr_data = g_array[int(ref_q['arr'])]
             val_s = poly_s
-        except:
-            val_s = -9
+        except IndexError:
+            pass
+        except TypeError:
+            pass
 
         # South West Neighbour
-        poly_sw = (poly + (column_count*1-(poly % column_count))+((poly % column_count)))-1
+        poly_sw = (poly + (column_count*1-(poly % column_count))+\
+                   ((poly % column_count)))-1
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_sw)]
             arr_data = g_array[int(ref_q['arr'])]
             val_sw = poly_sw
-        except:
-            val_sw = -9
+        except IndexError:
+            pass
+        except TypeError:
+            pass
 
         # West Neighbour
         poly_w = poly - 1
@@ -711,17 +721,22 @@ class Tiles():
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_w)]
             arr_data = g_array[int(ref_q['arr'])]
             val_w = poly_w
-        except:
-            val_w = -9
+        except IndexError:
+            pass
+        except TypeError:
+            pass
 
         # North West Neighbour
-        poly_nw = (poly - (column_count*1-(poly % column_count))-((poly % column_count)))-1
+        poly_nw = (poly - (column_count*1-(poly % column_count))-\
+                   ((poly % column_count)))-1
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_nw)]
             arr_data = g_array[int(ref_q['arr'])]
             val_nw = poly_nw
-        except:
-            val_nw = -9
+        except IndexError:
+            pass
+        except TypeError:
+            pass
 
         return val_n, val_ne, val_e, val_se, val_s, val_sw, val_w, val_nw
 
@@ -729,23 +744,32 @@ class Tiles():
         """
         neighbour update of geojson box Polygon array
         """
+        (val_n, val_ne, val_e, val_se, val_s, val_sw, val_w, val_nw) = \
+        (-9, -9, -9, -9, -9, -9, -9, -9)
+
         # North Neighbour
-        poly_n = (poly - (column_count*1-(poly % column_count))-((poly % column_count)))
+        poly_n = (poly - (column_count*1-(poly % column_count))-\
+                  ((poly % column_count)))
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_n)]
             arr_data = g_array[int(ref_q['arr'])]
             val_n = poly_n
-        except:
-            val_n = -9
+        except IndexError:
+            pass
+        except TypeError:
+            pass
 
         # North East Neighbour
-        poly_ne = (poly - (column_count*1-(poly % column_count))-((poly % column_count)))+1
+        poly_ne = (poly - (column_count*1-(poly % column_count))-\
+                   ((poly % column_count)))+1
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_ne)]
             arr_data = g_array[int(ref_q['arr'])]
             val_ne = poly_ne
-        except:
-            val_ne = -9
+        except IndexError:
+            pass
+        except TypeError:
+            pass
 
         # East Neighbour
         poly_e = poly + 1
@@ -753,35 +777,46 @@ class Tiles():
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_e)]
             arr_data = g_array[int(ref_q['arr'])]
             val_e = poly_e
-        except:
-            val_e = -9
+        except IndexError:
+            pass
+        except TypeError:
+            pass
 
         # South East Neighbour
-        poly_se = (poly + (column_count*1-(poly % column_count))+((poly % column_count)))+1
+        poly_se = (poly + (column_count*1-(poly % column_count))+\
+                   ((poly % column_count)))+1
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_se)]
             arr_data = g_array[int(ref_q['arr'])]
             val_se = poly_se
-        except:
-            val_se = -9
+        except IndexError:
+            pass
+        except TypeError:
+            pass
 
         # South Neighbour
-        poly_s = (poly + (column_count*1-(poly % column_count))+((poly % column_count)))
+        poly_s = (poly + (column_count*1-(poly % column_count))+\
+                  ((poly % column_count)))
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_s)]
             arr_data = g_array[int(ref_q['arr'])]
             val_s = poly_s
-        except:
-            val_s = -9
+        except IndexError:
+            pass
+        except TypeError:
+            pass
 
         # South West Neighbour
-        poly_sw = (poly + (column_count*1-(poly % column_count))+((poly % column_count)))-1
+        poly_sw = (poly + (column_count*1-(poly % column_count))+\
+                   ((poly % column_count)))-1
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_sw)]
             arr_data = g_array[int(ref_q['arr'])]
             val_sw = poly_sw
-        except:
-            val_sw = -9
+        except IndexError:
+            pass
+        except TypeError:
+            pass
 
         # West Neighbour
         poly_w = poly - 1
@@ -789,17 +824,22 @@ class Tiles():
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_w)]
             arr_data = g_array[int(ref_q['arr'])]
             val_w = poly_w
-        except:
-            val_w = -9
+        except IndexError:
+            pass
+        except TypeError:
+            pass
 
         # North West Neighbour
-        poly_nw = (poly - (column_count*1-(poly % column_count))-((poly % column_count)))-1
+        poly_nw = (poly - (column_count*1-(poly % column_count))-\
+                   ((poly % column_count)))-1
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_nw)]
             arr_data = g_array[int(ref_q['arr'])]
             val_nw = poly_nw
-        except:
-            val_nw = -9
+        except IndexError:
+            pass
+        except TypeError:
+            pass
 
         return val_n, val_ne, val_e, val_se, val_s, val_sw, val_w, val_nw
 
