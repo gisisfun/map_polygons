@@ -25,7 +25,7 @@ def area_wt(the_shape, the_radial):
     vrt_file = 'all_' + shape_and_size + '.vrt'
     feat_sa1_11 = 'feat_aust_' + p_mod.radial +'km_sa1_11'
     feat_sa1_16 = 'feat_aust_' + p_mod.radial +'km_sa1_16'
-    db_name = 'db_area_' + shape_and_size + '.vrt'
+    db_name = 'db_area_' + shape_and_size
     tabular_sql_name = 'tabular_area_wt_' + shape_and_size + '.txt'
     output_shape = shape_and_size + 'km_area_11_16'
 
@@ -115,7 +115,7 @@ def place_wt(the_shape, the_radial):
     vrt_file = 'all_' + shape_and_size + '.vrt'
     feat_sa1_11 = 'feat_aust_' + p_mod.radial +'km_sa1_11'
     feat_sa1_16 = 'feat_aust_' + p_mod.radial +'km_sa1_16'
-    db_name = 'db_place_' + shape_and_size + '.vrt'
+    db_name = 'db_place_' + shape_and_size
     tabular_sql_name = 'tabular_place_wt_' + shape_and_size + '.txt'
     output_shape = shape_and_size + 'km_place_11_16'
 
