@@ -176,7 +176,7 @@ class Util():
                 longs.append(float(data[i][lon_c]))
                 lats.append(float(data[i][lat_c]))
             except:
-                print('error')
+                pass
 
         coords = [(x, y) for x, y in zip(longs, lats)]
         return coords
