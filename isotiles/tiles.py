@@ -585,12 +585,12 @@ class Tiles():
         Separate continental polygons from non continental
         """
         (num_poly, isect_array) = (len(g_array), [])
-        h_count = 0
+        a_val = 0 
         for poly in range(0, num_poly):
             if g_array[poly]['properties']['Aust'] > 0:
-                g_array[poly]['properties']['a'] = h_count
+                g_array[poly]['properties']['a'] = a_val
                 isect_array.append(g_array[poly])
-                h_count += 1 
+                a_val += 1
         return isect_array
 
 
@@ -627,8 +627,14 @@ class Tiles():
 
         for g_ref in range(0, len(g_array)):
             g_poly = g_array[g_ref]['properties']['p']
+#            if self.shape == 'hex':
+#                (pol_n, pol_ne, pol_e, pol_se, pol_s, pol_sw, pol_w, pol_nw) = \
+#                self.neighbours(g_array, g_poly, ref_table_df, \
+#                                odd_columns)
+#            else:
             (pol_n, pol_ne, pol_e, pol_se, pol_s, pol_sw, pol_w, pol_nw) = \
-            self.neighbours_hex(g_array, g_poly, ref_table_df, odd_columns)
+            self.neighbours(g_array, g_poly, ref_table_df, \
+                            odd_columns)                
             g_array[g_ref]['properties']['p_N'] = pol_n
             g_array[g_ref]['properties']['p_NE'] = pol_ne
             g_array[g_ref]['properties']['p_E'] = pol_e
@@ -639,117 +645,44 @@ class Tiles():
             g_array[g_ref]['properties']['p_NW'] = pol_nw
         return g_array
 
-    def neighbours_hex(self, g_array, poly, ref_table_df, column_count):
+    def neighbours(self, g_array, poly, ref_table_df, column_count):
         """
         neighbour update of geojson hex Polygon array
         """
         (val_n, val_ne, val_e, val_se, val_s, val_sw, val_w, val_nw) = \
         (-9, -9, -9, -9, -9, -9, -9, -9)
-        # North Neighbour
-        try:
+        if self.shape == 'hex':
             poly_n = (poly - (column_count*2-(poly % column_count))-\
-                      ((poly % column_count)))
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_n)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_n = poly_n
-        except IndexError:
-            pass
-        except TypeError:
-            pass
-        # North East Neighbour
-        poly_ne = (poly - (column_count*1-(poly % column_count))-\
-                   ((poly % column_count)))
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_ne)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_ne = poly_ne
-        except IndexError:
-            pass
-        except TypeError:
-            pass
-
-        # East Neighbour
-        poly_e = poly + 1
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_e)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_e = poly_e
-        except IndexError:
-            pass
-        except TypeError:
-            pass
-
-        # South East Neighbour
-        poly_se = (poly + (column_count*1-(poly % column_count))+\
-                   ((poly % column_count)))
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_se)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_se = poly_se
-        except IndexError:
-            pass
-        except TypeError:
-            pass
-
-        # South Neighbour
-        poly_s = (poly + (column_count*2-(poly % column_count))+\
-                  ((poly % column_count)))
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_s)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_s = poly_s
-        except IndexError:
-            pass
-        except TypeError:
-            pass
-
-        # South West Neighbour
-        poly_sw = (poly + (column_count*1-(poly % column_count))+\
-                   ((poly % column_count)))-1
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_sw)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_sw = poly_sw
-        except IndexError:
-            pass
-        except TypeError:
-            pass
-
-        # West Neighbour
-        poly_w = poly - 1
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_w)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_w = poly_w
-        except IndexError:
-            pass
-        except TypeError:
-            pass
-
-        # North West Neighbour
-        poly_nw = (poly - (column_count*1-(poly % column_count))-\
-                   ((poly % column_count)))-1
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_nw)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_nw = poly_nw
-        except IndexError:
-            pass
-        except TypeError:
-            pass
-
-        return val_n, val_ne, val_e, val_se, val_s, val_sw, val_w, val_nw
-
-    def neighbours_box(self, g_array, poly, ref_table_df, column_count):
-        """
-        neighbour update of geojson box Polygon array
-        """
-        (val_n, val_ne, val_e, val_se, val_s, val_sw, val_w, val_nw) = \
-        (-9, -9, -9, -9, -9, -9, -9, -9)
+                          (poly % column_count))
+            poly_ne = (poly - (column_count*1-(poly % column_count))-\
+                       (poly % column_count))
+            poly_e = poly + 1
+            poly_se = (poly + (column_count*1-(poly % column_count))+\
+                       (poly % column_count))
+            poly_s = (poly + (column_count*2-(poly % column_count))+\
+                      (poly % column_count))
+            poly_sw = (poly + (column_count*1-(poly % column_count))+\
+                       (poly % column_count))-1
+            poly_w = poly - 1
+            poly_nw = (poly - (column_count*1-(poly % column_count))-\
+                      (poly % column_count))-1
+        else:
+            poly_n = (poly - (column_count*1-(poly % column_count))-\
+                      (poly % column_count))-1
+            poly_ne = (poly - (column_count*1-(poly % column_count))-\
+                   (poly % column_count))
+            poly_e = poly + 1
+            poly_se = (poly + (column_count*1-(poly % column_count))+\
+                       ((poly % column_count)))+2
+            poly_s = (poly + (column_count*1-(poly % column_count))+\
+                      (poly % column_count))+1
+            poly_sw = (poly + (column_count*1-(poly % column_count))+\
+                       (poly % column_count))
+            poly_w = poly - 1
+            poly_nw = (poly - (column_count*1-(poly % column_count))-\
+                       (poly % column_count))-2
 
         # North Neighbour
-        poly_n = (poly - (column_count*1-(poly % column_count))-\
-                  ((poly % column_count)))
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_n)]
             arr_data = g_array[int(ref_q['arr'])]
@@ -758,10 +691,8 @@ class Tiles():
             pass
         except TypeError:
             pass
-
+        
         # North East Neighbour
-        poly_ne = (poly - (column_count*1-(poly % column_count))-\
-                   ((poly % column_count)))+1
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_ne)]
             arr_data = g_array[int(ref_q['arr'])]
@@ -772,7 +703,6 @@ class Tiles():
             pass
 
         # East Neighbour
-        poly_e = poly + 1
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_e)]
             arr_data = g_array[int(ref_q['arr'])]
@@ -783,8 +713,6 @@ class Tiles():
             pass
 
         # South East Neighbour
-        poly_se = (poly + (column_count*1-(poly % column_count))+\
-                   ((poly % column_count)))+1
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_se)]
             arr_data = g_array[int(ref_q['arr'])]
@@ -795,8 +723,6 @@ class Tiles():
             pass
 
         # South Neighbour
-        poly_s = (poly + (column_count*1-(poly % column_count))+\
-                  ((poly % column_count)))
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_s)]
             arr_data = g_array[int(ref_q['arr'])]
@@ -807,8 +733,6 @@ class Tiles():
             pass
 
         # South West Neighbour
-        poly_sw = (poly + (column_count*1-(poly % column_count))+\
-                   ((poly % column_count)))-1
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_sw)]
             arr_data = g_array[int(ref_q['arr'])]
@@ -819,7 +743,6 @@ class Tiles():
             pass
 
         # West Neighbour
-        poly_w = poly - 1
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_w)]
             arr_data = g_array[int(ref_q['arr'])]
@@ -830,8 +753,6 @@ class Tiles():
             pass
 
         # North West Neighbour
-        poly_nw = (poly - (column_count*1-(poly % column_count))-\
-                   ((poly % column_count)))-1
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_nw)]
             arr_data = g_array[int(ref_q['arr'])]
@@ -855,7 +776,6 @@ class Tiles():
         intersects = self.intersections(hors, verts)
         hex_array = self.hex_array(intersects, len(hors), len(verts))
         poi_hex_array = self.add_poly_poi(hex_array)
-
         (odd, even) = self.column_counts(poi_hex_array)
         nb_poi_hex_array = self.update_neighbours(poi_hex_array, odd, even)
         # cut out ocean polygons
@@ -875,11 +795,9 @@ class Tiles():
         verts = self.vertical()
         intersects = self.intersections(hors, verts)
         box_array = self.box_array(intersects, len(hors), len(verts))
-
         poi_box_array = self.add_poly_poi(box_array)
         (odd, even) = self.column_counts(poi_box_array)
         nb_poi_box_array = self.update_neighbours(poi_box_array, odd, even)
-
         # cut out ocean polygons
         aus_box_array = self.aus_poly_intersect(nb_poi_box_array)
         # add neighbouur reference data
