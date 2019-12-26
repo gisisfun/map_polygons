@@ -20,9 +20,10 @@ Note: Python joins allow for two islands have added to the map (mapping layer) :
 Proceed to **poly_wt.py** to add the demographic data of your choice. In this case ABS Statistical Area Level 1 data sets are merged together to mease the 'relative change in need for assistance'.
 
 **output of map_me.py**
-![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/rel_need_for_assistance_by_place_weight.png)
+![hex_57km_rel_need_for_assistance_by_place_weight](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/hex_57km_rel_need_for_assistance_by_place_weight.png)
+![box_57km_rel_need_for_assistance_by_place_weight](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/box_57km_rel_need_for_assistance_by_place_weight.png)
 
- *hex_57km_place_11_16*
+ *hex_57km_place_11_16 and box_57km_place_11_16*
 
 Download Links
 - Shapefile Format: [ESRI .prj](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_place_11_16.prj), [ESRI .shp](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_place_11_16.shp), [ESRI .shx](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_place_11_16.shx), [ESRI .dbf](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_place_11_16.dbf)
