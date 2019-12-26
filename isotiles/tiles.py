@@ -17,163 +17,58 @@ from isotiles.parameters import BoundingBox, Offsets, Defaults
 #from isotiles.poi import POI
 from isotiles.util import Util
 
-class Neighbours:
+def neighbour_calc(poly, column_count):
     """
-    Neighbour cell calculations for hexagons
+    Neighbour cell calculations
     """
+    neighbour_list = {"box": {\
+                              "north": (poly - (column_count*1-\
+                                                (poly % column_count))-\
+                                        (poly % column_count))-1, \
+                              "north_east": (poly - (column_count*1-\
+                                                      (poly % column_count))-\
+                                              (poly % column_count)),\
+                              "east": poly + 1,\
+                              "south_east": (poly + (column_count*1-\
+                                              (poly % column_count))+\
+                                              (poly % column_count))+2,\
+                              "south": (poly + (column_count*1-\
+                                              (poly % column_count))+\
+                                              (poly % column_count))+1,\
+                              "south_west": (poly + (column_count*1-\
+                                                   (poly % column_count))+\
+                                                   (poly % column_count)),
+                              "west": poly - 1,\
+                               "north_west": (poly - (column_count*1-\
+                                                   (poly % column_count))-\
+                                                   (poly % column_count))-2},\
+                       "hex":{\
+                              "north": (poly - (column_count*2-\
+                                                (poly % column_count))-\
+                                                (poly % column_count)),\
+                              "north_east": (poly - (column_count*1-(poly % \
+                                                  column_count))-\
+                                                  (poly % column_count)),\
+                              "east": poly + 1,\
+                              "south_east": (poly+(column_count*1-\
+                                                        (poly % \
+                                                         column_count))+\
+                                                        (poly % column_count)),\
+                              "south": (poly + (column_count*2-\
+                                                (poly % column_count))+\
+                                                (poly % column_count)),\
+                              "south_west": (poly + (column_count*1-\
+                                                          (poly % \
+                                                           column_count))+\
+                                                           (poly % column_count\
+                                                            ))-1,\
+                              "west": poly - 1,\
+                              "north_west": (poly - (column_count*1-\
+                                                     (poly % column_count))-\
+                                                     (poly % column_count))-1\
+    }}
 
-    __slots_ = ("poly", "row_count")
-    def __init__(self, poly, column_count):
-        self.poly = poly
-        self.column_count = column_count
-
-    class box:
-        """
-        Box polygon neighbour definitions
-        """
-
-
-        def north(self):
-            """
-            North box polygon neighbour
-            """
-            poly_n = (self.poly - (self.column_count*1-\
-                                   (self.poly % self.column_count))-\
-                      (self.poly % self.column_count))-1
-
-            return poly_n
-
-        def north_east(self):
-           """
-           North East box polygon neighbour
-           """
-           poly_ne = (self.poly - (self.column_count*1-\
-                                   (self.poly % self.column_count))-\
-                  (self.poly % self.column_count))
-           return poly_ne
-
-        def east(self):
-            """
-            East box polygon neighbour
-            """
-            poly_e = self.poly + 1
-            return poly_e
-
-        def south_east(self):
-            """
-            South East box polygon neighbour
-            """
-            poly_se = (self.poly + (self.column_count*1-\
-                                    (self.poly % self.column_count))+\
-                       ((self.poly % self.column_count)))+2
-            return poly_se
-
-        def south(self):
-            """
-            South box polygon neighbour
-            """
-            poly_s = (self.poly + (self.column_count*1-\
-                                   (self.poly % self.column_count))+\
-                      (self.poly % self.column_count))+1
-            return poly_s
-
-        def south_west(self):
-            """
-            South West box polygon neighbour
-            """
-            poly_sw = (self.poly + (self.column_count*1-\
-                                    (self.poly % self.column_count))+\
-                       (self.poly % self.column_count))
-            return poly_sw
-
-        def west(self):
-            """
-            West box polygon neighbour
-            """
-            poly_w = self.poly - 1
-            return poly_w
-
-        def north_west(self):
-            """
-            North West box polygon neighbour
-            """
-            poly_nw = (self.poly - (self.column_count*1-\
-                                    (self.poly % self.column_count))-\
-                       (self.poly % self.column_count))-2
-            return poly_nw    
-
-    class hexagon:
-        """
-        Hexagon polygon neighbour definitions
-        """
-        
-        
-        def north(self):
-            """
-            North hex polygon neighbour
-            """
-            poly_n = (self.poly - (self.row_count*2-\
-                                  (self.poly % self.column_count))\
-                -((self.poly % self.row_count)))
-            return poly_n
-        def north_east(self):
-            """
-            North East hex polygon neighbour
-            """
-            poly_ne = (self.poly - (self.row_count*1-(self.poly % \
-                                                      self.column_count))\
-                -((self.poly % self.column_count)))
-            return poly_ne
-
-        def east(self):
-            """
-            East hex polygon neighbour
-            """
-            poly_e = self.poly + 1
-            return poly_e
-
-        def south_east(self):
-            """
-            South East hex polygon neighbour
-            """
-            poly_se = (self.poly + (self.column_count*1-\
-                                    (self.poly % self.column_count))\
-                       +((self.poly % self.column_count)))
-            return poly_se
-
-        def south(self):
-            """
-            South hex polygon neighbour
-            """
-            poly_s = (self.poly + (self.column_count*2-\
-                                   (self.poly % self.column_count))\
-                       +((self.poly % self.column_count)))
-            return poly_s
-
-        def south_west(self):
-            """
-            South West hex polygon neighbour
-            """
-            poly_sw = (self.poly + (self.column_count*1-\
-                                    (self.poly % self.column_count))\
-                       +((self.poly % self.column_count)))-1
-            return poly_sw
-
-        def west(self):
-            """
-            West hex polygon neighbour
-            """
-            poly_w = self.poly - 1
-            return poly_w
-
-        def north_west(self):
-            """
-            North West hex polygon neighbour
-            """
-            poly_nw = (self.poly - (self.row_count*1-\
-                                    (self.poly % self.row_count))\
-                       -((self.poly % self.row_count)))-1
-            return poly_nw
+    return neighbour_list
 
 class Tiles():
     """
