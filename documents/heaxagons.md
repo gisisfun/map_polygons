@@ -1,0 +1,4 @@
+# Map Polygons for Data Visualisation - Boxes
+![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/polygons_hex_output.png)
+![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/neighbours_hex.png)
+![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/hex_57km_rel_need_for_assistance_by_place_weight.png)
