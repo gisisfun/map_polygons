@@ -22,146 +22,158 @@ class Neighbours:
     Neighbour cell calculations for hexagons
     """
 
-    __slots_ = ("poly", "row_count", "g_array")
-    def __init__(self, poly, g_array, row_count):
+    __slots_ = ("poly", "row_count")
+    def __init__(self, poly, column_count):
         self.poly = poly
-        self.row_count = row_count
-        self.g_array = g_array
+        self.column_count = column_count
 
     class box:
         """
+        Box polygon neighbour definitions
         """
 
 
         def north(self):
-           """
-           North box neighbour
-           """
-           poly_n = (self.poly - (self.row_count*2-(self.poly % self.row_count))\
-                  -((self.poly % self.row_count)))
-           return poly_n
+            """
+            North box polygon neighbour
+            """
+            poly_n = (self.poly - (self.column_count*1-\
+                                   (self.poly % self.column_count))-\
+                      (self.poly % self.column_count))-1
+
+            return poly_n
 
         def north_east(self):
            """
-           North East box neighbour
+           North East box polygon neighbour
            """
-               poly_ne = (self.poly - (self.row_count*1-(self.poly % self.row_count))\
-                          -((self.poly % self.row_count)))
+           poly_ne = (self.poly - (self.column_count*1-\
+                                   (self.poly % self.column_count))-\
+                  (self.poly % self.column_count))
            return poly_ne
 
         def east(self):
             """
-            Easth box neighbour
+            East box polygon neighbour
             """
             poly_e = self.poly + 1
             return poly_e
 
         def south_east(self):
             """
-            South East hexagon neighbour
+            South East box polygon neighbour
             """
-            poly_se = (self.poly + (self.row_count*1-(self.poly % self.row_count))\
-                       +((self.poly % self.row_count)))
+            poly_se = (self.poly + (self.column_count*1-\
+                                    (self.poly % self.column_count))+\
+                       ((self.poly % self.column_count)))+2
             return poly_se
 
         def south(self):
             """
-            South box neighbour
+            South box polygon neighbour
             """
-             poly_s = (self.poly + (self.row_count*2-(self.poly % self.row_count))\
-                       +((self.poly % self.row_count)))
-             return poly_s
+            poly_s = (self.poly + (self.column_count*1-\
+                                   (self.poly % self.column_count))+\
+                      (self.poly % self.column_count))+1
+            return poly_s
 
         def south_west(self):
             """
-            South West box neighbour
+            South West box polygon neighbour
             """
-            poly_sw = (self.poly + (self.row_count*1-(self.poly % self.row_count))\
-                       +((self.poly % self.row_count)))-1
+            poly_sw = (self.poly + (self.column_count*1-\
+                                    (self.poly % self.column_count))+\
+                       (self.poly % self.column_count))
             return poly_sw
 
         def west(self):
             """
-            West box neighbour
+            West box polygon neighbour
             """
             poly_w = self.poly - 1
-        return poly_w
+            return poly_w
 
         def north_west(self):
             """
-            North West hexagon neighbour
+            North West box polygon neighbour
             """
-            poly_nw = (self.poly - (self.row_count*1-(self.poly % self.row_count))\
-                       -((self.poly % self.row_count)))-1
+            poly_nw = (self.poly - (self.column_count*1-\
+                                    (self.poly % self.column_count))-\
+                       (self.poly % self.column_count))-2
             return poly_nw    
 
-    class box:
-       """
-       """
-
-
+    class hexagon:
+        """
+        Hexagon polygon neighbour definitions
+        """
+        
+        
         def north(self):
-           """
-           North box neighbour
-           """
-           poly_n = (self.poly - (self.row_count*2-(self.poly % self.row_count))\
-                  -((self.poly % self.row_count)))
-           return poly_n
-
+            """
+            North hex polygon neighbour
+            """
+            poly_n = (self.poly - (self.row_count*2-\
+                                  (self.poly % self.column_count))\
+                -((self.poly % self.row_count)))
+            return poly_n
         def north_east(self):
-           """
-           North East box neighbour
-           """
-               poly_ne = (self.poly - (self.row_count*1-(self.poly % self.row_count))\
-                          -((self.poly % self.row_count)))
-           return poly_ne
+            """
+            North East hex polygon neighbour
+            """
+            poly_ne = (self.poly - (self.row_count*1-(self.poly % \
+                                                      self.column_count))\
+                -((self.poly % self.column_count)))
+            return poly_ne
 
         def east(self):
             """
-            East boc neighbour
+            East hex polygon neighbour
             """
             poly_e = self.poly + 1
             return poly_e
 
         def south_east(self):
             """
-            South East box neighbour
+            South East hex polygon neighbour
             """
-            poly_se = (self.poly + (self.row_count*1-(self.poly % self.row_count))\
-                       +((self.poly % self.row_count)))
+            poly_se = (self.poly + (self.column_count*1-\
+                                    (self.poly % self.column_count))\
+                       +((self.poly % self.column_count)))
             return poly_se
 
         def south(self):
             """
-            South box neighbour
+            South hex polygon neighbour
             """
-             poly_s = (self.poly + (self.row_count*2-(self.poly % self.row_count))\
-                       +((self.poly % self.row_count)))
-             return poly_s
+            poly_s = (self.poly + (self.column_count*2-\
+                                   (self.poly % self.column_count))\
+                       +((self.poly % self.column_count)))
+            return poly_s
 
         def south_west(self):
             """
-            South West box neighbour
+            South West hex polygon neighbour
             """
-            poly_sw = (self.poly + (self.row_count*1-(self.poly % self.row_count))\
-                       +((self.poly % self.row_count)))-1
+            poly_sw = (self.poly + (self.column_count*1-\
+                                    (self.poly % self.column_count))\
+                       +((self.poly % self.column_count)))-1
             return poly_sw
 
         def west(self):
             """
-            West box neighbour
+            West hex polygon neighbour
             """
             poly_w = self.poly - 1
-        return poly_w
+            return poly_w
 
         def north_west(self):
             """
-            North West box neighbour
+            North West hex polygon neighbour
             """
-            poly_nw = (self.poly - (self.row_count*1-(self.poly % self.row_count))\
+            poly_nw = (self.poly - (self.row_count*1-\
+                                    (self.poly % self.row_count))\
                        -((self.poly % self.row_count)))-1
             return poly_nw
-
 
 class Tiles():
     """
