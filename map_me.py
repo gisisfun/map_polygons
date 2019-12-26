@@ -8,7 +8,7 @@ def do_map(theshape,theradial,theweight):
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
 if len(sys.argv) is 1:
-    (shape, size, weight) = ['hex',57,'place']
+    (shape, size, weight) = ['box',57,'place']
     do_map(shape, size, weight )
 else:
     if (len(sys.argv) <4 ):
