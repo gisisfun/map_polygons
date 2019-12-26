@@ -20,6 +20,7 @@ Note: Python joins allow for two islands have added to the map (mapping layer) :
 Proceed to **poly_wt.py** to add the demographic data of your choice. In this case ABS Statistical Area Level 1 data sets are merged together to mease the 'relative change in need for assistance'.
 
 **output of map_me.py**
+
 ![hex_57km_rel_need_for_assistance_by_place_weight](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/hex_57km_rel_need_for_assistance_by_place_weight.png)
 ![box_57km_rel_need_for_assistance_by_place_weight](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/box_57km_rel_need_for_assistance_by_place_weight.png)
 
