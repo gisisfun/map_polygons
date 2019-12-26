@@ -55,8 +55,10 @@ class Visual:
                      all(axis=1)]  # .astype(np.float64)
         plt.rcParams["figure.figsize"] = (10, 6)
         the_title = """2016 to 2011 Relative Change in Need For Assistance \
-(Quantiles) for Statistical Area Level 1\n{weight} Weighted""".\
-        format(weight=self.weight.title())
+(Quantiles) for Statistical Area Level 1\n{weight} Weighted {shape} {size}km""".\
+        format(weight=self.weight.title(),\
+               shape=self.shape,
+               size=self.radial)
         shape_file.plot(column='rel_need_for_assistance', scheme='quantiles', \
                 k=5, linewidth=0, cmap='Reds', legend=True).\
                 set_title(the_title)
