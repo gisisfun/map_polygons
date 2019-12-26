@@ -598,11 +598,6 @@ class Tiles():
 
         for g_ref in range(0, len(g_array)):
             g_poly = g_array[g_ref]['properties']['p']
-#            if self.shape == 'hex':
-#                (pol_n, pol_ne, pol_e, pol_se, pol_s, pol_sw, pol_w, pol_nw) = \
-#                self.neighbours(g_array, g_poly, ref_table_df, \
-#                                odd_columns)
-#            else:
             (pol_n, pol_ne, pol_e, pol_se, pol_s, pol_sw, pol_w, pol_nw) = \
             self.neighbours(g_array, g_poly, ref_table_df, \
                             odd_columns)                
@@ -622,36 +617,11 @@ class Tiles():
         """
         (val_n, val_ne, val_e, val_se, val_s, val_sw, val_w, val_nw) = \
         (-9, -9, -9, -9, -9, -9, -9, -9)
-        if self.shape == 'hex':
-            poly_n = (poly - (column_count*2-(poly % column_count))-\
-                          (poly % column_count))
-            poly_ne = (poly - (column_count*1-(poly % column_count))-\
-                       (poly % column_count))
-            poly_e = poly + 1
-            poly_se = (poly + (column_count*1-(poly % column_count))+\
-                       (poly % column_count))
-            poly_s = (poly + (column_count*2-(poly % column_count))+\
-                      (poly % column_count))
-            poly_sw = (poly + (column_count*1-(poly % column_count))+\
-                       (poly % column_count))-1
-            poly_w = poly - 1
-            poly_nw = (poly - (column_count*1-(poly % column_count))-\
-                      (poly % column_count))-1
-        else:
-            poly_n = (poly - (column_count*1-(poly % column_count))-\
-                      (poly % column_count))-1
-            poly_ne = (poly - (column_count*1-(poly % column_count))-\
-                   (poly % column_count))
-            poly_e = poly + 1
-            poly_se = (poly + (column_count*1-(poly % column_count))+\
-                       ((poly % column_count)))+2
-            poly_s = (poly + (column_count*1-(poly % column_count))+\
-                      (poly % column_count))+1
-            poly_sw = (poly + (column_count*1-(poly % column_count))+\
-                       (poly % column_count))
-            poly_w = poly - 1
-            poly_nw = (poly - (column_count*1-(poly % column_count))-\
-                       (poly % column_count))-2
+        (poly_n, poly_ne, poly_e, poly_se, poly_s, poly_sw, poly_w, poly_nw) = \
+        (nb_list[self.shape]['north'], nb_list[self.shape]['north_east'],\
+          nb_list[self.shape]['east'], nb_list[self.shape]['south_east'],\
+          nb_list[self.shape]['south'], nb_list[self.shape]['south_west'],\
+          nb_list[self.shape]['west'], nb_list[self.shape]['north_west'])
 
         # North Neighbour
         try:
