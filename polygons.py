@@ -44,9 +44,11 @@ LEN_ARGS = len(ARGS)
 print('Number of arguments: {0} arguments.'.format(LEN_ARGS))
 print('Argument List: {0}'.format(str(ARGS)))
 if LEN_ARGS == 1:
-    (THE_SHAPE, BOUNDS_NORTH, BOUNDS_SOUTH, BOUNDS_EAST, BOUNDS_WEST, THE_RADIAL) =\
+    (THE_SHAPE, BOUNDS_NORTH, BOUNDS_SOUTH, BOUNDS_EAST, BOUNDS_WEST, \
+     THE_RADIAL) =\
     ['hex', -8, -45, 169, 96, 57]
-    hexagons(THE_SHAPE, BOUNDS_NORTH, BOUNDS_SOUTH, BOUNDS_EAST, BOUNDS_WEST, THE_RADIAL)
+    hexagons(THE_SHAPE, BOUNDS_NORTH, BOUNDS_SOUTH, BOUNDS_EAST, BOUNDS_WEST, \
+          THE_RADIAL)
 
 else:
     if LEN_ARGS < 7:
