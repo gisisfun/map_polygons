@@ -265,7 +265,6 @@ class Util():
 
         Input variables:
         """
-        print(g_array[0])
         content = FeatureCollection(g_array)
         msg = 'writing geojson formatted {shape} dataset to file:' +\
                file_name +'.json'
@@ -296,22 +295,26 @@ class Util():
         shapes = shape_file.shapes()
         #how many empty and real polgons and subpolygons
         shapes_list = []
-        [shapes_list.append([len(x.points), len(x.parts)]) for x in shapes]
+        for i, poly in enumerate(shapes):
+            shapes_list.append([len(poly.points), len(poly.parts)])
+        #[shapes_list.append([len(x.points), len(x.parts)]) for x in shapes]
 
         # add a row_id reference
         shapes_list_with_row_id = []
-        [shapes_list_with_row_id.\
-         append([x, shapes_list[x][0], \
-                 shapes_list[x][1]]) \
-                 for x in range(len(shapes_list))]
+        for row, row_data in enumerate(shapes_list):
+            shapes_list_with_row_id.append([row, row_data[0], row_data[1]])
 
         # drop all array rows ith 0 parts
-        shapes_list_no_null = [a for a in shapes_list_with_row_id if a[2] not in [0]]
+        shapes_list_no_null = []
+        for row, row_data in enumerate(shapes_list_with_row_id):
+            if row_data[2] > 0:
+                shapes_list_no_null.append(row_data)
 
         #get the field names
         fields = shape_file.fields
         column_list = []
-        [column_list.append(x[0]) for x in fields[1:]]
+        for field_n, field_data in enumerate(fields[1:]):
+            column_list.append(field_data[0])
 
         # data values with null geography
         tab_data = shape_file.records()
