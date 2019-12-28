@@ -63,7 +63,7 @@ class PostProcess():
 
         self.ogr2ogr = ogr2ogr_com # '/usr/bin/ogr2ogr'
         self.slash = slash # '/'
-        self.extn = extn
+        self.extn = "SELECT load_extension('"+extn+"');"
         self.spatialite = spatialite_com
 
 

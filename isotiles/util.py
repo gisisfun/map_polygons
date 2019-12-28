@@ -22,6 +22,14 @@ from geojson import FeatureCollection, Polygon, Feature
 class Util():
     """
     Generic Geospatial funcionality
+    
+    radial: 
+    shape: 
+    kmlfiles: 
+    shapefiles: 
+    geojson: 
+    csvfiles: 
+    slash:
     """
     defaults = Defaults()
 
@@ -35,8 +43,6 @@ class Util():
 
         self.radial = radial
         self.shape = shape
-
-
         self.shape_files_path = shapefiles
         self.geojson_path = geojson
         self.kml_files_path = kmlfiles
@@ -50,7 +56,7 @@ class Util():
         Construct filename string
         """
 
-        print(self.shape + '_' + str(self.radial) + 'km')
+        #print(self.shape + '_' + str(self.radial) + 'km')
         return self.shape + '_' + str(self.radial) + 'km'
 
     def file_deploy(self, resource_data):
@@ -61,6 +67,7 @@ class Util():
         ref_files
 
         Input variables:
+            resource_data:
         """
 
         if not os.path.isfile(resource_data.file_path.format(slash=self.slash)):
@@ -132,6 +139,11 @@ class Util():
     def coords_from_csv_latin1(self, file_name, lon_c, lat_c):
         """
         Reads files with illegal characters causing errors
+
+        input variables:
+            file_name:
+            lon_c:
+            lat_c:
         """
 
         csv.register_dialect(
@@ -166,6 +178,11 @@ class Util():
     def coords_from_csv(self, file_name, lon_c, lat_c):
         """
         Reads standard csv files
+
+        input variables:
+            file_name:
+            lon_c:
+            lat_c:
         """
 
         #csv.Sniffer
@@ -194,6 +211,11 @@ class Util():
     def points_in_polygon(self, g_array, lat_longs, g_label):
         """
         Counts for lat_longs generated
+
+        Input variables:
+            g_array:
+            lat_longs:
+            g_label:
         """
 
         lat_longs_df = pd.DataFrame(lat_longs)
@@ -232,11 +254,12 @@ class Util():
 
     def from_geojson_file(self, file_name):
         """
-        Read GeoJSON from file
+        Read GeoJSON data set from file
 
         Prerequisites:
 
         Input variables:
+           file_name:
         """
 
         msg = 'reading geojson formatted dataset from file:' + file_name +'.json'
@@ -256,7 +279,7 @@ class Util():
         my_file.close()  # close file
         return g_array
 
-    def to_geojson_file(self, g_array, file_name):
+    def to_geojson_file(self, g_array, gj_file):
         """
         Write string to file
 
@@ -264,12 +287,14 @@ class Util():
         to_geojson, hex_array or box_array, horizontal, vertical, Tiles
 
         Input variables:
+            g_array:
+            gj_file:
         """
         content = FeatureCollection(g_array)
         msg = 'writing geojson formatted {shape} dataset to file:' +\
-               file_name +'.json'
+               gj_file +'.json'
         print(msg.format(shape=self.shape, fname=self.filename))
-        file_path_templ = '{geojson}{slash}'+file_name+'.json'
+        file_path_templ = '{geojson}{slash}'+gj_file+'.json'
         my_file = open(file_path_templ.format(fname=self.filename, \
                                               slash=self.slash, \
                                               geojson=self.geojson_path), 'w')
@@ -281,6 +306,9 @@ class Util():
         """
         Reads shapefile Polgon or Multipolygon into a Polygon based Geojson arry
 
+        Input variables:
+            shape_file_name:
+            shape_file_path:
         """
 
         #fName,fPath
@@ -367,13 +395,17 @@ class Util():
         return g_array
 
 
-    def to_shp_file(self, g_array, file_name):
+    def to_shp_file(self, g_array, shape_file):
         """
         Write geojson Polygon array to shapefile
+
+        input variables:
+            g_array:
+            shape_file:
         """
 
         #tabular_list = []
-        file_path_templ = '{shapefiles}{slash}'+file_name
+        file_path_templ = '{shapefiles}{slash}'+shape_file
         full_file_path = file_path_templ.format(shape=self.shape,
                                                 size=self.radial,
                                                 slash=self.slash,
@@ -412,7 +444,8 @@ class Util():
             #w.record(n)
         w_file.close()
         # create the PRJ file
-        msg = 'writing shapefile formatted {shape} dataset to file:' + full_file_path +'.shp'
+        msg = 'writing shapefile formatted {shape} dataset to file:' + \
+        full_file_path +'.shp'
         print(msg.format(shape=self.shape, fname=self.filename))
         prj = open(prj_path, "w")
         epsg = 'GEOGCS["WGS 84",'
@@ -423,12 +456,14 @@ class Util():
         prj.write(epsg)
         prj.close()
 
-    def to_kml_file(self, g_array, file_name):
+    def to_kml_file(self, g_array, kml_file):
         """
         Writes geojson Polygon array to kml file
+            g_array:
+            kml_file:
         """
 
-        file_name_templ = '{kPath}{slash}'+file_name+'.kml'
+        file_name_templ = '{kPath}{slash}'+kml_file+'.kml'
         full_file_path = file_name_templ.format(kPath=self.kml_files_path,
                                                 shape=self.shape,
                                                 size=self.radial,
@@ -470,7 +505,7 @@ class Util():
             pol.description = rec_descr
             pol.style.polystyle.fill = 0
 
-        msg = 'writing kml formatted {shape} dataset to file:' + file_name +'.kml'
+        msg = 'writing kml formatted {shape} dataset to file:' + kml_file +'.kml'
         print(msg.format(shape=self.shape, fname=self.filename))
         kml.save(full_file_path)
 
@@ -506,7 +541,7 @@ class Util():
         hex_array or box_array, horizontal, vertical, Tiles
 
         Input variables:
-        pointslist: array of points and metadata defining polygon shapes
+        points_list: array of points and metadata defining polygon shapes
         """
 
         point_df = pd.DataFrame(points_list)
@@ -535,6 +570,8 @@ class Util():
 def random_points_in_polygon(poly):
     """
     Creates random points as defined by a polygon
+
+    poly
     """
 
     #path_contains_path, path_contains_points Doh! did not know about this
@@ -563,7 +600,8 @@ def random_points_in_polygon(poly):
 def tabular_dataframe(g_array):
     """
     Not Implemented to date
-
+    
+    g_array
     """
 
 #    tabular_list = []

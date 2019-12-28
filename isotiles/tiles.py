@@ -13,7 +13,7 @@ from geojson import Polygon, Feature #,FeatureCollection
 
 
 
-from isotiles.parameters import BoundingBox, Offsets, Defaults
+from isotiles.parameters import BoundingBox, Defaults
 #from isotiles.poi import POI
 from isotiles.util import Util
 
@@ -99,21 +99,23 @@ class Tiles():
         self.filename = self.f_name()
         self.shape_files_path = shapefiles
         self.kml_files_path = kmlfiles
-        off_values = Offsets()
+        self.short = .7071
+        self.long = 1
+        #off_values = Offsets()
 
 
 
         if self.shape == 'hex':
-            self.hor_seq = [off_values.short, off_values.short,
-                            off_values.short, off_values.short]
-            self.vert_seq = [off_values.short, off_values.long,
-                             off_values.short, off_values.long]
+            self.hor_seq = [self.short, self.short,
+                            self.short, self.short]
+            self.vert_seq = [self.short, self.long,
+                             self.short, self.long]
 
         else:
-            self.hor_seq = [off_values.long, off_values.long,
-                            off_values.long, off_values.long]
-            self.vert_seq = [off_values.long, off_values.long,
-                             off_values.long, off_values.long]
+            self.hor_seq = [self.long, self.long,
+                            self.long, self.long]
+            self.vert_seq = [self.long, self.long,
+                             self.long, self.long]
 
     def params(self):
         """
