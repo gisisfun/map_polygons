@@ -27,43 +27,23 @@ class Util():
 
     def __init__(self, radial: Defaults = defaults.radial,
                  shape: Defaults = defaults.shape,
-                 images: Defaults = defaults.images_path,
-                 metadata: Defaults = defaults.metadata_path,
-                 logfiles: Defaults = defaults.log_files_path,
                  kmlfiles: Defaults = defaults.kml_files_path,
                  shapefiles: Defaults = defaults.shape_files_path,
                  geojson: Defaults = defaults.geojson_path,
-                 vrt: Defaults = defaults.vrt_files_path,
-                 csv: Defaults = defaults.csv_files_path,
-                 spatialite: Defaults = defaults.spatialite_path,
-                 sql: Defaults = defaults.sql_files_path,
-                 slash: Defaults = defaults.slash,
-                 ogr2ogr_com: Defaults = defaults.ogr2ogr,
-                 spatialite_com: Defaults = defaults.spatialite,
-                 extn: Defaults = defaults.extn):
-        #posixvars = OSVars.posix()
-        #ntvars = OSVars.nt()
-        os.environ['SPATIALITE_SECURITY'] = 'relaxed'
+                 csvfiles: Defaults = defaults.csv_files_path,
+                 slash: Defaults = defaults.slash):
+
         self.radial = radial
         self.shape = shape
-        self.charset = 'CP1252'
 
-        self.spatialite_path = spatialite
-        self.sql_path = sql
-        self.images_path = images
-        self.metadata_path = metadata
+
         self.shape_files_path = shapefiles
         self.geojson_path = geojson
         self.kml_files_path = kmlfiles
-        self.vrt_path = vrt
-        self.csv_files_path = csv
-        self.spatialite_files_path = spatialite
-        self.sql_files_path = sql
+        self.csv_files_path = csvfiles
         self.filename = self.f_name()
-        self.ogr2ogr = ogr2ogr_com
         self.slash = slash
-        self.extn = extn
-        self.spatialite = spatialite_com
+
 
     def f_name(self):
         """
@@ -175,7 +155,9 @@ class Util():
             try:
                 longs.append(float(data[i][lon_c]))
                 lats.append(float(data[i][lat_c]))
-            except:
+            except IndexError:
+                pass
+            except ValueError:
                 pass
 
         coords = [(x, y) for x, y in zip(longs, lats)]
@@ -214,20 +196,18 @@ class Util():
         Counts for lat_longs generated
         """
 
-        num_poly = len(g_array)
         lat_longs_df = pd.DataFrame(lat_longs)
         lat_longs_df.columns = ['longitude', 'latitude']
-        for poly in range(0, num_poly):
-            #poly_id=g_array[poly]['properties']['p']
+        for poly, poly_data in enumerate(g_array):
             p_count = 0
             bound_points_df = lat_longs_df[(lat_longs_df['latitude'] >=\
-                                            g_array[poly]['properties']['S']) & \
+                                            poly_data['properties']['S']) & \
                                            (lat_longs_df['latitude'] <=\
-                                            g_array[poly]['properties']['N']) & \
+                                            poly_data['properties']['N']) & \
                                            (lat_longs_df['longitude'] <=\
-                                            g_array[poly]['properties']['E']) & \
+                                            poly_data['properties']['E']) & \
                                            (lat_longs_df['longitude'] >=\
-                                            g_array[poly]['properties']['W'])]
+                                            poly_data['properties']['W'])]
             #this is dodgy but it works for now
             if bound_points_df.size == 2:
                 bound_points_df.append(bound_points_df)
@@ -242,10 +222,11 @@ class Util():
                 path = mpltPath.Path(poly_coords)
 
                 for index, row in bound_points_df.iterrows():
-                    if path.contains_point([row['longitude'], row['latitude']]) is True:
+                    if path.contains_point([row['longitude'], \
+                                            row['latitude']]) is True:
                         p_count += 1
 
-            g_array[poly]['properties'][g_label] = float(p_count)
+            poly_data['properties'][g_label] = float(p_count)
 
         return g_array
 
@@ -265,11 +246,13 @@ class Util():
                                              slash=self.slash,\
                                              geojson=self.geojson_path), 'r')
         #open file for reading geojson layer in geojson format
-        gj_data = my_file.read()  # read geojson layer to open file
+        gj_data = my_file.read()
+        # read geojson layer to open file
         gj_dict = json.loads(gj_data)
+        print(gj_dict)
         g_array = []
-        for i in range(len(gj_dict['features'])):
-            g_array.append(gj_dict['features'][i])
+        for gj_row, row_data in enumerate(gj_dict['features']):
+            g_array.append(row_data)
         my_file.close()  # close file
         return g_array
 
@@ -282,6 +265,7 @@ class Util():
 
         Input variables:
         """
+        print(g_array[0])
         content = FeatureCollection(g_array)
         msg = 'writing geojson formatted {shape} dataset to file:' +\
                file_name +'.json'
@@ -334,24 +318,23 @@ class Util():
 
         tab_data_val = []
         row_ref = []
-        i = 0
-        for tab_row in range(len(shapes_list_no_null)): # all rows
-            #for column_name in column_list:
-            row_data = [] #shapes_list_no_null[tab_row][0]]
 
-            for tab_val in tab_data[shapes_list_no_null[tab_row][0]]: # each row of tab data (y)
-                row_ref.append(i)
-                row_data.append(tab_val) #,len(shapes[tab_row].points)])
-                #column_dict[column_name] = str(tab_col)
-            i += 1
-            tab_data_val.append(row_data) # column_dict)
+        for tab_row, row_data in enumerate(shapes_list_no_null):
+            # all rows    #for column_name in column_list:
+            row_data_list = [] #shapes_list_no_null[tab_row][0]]
+
+            for tab_val in tab_data[row_data[0]]:
+                # each row of tab data (y)
+                row_ref.append(tab_row)
+                row_data_list.append(tab_val) #,len(shapes[tab_row].points)])
+
+            tab_data_val.append(row_data_list)
 
         geojson_properties_list = []
-        for tab_row in tab_data_val:
+        for tab_row, row_data in enumerate(tab_data_val):
             dataset_dict_row = {}
-            for i in range(0, len(column_list)):
-                #print(i)
-                dataset_dict_row[column_list[i]] = tab_row[i]
+            for column, column_data in enumerate(column_list):
+                dataset_dict_row[column_data] = row_data[column]
             geojson_properties_list.append(dataset_dict_row)
 
         # make a parts list find numbers of points
@@ -366,18 +349,16 @@ class Util():
             points_len.append(len(shapes[row_ref[i]].points))
 
         g_array = []
-        for i in range(len(geojson_properties_list)):
+        for i, gj_prop_val in enumerate(geojson_properties_list):
             parts_list[i].append(points_len[i])
             shapes_ref = row_ref[i]
             #thing.append([geojson_properties_list[i],parts_count[i],parts_list[i]])
 
             for j in range(0, parts_count[i]):
-                #geojson_polygon = {}
-
                 geopoly = Polygon([shapes[shapes_ref].\
                                    points[parts_list[i][j]:parts_list[i][j+1]]])
                 geopoly = Feature(geometry=geopoly, \
-                                  properties=geojson_properties_list[i])
+                                  properties=gj_prop_val)
 
                 g_array.append(geopoly)
         return g_array
@@ -458,21 +439,20 @@ class Util():
         for key in props_dict:
             key_names_array.append(key)
 
-        for poly in range(0, len(g_array)):
-            props_dict_rec = g_array[poly]['properties']
+        for poly, val in enumerate(g_array):
             (i, key_values_array) = (0, [])
             rec_descr = ""
             for key in props_dict:
-                key_values_array.append(props_dict_rec[key])
+                key_values_array.append(val['properties'][key])
 
                 if i is not len(props_dict)-1:
                     rec_descr = rec_descr + key + ' = ' \
-                    + str(props_dict_rec[key]) + '\n'
+                    + str(val['properties'][key]) + '\n'
                 else:
                     rec_descr = rec_descr + key + ' = ' \
-                    + str(props_dict_rec[key]) + '\n'
+                    + str(val['properties'][key]) + '\n'
                 i += 1
-            #ev_str = 'pol = kml.newpolygon(name ="'
+
             (points_str, points_t) = ("[", [])
             for points in g_array[poly]['geometry']['coordinates'][0]:
                 points_t.append(tuple(points))
@@ -549,7 +529,7 @@ class Util():
                                sep=',', index=False)
 
 
-def random_points_in_polygon(self, poly):
+def random_points_in_polygon(poly):
     """
     Creates random points as defined by a polygon
     """

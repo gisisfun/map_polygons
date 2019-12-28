@@ -17,7 +17,7 @@ from isotiles.parameters import BoundingBox, Offsets, Defaults
 #from isotiles.poi import POI
 from isotiles.util import Util
 
-def neighbour_calc(poly, column_count):
+def neighbour_poly_calc(poly, column_count):
     """
     Neighbour cell calculations
     """
@@ -69,6 +69,7 @@ def neighbour_calc(poly, column_count):
     }}
 
     return neighbour_list
+
 
 class Tiles():
     """
@@ -501,10 +502,10 @@ class Tiles():
         print('Polygons Centroids and Offset Vertices')
         coords = self.aus_poly_coords(next_poly_array)
         print(len(coords))
-        poly_array = u_mod.points_in_polygon(next_poly_array, coords, 'Poly')
+        poly_array = u_mod.points_in_polygon(next_poly_array, coords, 'P_POI')
         for poly in range(0, len(poly_array)):
             poly_array[poly]['properties']['Aust'] = 0
-            if poly_array[poly]['properties']['Poly'] > 0 \
+            if poly_array[poly]['properties']['P_POI'] > 0 \
                or poly_array[poly]['properties']['Island'] > 0 or \
                poly_array[poly]['properties']['Locality'] > 0 or \
                poly_array[poly]['properties']['Boundary'] > 0:
@@ -556,7 +557,7 @@ class Tiles():
         Separate continental polygons from non continental
         """
         (num_poly, isect_array) = (len(g_array), [])
-        a_val = 0 
+        a_val = 0
         for poly in range(0, num_poly):
             if g_array[poly]['properties']['Aust'] > 0:
                 g_array[poly]['properties']['a'] = a_val
@@ -600,7 +601,7 @@ class Tiles():
             g_poly = g_array[g_ref]['properties']['p']
             (pol_n, pol_ne, pol_e, pol_se, pol_s, pol_sw, pol_w, pol_nw) = \
             self.neighbours(g_array, g_poly, ref_table_df, \
-                            odd_columns)                
+                            odd_columns)
             g_array[g_ref]['properties']['p_N'] = pol_n
             g_array[g_ref]['properties']['p_NE'] = pol_ne
             g_array[g_ref]['properties']['p_E'] = pol_e
@@ -617,6 +618,9 @@ class Tiles():
         """
         (val_n, val_ne, val_e, val_se, val_s, val_sw, val_w, val_nw) = \
         (-9, -9, -9, -9, -9, -9, -9, -9)
+        #poly_ref = self.Neighbour_Calc(poly,column_count)
+        nb_list = neighbour_poly_calc(poly, column_count)
+
         (poly_n, poly_ne, poly_e, poly_se, poly_s, poly_sw, poly_w, poly_nw) = \
         (nb_list[self.shape]['north'], nb_list[self.shape]['north_east'],\
           nb_list[self.shape]['east'], nb_list[self.shape]['south_east'],\
@@ -632,7 +636,7 @@ class Tiles():
             pass
         except TypeError:
             pass
-        
+
         # North East Neighbour
         try:
             ref_q = ref_table_df[(ref_table_df['poly'] == poly_ne)]
