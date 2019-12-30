@@ -10,7 +10,7 @@ from pyunpack import Archive
 import numpy as np
 import shapefile
 import simplekml
-
+from mapclassify import EqualInterval, NaturalBreaks, MaximumBreaks, BoxPlot, Quantiles, Percentiles, FisherJenks, StdMean, UserDefined
 
 import pandas as pd
 import matplotlib.path as mpltPath
@@ -18,6 +18,68 @@ import matplotlib.path as mpltPath
 from isotiles.parameters import Defaults
 from isotiles.datasets import DataSets
 from geojson import FeatureCollection, Polygon, Feature
+
+def classify(class_list, tb_classed):
+    classed = False
+    for i, val in enumerate(class_list):
+        if val >= tb_classed and classed is False:
+            the_class = val
+            classed = True
+    return the_class
+
+def apply_classification(g_array,ref_col):
+    #get the values_list
+    values_list = []
+    for i, val in enumerate(g_array):
+        values_list.append(val['properties'][ref_col])
+        
+    the_breaks = NaturalBreaks(values_list, 5)
+    print(the_breaks,'\n',the_breaks.bins,'\n')
+
+    break_list = []
+    for i,val in enumerate(values_list):
+        break_list.append(classify(the_breaks.bins, val))
+    transparency = [[100, 'FF'], [95, 'F2'], [90, 'E6'], [85, 'D9'], [80, 'CC'], [75, 'BF'], [70, 'B3'],[65, 'A6'],[60, '99'],
+                    [55, '8C'], [50, '80'], [45, '73'], [40, '66'], [35, '59'], [30, '4D'], [25, '40'],[20, '33'], [15, '26'],
+                    [10, '1A'], [5, '0D'], [0, '00']]
+    # kml alpha format #AABBGGRR
+    c_hex_a_ref = ['ZZ000099', 'ZZ001AA6', 'ZZ0033B3', 'ZZ004DBF', 'ZZ004DCC', 'ZZ0066CC', 'ZZ0080D9', 'ZZ0099E6', 'ZZ0320FB', 'ZZ00CCFF']
+    c_hex_a = []
+    for i, val in enumerate(c_hex_a_ref):
+        c_hex_a.append(val.replace('ZZ','FF'))
+    
+        
+    #print('values_list')
+    #print(values_list, len(values_list))
+    #print('distinct')
+    values_distinct = list(dict.fromkeys(values_list))
+    #print(values_distinct, len(values_distinct))
+
+    #print('break_list')
+    #print(break_list, len(break_list))
+    #print('distinct')
+    break_distinct = list(dict.fromkeys(break_list))
+    #print(break_distinct, len(break_distinct))
+
+    #values_break = []
+    old_val = []
+    rgb_breaks = []
+    hex_breaks = []
+    for i,val in enumerate(values_list):
+        new_val = values_list.index(val) #[i for i, e in enumerate(values_n) if e is val]
+        if new_val != old_val:
+        
+            #look up rgb colour values
+            color_index = break_distinct.index(break_list[new_val])
+            #print(color_index)
+            #values_break.append([val,break_n[new_val],c_rgb[color_index]])
+            
+            old_val = new_val
+        #rgb_breaks.append(c_rgb[color_index])
+        hex_breaks.append(c_hex_a[color_index])
+    #print('values_break')
+    #print(values_break, len(values_break))
+    return hex_breaks
 
 class Util():
     """
@@ -456,13 +518,19 @@ class Util():
         prj.write(epsg)
         prj.close()
 
-    def to_kml_file(self, g_array, kml_file):
+    def to_kml_file(self, g_array, kml_file, the_key="No_Key"):
         """
         Writes geojson Polygon array to kml file
             g_array:
             kml_file:
         """
+        ###
+        # Start New Bit
+        if the_key != "No_Key":
+            hex_list = apply_classification(g_array,the_key)
 
+        # End New Bit
+        ###
         file_name_templ = '{kPath}{slash}'+kml_file+'.kml'
         full_file_path = file_name_templ.format(kPath=self.kml_files_path,
                                                 shape=self.shape,
@@ -470,6 +538,7 @@ class Util():
                                                 slash=self.slash,
                                                 fname=self.filename)
         kml = simplekml.Kml()
+
         #setup columns
         props_dict = g_array[0]['properties']
 
@@ -503,11 +572,84 @@ class Util():
             pol.innerpoundaryis = points_t
 
             pol.description = rec_descr
-            pol.style.polystyle.fill = 0
+            #pol.style.polystyle.fill = 0 # fill is off
+            ###
+            # Start Bit Start
+            # transparency yes
+            pol.style.polystyle.outline = 1 # outline is visible
+            pol.style.polystyle.fill = 0 # fill is not visible
+            if the_key != "No_Key":
+                if val['properties'][the_key] == 0:
+                    pol.style.polystyle.outline = 0 # outline is not visible
+                    pol.style.polystyle.fill = 0 # fill is not visible
+                else:
+                    pol.style.polystyle.outline = 1 # outline is visible
+                    pol.style.polystyle.fill = 1 # fill is visible
+            # 80 50% transparency
+            #the_hex = simplekml.Color.rgb(rgb_list[poly][0], rgb_list[poly][1], rgb_list[poly][2])
+            #the_hex = '#80'+the_hex[6:8]+the_hex[4:6]+the_hex[2:4]
+            pol.style.polystyle.color = simplekml.Color.hexa(hex_list[poly])
+
+            # End Bit Start
+            ###
 
         msg = 'writing kml formatted {shape} dataset to file:' + kml_file +'.kml'
         print(msg.format(shape=self.shape, fname=self.filename))
         kml.save(full_file_path)
+
+#    def to_kml_file(self, g_array, kml_file):
+#        """
+#        Writes geojson Polygon array to kml file
+#            g_array:
+#            kml_file:
+#        """
+#
+#        file_name_templ = '{kPath}{slash}'+kml_file+'.kml'
+#        full_file_path = file_name_templ.format(kPath=self.kml_files_path,
+#                                                shape=self.shape,
+#                                                size=self.radial,
+#                                                slash=self.slash,
+#                                                fname=self.filename)
+#        kml = simplekml.Kml()
+#        #setup columns
+#        props_dict = g_array[0]['properties']
+#
+#        key_names_array = []
+#        for key in props_dict:
+#            key_names_array.append(key)
+#
+#        for poly, val in enumerate(g_array):
+#            (i, key_values_array) = (0, [])
+#            rec_descr = ""
+#            for key in props_dict:
+#                key_values_array.append(val['properties'][key])
+#
+#                if i is not len(props_dict)-1:
+#                    rec_descr = rec_descr + key + ' = ' \
+#                    + str(val['properties'][key]) + '\n'
+#                else:
+#                    rec_descr = rec_descr + key + ' = ' \
+#                    + str(val['properties'][key]) + '\n'
+#                i += 1
+#
+#            (points_str, points_t) = ("[", [])
+#            for points in g_array[poly]['geometry']['coordinates'][0]:
+#                points_t.append(tuple(points))
+#                points_str = points_str + "("\
+#                             + str(points[0]) + ","\
+#                             + str(points[1]) + "), "
+#
+#            pol = kml.newpolygon(name=str(key_values_array[0]))
+#            pol.outerboundaryis = points_t
+#            pol.innerpoundaryis = points_t
+#
+#            pol.description = rec_descr
+#            pol.style.polystyle.fill = 0
+#            pol.style.polystyle.color = simplekml.Color.red
+#
+#        msg = 'writing kml formatted {shape} dataset to file:' + kml_file +'.kml'
+#        print(msg.format(shape=self.shape, fname=self.filename))
+#        kml.save(full_file_path)
 
 
     def points_and_polygons(self, g_array):
