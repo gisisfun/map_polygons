@@ -39,11 +39,14 @@ def apply_classification(g_array,ref_col):
     break_list = []
     for i,val in enumerate(values_list):
         break_list.append(classify(the_breaks.bins, val))
-    transparency = [[100, 'FF'], [95, 'F2'], [90, 'E6'], [85, 'D9'], [80, 'CC'], [75, 'BF'], [70, 'B3'],[65, 'A6'],[60, '99'],
-                    [55, '8C'], [50, '80'], [45, '73'], [40, '66'], [35, '59'], [30, '4D'], [25, '40'],[20, '33'], [15, '26'],
-                    [10, '1A'], [5, '0D'], [0, '00']]
+#    transparency = [[100, 'FF'], [95, 'F2'], [90, 'E6'], [85, 'D9'], 
+#                    [80, 'CC'], [75, 'BF'], [70, 'B3'],[65, 'A6'],[60, '99'],
+#                    [55, '8C'], [50, '80'], [45, '73'], [40, '66'], 
+#                    [35, '59'], [30, '4D'], [25, '40'],[20, '33'], [15, '26'],
+#                    [10, '1A'], [5, '0D'], [0, '00']]
     # kml alpha format #AABBGGRR
-    c_hex_a_ref = ['ZZ000099', 'ZZ001AA6', 'ZZ0033B3', 'ZZ004DBF', 'ZZ004DCC', 'ZZ0066CC', 'ZZ0080D9', 'ZZ0099E6', 'ZZ0320FB', 'ZZ00CCFF']
+    c_hex_a_ref = ['ZZ000099', 'ZZ001AA6', 'ZZ0033B3', 'ZZ004DBF', 'ZZ004DCC',
+                   'ZZ0066CC', 'ZZ0080D9', 'ZZ0099E6', 'ZZ0320FB', 'ZZ00CCFF']
     c_hex_a = []
     for i, val in enumerate(c_hex_a_ref):
         c_hex_a.append(val.replace('ZZ','FF'))
@@ -52,7 +55,7 @@ def apply_classification(g_array,ref_col):
     #print('values_list')
     #print(values_list, len(values_list))
     #print('distinct')
-    values_distinct = list(dict.fromkeys(values_list))
+    #values_distinct = list(dict.fromkeys(values_list))
     #print(values_distinct, len(values_distinct))
 
     #print('break_list')
@@ -63,7 +66,7 @@ def apply_classification(g_array,ref_col):
 
     #values_break = []
     old_val = []
-    rgb_breaks = []
+    #rgb_breaks = []
     hex_breaks = []
     for i,val in enumerate(values_list):
         new_val = values_list.index(val) #[i for i, e in enumerate(values_n) if e is val]
@@ -585,10 +588,8 @@ class Util():
                 else:
                     pol.style.polystyle.outline = 1 # outline is visible
                     pol.style.polystyle.fill = 1 # fill is visible
-            # 80 50% transparency
-            #the_hex = simplekml.Color.rgb(rgb_list[poly][0], rgb_list[poly][1], rgb_list[poly][2])
-            #the_hex = '#80'+the_hex[6:8]+the_hex[4:6]+the_hex[2:4]
-            pol.style.polystyle.color = simplekml.Color.hexa(hex_list[poly])
+
+                pol.style.polystyle.color = simplekml.Color.hexa(hex_list[poly])
 
             # End Bit Start
             ###
