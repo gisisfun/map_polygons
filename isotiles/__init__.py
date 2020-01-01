@@ -25,11 +25,6 @@ class Defaults:
         self.radial = 57
         self.shape = 'hex'
 
-        my_os = str(os.name)
-        if my_os == 'nt':
-            gdal_vars = {'GDAL_DATA': 'C:\\OSGeo4W64\\share\\gdal'}
-            os.environ.update(gdal_vars)
-
     @property
     def kml_files_path(self):
         """

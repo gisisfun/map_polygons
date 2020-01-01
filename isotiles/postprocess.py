@@ -28,8 +28,6 @@ class PostProcess():
     def __init__(self, radial: Defaults = defaults.radial,
                  shape: Defaults = defaults.shape,
                  images: Defaults = defaults.images_path,
-                 metadata: Defaults = defaults.metadata_path,
-                 logfiles: Defaults = defaults.log_files_path,
                  kmlfiles: Defaults = defaults.kml_files_path,
                  shapefiles: Defaults = defaults.shape_files_path,
                  geojson: Defaults = defaults.geojson_path,
@@ -50,8 +48,6 @@ class PostProcess():
         self.spatialite_path = spatialite
         self.sql_files_path = sql
         self.image_files_path = images
-        self.metadata_path = metadata
-        self.log_files_path = logfiles
         self.shape_files_path = shapefiles
         self.kml_files_path = kmlfiles
         self.geojson_path = geojson
@@ -65,6 +61,11 @@ class PostProcess():
         self.slash = slash # '/'
         self.extn = "SELECT load_extension('"+extn+"');"
         self.spatialite = spatialite_com
+
+	my_os = str(os.name)
+        if my_os == 'nt':
+            gdal_vars = {'GDAL_DATA': 'C:\\OSGeo4W64\\share\\gdal'}
+            os.environ.update(gdal_vars)
 
 
     def vrt_shape_and_size(self, dir_name, template_file, new_file):
