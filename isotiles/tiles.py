@@ -3,7 +3,7 @@ Map_polygons tiles module
 """
 
 #all
-from math import pow, sqrt
+from math import sqrt
 import pandas as pd
 import numpy as np
 from geopy.distance import geodesic
@@ -13,7 +13,7 @@ from geojson import Polygon, Feature #,FeatureCollection
 
 
 
-from isotiles.parameters import BoundingBox, Defaults
+from isotiles.__init__ import Defaults
 #from isotiles.poi import POI
 from isotiles.util import Util
 
@@ -76,13 +76,12 @@ class Tiles():
     Modules for map_polygons
     """
 
-    value = BoundingBox.Australia()
     defaults = Defaults()
 
-    def __init__(self, north: BoundingBox = value.north,
-                 south: BoundingBox = value.south,
-                 east: BoundingBox = value.east,
-                 west: BoundingBox = value.west,
+    def __init__(self, north: Defaults = defaults.north,
+                 south: Defaults = defaults.south,
+                 east: Defaults = defaults.east,
+                 west: Defaults = defaults.west,
                  radial: Defaults = defaults.radial,
                  shape: Defaults = defaults.shape,
                  kmlfiles: Defaults = defaults.kml_files_path,
@@ -96,26 +95,57 @@ class Tiles():
         self.west = west
         self.radial = radial
         self.shape = shape
-        self.filename = self.f_name()
         self.shape_files_path = shapefiles
         self.kml_files_path = kmlfiles
-        self.short = .7071
-        self.long = 1
-        #off_values = Offsets()
 
 
+    @property
+    def short(self):
+        """
+        Short interval to next reference point
+        """
+        return .7071
 
+    @property
+    def long(self):
+        """
+        Long interval to next reference point
+        """
+
+        return 1
+
+    @property
+    def hor_seq(self):
+        """
+        Long interval to next reference point
+        """
         if self.shape == 'hex':
-            self.hor_seq = [self.short, self.short,
-                            self.short, self.short]
-            self.vert_seq = [self.short, self.long,
-                             self.short, self.long]
-
+            hor_seq = [self.short, self.short,
+                       self.short, self.short]
         else:
-            self.hor_seq = [self.long, self.long,
-                            self.long, self.long]
-            self.vert_seq = [self.long, self.long,
-                             self.long, self.long]
+            hor_seq = [self.long, self.long,
+                       self.long, self.long]
+        return hor_seq
+
+    @property
+    def vert_seq(self):
+        """
+        Long interval to next reference point
+        """
+        if self.shape == 'hex':
+            vert_seq = [self.short, self.long,
+                        self.short, self.long]
+        else:
+            vert_seq = [self.long, self.long,
+                        self.long, self.long]
+        return vert_seq
+    @property
+    def filename(self):
+        """
+        Construct filename string
+        """
+        return '{}_{}km'.format(self.shape, self.radial)
+
 
     def params(self):
         """
@@ -124,12 +154,10 @@ class Tiles():
         Dependencies:
         Tiles
         """
-
-        part_1 = 'Making {0} shapes starting from {1},{2} to {3},{4} with'
-        part_2 = 'a radial length of {5} km'
-        parts = part_1 + part_2
-        return  parts.format(self.shape, self.north, self.west, self.south,
-                             self.east, self.radial)
+        msg = """Making {0} shapes starting from {1},{2} to {3},{4} with
+    a radial length of {5} km"""
+        return  msg.format(self.shape, self.north, self.west, self.south,
+                           self.east, self.radial)
 
 
     def metadata(self):
@@ -163,17 +191,7 @@ class Tiles():
 #        #write geojson layer to open file
 #        myfile.close()  # close file
 
-    def f_name(self):
-        """
-        Construct filename string
 
-        Dependencies:
-        Tiles
-        """
-
-
-        print(self.shape + '_' + str(self.radial) + 'km')
-        return self.shape + '_' + str(self.radial) + 'km'
 
     def point_radial_distance(self, coords, brng, radial):
         """
@@ -316,7 +334,7 @@ class Tiles():
         print('\n4/7 deriving hexagon polygons from intersection data')
         (row, col, last_lat_row, poly_id) = (1, 1, 0, 0)
 
-        while (top_left < (max_h) * (max_v)):
+        while top_left < max_h * max_v:
             vertex = [1 + top_left, 2 + top_left, max_v + 3 + top_left, \
                       (max_v * 2) + 2 + top_left, (max_v * 2) + \
                       1 + top_left, max_v + top_left]
@@ -358,7 +376,7 @@ class Tiles():
                                        "p_E":-9, "p_SE":-9, \
                                        "p_S":-9, "p_SW":-9, \
                                        "p_W":-9, "p_NW":-9})
-                    if  (bounds_e > bounds_w):
+                    if  bounds_e > bounds_w:
                         g_array.append(geopoly)
                         #append geojson geometry definition attributes to list
                         #tabular dataset
@@ -404,7 +422,6 @@ class Tiles():
         """
 
         self.shape = 'box'
-        self.filename = self.f_name()
         poly_id = 0
         (top_left, g_array, col, row) = (0, [], 1, 1)
         # g_array - array of geojson formatted geometry element
@@ -505,13 +522,13 @@ class Tiles():
         coords = self.aus_poly_coords(next_poly_array)
         print(len(coords))
         poly_array = u_mod.points_in_polygon(next_poly_array, coords, 'P_POI')
-        for poly in range(0, len(poly_array)):
-            poly_array[poly]['properties']['Aust'] = 0
-            if poly_array[poly]['properties']['P_POI'] > 0 \
-               or poly_array[poly]['properties']['Island'] > 0 or \
-               poly_array[poly]['properties']['Locality'] > 0 or \
-               poly_array[poly]['properties']['Boundary'] > 0:
-                poly_array[poly]['properties']['Aust'] = 1
+        for poly, poly_data in enumerate(poly_array):
+            poly_data['properties']['Aust'] = 0
+            if poly_data['properties']['P_POI'] > 0 \
+               or poly_data['properties']['Island'] > 0 or \
+               poly_data['properties']['Locality'] > 0 or \
+               poly_data['properties']['Boundary'] > 0:
+                poly_data['properties']['Aust'] = 1
                 #out_array.append(poly_array[poly])
 
         return poly_array
@@ -527,16 +544,16 @@ class Tiles():
         big_coords = shapes[0].points
         loc_poly_array = g_array
         coords = []
-        for poly in range(0, len(g_array)):
-            c_lon = loc_poly_array[poly]['properties']['lon']
-            c_lat = loc_poly_array[poly]['properties']['lat']
+        for poly, poly_val in enumerate(loc_poly_array):
+            c_lon = poly_val['properties']['lon']
+            c_lat = poly_val['properties']['lat']
             coords.append((c_lon, c_lat))
             for point in loc_poly_array[poly]['geometry']['coordinates'][0]:
                 coords.append((point[0], point[1]))
             unique_coords = np.unique(coords, axis=0) # remove duplicate coordinates
         in_coords = []
-        for subpolyptr in range(len(shapes[0].parts)-1):
-            sub_coords = big_coords[shapes[0].parts[subpolyptr]:shapes[0].parts[subpolyptr+1]]
+        for subpoly, ptr_val in enumerate(shapes[0].parts[:-1]):
+            sub_coords = big_coords[shapes[0].parts[subpoly]:shapes[0].parts[subpoly+1]]
             path = mpltPath.Path(sub_coords)
             np_arr = np.array(sub_coords)
             (arr_min, arr_max) = (np.min(np_arr, axis=0), np.max(np_arr, \
@@ -573,8 +590,8 @@ class Tiles():
         column counts for neighbour update
         """
         ref_table = []
-        for record in range(0, len(g_array)):
-            ref_table.append(g_array[record]['properties']['row'])
+        for record, rec_data in enumerate(g_array):
+            ref_table.append(rec_data['properties']['row'])
 
         ref_table_df = pd.DataFrame(ref_table)
         ref_table_df.columns = ['row']
@@ -590,8 +607,7 @@ class Tiles():
         neighbour update of geojson Polygon array
         """
         ref_table = []
-        for record in range(0, len(g_array)):
-            g_rec = g_array[record]
+        for record, g_rec in enumerate(g_array):
             ref_table.append([g_rec['properties']['a'], \
                               g_rec['properties']['p'], \
                               g_rec['properties']['row']])
@@ -599,19 +615,19 @@ class Tiles():
         ref_table_df = pd.DataFrame(ref_table)
         ref_table_df.columns = ['arr', 'poly', 'row']
 
-        for g_ref in range(0, len(g_array)):
-            g_poly = g_array[g_ref]['properties']['p']
+        for g_ref, g_rec in enumerate(g_array):
+            g_poly = g_rec['properties']['p']
             (pol_n, pol_ne, pol_e, pol_se, pol_s, pol_sw, pol_w, pol_nw) = \
             self.neighbours(g_array, g_poly, ref_table_df, \
                             odd_columns)
-            g_array[g_ref]['properties']['p_N'] = pol_n
-            g_array[g_ref]['properties']['p_NE'] = pol_ne
-            g_array[g_ref]['properties']['p_E'] = pol_e
-            g_array[g_ref]['properties']['p_SE'] = pol_se
-            g_array[g_ref]['properties']['p_S'] = pol_s
-            g_array[g_ref]['properties']['p_SW'] = pol_sw
-            g_array[g_ref]['properties']['p_W'] = pol_w
-            g_array[g_ref]['properties']['p_NW'] = pol_nw
+            g_rec['properties']['p_N'] = pol_n
+            g_rec['properties']['p_NE'] = pol_ne
+            g_rec['properties']['p_E'] = pol_e
+            g_rec['properties']['p_SE'] = pol_se
+            g_rec['properties']['p_S'] = pol_s
+            g_rec['properties']['p_SW'] = pol_sw
+            g_rec['properties']['p_W'] = pol_w
+            g_rec['properties']['p_NW'] = pol_nw
         return g_array
 
     def neighbours(self, g_array, poly, ref_table_df, column_count):

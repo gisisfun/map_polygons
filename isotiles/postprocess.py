@@ -13,7 +13,7 @@ import subprocess
 import pandas as pd
 
 
-from isotiles.parameters import Defaults
+from isotiles.__init__ import Defaults
 
 class PostProcess():
     """

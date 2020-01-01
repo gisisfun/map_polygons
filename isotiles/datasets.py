@@ -216,6 +216,3 @@ class DataSets:
                     self.zip_dir = 'kmlfiles'
                     self.zip_path = 'kmlfiles{slash}MODIS_C6_Australia_and_New_Zealand_24h.kml'
 
-
-
-

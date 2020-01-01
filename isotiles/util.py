@@ -15,7 +15,7 @@ from mapclassify import EqualInterval, NaturalBreaks, MaximumBreaks, BoxPlot, Qu
 import pandas as pd
 import matplotlib.path as mpltPath
 
-from isotiles.parameters import Defaults
+from isotiles.__init__ import Defaults
 from isotiles.datasets import DataSets
 from geojson import FeatureCollection, Polygon, Feature
 

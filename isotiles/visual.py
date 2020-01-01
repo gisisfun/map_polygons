@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import geopandas as gpd
-from isotiles.parameters import Defaults # OSVars,
+from isotiles.__init__ import Defaults # OSVars,
 #Visual
 
 
