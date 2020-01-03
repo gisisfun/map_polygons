@@ -48,7 +48,7 @@ Download Links
 *Map Polygons* - polgons.py
 - **geopy** for projection based point calculations for list.
 - **geojson** for encoding of the geometric shapes.
-- **matplotlib** find points inside polygons used to filter the coastline, and point of interest of the interior.
+- **matplotlib** find points inside polygons used to filter the coastline, and points of interest of the interior.
 - **pyshp** for encoding ESRI shapefiles.
 
 Note: additional operating system libraries are not required for the python modules listed above (Thank you @psmaAaron). This will be useful if your IT department does not support the GDAL libraries/executables on the operating system.
