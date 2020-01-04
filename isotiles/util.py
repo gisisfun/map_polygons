@@ -17,7 +17,7 @@ import pandas as pd
 import matplotlib.path as mpltPath
 
 from isotiles.__init__ import Defaults
-from isotiles.datasets import DataSets
+#from isotiles.datasets import DataSets
 from geojson import FeatureCollection, Polygon, Feature
 
 
@@ -125,7 +125,8 @@ class Util():
                  shapefiles: Defaults = defaults.shape_files_path,
                  geojson: Defaults = defaults.geojson_path,
                  csvfiles: Defaults = defaults.csv_files_path,
-                 slash: Defaults = defaults.slash):
+                 slash: Defaults = defaults.slash,
+                 json: Defaults = defaults.json_files_path):
 
         self.radial = radial
         self.shape = shape
@@ -135,7 +136,7 @@ class Util():
         self.csv_files_path = csvfiles
         self.filename = self.f_name()
         self.slash = slash
-
+        self.json_files_path = json
 
     def f_name(self):
         """
@@ -156,29 +157,29 @@ class Util():
             resource_data:
         """
 
-        if not os.path.isfile(resource_data.file_path.format(slash=self.slash)):
+        if not os.path.isfile(resource_data['file_path'].format(slash=self.slash)):
             print('Downloading {descr} file in {fmt} file format'\
-                  .format(fmt=resource_data.format, \
-                          descr=resource_data.description))
+                  .format(fmt=resource_data['format'], \
+                          descr=resource_data['description']))
 
-            urllib.request.urlretrieve(resource_data.down_url,
-                                       resource_data.zip_path.\
+            urllib.request.urlretrieve(resource_data['down_url'],
+                                       resource_data['zip_path'].\
                                        format(slash=self.slash))
-            if resource_data.zip_path.endswith('zip') is True:
+            if resource_data['zip_path'].endswith('zip') is True:
                 print('Unzipping {descr} file in {fmt} file format'\
-                    .format(descr=resource_data.description, \
-                            fmt=resource_data.format))
+                    .format(descr=resource_data['description'], \
+                            fmt=resource_data['format']))
                 print('extracting files')
                 Archive(\
-                        resource_data.zip_path.format(\
+                        resource_data['zip_path'].format(\
                                              slash=\
                                              self.slash)).\
-                        extractall(resource_data.zip_dir\
+                        extractall(resource_data['zip_dir']\
                                              .format(slash=self.slash))
         else:
             print('{descr} file in {fmt} file format exists'\
-                  .format(descr=resource_data.description, \
-                          fmt=resource_data.format))
+                  .format(descr=resource_data['description'], \
+                          fmt=resource_data['format']))
 
 
     def ref_files_polygons(self):
@@ -188,16 +189,17 @@ class Util():
 
         Input variables:
         """
-        ref_data = DataSets.Australia.ShapeFormat()
+        datasets = self.from_json_file('datasets.json')
+        ref_data = datasets['DataSets']['Australia']['ShapeFormat']
         self.file_deploy(ref_data)
 
-        ref_data = DataSets.AGILDataset.CSVFormat()
+        ref_data = datasets['DataSets']['AGILDataset']['CSVFormat']
         self.file_deploy(ref_data)
 
-        ref_data = DataSets.MBSP.CSVFormat()
+        ref_data = datasets['DataSets']['MBSP']['CSVFormat']
         self.file_deploy(ref_data)
 
-        ref_data = DataSets.NASAActiveFireData.ModisC61km.CSVFormat()
+        ref_data = datasets['DataSets']['NASAActiveFireData']['ModisC61km']['CSVFormat']
         self.file_deploy(ref_data)
 
     def ref_files_poly_wt(self):
@@ -207,19 +209,20 @@ class Util():
 
         Input variables:
         """
-        ref_data = DataSets.Australia.ShapeFormat()
+        datasets = self.from_json_file('DataSets.json')
+        ref_data = datasets['DataSets']['Australia']['ShapeFormat']
         self.file_deploy(ref_data)
 
-        ref_data = DataSets.StatisticalAreasLevel12011.ShapeFormat()
+        ref_data = datasets['DataSets']['StatisticalAreasLevel12011']['ShapeFormat']
         self.file_deploy(ref_data)
 
-        ref_data = DataSets.StatisticalAreasLevel12016.ShapeFormat()
+        ref_data = datasets['DataSets']['StatisticalAreasLevel12016']['ShapeFormat']
         self.file_deploy(ref_data)
 
-        ref_data = DataSets.AGILDataset.CSVFormat()
+        ref_data = datasets['DataSets']['AGILDataset']['CSVFormat']
         self.file_deploy(ref_data)
 
-        ref_data = DataSets.OpenStreetMaps.ShapeFormat()
+        ref_data = datasets['DataSets']['OpenStreetMaps']['ShapeFormat']
         self.file_deploy(ref_data)
 
     def coords_from_csv_latin1(self, file_name, lon_c, lat_c):
@@ -293,6 +296,15 @@ class Util():
         coords = [(x, y) for x, y in zip(longs, lats)]
         return coords
 
+    def from_json_file(self,file_name):
+        full_file_path = '{jsonpath}{slash}{fname}'.\
+                  format(jsonpath=self.json_files_path, fname=file_name, \
+                         slash=self.slash)
+        json_file = open(full_file_path,"r")
+        json_file_text = json_file.read()
+        json_dict = json.loads(json_file_text)
+        json_file.close()
+        return json_dict
 
     def points_in_polygon(self, g_array, lat_longs, g_label):
         """

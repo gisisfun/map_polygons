@@ -33,6 +33,13 @@ class Defaults:
         return 'kmlfiles'
 
     @property
+    def json_files_path(self):
+        """
+        Path to JSON files
+        """
+        return 'jsonfiles'
+
+    @property
     def geojson_path(self):
         """
         Path to GeoJSON files
