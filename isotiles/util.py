@@ -10,7 +10,8 @@ from pyunpack import Archive
 import numpy as np
 import shapefile
 import simplekml
-from mapclassify import EqualInterval, NaturalBreaks, MaximumBreaks, BoxPlot, Quantiles, Percentiles, FisherJenks, StdMean, UserDefined
+from mapclassify import EqualInterval, NaturalBreaks, MaximumBreaks, \
+BoxPlot, Quantiles, Percentiles, FisherJenks, StdMean, UserDefined
 
 import pandas as pd
 import matplotlib.path as mpltPath
@@ -18,6 +19,46 @@ import matplotlib.path as mpltPath
 from isotiles.__init__ import Defaults
 from isotiles.datasets import DataSets
 from geojson import FeatureCollection, Polygon, Feature
+
+
+def tabular_dataframe(g_array):
+    """
+    Not Implemented to date
+    
+    g_array
+    """
+
+#    tabular_list = []
+#    #num_coords = len(g_array[n]['geometry']['coordinates'][0])-2
+#    for i in range(0, num_coords):
+#        poly = g_array[n]['properties']['p']
+#        centre_lat = g_array[n]['properties']['lat']
+#        centre_lon = g_array[n]['properties']['long']
+#        bounds_n = g_array[n]['properties']['N']
+#        bounds_s = g_array[n]['properties']['S']
+#        bounds_e = g_array[n]['properties']['E']
+#        bounds_w = g_array[n]['properties']['W']
+#        tabular_line =[poly, centre_lat, centre_lon, \
+#                       bounds_n, bounds_s, bounds_e, bounds_w]
+#        tabular_list.append(tabular_line)
+#
+#    tabular_df = pd.DataFrame(tabular_list)
+#    #convert tabular array to tabular data frame
+#    tabular_df.columns = ['poly', 'lat', 'long', 'N', 'S', 'E', 'W']
+#    tabular_df.to_csv('csv{slash}{outfile}_dataset.csv' \
+#                      .format(outfile = outfile, slash = slash), \
+#                      sep = ',')
+#    return tabular_df
+    return g_array
+
+
+
+def to_geojson_fmt(g_array):
+    """
+    converts geojson Polygon data in array to FeatureCollection
+    """
+
+    return FeatureCollection(g_array)
 
 def classify(class_list, tb_classed):
     classed = False
@@ -39,11 +80,7 @@ def apply_classification(g_array,ref_col):
     break_list = []
     for i,val in enumerate(values_list):
         break_list.append(classify(the_breaks.bins, val))
-#    transparency = [[100, 'FF'], [95, 'F2'], [90, 'E6'], [85, 'D9'], 
-#                    [80, 'CC'], [75, 'BF'], [70, 'B3'],[65, 'A6'],[60, '99'],
-#                    [55, '8C'], [50, '80'], [45, '73'], [40, '66'], 
-#                    [35, '59'], [30, '4D'], [25, '40'],[20, '33'], [15, '26'],
-#                    [10, '1A'], [5, '0D'], [0, '00']]
+
     # kml alpha format #AABBGGRR
     c_hex_a_ref = ['ZZ000099', 'ZZ001AA6', 'ZZ0033B3', 'ZZ004DBF', 'ZZ004DCC',
                    'ZZ0066CC', 'ZZ0080D9', 'ZZ0099E6', 'ZZ0320FB', 'ZZ00CCFF']
@@ -51,18 +88,7 @@ def apply_classification(g_array,ref_col):
     for i, val in enumerate(c_hex_a_ref):
         c_hex_a.append(val.replace('ZZ','FF'))
     
-        
-    #print('values_list')
-    #print(values_list, len(values_list))
-    #print('distinct')
-    #values_distinct = list(dict.fromkeys(values_list))
-    #print(values_distinct, len(values_distinct))
-
-    #print('break_list')
-    #print(break_list, len(break_list))
-    #print('distinct')
     break_distinct = list(dict.fromkeys(break_list))
-    #print(break_distinct, len(break_distinct))
 
     #values_break = []
     old_val = []
@@ -71,17 +97,12 @@ def apply_classification(g_array,ref_col):
     for i,val in enumerate(values_list):
         new_val = values_list.index(val) #[i for i, e in enumerate(values_n) if e is val]
         if new_val != old_val:
-        
             #look up rgb colour values
             color_index = break_distinct.index(break_list[new_val])
-            #print(color_index)
-            #values_break.append([val,break_n[new_val],c_rgb[color_index]])
             
             old_val = new_val
         #rgb_breaks.append(c_rgb[color_index])
         hex_breaks.append(c_hex_a[color_index])
-    #print('values_break')
-    #print(values_break, len(values_break))
     return hex_breaks
 
 class Util():
@@ -521,6 +542,7 @@ class Util():
         prj.write(epsg)
         prj.close()
 
+
     def to_kml_file(self, g_array, kml_file, the_key="No_Key"):
         """
         Writes geojson Polygon array to kml file
@@ -597,60 +619,6 @@ class Util():
         msg = 'writing kml formatted {shape} dataset to file:' + kml_file +'.kml'
         print(msg.format(shape=self.shape, fname=self.filename))
         kml.save(full_file_path)
-
-#    def to_kml_file(self, g_array, kml_file):
-#        """
-#        Writes geojson Polygon array to kml file
-#            g_array:
-#            kml_file:
-#        """
-#
-#        file_name_templ = '{kPath}{slash}'+kml_file+'.kml'
-#        full_file_path = file_name_templ.format(kPath=self.kml_files_path,
-#                                                shape=self.shape,
-#                                                size=self.radial,
-#                                                slash=self.slash,
-#                                                fname=self.filename)
-#        kml = simplekml.Kml()
-#        #setup columns
-#        props_dict = g_array[0]['properties']
-#
-#        key_names_array = []
-#        for key in props_dict:
-#            key_names_array.append(key)
-#
-#        for poly, val in enumerate(g_array):
-#            (i, key_values_array) = (0, [])
-#            rec_descr = ""
-#            for key in props_dict:
-#                key_values_array.append(val['properties'][key])
-#
-#                if i is not len(props_dict)-1:
-#                    rec_descr = rec_descr + key + ' = ' \
-#                    + str(val['properties'][key]) + '\n'
-#                else:
-#                    rec_descr = rec_descr + key + ' = ' \
-#                    + str(val['properties'][key]) + '\n'
-#                i += 1
-#
-#            (points_str, points_t) = ("[", [])
-#            for points in g_array[poly]['geometry']['coordinates'][0]:
-#                points_t.append(tuple(points))
-#                points_str = points_str + "("\
-#                             + str(points[0]) + ","\
-#                             + str(points[1]) + "), "
-#
-#            pol = kml.newpolygon(name=str(key_values_array[0]))
-#            pol.outerboundaryis = points_t
-#            pol.innerpoundaryis = points_t
-#
-#            pol.description = rec_descr
-#            pol.style.polystyle.fill = 0
-#            pol.style.polystyle.color = simplekml.Color.red
-#
-#        msg = 'writing kml formatted {shape} dataset to file:' + kml_file +'.kml'
-#        print(msg.format(shape=self.shape, fname=self.filename))
-#        kml.save(full_file_path)
 
 
     def points_and_polygons(self, g_array):
@@ -740,41 +708,4 @@ def random_points_in_polygon(poly):
 
     return r_coords
 
-def tabular_dataframe(g_array):
-    """
-    Not Implemented to date
-    
-    g_array
-    """
 
-#    tabular_list = []
-#    #num_coords = len(g_array[n]['geometry']['coordinates'][0])-2
-#    for i in range(0, num_coords):
-#        poly = g_array[n]['properties']['p']
-#        centre_lat = g_array[n]['properties']['lat']
-#        centre_lon = g_array[n]['properties']['long']
-#        bounds_n = g_array[n]['properties']['N']
-#        bounds_s = g_array[n]['properties']['S']
-#        bounds_e = g_array[n]['properties']['E']
-#        bounds_w = g_array[n]['properties']['W']
-#        tabular_line =[poly, centre_lat, centre_lon, \
-#                       bounds_n, bounds_s, bounds_e, bounds_w]
-#        tabular_list.append(tabular_line)
-#
-#    tabular_df = pd.DataFrame(tabular_list)
-#    #convert tabular array to tabular data frame
-#    tabular_df.columns = ['poly', 'lat', 'long', 'N', 'S', 'E', 'W']
-#    tabular_df.to_csv('csv{slash}{outfile}_dataset.csv' \
-#                      .format(outfile = outfile, slash = slash), \
-#                      sep = ',')
-#    return tabular_df
-    return g_array
-
-
-
-def to_geojson_fmt(g_array):
-    """
-    converts geojson Polygon data in array to FeatureCollection
-    """
-
-    return FeatureCollection(g_array)
