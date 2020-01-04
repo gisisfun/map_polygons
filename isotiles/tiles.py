@@ -17,6 +17,85 @@ from isotiles.__init__ import Defaults
 #from isotiles.poi import POI
 from isotiles.util import Util
 
+
+
+def point_radial_distance(coords, brng, radial):
+    """
+    Calulate next point from coordinates and bearing
+
+    Dependencies:
+    None
+    """
+    return geodesic(kilometers=radial).destination(point=coords, bearing=brng)
+
+def line_intersection(line1, line2):
+    """
+    source: https://stackoverflow.com/questions/20677795/
+    how-do-i-compute-the-intersection-between-two-lines-in-python
+
+    Dependencies:
+    intersections,horizontal,vertical,Tiles
+    """
+
+
+    xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
+    ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
+
+    def det(a_val, b_val):
+        return a_val[0] * b_val[1] - a_val[1] * b_val[0]
+
+    div = det(xdiff, ydiff)
+    if div == 0:
+        raise Exception('lines do not intersect')
+
+    d_val = (det(*line1), det(*line2))
+    (x_val, y_val) = (det(d_val, xdiff) / div, det(d_val, ydiff) / div)
+    return x_val, y_val
+
+
+
+def intersections(hor_line_list, vert_line_list):
+    """
+    Intersecting Lines as points
+
+    Dependencies:
+    horizontal,vertical,Tiles
+
+    Input variables:
+    hor_line_list:
+    vert_line_list:
+    """
+
+    print('\n3/7 deriving intersection point data between horizontal and vertical lines')
+    (intersect_list, hor_max, vert_max) = ([], len(hor_line_list), \
+     len(vert_line_list))
+    for h_val in range(0, hor_max):
+        for v_val in range(0, vert_max):
+            intersect_point = line_intersection(hor_line_list[h_val],
+                                                vert_line_list[v_val])
+            intersect_data = [intersect_point[1], intersect_point[0]]
+            intersect_list.append(intersect_data)
+
+    print('derived {0} points of intersection'.format(len(intersect_list)))
+    return intersect_list
+
+def column_counts(g_array):
+    """
+    column counts for neighbour update
+    """
+    ref_table = []
+    for g_rec in iter(g_array):
+        ref_table.append(g_rec['properties']['row'])
+
+        ref_table_df = pd.DataFrame(ref_table)
+        ref_table_df.columns = ['row']
+        #print(len(ref_table_df))
+
+    odd_columns = ref_table.count(1)
+    even_columns = ref_table.count(2)
+    #print(int(odd_columns), int(even_columns))
+    return odd_columns, even_columns
+
 def neighbour_poly_calc(poly, column_count):
     """
     Neighbour cell calculations
@@ -70,6 +149,33 @@ def neighbour_poly_calc(poly, column_count):
 
     return neighbour_list
 
+def neighbour_check(poly, ref_table_df, g_array):
+    """
+    Checks for existing polygon
+    """
+    val = -9
+    try:
+        ref_q = ref_table_df[(ref_table_df['poly'] == poly)]
+        arr_data = g_array[int(ref_q['arr'])]
+        val = poly
+    except IndexError:
+        pass
+    except TypeError:
+        pass
+    return val
+
+def aus_poly_intersect(g_array):
+    """
+    Separate continental polygons from non continental
+    """
+    (num_poly, isect_array) = (len(g_array), [])
+    a_val = 0
+    for poly in range(0, num_poly):
+        if g_array[poly]['properties']['Aust'] > 0:
+            g_array[poly]['properties']['a'] = a_val
+            isect_array.append(g_array[poly])
+            a_val += 1
+    return isect_array
 
 class Tiles():
     """
@@ -193,15 +299,6 @@ class Tiles():
 
 
 
-    def point_radial_distance(self, coords, brng, radial):
-        """
-        Calulate next point from coordinates and bearing
-
-        Dependencies:
-        None
-        """
-        return geodesic(kilometers=radial).destination(point=coords, bearing=brng)
-
     def horizontal(self):
         """
         Horizontal Reference Points
@@ -219,7 +316,7 @@ class Tiles():
                 i = 0
 
             latlong = [new_north, self.east]
-            p_val = self.point_radial_distance(latlong, angle, self.radial *\
+            p_val = point_radial_distance(latlong, angle, self.radial *\
                                            self.hor_seq[i])
             new_north = p_val[0]
             longitudes.append([[p_val[0], self.west], [p_val[0], self.east]])
@@ -247,64 +344,13 @@ class Tiles():
                 i = 0
 
             latlong = [self.north, new_west]
-            p_val = self.point_radial_distance(latlong, angle, \
+            p_val = point_radial_distance(latlong, angle, \
                                                self.radial*self.vert_seq[i])
             new_west = p_val[1]
             latitudes.append([[self.north, p_val[1]], [self.south, p_val[1]]])
             i += 1
 
         return latitudes
-
-
-    def line_intersection(self, line1, line2):
-        """
-        source: https://stackoverflow.com/questions/20677795/
-        how-do-i-compute-the-intersection-between-two-lines-in-python
-
-        Dependencies:
-        intersections,horizontal,vertical,Tiles
-        """
-
-
-        xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
-        ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
-
-        def det(a_val, b_val):
-            return a_val[0] * b_val[1] - a_val[1] * b_val[0]
-
-        div = det(xdiff, ydiff)
-        if div == 0:
-            raise Exception('lines do not intersect')
-
-        d_val = (det(*line1), det(*line2))
-        (x_val, y_val) = (det(d_val, xdiff) / div, det(d_val, ydiff) / div)
-        return x_val, y_val
-
-    def intersections(self, hor_line_list, vert_line_list):
-        """
-        Intersecting Lines as points
-
-        Dependencies:
-        horizontal,vertical,Tiles
-
-        Input variables:
-        hor_line_list:
-        vert_line_list:
-        """
-
-
-        print('\n3/7 deriving intersection point data between horizontal and vertical lines')
-        (intersect_list, hor_max, vert_max) = ([], len(hor_line_list), \
-         len(vert_line_list))
-        for h_val in range(0, hor_max):
-            for v_val in range(0, vert_max):
-                intersect_point = self.line_intersection(hor_line_list[h_val],
-                                                         vert_line_list[v_val])
-                intersect_data = [intersect_point[1], intersect_point[0]]
-                intersect_list.append(intersect_data)
-
-        print('derived {0} points of intersection'.format(len(intersect_list)))
-        return intersect_list
 
 
 
@@ -485,6 +531,7 @@ class Tiles():
 
         # shapefile contains multipolygons
         shapes = shape_file.shapes()
+        #print(len(shapes))
         big_coords = shapes[0].points
         # get the query polygons
 
@@ -520,9 +567,9 @@ class Tiles():
 
         print('Polygons Centroids and Offset Vertices')
         coords = self.aus_poly_coords(next_poly_array)
-        print(len(coords))
+        #print(len(coords))
         poly_array = u_mod.points_in_polygon(next_poly_array, coords, 'P_POI')
-        for poly, poly_data in enumerate(poly_array):
+        for poly_data in iter(poly_array):
             poly_data['properties']['Aust'] = 0
             if poly_data['properties']['P_POI'] > 0 \
                or poly_data['properties']['Island'] > 0 or \
@@ -552,7 +599,9 @@ class Tiles():
                 coords.append((point[0], point[1]))
             unique_coords = np.unique(coords, axis=0) # remove duplicate coordinates
         in_coords = []
-        for subpoly, ptr_val in enumerate(shapes[0].parts[:-1]):
+        len_parts = len(shapes[0].parts[:-1])
+        #print(len_parts)
+        for subpoly in range(len_parts):
             sub_coords = big_coords[shapes[0].parts[subpoly]:shapes[0].parts[subpoly+1]]
             path = mpltPath.Path(sub_coords)
             np_arr = np.array(sub_coords)
@@ -571,43 +620,13 @@ class Tiles():
         return in_coords
 
 
-    def aus_poly_intersect(self, g_array):
-        """
-        Separate continental polygons from non continental
-        """
-        (num_poly, isect_array) = (len(g_array), [])
-        a_val = 0
-        for poly in range(0, num_poly):
-            if g_array[poly]['properties']['Aust'] > 0:
-                g_array[poly]['properties']['a'] = a_val
-                isect_array.append(g_array[poly])
-                a_val += 1
-        return isect_array
-
-
-    def column_counts(self, g_array):
-        """
-        column counts for neighbour update
-        """
-        ref_table = []
-        for record, rec_data in enumerate(g_array):
-            ref_table.append(rec_data['properties']['row'])
-
-        ref_table_df = pd.DataFrame(ref_table)
-        ref_table_df.columns = ['row']
-        print(len(ref_table_df))
-
-        odd_columns = ref_table.count(1)
-        even_columns = ref_table.count(2)
-        print(int(odd_columns), int(even_columns))
-        return odd_columns, even_columns
 
     def update_neighbours(self, g_array, odd_columns, even_columns):
         """
         neighbour update of geojson Polygon array
         """
         ref_table = []
-        for record, g_rec in enumerate(g_array):
+        for g_rec in iter(g_array):
             ref_table.append([g_rec['properties']['a'], \
                               g_rec['properties']['p'], \
                               g_rec['properties']['row']])
@@ -615,7 +634,7 @@ class Tiles():
         ref_table_df = pd.DataFrame(ref_table)
         ref_table_df.columns = ['arr', 'poly', 'row']
 
-        for g_ref, g_rec in enumerate(g_array):
+        for g_rec in iter(g_array):
             g_poly = g_rec['properties']['p']
             (pol_n, pol_ne, pol_e, pol_se, pol_s, pol_sw, pol_w, pol_nw) = \
             self.neighbours(g_array, g_poly, ref_table_df, \
@@ -630,102 +649,29 @@ class Tiles():
             g_rec['properties']['p_NW'] = pol_nw
         return g_array
 
+
+
     def neighbours(self, g_array, poly, ref_table_df, column_count):
         """
         neighbour update of geojson hex Polygon array
         """
-        (val_n, val_ne, val_e, val_se, val_s, val_sw, val_w, val_nw) = \
-        (-9, -9, -9, -9, -9, -9, -9, -9)
-        #poly_ref = self.Neighbour_Calc(poly,column_count)
         nb_list = neighbour_poly_calc(poly, column_count)
 
-        (poly_n, poly_ne, poly_e, poly_se, poly_s, poly_sw, poly_w, poly_nw) = \
-        (nb_list[self.shape]['north'], nb_list[self.shape]['north_east'],\
-          nb_list[self.shape]['east'], nb_list[self.shape]['south_east'],\
-          nb_list[self.shape]['south'], nb_list[self.shape]['south_west'],\
-          nb_list[self.shape]['west'], nb_list[self.shape]['north_west'])
+        
+        poly_list = (nb_list[self.shape]['north'], 
+                     nb_list[self.shape]['north_east'],
+                     nb_list[self.shape]['east'], 
+                     nb_list[self.shape]['south_east'],
+                     nb_list[self.shape]['south'], 
+                     nb_list[self.shape]['south_west'],
+                     nb_list[self.shape]['west'], 
+                     nb_list[self.shape]['north_west'])
+        val_list = []
+        for poly in iter(poly_list):
+            val_list.append(neighbour_check(poly, ref_table_df, g_array))
 
-        # North Neighbour
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_n)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_n = poly_n
-        except IndexError:
-            pass
-        except TypeError:
-            pass
-
-        # North East Neighbour
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_ne)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_ne = poly_ne
-        except IndexError:
-            pass
-        except TypeError:
-            pass
-
-        # East Neighbour
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_e)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_e = poly_e
-        except IndexError:
-            pass
-        except TypeError:
-            pass
-
-        # South East Neighbour
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_se)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_se = poly_se
-        except IndexError:
-            pass
-        except TypeError:
-            pass
-
-        # South Neighbour
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_s)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_s = poly_s
-        except IndexError:
-            pass
-        except TypeError:
-            pass
-
-        # South West Neighbour
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_sw)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_sw = poly_sw
-        except IndexError:
-            pass
-        except TypeError:
-            pass
-
-        # West Neighbour
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_w)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_w = poly_w
-        except IndexError:
-            pass
-        except TypeError:
-            pass
-
-        # North West Neighbour
-        try:
-            ref_q = ref_table_df[(ref_table_df['poly'] == poly_nw)]
-            arr_data = g_array[int(ref_q['arr'])]
-            val_nw = poly_nw
-        except IndexError:
-            pass
-        except TypeError:
-            pass
-
-        return val_n, val_ne, val_e, val_se, val_s, val_sw, val_w, val_nw
+        return val_list 
+    #val_n, val_ne, val_e, val_se, val_s, val_sw, val_w, val_nw
 
 
     def hexagons(self):
@@ -736,13 +682,13 @@ class Tiles():
         print(self.params())
         hors = self.horizontal()
         verts = self.vertical()
-        intersects = self.intersections(hors, verts)
+        intersects = intersections(hors, verts)
         hex_array = self.hex_array(intersects, len(hors), len(verts))
         poi_hex_array = self.add_poly_poi(hex_array)
-        (odd, even) = self.column_counts(poi_hex_array)
+        (odd, even) = column_counts(poi_hex_array)
         nb_poi_hex_array = self.update_neighbours(poi_hex_array, odd, even)
         # cut out ocean polygons
-        aus_hex_array = self.aus_poly_intersect(nb_poi_hex_array)
+        aus_hex_array = aus_poly_intersect(nb_poi_hex_array)
         # add neighbouur reference data
         nb_aus_hex_array = self.update_neighbours(aus_hex_array, odd, even)
         # return output from function
@@ -756,13 +702,13 @@ class Tiles():
         print(self.params())
         hors = self.horizontal()
         verts = self.vertical()
-        intersects = self.intersections(hors, verts)
+        intersects = intersections(hors, verts)
         box_array = self.box_array(intersects, len(hors), len(verts))
         poi_box_array = self.add_poly_poi(box_array)
-        (odd, even) = self.column_counts(poi_box_array)
+        (odd, even) = column_counts(poi_box_array)
         nb_poi_box_array = self.update_neighbours(poi_box_array, odd, even)
         # cut out ocean polygons
-        aus_box_array = self.aus_poly_intersect(nb_poi_box_array)
+        aus_box_array = aus_poly_intersect(nb_poi_box_array)
         # add neighbouur reference data
         nb_aus_box_array = self.update_neighbours(aus_box_array, odd, even)
         #print("100% progress: It's not over til it's over")
