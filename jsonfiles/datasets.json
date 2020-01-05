@@ -42,7 +42,9 @@
                 "zip_path": "csv{slash}agil_locations20190208.csv"}},
  "OpenStreetMaps":
 {"ShapeFormat":
-                {"description": "OpenStreetMaps", "format": "Shape", "file_path": "shapefiles{slash}gis_osm_places_free_1.shp'", "down_url": "https://download.geofabrik.de/australia-oceania/australia-latest-free.shp.zip", 
+                {"description": "OpenStreetMaps",
+ "format": "Shape", 
+"file_path": "shapefiles{slash}gis_osm_places_free_1.shp", "down_url": "https://download.geofabrik.de/australia-oceania/australia-latest-free.shp.zip", 
                 "zip_dir": "shapefiles", 
                 "zip_path": "shapefiles{slash}australia-latest-free.shp.zip"}},
 
