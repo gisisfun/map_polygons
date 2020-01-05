@@ -34,16 +34,12 @@ class PostProcess():
                  vrt: Defaults = defaults.vrt_files_path,
                  csv: Defaults = defaults.csv_files_path,
                  spatialite: Defaults = defaults.spatialite_path,
-                 sql: Defaults = defaults.sql_files_path,
-                 slash: Defaults = defaults.slash,
-                 ogr2ogr_com: Defaults = defaults.ogr2ogr,
-                 spatialite_com: Defaults = defaults.spatialite,
-                 extn: Defaults = defaults.extn):
+                 sql: Defaults = defaults.sql_files_path):
 
         os.environ['SPATIALITE_SECURITY'] = 'relaxed'
         self.radial = radial
         self.shape = shape
-        self.charset = 'CP1252'
+
 
         self.spatialite_path = spatialite
         self.sql_files_path = sql
@@ -55,17 +51,50 @@ class PostProcess():
         self.csv_files_path = csv
         self.spatialite_path = spatialite
         self.sql_files_path = sql
-
-
-        self.ogr2ogr = ogr2ogr_com # '/usr/bin/ogr2ogr'
-        self.slash = slash # '/'
-        self.extn = "SELECT load_extension('"+extn+"');"
-        self.spatialite = spatialite_com
-
-	my_os = str(os.name)
+        my_os = str(os.name)
         if my_os == 'nt':
             gdal_vars = {'GDAL_DATA': 'C:\\OSGeo4W64\\share\\gdal'}
             os.environ.update(gdal_vars)
+
+    @property
+    def ogr2ogr(self):
+        """
+        Long interval to next reference point
+        """
+        defaults = Defaults()
+        return defaults.ogr2ogr
+
+    @property
+    def slash(self):
+        """
+        Long interval to next reference point
+        """
+        defaults = Defaults()
+        return defaults.slash
+
+
+    @property
+    def extn(self):
+        """
+        Long interval to next reference point
+        """
+        defaults = Defaults()
+        return "SELECT load_extension('"+defaults.extn+"');"
+
+    @property
+    def spatialite(self):
+        """
+        Long interval to next reference point
+        """
+        defaults = Defaults()
+        return defaults.spatialite
+
+    @property
+    def charset(self):
+        """
+        Long interval to next reference point
+        """
+        return 'CP1252'
 
 
     def vrt_shape_and_size(self, dir_name, template_file, new_file):
