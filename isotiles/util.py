@@ -209,7 +209,7 @@ class Util():
 
         Input variables:
         """
-        datasets = self.from_json_file('DataSets.json')
+        datasets = self.from_json_file('datasets.json')
         ref_data = datasets['DataSets']['Australia']['ShapeFormat']
         self.file_deploy(ref_data)
 
