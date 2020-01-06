@@ -35,12 +35,8 @@ class Visual:
     def map_data(self):
         """
         """
-        shp_path = "{shapePath}{slash}{shape}_{size}km_{weight}_11_16.shp".\
-                   format(slash=self.slash,\
-                          shapePath=self.shape_files_path,\
-                          shape=self.shape,\
-                          size=self.radial,\
-                          weight=self.weight)
+        shp_path = "{}{}{}_{}km_{}_11_16.shp".format(self.shape_files_path, 
+                    self.slash, self.shape, self.radial, self.weight)
 
         shape_file = gpd.read_file(shp_path)
         shape_file['rel_need_for_assistance'] = \
@@ -54,11 +50,9 @@ class Visual:
                                                    np.nan).notnull().\
                      all(axis=1)]  # .astype(np.float64)
         plt.rcParams["figure.figsize"] = (10, 6)
-        the_title = """2016 to 2011 Relative Change in Need For Assistance \
-(Quantiles) for Statistical Area Level 1\n{weight} Weighted {shape} {size}km""".\
-        format(weight=self.weight.title(),\
-               shape=self.shape,
-               size=self.radial)
+        the_title = "2016 to 2011 Relative Change in Need For Assistance \
+(Quantiles) for Statistical Area Level 1\n{} Weighted {} {}km".\
+        format(self.weight.title(), self.shape, self.radial)
         shape_file.plot(column='rel_need_for_assistance', scheme='quantiles', \
                 k=5, linewidth=0, cmap='Reds', legend=True).\
                 set_title(the_title)
@@ -68,9 +62,8 @@ and 2011""", xy=(0.1, .08), xycoords='figure fraction', \
                      fontsize=12, color='#555555')
         plt.axis('off')
 
-        plt.savefig("""{imagePath}{slash}{shape}_{size}km_rel_need_for_assistance_by_{weight}_\
-weight.png""".\
-                    format(shape=self.shape, slash=self.slash, size=self.radial,\
-                           imagePath=self.images_path, weight=self.weight),\
+        plt.savefig("{}{}{}_{}km_rel_need_for_assistance_by_{}_weight.png".\
+                    format(self.images_path, self.slash, self.shape, 
+                           self.radial, self.weight),
                     bbox_inches='tight')
         #plt.show() #

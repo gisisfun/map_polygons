@@ -157,29 +157,27 @@ class Util():
             resource_data:
         """
 
-        if not os.path.isfile(resource_data['file_path'].format(slash=self.slash)):
+        if not os.path.isfile(resource_data['file_path'].replace('/',self.slash)):
             print('Downloading {descr} file in {fmt} file format'\
                   .format(fmt=resource_data['format'], \
                           descr=resource_data['description']))
 
             urllib.request.urlretrieve(resource_data['down_url'],
                                        resource_data['zip_path'].\
-                                       format(slash=self.slash))
+                                       replace('/', self.slash))
             if resource_data['zip_path'].endswith('zip') is True:
                 print('Unzipping {descr} file in {fmt} file format'\
                     .format(descr=resource_data['description'], \
                             fmt=resource_data['format']))
                 print('extracting files')
                 Archive(\
-                        resource_data['zip_path'].format(\
-                                             slash=\
-                                             self.slash)).\
-                        extractall(resource_data['zip_dir']\
-                                             .format(slash=self.slash))
+                        resource_data['zip_path'].replace('/',self.slash)).\
+                        extractall(resource_data['zip_dir'].replace('/', 
+                                   self.slash))
         else:
-            print('{descr} file in {fmt} file format exists'\
-                  .format(descr=resource_data['description'], \
-                          fmt=resource_data['format']))
+            print('{} file in {} file format exists'\
+                  .format(resource_data['description'], 
+                          resource_data['format']))
 
 
     def ref_files_polygons(self):
@@ -244,8 +242,8 @@ class Util():
             lineterminator='\r\n',
             quoting=csv.QUOTE_MINIMAL)
 
-        with open('{csvpath}{slash}{fname}'.format(csvpath=self.csv_files_path, \
-                  fname=file_name, slash=self.slash), encoding='latin1') as csvfile:
+        with open('{}{}{}'.format(self.csv_files_path, self.slash, file_name), 
+                  encoding='latin1') as csvfile:
             data = list(csv.reader(csvfile, dialect='mydialect'))
 
         longs = []
@@ -285,9 +283,8 @@ class Util():
             quoting=csv.QUOTE_MINIMAL)
 
 
-        with open('{csvpath}{slash}{fname}'.\
-                  format(csvpath=self.csv_files_path, fname=file_name, \
-                         slash=self.slash), newline='', encoding='utf-8') \
+        with open('{}{}{}'.format(self.csv_files_path, self.slash, file_name), 
+                  newline='', encoding='utf-8') \
                   as csvfile:
             data = list(csv.reader(csvfile, dialect='mydialect'))
 
@@ -297,9 +294,8 @@ class Util():
         return coords
 
     def from_json_file(self,file_name):
-        full_file_path = '{jsonpath}{slash}{fname}'.\
-                  format(jsonpath=self.json_files_path, fname=file_name, \
-                         slash=self.slash)
+        full_file_path = '{}{}{}'.format(self.json_files_path, self.slash, 
+                          file_name)
         json_file = open(full_file_path,"r")
         json_file_text = json_file.read()
         json_dict = json.loads(json_file_text)
@@ -360,12 +356,10 @@ class Util():
            file_name:
         """
 
-        msg = 'reading geojson formatted dataset from file:' + file_name +'.json'
-        print(msg.format(shape=self.shape, fname=self.filename))
-        full_file_templ = '{geojson}{slash}' + file_name + '.json'
-        my_file = open(full_file_templ.format(fname=file_name, \
-                                             slash=self.slash,\
-                                             geojson=self.geojson_path), 'r')
+        print('reading geojson formatted dataset from file:{}.json'.
+              format(self.filename))
+        my_file = open('{}{}{}.json'.format(self.geojson_path, self.slash, 
+                       file_name), 'r')
         #open file for reading geojson layer in geojson format
         gj_data = my_file.read()
         # read geojson layer to open file
@@ -389,13 +383,10 @@ class Util():
             gj_file:
         """
         content = FeatureCollection(g_array)
-        msg = 'writing geojson formatted {shape} dataset to file:' +\
-               gj_file +'.json'
-        print(msg.format(shape=self.shape, fname=self.filename))
-        file_path_templ = '{geojson}{slash}'+gj_file+'.json'
-        my_file = open(file_path_templ.format(fname=self.filename, \
-                                              slash=self.slash, \
-                                              geojson=self.geojson_path), 'w')
+        print('writing geojson formatted {shape} dataset to file:' +\
+               gj_file +'.json')
+        my_file = open('{}{}{}.json'.format(self.geojson_path, self.slash, 
+                       self.filename), 'w')
         #open file for writing geojson layer in geojson format
         my_file.write(str(content))  # write geojson layer to open file
         my_file.close()  # close file
@@ -412,10 +403,8 @@ class Util():
         #fName,fPath
         #tabular_list = []
 
-        shape_file_full_path = '{fPath}{slash}{fName}'.\
-                                format(slash=self.slash, \
-                                       fPath=shape_file_path, \
-                                       fName=shape_file_name)
+        shape_file_full_path = '{}{}{}'.format(shape_file_path, self.slash, 
+                                shape_file_name)
         #prjPath = fPath + '.prj'
         shape_file = shapefile.Reader(shape_file_full_path) # , shapeType=3)
         shapes = shape_file.shapes()
@@ -503,12 +492,8 @@ class Util():
         """
 
         #tabular_list = []
-        file_path_templ = '{shapefiles}{slash}'+shape_file
-        full_file_path = file_path_templ.format(shape=self.shape,
-                                                size=self.radial,
-                                                slash=self.slash,
-                                                shapefiles=self.shape_files_path,
-                                                fname=self.filename)
+        full_file_path = '{}{}{}'.format(self.shape_files_path, self.slash,  
+                                                shape_file)
         prj_path = full_file_path + '.prj'
         w_file = shapefile.Writer(full_file_path) # , shapeType=3)
         #setup columns
@@ -567,13 +552,9 @@ class Util():
             hex_list = apply_classification(g_array,the_key)
 
         # End New Bit
-        ###
-        file_name_templ = '{kPath}{slash}'+kml_file+'.kml'
-        full_file_path = file_name_templ.format(kPath=self.kml_files_path,
-                                                shape=self.shape,
-                                                size=self.radial,
-                                                slash=self.slash,
-                                                fname=self.filename)
+        ### 
+        full_file_path = '{}{}{}.kml'.format(self.kml_files_path, 
+                                                self.slash, kml_file)
         kml = simplekml.Kml()
 
         #setup columns
@@ -646,13 +627,15 @@ class Util():
 
         (point_list, num_poly) = ([], len(g_array))
 
-        for poly in range(0, num_poly):
-            num_coords = len(g_array[poly]['geometry']['coordinates'][0])-2
-            poly_id = g_array[poly]['properties']['p']
-            for i in range(0, num_coords):
+        for poly in iter(g_array):
+            num_coords = len(poly['geometry']['coordinates'][0])-2
+            poly_id = poly['properties']['p']
+            #for i in range(0, num_coords):
+            for i in inter(poly['geometry']['coordinates'][0][:-2]):
                 point_list.append( \
-                    [poly_id, str(g_array[poly]['geometry']['coordinates'][0][i][0]) + \
-                     str(g_array[poly]['geometry']['coordinates'][0][i][1])])
+                    [poly_id, 
+                     str(poly['geometry']['coordinates'][0][i][0]) + \
+                     str(poly['geometry']['coordinates'][0][i][1])])
         return point_list
 
 
@@ -669,10 +652,8 @@ class Util():
 
         point_df = pd.DataFrame(points_list)
         point_df.columns = ['poly', 'latlong']
-        point_df.to_csv('{csv}{slash}{outfile}_points.csv' \
-                        .format(outfile=self.filename, \
-                                slash=self.slash,
-                                csv=self.csv_files_path), sep=',')
+        point_df.to_csv('{}{}{}_points.csv'.format(self.csv_files_path, 
+                        self.slash, self.filename), sep=',')
         point_df_a = point_df  # make copy of dataframe
         process_point_df = pd.merge(point_df, point_df_a, on='latlong')
         # merge columns of same dataframe on concatenated latlong
@@ -683,10 +664,9 @@ class Util():
                           copy().sort_values(by=['poly_x']).drop_duplicates()
         #just leave polygon greferences and filter output
 
-        output_point_df.to_csv('{csv}{slash}{outfile}_neighbours.csv' \
-                               .format(outfile=self.filename, \
-                                slash=self.slash,
-                                       csv=self.csv_files_path), \
+        output_point_df.to_csv('{}{}{}_neighbours.csv' \
+                               .format(self.csv_files_path, self.slash, 
+                                       self.filename), \
                                sep=',', index=False)
 
 

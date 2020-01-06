@@ -105,18 +105,11 @@ class PostProcess():
         template_file:
         new_file:
         """
-        file_templ = '{dirname}{slash}{file}'
-        in_file = open(file_templ.\
-                      format(dirname=dir_name,\
-                             file=template_file,\
-                             slash=self.slash), "r")
+        in_file = open(dir_name+self.slash+template_file, "r")
         in_file_text = in_file.read()
         in_file.close()
 
-        outfile = open(file_templ.\
-                       format(dirname=dir_name,\
-                              file=new_file,\
-                              slash=self.slash), "w")
+        outfile = open('{}{}{}'.format(dir_name, self.slash, new_file), "w")
         out_file_text = in_file_text.\
                       replace('57', str(self.radial)).\
                       replace('hex', self.shape).\
@@ -131,26 +124,17 @@ class PostProcess():
         Customise shape and size for spatialite command files
 
         dir_name:
-        template_file:        dir_name:
         template_file:
         new_file:
-        new_file:
         """
-        file_templ = '{dirname}{slash}{file}'
-        in_file = open(file_templ.\
-                      format(dirname=dir_name,\
-                             file=template_file,\
-                             slash=self.slash), "r")
+        in_file = open('{}{}{}'.format(dir_name, self.slash, template_file), "r")
         in_file_text = in_file.read()
         in_file.close()
 
-        out_file = open(file_templ.\
-                       format(dirname=dir_name,\
-                              file=new_file,\
-                              slash=self.slash), "w")
-        out_file_text = in_file_text.replace('57', str(self.radial)).\
-                      replace('hex', self.shape).\
-                      replace('/', self.slash)
+        out_file = open('{}{}{}'.format(dir_name, self.slash, new_file), "w")
+        out_file_text = in_file_text.replace('57', str(self.radial))\
+                        .replace('hex', self.shape)\
+                        .replace('/', self.slash)
         out_file.write(out_file_text)
         out_file.close()
         return out_file_text
@@ -163,14 +147,8 @@ class PostProcess():
         sql_file:
         db_file:
         """
-        db_text = '{SplitePath}{slash}{dbfile}.sqlite'.\
-                  format(dbfile=db_file,\
-                         slash=self.slash,
-                         SplitePath=self.spatialite_path)
-        sql_text = "{SplitePath}{slash}{sqlfile}".\
-                   format(sqlfile=sql_file,\
-                          slash=self.slash,
-                          SplitePath=self.spatialite_path)
+        db_text = '{}{}{}.sqlite'.format(self.spatialite_path, self.slash, db_file)
+        sql_text = '{}{}{}'.format(self.spatialite_path, self.slash, sql_file)
         process_1 = subprocess.Popen(["cat", sql_text], stdout=subprocess.PIPE)
         process_2 = subprocess.Popen([self.spatialite, db_text], \
                                      stdin=process_1.stdout)
@@ -187,15 +165,11 @@ class PostProcess():
         shape_file: shape file at new projection
         srid: EPSG value for reprojection
         """
-        shape_files_text = '{sFiles}{slash}{shapefile}.shp'.\
-                          format(shapefile=shape_file, \
-                                 slash=self.slash, \
-                                 sFiles=self.shape_files_path)
-        geojson_text = '{gFiles}{slash}{geojsonfile}.json'.\
-                       format(geojsonfile=geojson_file,\
-                              slash=self.slash,\
-                              gFiles=self.geojson_path)
-        epsg_text = 'EPSG:{srid}'.format(srid=srid)
+        shape_files_text = '{}{}{}.shp'.format(self.shape_files_path, 
+                            self.slash, shape_file)
+        geojson_text = '{}{}{}.json'.format(self.geojson_path, self.slash, 
+                        geojson_file)
+        epsg_text = 'EPSG:{}'.format(srid)
         shp_options = [self.ogr2ogr, '-f', 'ESRI Shapefile', \
                        shape_files_text, '-t_srs', epsg_text, geojson_text]
         try:
@@ -215,15 +189,12 @@ class PostProcess():
         shape_out: shape file at new projection
         srid: EPSG value for reprojection
         """
-        shape_templ = '{SFiles}{slash}{shapefile}.shp'
-        shape_in_text = shape_templ.format(shapefile=shape_in, \
-                                           slash=self.slash, \
-                                           SFiles=self.shape_files_path)
-        shape_out_text = shape_templ.format(shapefile=shape_out, \
-                                            slash=self.slash, \
-                                            SFiles=self.shape_files_path)
+        shape_in_text = '{}{}{}.shp'.format(self.shape_files_path, self.slash, \
+                         shape_in)
+        shape_out_text = '{}{}{}.shp'.format(self.shape_files_path, self.slash, \
+                         shape_out)
 
-        epsg_text = 'EPSG:{srid}'.format(srid=srid)
+        epsg_text = 'EPSG:{}'.format(srid)
         shp_options = [self.ogr2ogr, '-f', 'ESRI Shapefile', shape_out_text, \
                        '-t_srs', epsg_text, shape_in_text]
         try:
@@ -246,18 +217,10 @@ class PostProcess():
         print('sqlfile: {0} vrt: {1} shapefile: {2}'.format(sql_file, vrt_file, \
               shape_file))
 
-        shapefiles_text = '{SFiles}{slash}{shapefile}.shp'.\
-                          format(shapefile=shape_file,\
-                                 slash=self.slash,\
-                                 SFiles=self.shape_files_path)
-        vrt_text = '{VPath}{slash}{vrtfile}.vrt'.\
-                   format(vrtfile=vrt_file,\
-                          slash=self.slash,\
-                          VPath=self.vrt_files_path)
-        sql_text = '@{SqlPath}{slash}{sqlfile}.sql'.\
-                   format(sqlfile=sql_file,\
-                          slash=self.slash, \
-                          SqlPath=self.sql_files_path)
+        shapefiles_text ='{}{}{}.shp'.format(self.shape_files_path, self.slash, \
+                         shape_file)
+        vrt_text = '{}{}{}.vrt'.format(self.vrt_files_path, self.slash, vrt_file)
+        sql_text = '@{}{}{}.sql'.format(self.sql_files_path, self.slash, sql_file)
 
         shp_options = [self.ogr2ogr, '-f', 'ESRI Shapefile', shapefiles_text \
                        , vrt_text, '-dialect', 'sqlite', '-sql', sql_text]
@@ -279,10 +242,8 @@ class PostProcess():
         sql_file:
         db_name:
         """
-        file = open("{SplitePath}{slash}{file}.txt".\
-                             format(slash=self.slash,
-                                    SplitePath=self.spatialite_path,\
-                                    file=sql_file), "r")
+        file = open("{}{}{}.txt".format(self.spatialite_path, self.slash,
+                    sql_file), "r")
         sql_text = file.read()
         file.close()
 
@@ -290,69 +251,53 @@ class PostProcess():
 
         subprocess.check_output( \
                                 ["sqlite3", \
-                                 "{Splite}{slash}{db}.sqlite".\
-                                 format(db=db_name,\
-                                        slash=self.slash,\
-                                        Splite=self.spatialite_path)], \
+                                 "{ }{ }{}.sqlite".\
+                                 format(self.spatialite_path, self.slash, 
+                                        db_name)], \
                                         input=bytes(the_sql.encode("utf-8")))
 
 
-    def shp_to_db(self, filename, db_name, tbl_name, srid):
+    def shp_to_db(self, file_name, db_name, tbl_name, srid):
         """
 
         db_name:
         tbl_name:
         srid:
         """
-        with sqlite3.connect("{SplitePath}{slash}{db}.sqlite".\
-                             format(db=db_name,\
-                                    slash=self.slash,
-                                    SplitePath=self.spatialite_path)\
+        with sqlite3.connect("{}{}{}.sqlite".\
+                             format(self.spatialite_path, self.slash, db_name)\
                              ) as conn:
             conn.enable_load_extension(True)
             sql_con = conn.cursor()
             sql_con.execute(self.extn)
             #c.execute("SELECT InitSpatialMetaData(1)")
-            sql_statement = """DROP TABLE IF EXISTS "{table}";""".\
-                           format(table=tbl_name)
+            sql_statement = """DROP TABLE IF EXISTS "{}";""".format(tbl_name)
             sql_con.execute(sql_statement)
             ## LOADING SHAPEFILE
-            sql_statement = """SELECT ImportSHP('{SFiles}{slash}{filename}', \
-            '{table}', '{charset}', {srid});""". \
-            format(filename=filename,\
-                   table=tbl_name,\
-                   charset=self.charset,\
-                   srid=srid,\
-                   slash=self.slash,\
-                   SFiles=self.shape_files_path)
+            sql_statement = "SELECT ImportSHP('{}{}{}', '{}', '{}', {});". \
+            format(self.shape_files_path, self.slash, file_name, tbl_name,
+                   self.charset,srid)
 
             sql_con.execute(sql_statement)
             conn.commit()
 
 
-    def csv_to_db(self, filename, db_name, tbl_name):
+    def csv_to_db(self, file_name, db_name, tbl_name):
         """
 
         db_name:
         tbl_name:
         """
-        cnx = sqlite3.connect('{SplitePath}{slash}{db}.sqlite'.\
-                              format(db=db_name,\
-                                     slash=self.slash,\
-                                     SplitePath=self.spatialite_path))
-        with sqlite3.connect("{SplitePath}{slash}{db}.sqlite".\
-                             format(db=db_name,\
-                                    slash=self.slash,
-                                    SplitePath=self.spatialite_path\
-                                    )) as conn:
+        cnx = sqlite3.connect('{}{}{}.sqlite'.\
+                              format(self.spatialite_path, self.slash, db_name))
+        with sqlite3.connect('{}{}{}.sqlite'.\
+                              format(self.spatialite_path, self.slash, 
+                                     db_name)) as conn:
             sql_con = conn.cursor()
-            sql_statement = """DROP TABLE IF EXISTS "{table}";""".\
-                           format(table=tbl_name)
+            sql_statement = 'DROP TABLE IF EXISTS "{}";'.format(tbl_name)
             sql_con.execute(sql_statement)
-            csv_df = pd.read_csv('{csvPath}{slash}{filename}.csv'.\
-                             format(filename=filename,\
-                                    slash=self.slash,\
-                                    csvPath=self.csv_files_path))
+            csv_df = pd.read_csv('{}{}{}.csv'.format(self.csv_files_path, 
+                                 self.slash, file_name))
             csv_df.to_sql(tbl_name, cnx)
 
 
@@ -362,15 +307,11 @@ class PostProcess():
         cmd_file:
         db_name:
         """
-        db_text = '{SplitePath}{slash}{db}.sqlite'.\
-                  format(db=db_name,\
-                         slash=self.slash,\
-                         SplitePath=self.spatialite_path)
+        db_text = '{}{}{}.sqlite'.format(self.spatialite_path, self.slash, 
+                   db_name)
 
-        cmd_text = '{vrtPath}{slash}{cmdfile}.vrt'.\
-                   format(cmdfile=cmd_file,\
-                          slash=self.slash,\
-                          vrtPath=self.vrt_files_path)
+        cmd_text = '{}{}{}.vrt'.format(self.vrt_files_path, self.slash, 
+                    cmd_file)
         options = [cmd_text, db_text, '<', cmd_text]
 
         try:
@@ -385,14 +326,10 @@ class PostProcess():
         shape_file:
         geojson_file:
         """
-        shape_files_text = '{sFiles}{slash}{shapefile}.shp'.\
-                          format(shapefile=shape_file, \
-                                 slash=self.slash, \
-                                 sFiles=self.shape_files_path)
-        geojson_text = '{gFiles}{slash}{geojsonfile}.json'.\
-                       format(geojsonfile=geojson_file,\
-                              slash=self.slash,\
-                              gFiles=self.geojson_path)
+        shape_files_text = '{}{}{}.shp'.format(self.shape_files_path, 
+                            self.slash, shape_file)
+        geojson_text = '{}{}{}.json'.format(self.geojson_path, self.slash, 
+                        geojson_file)
         #epsg_text = 'EPSG:{srid}'.format(srid=srid)
         shp_options = [self.ogr2ogr, '-f', 'GeoJSON', geojson_text, \
                        shape_files_text]
@@ -408,14 +345,10 @@ class PostProcess():
         shape_file:
         kml_file:
         """
-        shape_files_text = '{sFiles}{slash}{shapefile}.shp'.\
-                          format(shapefile=shape_file, \
-                                 slash=self.slash, \
-                                 sFiles=self.shape_files_path)
-        kml_text = '{kFiles}{slash}{kmlfile}.kml'.\
-                       format(kmlfile=kml_file,\
-                              slash=self.slash,\
-                              kFiles=self.kml_files_path)
+        shape_files_text = '{}{}{}.shp'.format(self.shape_files_path, 
+                            self.slash, shape_file)
+        kml_text = '{}{}{}.kml'.format(self.kml_files_path, self.slash, 
+                    kml_file)
         #epsg_text = 'EPSG:{srid}'.format(srid=srid)
         shp_options = [self.ogr2ogr, '-f', 'KML', kml_text, shape_files_text]
         try:

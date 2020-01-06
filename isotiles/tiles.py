@@ -18,7 +18,6 @@ from isotiles.__init__ import Defaults
 from isotiles.util import Util
 
 
-
 def point_radial_distance(coords, brng, radial):
     """
     Calulate next point from coordinates and bearing
@@ -27,6 +26,7 @@ def point_radial_distance(coords, brng, radial):
     None
     """
     return geodesic(kilometers=radial).destination(point=coords, bearing=brng)
+
 
 def line_intersection(line1, line2):
     """
@@ -51,7 +51,6 @@ def line_intersection(line1, line2):
     d_val = (det(*line1), det(*line2))
     (x_val, y_val) = (det(d_val, xdiff) / div, det(d_val, ydiff) / div)
     return x_val, y_val
-
 
 
 def intersections(hor_line_list, vert_line_list):
@@ -95,6 +94,7 @@ def column_counts(g_array):
     even_columns = ref_table.count(2)
     #print(int(odd_columns), int(even_columns))
     return odd_columns, even_columns
+
 
 def neighbour_poly_calc(poly, column_count):
     """
@@ -256,9 +256,6 @@ class Tiles():
     def params(self):
         """
         Construct feedback of user variables for user
-
-        Dependencies:
-        Tiles
         """
         msg = """Making {0} shapes starting from {1},{2} to {3},{4} with
     a radial length of {5} km"""
@@ -274,7 +271,8 @@ class Tiles():
 #                                           'West': self.west, 'East': self.east}}}
 #        layer_dict['Param'] = {}
 #        layer_dict['Param']['side_km'] = self.radial
-#        layer_dict['Param']['epsg'] = 4326
+#        layer_dict['Param']['epsg'] = 4326, 
+                       
 #        layer_dict['Param']['shape'] = self.shape
 #        layer_dict['Boxes'] = {}
 #        layer_dict['Boxes']['long'] = 1
@@ -296,7 +294,6 @@ class Tiles():
 #        myfile.write(str(json.dumps(layer_dict)))
 #        #write geojson layer to open file
 #        myfile.close()  # close file
-
 
 
     def horizontal(self):
@@ -353,7 +350,6 @@ class Tiles():
         return latitudes
 
 
-
     def hex_array(self, intersect_list, max_h, max_v):
         """
         Put it all together - deriving hexagon polygons from intersection data
@@ -366,8 +362,6 @@ class Tiles():
         max_h:
         max_v:
         """
-
-
         (g_array, tabular_list) = ([], [])
         (lat_offset, top_left, poly_row_count) = \
         (4, 0, int(max_v / len(self.hor_seq)))
@@ -466,7 +460,6 @@ class Tiles():
         Input variables:
         Provided
         """
-
         self.shape = 'box'
         poly_id = 0
         (top_left, g_array, col, row) = (0, [], 1, 1)
@@ -580,6 +573,7 @@ class Tiles():
 
         return poly_array
 
+
     def aus_poly_coords(self, g_array):
         """
         generate coords inside map layer polygons to fill continent
@@ -620,7 +614,6 @@ class Tiles():
         return in_coords
 
 
-
     def update_neighbours(self, g_array, odd_columns, even_columns):
         """
         neighbour update of geojson Polygon array
@@ -650,14 +643,12 @@ class Tiles():
         return g_array
 
 
-
     def neighbours(self, g_array, poly, ref_table_df, column_count):
         """
         neighbour update of geojson hex Polygon array
         """
         nb_list = neighbour_poly_calc(poly, column_count)
 
-        
         poly_list = (nb_list[self.shape]['north'], 
                      nb_list[self.shape]['north_east'],
                      nb_list[self.shape]['east'], 
@@ -671,14 +662,12 @@ class Tiles():
             val_list.append(neighbour_check(poly, ref_table_df, g_array))
 
         return val_list 
-    #val_n, val_ne, val_e, val_se, val_s, val_sw, val_w, val_nw
 
 
     def hexagons(self):
         """
         Process geojson Polygon array
         """
-
         print(self.params())
         hors = self.horizontal()
         verts = self.vertical()
@@ -694,11 +683,11 @@ class Tiles():
         # return output from function
         return nb_aus_hex_array
 
+
     def boxes(self):
         """
         Process geojson Polygon array
         """
-
         print(self.params())
         hors = self.horizontal()
         verts = self.vertical()
