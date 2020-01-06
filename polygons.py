@@ -21,9 +21,12 @@ def hexagons(theshape, bounds_north, bounds_south, bounds_east, bounds_west, the
     u_mod = Util(shape=theshape, radial=theradial)
     u_mod.ref_files_polygons()
     nb_aus_hex_array = t_mod.hexagons()
-    u_mod.to_geojson_file(nb_aus_hex_array, 'aus_{fname}_layer')
-    u_mod.to_kml_file(nb_aus_hex_array, 'aus_{fname}_layer','Active_Fires')
-    u_mod.to_shp_file(nb_aus_hex_array, 'aus_{fname}_layer')
+    u_mod.to_geojson_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
+                          format(theshape, theradial))
+    u_mod.to_kml_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
+                          format(theshape, theradial),'Active_Fires')
+    u_mod.to_shp_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
+                          format(theshape, theradial))
 
 def boxes(theshape, bounds_north, bounds_south, bounds_east, bounds_west, theradial):
     """
@@ -35,9 +38,12 @@ def boxes(theshape, bounds_north, bounds_south, bounds_east, bounds_west, therad
     u_mod = Util(shape=theshape, radial=theradial)
     u_mod.ref_files_polygons()
     nb_aus_box_array = t_mod.boxes()
-    u_mod.to_geojson_file(nb_aus_box_array, 'aus_{fname}_layer')
-    u_mod.to_kml_file(nb_aus_box_array, 'aus_{fname}_layer','Active_Fires')
-    u_mod.to_shp_file(nb_aus_box_array, 'aus_{fname}_layer')
+    u_mod.to_geojson_file(nb_aus_box_array, 'aus_{}_{}km_layer'.
+                          format(theshape, theradial))
+    u_mod.to_kml_file(nb_aus_box_array, 'aus_{}_{}km_layer'.
+                          format(theshape, theradial),'Active_Fires')
+    u_mod.to_shp_file(nb_aus_box_array, 'aus_{}_{}km_layer'.
+                          format(theshape, theradial))
         
 ARGS = sys.argv
 LEN_ARGS = len(ARGS)
