@@ -13,7 +13,7 @@ THE_LEN = len(sys.argv)
 print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
 print('Argument List: {0}'.format(str(sys.argv)))
 if THE_LEN == 1:
-    (THE_SCRIPT, THE_SHAPE, THE_SIZE, THE_WEIGHT) = ['hex', 57, 'place']
+    (THE_SHAPE, THE_SIZE, THE_WEIGHT) = ['hex', 57, 'place']
     do_map(THE_SHAPE, THE_SIZE, THE_WEIGHT)
 else:
     if THE_LEN < 4:
