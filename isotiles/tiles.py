@@ -190,7 +190,6 @@ class Tiles():
                  west: Defaults = defaults.west,
                  radial: Defaults = defaults.radial,
                  shape: Defaults = defaults.shape,
-                 kmlfiles: Defaults = defaults.kml_files_path,
                  shapefiles: Defaults = defaults.shape_files_path):
         """
         supply variables for map_polygons
@@ -202,7 +201,6 @@ class Tiles():
         self.radial = radial
         self.shape = shape
         self.shape_files_path = shapefiles
-        self.kml_files_path = kmlfiles
 
 
     @property
@@ -267,34 +265,14 @@ class Tiles():
         """
         Not Implemented to date
 #        """
-#        layer_dict = {'Bounds': {'Australia': {'North': self.north, 'South': self.south, \
-#                                           'West': self.west, 'East': self.east}}}
-#        layer_dict['Param'] = {}
-#        layer_dict['Param']['side_km'] = self.radial
-#        layer_dict['Param']['epsg'] = 4326, 
-                       
-#        layer_dict['Param']['shape'] = self.shape
-#        layer_dict['Boxes'] = {}
-#        layer_dict['Boxes']['long'] = 1
-#        hor_seq = [layer_dict['Boxes']['long'], layer_dict['Boxes']['long'], \
-#                   layer_dict['Boxes']['long'], layer_dict['Boxes']['long']]
-#        vert_seq = [layer_dict['Boxes']['long'], layer_dict['Boxes']['long'], \
-#                    layer_dict['Boxes']['long'], layer_dict['Boxes']['long']]
-#
-#        layer_dict['Bounds']['Dataset']['North'] = tabular_df['N'].max()
-#        layer_dict['Bounds']['Dataset']['South'] = tabular_df['S'].min()
-#        layer_dict['Bounds']['Dataset']['East'] = tabular_df['E'].max()
-#        layer_dict['Bounds']['Dataset']['West'] = tabular_df['W'].min()
-#
-#        print('\n7/7 boxes json metadata to written to file: {0}_metadata.json' \
-#              .format(outfile))
-#        myfile = open('metadata{slash}{outfile}_metadata.json' \
-#                      .format(outfile=outfile, slash=slash), 'w')
-#        # open file for writing geojson layer
-#        myfile.write(str(json.dumps(layer_dict)))
-#        #write geojson layer to open file
-#        myfile.close()  # close file
-
+        layer_dict = {'Bounds': {'Australia': {'North': self.north,
+                                               'South': self.south,
+                                               'West': self.west,
+                                               'East': self.east}}}
+        layer_dict['Param'] = {}
+        layer_dict['Param']['side_km'] = self.radial
+        layer_dict['Param']['epsg'] = 4326
+        return layer_dict
 
     def horizontal(self):
         """
@@ -649,19 +627,19 @@ class Tiles():
         """
         nb_list = neighbour_poly_calc(poly, column_count)
 
-        poly_list = (nb_list[self.shape]['north'], 
+        poly_list = (nb_list[self.shape]['north'],
                      nb_list[self.shape]['north_east'],
-                     nb_list[self.shape]['east'], 
+                     nb_list[self.shape]['east'],
                      nb_list[self.shape]['south_east'],
-                     nb_list[self.shape]['south'], 
+                     nb_list[self.shape]['south'],
                      nb_list[self.shape]['south_west'],
-                     nb_list[self.shape]['west'], 
+                     nb_list[self.shape]['west'],
                      nb_list[self.shape]['north_west'])
         val_list = []
         for poly in iter(poly_list):
             val_list.append(neighbour_check(poly, ref_table_df, g_array))
 
-        return val_list 
+        return val_list
 
 
     def hexagons(self):
