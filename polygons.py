@@ -1,6 +1,6 @@
 """
-Wrapper script for map_polygons
-
+Creates a tessellating polygon data set:
+counts of Coastline (Boundary), Islands and GNAF locality (Locality)
 """
 import argparse
 from isotiles.tiles import Tiles
@@ -8,13 +8,14 @@ from isotiles.util import Util
 #from isotiles.visual import Visual
 
 
-def hexagons(theshape, bounds_north, bounds_south, bounds_east, bounds_west, theradial):
+def hexagons(bounds_north, bounds_south, bounds_east, bounds_west,
+             theradial):
 
     """
     Hexagons specific functions to create hexagon mapping layer
 
     """
-
+    theshape = 'hex'
     t_mod = Tiles(shape=theshape, north=bounds_north,
                   south=bounds_south, east=bounds_east,
                   west=bounds_west, radial=theradial)
@@ -24,14 +25,15 @@ def hexagons(theshape, bounds_north, bounds_south, bounds_east, bounds_west, the
     u_mod.to_geojson_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
                           format(theshape, theradial))
     u_mod.to_kml_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
-                          format(theshape, theradial),'Active_Fires')
+                      format(theshape, theradial), 'Active_Fires')
     u_mod.to_shp_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
-                          format(theshape, theradial))
+                      format(theshape, theradial))
 
-def boxes(theshape, bounds_north, bounds_south, bounds_east, bounds_west, theradial):
+def boxes(bounds_north, bounds_south, bounds_east, bounds_west, theradial):
     """
     Boxes specific functions to create hexagon mapping
     """
+    theshape = 'box'
     t_mod = Tiles(shape=theshape, north=bounds_north,
                   south=bounds_south, east=bounds_east,
                   west=bounds_west, radial=theradial)
@@ -41,39 +43,38 @@ def boxes(theshape, bounds_north, bounds_south, bounds_east, bounds_west, therad
     u_mod.to_geojson_file(nb_aus_box_array, 'aus_{}_{}km_layer'.
                           format(theshape, theradial))
     u_mod.to_kml_file(nb_aus_box_array, 'aus_{}_{}km_layer'.
-                          format(theshape, theradial),'Active_Fires')
+                      format(theshape, theradial), 'Active_Fires')
     u_mod.to_shp_file(nb_aus_box_array, 'aus_{}_{}km_layer'.
-                          format(theshape, theradial))
-    
-    
-parser = argparse.ArgumentParser(
+                      format(theshape, theradial))
+
+
+PARSER = argparse.ArgumentParser(
         prog='polygons',
         description='''
         Creates a tessellating polygon data set:
-        counts of Coastline (Boundary), Islands and GNAF locality (Locality)''')  
-    
-parser.add_argument('-bn', '--north', default=-8, 
-                    help="bounds north (-90 to 90)")
-parser.add_argument('-bs', '--south', default=-45, 
-                    help="bounds south (-90 to 90)")
-parser.add_argument('-be', '--east', default=169, 
-                    help="bounds east (-180 to 180)")
-parser.add_argument('-bw', '--west', default=-96, 
-                    help="bounds west (-180 to 180)")
-parser.add_argument('-rl', '--radial', default=57, 
-                    help="radial length in km")
-parser.add_argument('-sh', '--shape', default='hex', 
-                    help="shape (hex or box)")
-        
+        counts of Coastline (Boundary), Islands and GNAF locality (Locality)''')
 
-args = parser.parse_args()
-if args.shape == 'hex':
-    hexagons(args.shape, float(args.north), float(args.south), float(args.east),
-             float(args.west), float(args.radial))
-       
-if args.shape == "box":
-    boxes(args.shape, float(args.north), float(args.south), float(args.east),
-             float(args.west), float(args.radial))
-#else:
-#    print('shape is hex or box')
+PARSER.add_argument('-bn', '--north', default=-8,
+                    help="bounds north (-90 to 90)")
+PARSER.add_argument('-bs', '--south', default=-45,
+                    help="bounds south (-90 to 90)")
+PARSER.add_argument('-be', '--east', default=169,
+                    help="bounds east (-180 to 180)")
+PARSER.add_argument('-bw', '--west', default=-96,
+                    help="bounds west (-180 to 180)")
+PARSER.add_argument('-rl', '--radial', default=57,
+                    help="radial length in km")
+PARSER.add_argument('-sh', '--shape', default='hex',
+                    help="shape (hex or box)")
+
+
+ARGS = PARSER.parse_args()
+if ARGS.shape == 'hex':
+    hexagons(float(ARGS.north), float(ARGS.south), float(ARGS.east),
+             float(ARGS.west), float(ARGS.radial))
+
+if ARGS.shape == "box":
+    boxes(float(ARGS.north), float(ARGS.south), float(ARGS.east),
+          float(ARGS.west), float(ARGS.radial))
+
                 

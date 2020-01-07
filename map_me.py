@@ -1,4 +1,5 @@
 """
+Creates a png format map of an existing polygon data set
 """
 import argparse
 from isotiles.visual import Visual
@@ -10,16 +11,16 @@ def do_map(the_shape, the_size, the_weight):
     v_mod = Visual(shape=the_shape, radial=the_size, weight=the_weight)
     v_mod.map_data()
     
-parser = argparse.ArgumentParser(
+PARSER = argparse.ArgumentParser(
         prog='map_me',
         description='Creates a png format map of an existing polygon data set')    
     
-parser.add_argument('-rl', '--radial', default=57, help="radial length in km")
-parser.add_argument('-wt', '--weight', default='place', 
+PARSER.add_argument('-rl', '--radial', default=57, help="radial length in km")
+PARSER.add_argument('-wt', '--weight', default='place', 
                     help="polygon intersection weight variable (place or area)")
-parser.add_argument('-sh', '--shape', default='hex', help="shape (hex or box)")
+PARSER.add_argument('-sh', '--shape', default='hex', help="shape (hex or box)")
         
 
-args = parser.parse_args()
+ARGS = PARSER.parse_args()
 
-do_map(args.shape, args.radial, args.weight)
+do_map(ARGS.shape, ARGS.radial, ARGS.weight)

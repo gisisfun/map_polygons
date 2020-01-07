@@ -1,11 +1,14 @@
 """
 Script used to postprocess the polygon data set
+Tabular data appended to existing polygon data set:
+ABS Census polygon data intersecting polygon weighted data and
+OpenStreetMaps points of interest
 """
-import sys
+import argparse
 from isotiles.postprocess import PostProcess
 from isotiles.util import Util
 
-import argparse
+
 
 def area_wt(the_shape, the_radial):
     """
@@ -20,7 +23,7 @@ def area_wt(the_shape, the_radial):
     aust_shape_file_name = 'aust_' + p_mod.shape +'_shape_' + \
                            str(p_mod.radial) +'km'
     gj_name = 'aus_' + shape_and_size + 'km_layer'
-    vrt_ref = 'all_' +shape_and_size
+    vrt_ref = 'all_' + shape_and_size
     vrt_file = 'all_' + shape_and_size + '.vrt'
     feat_sa1_11 = 'feat_aust_' + str(p_mod.radial) +'km_sa1_11'
     feat_sa1_16 = 'feat_aust_' + str(p_mod.radial) +'km_sa1_16'
@@ -71,8 +74,8 @@ def area_wt(the_shape, the_radial):
 
     print('shape_11_16_area')
     p_mod.sql_to_ogr('shape_11_16_area', vrt_ref, output_shape)
-    p_mod.shp_to_geojson(output_shape,output_shape)
-    p_mod.shp_to_kml(output_shape,output_shape) 
+    p_mod.shp_to_geojson(output_shape, output_shape)
+    p_mod.shp_to_kml(output_shape, output_shape)
 
 
 def place_wt(the_shape, the_radial):
@@ -141,26 +144,26 @@ def place_wt(the_shape, the_radial):
 
     print('shape_11_16_place')
     p_mod.sql_to_ogr('shape_11_16_place', vrt_ref, output_shape)
-    p_mod.shp_to_geojson(output_shape,output_shape)
-    p_mod.shp_to_kml(output_shape,output_shape) 
+    p_mod.shp_to_geojson(output_shape, output_shape)
+    p_mod.shp_to_kml(output_shape, output_shape)
 
-parser = argparse.ArgumentParser(
+PARSER = argparse.ArgumentParser(
         prog='poly_wt',
         description='''
         Tabular data appended to existing polygon data set:
             ABS Census polygon data intersecting polygon weighted data and
-            OpenStreetMaps points of interest''')    
-    
-parser.add_argument('-rl', '--radial', default=57, help="radial length in km")
-parser.add_argument('-wt', '--weight', default='place', 
-                    help="polygon intersection weight variable (place or area)")
-parser.add_argument('-sh', '--shape', default='hex', help="shape (hex or box)")
-        
+            OpenStreetMaps points of interest''')
 
-args = parser.parse_args()
-if args.weight == 'place':
-    place_wt(args.shape, args.radial)
-if args.weight == 'area':
-    area_wt(args.shape, args.radial)   
+PARSER.add_argument('-rl', '--radial', default=57, help="radial length in km")
+PARSER.add_argument('-wt', '--weight', default='place',
+                    help="polygon intersection weight variable (place or area)")
+PARSER.add_argument('-sh', '--shape', default='hex', help="shape (hex or box)")
+
+
+ARGS = PARSER.parse_args()
+if ARGS.weight == 'place':
+    place_wt(ARGS.shape, ARGS.radial)
+if ARGS.weight == 'area':
+    area_wt(ARGS.shape, ARGS.radial)
 else:
     print('weight is place or area')
