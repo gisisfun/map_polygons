@@ -16,14 +16,14 @@ def area_wt(the_shape, the_radial):
     """
     p_mod = PostProcess(shape=the_shape, radial=the_radial)
     u_mod = Util(shape=the_shape, radial=the_radial)
-    shape_and_size = p_mod.shape +'_' + p_mod.radial
+    shape_and_size = p_mod.shape +'_' + str(p_mod.radial)
     aust_shape_file_name = 'aust_' + p_mod.shape +'_shape_' + \
-                           p_mod.radial +'km'
+                           str(p_mod.radial) +'km'
     gj_name = 'aus_' + shape_and_size + 'km_layer'
     vrt_ref = 'all_' +shape_and_size
     vrt_file = 'all_' + shape_and_size + '.vrt'
-    feat_sa1_11 = 'feat_aust_' + p_mod.radial +'km_sa1_11'
-    feat_sa1_16 = 'feat_aust_' + p_mod.radial +'km_sa1_16'
+    feat_sa1_11 = 'feat_aust_' + str(p_mod.radial) +'km_sa1_11'
+    feat_sa1_16 = 'feat_aust_' + str(p_mod.radial) +'km_sa1_16'
     db_name = 'db_area_' + shape_and_size
     tabular_sql_name = 'tabular_area_wt_' + shape_and_size + '.txt'
     output_shape = shape_and_size + 'km_area_11_16'
@@ -83,14 +83,14 @@ def place_wt(the_shape, the_radial):
     """
     p_mod = PostProcess(shape=the_shape, radial=the_radial)
     u_mod = Util(shape=the_shape, radial=the_radial)
-    shape_and_size = p_mod.shape +'_' + p_mod.radial
+    shape_and_size = p_mod.shape +'_' + str(p_mod.radial)
     aust_shape_file_name = 'aust_' + p_mod.shape +'_shape_' + \
-                           p_mod.radial +'km'
+                           str(p_mod.radial) +'km'
     gj_name = 'aus_' + shape_and_size + 'km_layer'
     vrt_ref = 'all_' +shape_and_size
     vrt_file = 'all_' + shape_and_size + '.vrt'
-    feat_sa1_11 = 'feat_aust_' + p_mod.radial +'km_sa1_11'
-    feat_sa1_16 = 'feat_aust_' + p_mod.radial +'km_sa1_16'
+    feat_sa1_11 = 'feat_aust_' + str(p_mod.radial) +'km_sa1_11'
+    feat_sa1_16 = 'feat_aust_' + str(p_mod.radial) +'km_sa1_16'
     db_name = 'db_place_' + shape_and_size
     tabular_sql_name = 'tabular_place_wt_' + shape_and_size + '.txt'
     output_shape = shape_and_size + 'km_place_11_16'
