@@ -1,25 +1,22 @@
 """
 """
-import sys
+import argparse
 from isotiles.visual import Visual
+parser = argparse.ArgumentParser()
 
 def do_map(the_shape, the_size, the_weight):
     """
     """
     v_mod = Visual(shape=the_shape, radial=the_size, weight=the_weight)
     v_mod.map_data()
+    
+    
+parser.add_argument('-rl', '--radial', default=57, help="radial length in km")
+parser.add_argument('-wt', '--weight', default='place', 
+                    help="polygon intersection weight variable (place or area)")
+parser.add_argument('-sh', '--shape', default='hex', help="shape (hex or box)")
+        
 
-THE_LEN = len(sys.argv)
-print('Number of arguments: {0} arguments.'.format(len(sys.argv)))
-print('Argument List: {0}'.format(str(sys.argv)))
-if THE_LEN == 1:
-    (THE_SHAPE, THE_SIZE, THE_WEIGHT) = ['hex', 57, 'place']
-    do_map(THE_SHAPE, THE_SIZE, THE_WEIGHT)
-else:
-    if THE_LEN < 4:
-        sys.exit("""arguments are \nshape - hex or box \n\
-size (in km)\nweight - area or place \n\
-\npython3 map_me.py hex 57 place\n""")
-    else:
-        (THE_SCRIPT, THE_SHAPE, THE_SIZE, THE_WEIGHT) = sys.argv
-        do_map(THE_SHAPE, THE_SIZE, THE_WEIGHT)
+args = parser.parse_args()
+
+do_map(args.shape, args.radial, args.weight)

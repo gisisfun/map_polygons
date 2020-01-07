@@ -2,11 +2,12 @@
 Wrapper script for map_polygons
 
 """
+import argparse
 import sys
 from isotiles.tiles import Tiles
 from isotiles.util import Util
 #from isotiles.visual import Visual
-
+parser = argparse.ArgumentParser()
 
 def hexagons(theshape, bounds_north, bounds_south, bounds_east, bounds_west, theradial):
 
@@ -44,41 +45,29 @@ def boxes(theshape, bounds_north, bounds_south, bounds_east, bounds_west, therad
                           format(theshape, theradial),'Active_Fires')
     u_mod.to_shp_file(nb_aus_box_array, 'aus_{}_{}km_layer'.
                           format(theshape, theradial))
-        
-ARGS = sys.argv
-LEN_ARGS = len(ARGS)
-print('Number of arguments: {0} arguments.'.format(LEN_ARGS))
-print('Argument List: {0}'.format(str(ARGS)))
-if LEN_ARGS == 1:
-    (THE_SHAPE, BOUNDS_NORTH, BOUNDS_SOUTH, BOUNDS_EAST, BOUNDS_WEST, \
-     THE_RADIAL) =\
-    ['hex', -8, -45, 169, 96, 57]
-    hexagons(THE_SHAPE, BOUNDS_NORTH, BOUNDS_SOUTH, BOUNDS_EAST, BOUNDS_WEST, \
-          THE_RADIAL)
 
+parser.add_argument('-bn', '--north', default=-8, 
+                    help="bounds north (-90 to 90)")
+parser.add_argument('-bs', '--south', default=-45, 
+                    help="bounds south (-90 to 90)")
+parser.add_argument('-be', '--east', default=169, 
+                    help="bounds east (-180 to 180)")
+parser.add_argument('-bw', '--west', default=-96, 
+                    help="bounds west (-180 to 180)")
+parser.add_argument('-rl', '--radial', default=57, 
+                    help="radial length in km")
+parser.add_argument('-sh', '--shape', default='hex', 
+                    help="shape (hex or box)")
+        
+
+args = parser.parse_args()
+if args.shape == 'hex':
+    hexagons(args.shape, float(args.north), float(args.south), float(args.east),
+             float(args.west), float(args.radial))
+       
+if args.shape == "box":
+    boxes(args.shape, float(args.north), float(args.south), float(args.east),
+             float(args.west), float(args.radial))
 else:
-    if LEN_ARGS < 7:
-        MSG = """arguments are \nshape - hex or box \n bounding north\n
-bounding south \n bounding east \n bounding west \n radial in km\n \
-filename for output\n\nfor hexagon\n 
-python3 polygons_new.py hex -8 -45 168 96 212\n\nfor boxes\n\
-python3 polygons_new.py box -8 -45 168 96 212\n
-"""
-        sys.exit(MSG)
-    else:
-        (BLAH, THE_SHAPE, BOUNDS_NORTH, BOUNDS_SOUTH, BOUNDS_EAST, \
-         BOUNDS_WEST, THE_RADIAL) = sys.argv
-        SHAPE = str(THE_SHAPE)
-        print(THE_SHAPE)
-        if SHAPE == "hex":
-            hexagons(THE_SHAPE, float(BOUNDS_NORTH), float(BOUNDS_SOUTH), \
-                     float(BOUNDS_EAST), float(BOUNDS_WEST), \
-                     float(THE_RADIAL))
-        else:
-            if SHAPE == "box":
-                boxes(THE_SHAPE, float(BOUNDS_NORTH), float(BOUNDS_SOUTH), \
-                      float(BOUNDS_EAST), float(BOUNDS_WEST), \
-                      float(THE_RADIAL))
-            else:
-                print('shape is hex or box')
+    print('shape is hex or box')
                 
