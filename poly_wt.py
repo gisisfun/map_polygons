@@ -6,7 +6,6 @@ from isotiles.postprocess import PostProcess
 from isotiles.util import Util
 
 import argparse
-parser = argparse.ArgumentParser()
 
 def area_wt(the_shape, the_radial):
     """
@@ -144,7 +143,13 @@ def place_wt(the_shape, the_radial):
     p_mod.sql_to_ogr('shape_11_16_place', vrt_ref, output_shape)
     p_mod.shp_to_geojson(output_shape,output_shape)
     p_mod.shp_to_kml(output_shape,output_shape) 
-    
+
+parser = argparse.ArgumentParser(
+        prog='poly_wt',
+        description='''
+        Tabular data appended to existing polygon data set:
+            ABS Census polygon data intersecting polygon weighted data and
+            OpenStreetMaps points of interest''')    
     
 parser.add_argument('-rl', '--radial', default=57, help="radial length in km")
 parser.add_argument('-wt', '--weight', default='place', 

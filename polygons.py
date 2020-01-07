@@ -3,11 +3,10 @@ Wrapper script for map_polygons
 
 """
 import argparse
-import sys
 from isotiles.tiles import Tiles
 from isotiles.util import Util
 #from isotiles.visual import Visual
-parser = argparse.ArgumentParser()
+
 
 def hexagons(theshape, bounds_north, bounds_south, bounds_east, bounds_west, theradial):
 
@@ -45,7 +44,14 @@ def boxes(theshape, bounds_north, bounds_south, bounds_east, bounds_west, therad
                           format(theshape, theradial),'Active_Fires')
     u_mod.to_shp_file(nb_aus_box_array, 'aus_{}_{}km_layer'.
                           format(theshape, theradial))
-
+    
+    
+parser = argparse.ArgumentParser(
+        prog='polygons',
+        description='''
+        Creates a tessellating polygon data set:
+        counts of Coastline (Boundary), Islands and GNAF locality (Locality)''')  
+    
 parser.add_argument('-bn', '--north', default=-8, 
                     help="bounds north (-90 to 90)")
 parser.add_argument('-bs', '--south', default=-45, 
@@ -68,4 +74,6 @@ if args.shape == 'hex':
 if args.shape == "box":
     boxes(args.shape, float(args.north), float(args.south), float(args.east),
              float(args.west), float(args.radial))
+#else:
+#    print('shape is hex or box')
                 

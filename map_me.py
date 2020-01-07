@@ -10,6 +10,9 @@ def do_map(the_shape, the_size, the_weight):
     v_mod = Visual(shape=the_shape, radial=the_size, weight=the_weight)
     v_mod.map_data()
     
+parser = argparse.ArgumentParser(
+        prog='map_me',
+        description='Creates a png format map of an existing polygon data set')    
     
 parser.add_argument('-rl', '--radial', default=57, help="radial length in km")
 parser.add_argument('-wt', '--weight', default='place', 
