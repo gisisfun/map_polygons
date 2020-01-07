@@ -68,6 +68,4 @@ if args.shape == 'hex':
 if args.shape == "box":
     boxes(args.shape, float(args.north), float(args.south), float(args.east),
              float(args.west), float(args.radial))
-else:
-    print('shape is hex or box')
                 
