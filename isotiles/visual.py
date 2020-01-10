@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import geopandas as gpd
 from isotiles.__init__ import Defaults # OSVars,
 #Visual
-
+import mplleaflet
 
 mpl.use('Agg')
 
@@ -67,3 +67,7 @@ and 2011""", xy=(0.1, .08), xycoords='figure fraction', \
                            self.radial, self.weight),
                     bbox_inches='tight')
         #plt.show() #
+        
+        
+        
+    #mplleaflet.show()
