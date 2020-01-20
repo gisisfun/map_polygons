@@ -138,9 +138,12 @@ def file_deploy(resource_data, slash='/'):
         print('Downloading {} file in {} file format'\
               .format(resource_data['format'], resource_data['description']))
 
-        urllib.request.urlretrieve(resource_data['down_url'],
-                                   resource_data['zip_path'].\
-                                   replace('/', slash))
+        try:
+            urllib.request.urlretrieve(resource_data['down_url'],
+                                       resource_data['zip_path'].\
+                                       replace('/', slash))
+        except urllib.error.HTTPError:
+            print("URL not found")
         if resource_data['zip_path'].endswith('zip') is True:
             print('Unzipping {} file in {} file format'\
                 .format(resource_data['description'], resource_data['format']))
@@ -152,7 +155,7 @@ def file_deploy(resource_data, slash='/'):
               .format(resource_data['description'], resource_data['format']))
 
 
-def ref_files_polygons(path_datasets, slash, def_file):
+def ref_files_polygons(def_file, path_datasets, slash):
     """
     Get reference files for polygons.py
 
@@ -166,8 +169,8 @@ def ref_files_polygons(path_datasets, slash, def_file):
     Output:
         files dwonloaded if necessary and deployed to file system
     """
-    def_file = 'datasets.json'
-    datasets = from_json_file(path_datasets, def_file)
+    def_file = 'datasets'
+    datasets = from_json_file(def_file, path_datasets, slash)
     ref_data = datasets['DataSets']['Australia']['ShapeFormat']
     file_deploy(ref_data)
 
@@ -195,8 +198,8 @@ def ref_files_poly_wt(json_files_path='jsonfiles', slash='/', def_file='datasets
     Output:
         files dwonloaded if necessary and deployed to file system
     """
-    def_file = 'datasets.json'
-    datasets = from_json_file(json_files_path, slash, def_file + '.json')
+    def_file = 'datasets'
+    datasets = from_json_file(def_file, json_files_path, slash)
 
     ref_data = datasets['DataSets']['Australia']['ShapeFormat']
     file_deploy(ref_data)
@@ -213,7 +216,7 @@ def ref_files_poly_wt(json_files_path='jsonfiles', slash='/', def_file='datasets
     ref_data = datasets['DataSets']['OpenStreetMaps']['ShapeFormat']
     file_deploy(ref_data)
 
-def coords_from_csv_latin1(file_name , lon_col, lat_col, csv_files_path='csvfiles', slash='/',):
+def coords_from_csv_latin1(file_name , lon_col, lat_col, csv_files_path='csv', slash='/',):
     """
     Reads files with illegal characters causing errors
 
@@ -258,7 +261,7 @@ def coords_from_csv_latin1(file_name , lon_col, lat_col, csv_files_path='csvfile
     coords = [(x, y) for x, y in zip(longs, lats)]
     return coords
 
-def coords_from_csv(file_name, lon_col, lat_col,csv_files_path='csvfiles', slash='/'):
+def coords_from_csv(file_name, lon_col, lat_col,csv_files_path='csv', slash='/'):
     """
     Reads standard csv files
 
@@ -285,7 +288,7 @@ def coords_from_csv(file_name, lon_col, lat_col,csv_files_path='csvfiles', slash
         quoting=csv.QUOTE_MINIMAL)
 
 
-    with open('{}{}{}'.format(self.csv_files_path, self.slash, file_name), 
+    with open('{}{}{}'.format(csv_files_path, slash, file_name), 
               newline='', encoding='utf-8') \
               as csvfile:
         data = list(csv.reader(csvfile, dialect='mydialect'))
@@ -604,7 +607,7 @@ def to_shp_file(g_array, file_name, shape_files_path='shapefiles', slash='/'):
 #            classed = True
 #    return the_breaks_ref
 
-def apply_classification(g_array,ref_col):
+def apply_classification(g_array, ref_col):
     """
     Apply cloreplath colour classification range to array of geojson polygon data
 
@@ -660,7 +663,9 @@ def apply_classification(g_array,ref_col):
     return colour_breaks
 
 
-def to_kml_file(g_array, file_name, the_key="No_Key", kml_files_path='kmlfiles', slash='/'):
+def to_kml_file(g_array, file_name, \
+                kml_files_path='kmlfiles', slash='/', \
+                the_key="No_Key"):
     """
     Writes geojson Polygon array to kml file
 
@@ -757,13 +762,13 @@ def points_and_polygons(g_array):
         point_list: array of points with id, x and y values
     """
 
-    (point_list, num_poly) = ([], len(g_array))
+    point_list= []
 
     for poly in iter(g_array):
-        num_coords = len(poly['geometry']['coordinates'][0])-2
+        #num_coords = len(poly['geometry']['coordinates'][0])-2
         poly_id = poly['properties']['p']
         #for i in range(0, num_coords):
-        for i in inter(poly['geometry']['coordinates'][0][:-2]):
+        for i in iter(poly['geometry']['coordinates'][0][:-2]):
             point_list.append( \
                 [poly_id, 
                  str(poly['geometry']['coordinates'][0][i][0]) + \
@@ -771,7 +776,7 @@ def points_and_polygons(g_array):
     return point_list
 
 
-def neighbours(points_list):
+def neighbours(points_list, file_name, csv_files_path='csv' ,slash='/'):
     """
     Intersecting polygons list
 
@@ -787,8 +792,8 @@ def neighbours(points_list):
 
     point_df = pd.DataFrame(points_list)
     point_df.columns = ['poly', 'latlong']
-    point_df.to_csv('{}{}{}_points.csv'.format(self.csv_files_path, 
-                    self.slash, self.filename), sep=',')
+    point_df.to_csv('{}{}{}_points.csv'.format(csv_files_path, 
+                    slash, file_name), sep=',')
     point_df_a = point_df  # make copy of dataframe
     process_point_df = pd.merge(point_df, point_df_a, on='latlong')
     # merge columns of same dataframe on concatenated latlong
@@ -800,9 +805,10 @@ def neighbours(points_list):
     #just leave polygon greferences and filter output
 
     output_point_df.to_csv('{}{}{}_neighbours.csv' \
-                           .format(self.csv_files_path, self.slash, 
-                                   self.filename), \
-                           sep=',', index=False)
+                           .format(csv_files_path, slash, 
+                                   file_name), \
+                           sep=',', \
+                           index=False)
 
 
 def random_points_in_polygon(poly):
