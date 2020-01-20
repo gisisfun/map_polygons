@@ -67,11 +67,11 @@
 "zip_path": "kmlfiles/VNP14IMGTDL_NRT_Australia_and_New_Zealand_24h.kml"}},
 
 
-		"ModisC61km": 
-			{"ShapeFormat":
-				{"description": "NASA Active Fire Data Modis C6 1km", "format": "Shape", "file_path": "shapefiles/MODIS_C6_Australia_and_New_Zealand_24h.shp", "down_url": "https://firms.modaps.eosdis.nasa.gov/active_fire/c6/shapes/zips/MODIS_C6_Australia_and_New_Zealand_24h.zip", "zip_dir": "shapefiles", "zip_path": "shapefiles/MODIS_C6_Australia_and_New_Zealand_24h.zip"},
-			"CSVFormat":
-				{"description": "NASA Active Fire Data Modis C6 1km", "format": "CSV", "file_path": "csv/MODIS_C6_Australia_and_New_Zealand_24h.csv", "down_url": "https://firms.modaps.eosdis.nasa.gov/active_fire/c6/text/MODIS_C6_Australia_and_New_Zealand_24h.csv", "zip_dir": "csv", "zip_path": "csv/MODIS_C6_Australia_and_New_Zealand_24h.csv"}, 
+"ModisC61km": 
+	{"ShapeFormat":
+		{"description": "NASA Active Fire Data Modis C6 1km", "format": "Shape", "file_path": "shapefiles/MODIS_C6_Australia_and_New_Zealand_24h.shp", "down_url": "https://firms.modaps.eosdis.nasa.gov/active_fire/c6/shapes/zips/MODIS_C6_Australia_and_New_Zealand_24h.zip", "zip_dir": "shapefiles", "zip_path": "shapefiles/MODIS_C6_Australia_and_New_Zealand_24h.zip"},
+		"CSVFormat":
+			{"description": "NASA Active Fire Data Modis C6 1km", "format": "CSV", "file_path": "csv/MODIS_C6_Australia_and_New_Zealand_24h.csv", "down_url": "https://firms.modaps.eosdis.nasa.gov/data/active_fire/c6/csv/MODIS_C6_Australia_NewZealand_24h.csv", "zip_dir": "csv", "zip_path": "csv/MODIS_C6_Australia_and_New_Zealand_24h.csv"}, 
 			"KMLFormat":
                 {"description": "NASA Active Fire Data Modis C6 1km", 
                 "format": "KML", "file_path": "kmlfiles/MODIS_C6_Australia_and_New_Zealand_24h.kml", 
