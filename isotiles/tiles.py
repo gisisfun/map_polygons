@@ -3,6 +3,8 @@ Map_polygons tiles module
 """
 
 #all
+import os
+import sys
 from math import sqrt
 import pandas as pd
 import numpy as np
@@ -12,10 +14,12 @@ import shapefile #to be moved to util from add_poly_poi
 from geojson import Polygon, Feature #,FeatureCollection
 
 
+sys.path.append('..')
 
 from isotiles.__init__ import Defaults
 #from isotiles.poi import POI
-from isotiles.util import Util
+from utils import points_in_polygon, coords_from_csv, \
+coords_from_csv_latin1
 
 
 def point_radial_distance(coords, brng, radial):
@@ -200,7 +204,7 @@ class Tiles():
         self.west = west
         self.radial = radial
         self.shape = shape
-        self.shape_files_path = shapefiles
+        #self.shape_files_path = shapefiles
 
 
     @property
@@ -217,6 +221,52 @@ class Tiles():
         """
 
         return 1
+
+
+    @property
+    def slash(self):
+        """
+        OS dependant path slash character.
+        """
+        my_os = str(os.name)
+        os_dict = {"posix":{"slash": "/"}, "nt":{"slash": '\\'}}
+        return os_dict[my_os]['slash'] # '/'
+
+    @property
+    def shape_files_path(self):
+        """
+        Shape filespath
+        """
+        return "shapefiles"
+
+    @property
+    def kml_files_path(self):
+        """
+        Shape filespath
+        """
+        return "kmlfiles"
+    
+    @property
+    def csv_files_path(self):
+        """
+        Shape filespath
+        """
+        return "csv"
+
+    @property
+    def json_files_path(self):
+        """
+        Shape filespath
+        """
+        return "jsonfiles"
+
+    @property
+    def geojson_files_path(self):
+        """
+        Shape filespath
+        """
+        return "geojson"
+
 
     @property
     def hor_seq(self):
@@ -496,7 +546,7 @@ class Tiles():
         """
         Polulates polygons with poi to identifiy contental features without gdal
         """
-        u_mod = Util()
+        #u_mod = Util()
         # load the shapefile
         shape_file = shapefile.Reader("shapefiles/AUS_2016_AUST")
 
@@ -511,35 +561,34 @@ class Tiles():
         lats = [float(item[1]) for item in big_coords]
         coords = [(x, y) for x, y in zip(longs, lats)]
 
-        poly_array = u_mod.points_in_polygon(g_array, coords, 'Boundary')
+        poly_array = points_in_polygon(g_array, coords, 'Boundary')
 
         print('Adding Island points')
-        coords = u_mod.coords_from_csv('islands.csv', 1, 2)
-        next_poly_array = u_mod.points_in_polygon(poly_array, coords, 'Island')
+        coords = coords_from_csv('islands.csv', 1, 2)
+        next_poly_array = points_in_polygon(poly_array, coords, 'Island')
 
         print('Adding GNAF Locality points')
-        coords = u_mod.coords_from_csv('aug_gnaf_2019_locality.csv', 4, 3)
-        poly_array = u_mod.points_in_polygon(next_poly_array, coords, 'Locality')
+        coords = coords_from_csv('aug_gnaf_2019_locality.csv', 4, 3)
+        poly_array = points_in_polygon(next_poly_array, coords, 'Locality')
 
         print('NASA Active fire Data MODIS C6 Australia and New Zealand 24h')
-        coords = u_mod.\
-                 coords_from_csv('MODIS_C6_Australia_and_New_Zealand_24h.csv',\
+        coords = coords_from_csv('MODIS_C6_Australia_and_New_Zealand_24h.csv',\
                                  1, 0)
-        next_poly_array = u_mod.points_in_polygon(poly_array, coords, \
+        next_poly_array = points_in_polygon(poly_array, coords, \
                                                   'Active_Fires')
 
         print('National Mobile Blackspot program')
-        coords = u_mod.coords_from_csv_latin1('mbsp_database.csv', 6, 5)
-        poly_array = u_mod.points_in_polygon(next_poly_array, coords, 'MBSP')
+        coords = coords_from_csv_latin1('mbsp_database.csv', 6, 5)
+        poly_array = points_in_polygon(next_poly_array, coords, 'MBSP')
 
         print('AGIL Locations')
-        coords = u_mod.coords_from_csv('agil_locations20190208.csv', 3, 2)
-        next_poly_array = u_mod.points_in_polygon(poly_array, coords, 'AGIL')
+        coords = coords_from_csv('agil_locations20190208.csv', 3, 2)
+        next_poly_array = points_in_polygon(poly_array, coords, 'AGIL')
 
         print('Polygons Centroids and Offset Vertices')
         coords = self.aus_poly_coords(next_poly_array)
         #print(len(coords))
-        poly_array = u_mod.points_in_polygon(next_poly_array, coords, 'P_POI')
+        poly_array = points_in_polygon(next_poly_array, coords, 'P_POI')
         for poly_data in iter(poly_array):
             poly_data['properties']['Aust'] = 0
             if poly_data['properties']['P_POI'] > 0 \

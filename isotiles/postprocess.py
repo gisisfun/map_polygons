@@ -74,6 +74,13 @@ class PostProcess():
 
 
     @property
+    def json_files_path(self):
+        """
+        Shape filespath
+        """
+        return "jsonfiles"
+
+    @property
     def extn(self):
         """
         Long interval to next reference point
@@ -150,10 +157,12 @@ class PostProcess():
         db_text = '{}{}{}.sqlite'.format(self.spatialite_path, self.slash, db_file)
         sql_text = '{}{}{}'.format(self.spatialite_path, self.slash, sql_file)
         process_1 = subprocess.Popen(["cat", sql_text], stdout=subprocess.PIPE)
-        process_2 = subprocess.Popen([self.spatialite, db_text], \
-                                     stdin=process_1.stdout)
-        process_2.communicate()
-
+        try:
+            process_2 = subprocess.Popen([self.spatialite, db_text], \
+                                          stdin=process_1.stdout)
+            process_2.communicate()
+        except FileNotFoundError:
+            print('spatialite executable no found')
 
     def geojson_to_shp(self, geojson_file, shape_file, srid):
         """
