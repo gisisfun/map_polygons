@@ -4,7 +4,8 @@ counts of Coastline (Boundary), Islands and GNAF locality (Locality)
 """
 import argparse
 from isotiles.tiles import Tiles
-from utils import ref_files_polygons, to_geojson_file, to_kml_file, to_shp_file
+from utils import from_json_file, file_deploy, to_geojson_file, to_kml_file, \
+to_shp_file
 #from isotiles.visual import Visual
 
 
@@ -20,7 +21,21 @@ def hexagons(bounds_north, bounds_south, bounds_east, bounds_west,
                   south=bounds_south, east=bounds_east,
                   west=bounds_west, radial=theradial)
     #u_mod = Util(shape=theshape, radial=theradial)
-    ref_files_polygons('datasets',t_mod.json_files_path, t_mod.slash)
+    
+    
+    datasets = from_json_file('datasets',t_mod.json_files_path, t_mod.slash)
+    ref_data = datasets['DataSets']['Australia']['ShapeFormat']
+    file_deploy(ref_data)
+
+    ref_data = datasets['DataSets']['AGILDataset']['CSVFormat']
+    file_deploy(ref_data)
+
+    ref_data = datasets['DataSets']['MBSP']['CSVFormat']
+    file_deploy(ref_data)
+
+    ref_data = datasets['DataSets']['NASAActiveFireData']['ModisC61km']['CSVFormat']
+    file_deploy(ref_data)
+    
     nb_aus_hex_array = t_mod.hexagons()
     to_geojson_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
                     format(theshape, theradial),'geojson', t_mod.slash)

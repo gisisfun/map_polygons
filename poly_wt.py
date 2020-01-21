@@ -6,7 +6,7 @@ OpenStreetMaps points of interest
 """
 import argparse
 from isotiles.postprocess import PostProcess
-from utils import ref_files_poly_wt
+from utils import from_json_file, file_deploy
 
 
 
@@ -32,7 +32,23 @@ def area_wt(the_shape, the_radial):
     output_shape = shape_and_size + 'km_area_11_16'
     p_mod.vrt_shape_and_size('vrt', 'template.vrt', vrt_file)
     p_mod.do_spatialite('table_goes_here.txt', db_name)
-    ref_files_poly_wt('datasets',p_mod.json_files_path, p_mod.slash)
+    
+    datasets = from_json_file('datasets', p_mod.json_files_path, p_mod.slash)
+
+    ref_data = datasets['DataSets']['Australia']['ShapeFormat']
+    file_deploy(ref_data)
+
+    ref_data = datasets['DataSets']['StatisticalAreasLevel12011']['ShapeFormat']
+    file_deploy(ref_data)
+
+    ref_data = datasets['DataSets']['StatisticalAreasLevel12016']['ShapeFormat']
+    file_deploy(ref_data)
+
+    ref_data = datasets['DataSets']['AGILDataset']['CSVFormat']
+    file_deploy(ref_data)
+
+    ref_data = datasets['DataSets']['OpenStreetMaps']['ShapeFormat']
+    file_deploy(ref_data)
 
     print('aust_shape')
     p_mod.geojson_to_shp(gj_name, aust_shape_file_name, 4283)
@@ -99,7 +115,25 @@ def place_wt(the_shape, the_radial):
     output_shape = shape_and_size + 'km_place_11_16'
     p_mod.vrt_shape_and_size('vrt', 'template.vrt', vrt_file)
     p_mod.do_spatialite('table_goes_here.txt', db_name)
-    ref_files_poly_wt('datasets',p_mod.json_files_path, p_mod.slash)
+    
+    datasets = from_json_file('datasets', p_mod.json_files_path, p_mod.slash)
+
+    ref_data = datasets['DataSets']['Australia']['ShapeFormat']
+    file_deploy(ref_data)
+
+    ref_data = datasets['DataSets']['StatisticalAreasLevel12011']['ShapeFormat']
+    file_deploy(ref_data)
+
+    ref_data = datasets['DataSets']['StatisticalAreasLevel12016']['ShapeFormat']
+    file_deploy(ref_data)
+
+    ref_data = datasets['DataSets']['AGILDataset']['CSVFormat']
+    file_deploy(ref_data)
+
+    ref_data = datasets['DataSets']['OpenStreetMaps']['ShapeFormat']
+    file_deploy(ref_data)
+    
+    #ref_files_poly_wt('datasets',p_mod.json_files_path, p_mod.slash)
 
     print('aust_shape')
     p_mod.geojson_to_shp(gj_name, aust_shape_file_name, 4283)
