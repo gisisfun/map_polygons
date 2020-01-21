@@ -184,7 +184,7 @@ def ref_files_polygons(def_file, path_datasets='jsonfiles', slash='/'):
     file_deploy(ref_data)
 
 
-def ref_files_poly_wt(json_files_path='jsonfiles', slash='/', def_file='datasets'):
+def ref_files_poly_wt(file_name='datasets', json_files_path='jsonfiles', slash='/'):
     """
     Get reference files for poly_wt.py
 
@@ -199,7 +199,7 @@ def ref_files_poly_wt(json_files_path='jsonfiles', slash='/', def_file='datasets
         files dwonloaded if necessary and deployed to file system
     """
     def_file = 'datasets'
-    datasets = from_json_file(def_file, json_files_path, slash)
+    datasets = from_json_file(file_name, json_files_path, slash)
 
     ref_data = datasets['DataSets']['Australia']['ShapeFormat']
     file_deploy(ref_data)
@@ -844,4 +844,5 @@ def random_points_in_polygon(poly):
             r_coords.append([coord[0], coord[1]])
 
     return r_coords
-    
+
+
