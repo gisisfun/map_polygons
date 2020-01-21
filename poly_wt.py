@@ -6,7 +6,7 @@ OpenStreetMaps points of interest
 """
 import argparse
 from isotiles.postprocess import PostProcess
-from isotiles.util import Util
+from utils import ref_files_poly_wt
 
 
 
@@ -18,7 +18,7 @@ def area_wt(the_shape, the_radial):
     the_radial:
     """
     p_mod = PostProcess(shape=the_shape, radial=the_radial)
-    u_mod = Util(shape=the_shape, radial=the_radial)
+    #u_mod = Util(shape=the_shape, radial=the_radial)
     shape_and_size = p_mod.shape +'_' + str(p_mod.radial)
     aust_shape_file_name = 'aust_' + p_mod.shape +'_shape_' + \
                            str(p_mod.radial) +'km'
@@ -32,7 +32,7 @@ def area_wt(the_shape, the_radial):
     output_shape = shape_and_size + 'km_area_11_16'
     p_mod.vrt_shape_and_size('vrt', 'template.vrt', vrt_file)
     p_mod.do_spatialite('table_goes_here.txt', db_name)
-    u_mod.ref_files_poly_wt()
+    ref_files_poly_wt('datasets',p_mod.json_files_path, p_mod.slash)
 
     print('aust_shape')
     p_mod.geojson_to_shp(gj_name, aust_shape_file_name, 4283)
@@ -85,7 +85,7 @@ def place_wt(the_shape, the_radial):
     the_radial:
     """
     p_mod = PostProcess(shape=the_shape, radial=the_radial)
-    u_mod = Util(shape=the_shape, radial=the_radial)
+    #u_mod = Util(shape=the_shape, radial=the_radial)
     shape_and_size = p_mod.shape +'_' + str(p_mod.radial)
     aust_shape_file_name = 'aust_' + p_mod.shape +'_shape_' + \
                            str(p_mod.radial) +'km'
@@ -99,7 +99,7 @@ def place_wt(the_shape, the_radial):
     output_shape = shape_and_size + 'km_place_11_16'
     p_mod.vrt_shape_and_size('vrt', 'template.vrt', vrt_file)
     p_mod.do_spatialite('table_goes_here.txt', db_name)
-    u_mod.ref_files_poly_wt()
+    ref_files_poly_wt('datasets',p_mod.json_files_path, p_mod.slash)
 
     print('aust_shape')
     p_mod.geojson_to_shp(gj_name, aust_shape_file_name, 4283)
