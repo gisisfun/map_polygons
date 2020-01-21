@@ -260,7 +260,7 @@ class PostProcess():
 
         subprocess.check_output( \
                                 ["sqlite3", \
-                                 "{ }{ }{}.sqlite".\
+                                 "{}{}{}.sqlite".\
                                  format(self.spatialite_path, self.slash, 
                                         db_name)], \
                                         input=bytes(the_sql.encode("utf-8")))
