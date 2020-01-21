@@ -259,8 +259,7 @@ class PostProcess():
         the_sql = str(sql_text)
 
         subprocess.check_output( \
-                                ["sqlite3", \
-                                 "{}{}{}.sqlite".\
+                                ["sqlite3",  "{}{}{}.db".\
                                  format(self.spatialite_path, self.slash, 
                                         db_name)], \
                                         input=bytes(the_sql.encode("utf-8")))
