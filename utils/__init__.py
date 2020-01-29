@@ -542,7 +542,7 @@ def to_shp_file(g_array, file_name, shape_files_path='shapefiles', slash='/'):
     """
 
     #tabular_list = []
-    full_file_path = '{}{}{}'.format(shape_files_path, slash, file_name)
+    full_file_path = shape_files_path + slash + file_name
     prj_path = full_file_path + '.prj'
     w_file = shapefile.Writer(full_file_path) # , shapeType=3)
     #setup columns
@@ -575,10 +575,9 @@ def to_shp_file(g_array, file_name, shape_files_path='shapefiles', slash='/'):
         w_file.poly([g_array[n_val]['geometry']['coordinates'][0]])
     w_file.close()
     # create the PRJ file
-    msg = 'writing shapefile formatted {} dataset to file:' + \
+    msg = 'writing shapefile formatted dataset to file:' + \
     full_file_path +'.shp'
-    the_shape = 'None'
-    print(msg.format(the_shape))
+    print(msg)
     prj = open(prj_path, "w")
     epsg = 'GEOGCS["WGS 84",'
     epsg += 'DATUM["WGS_1984",'
