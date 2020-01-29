@@ -32,56 +32,6 @@ def point_radial_distance(coords, brng, radial):
     return geodesic(kilometers=radial).destination(point=coords, bearing=brng)
 
 
-def line_intersection(line1, line2):
-    """
-    source: https://stackoverflow.com/questions/20677795/
-    how-do-i-compute-the-intersection-between-two-lines-in-python
-
-    Dependencies:
-    intersections,horizontal,vertical,Tiles
-    """
-
-
-    xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
-    ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
-
-    def det(a_val, b_val):
-        return a_val[0] * b_val[1] - a_val[1] * b_val[0]
-
-    div = det(xdiff, ydiff)
-    if div == 0:
-        raise Exception('lines do not intersect')
-
-    d_val = (det(*line1), det(*line2))
-    (x_val, y_val) = (det(d_val, xdiff) / div, det(d_val, ydiff) / div)
-    return x_val, y_val
-
-
-def intersections(hor_line_list, vert_line_list):
-    """
-    Intersecting Lines as points
-
-    Dependencies:
-    horizontal,vertical,Tiles
-
-    Input variables:
-    hor_line_list:
-    vert_line_list:
-    """
-
-    print('\n3/7 deriving intersection point data between horizontal and vertical lines')
-    (intersect_list, hor_max, vert_max) = ([], len(hor_line_list), \
-     len(vert_line_list))
-    for h_val in range(0, hor_max):
-        for v_val in range(0, vert_max):
-            intersect_point = line_intersection(hor_line_list[h_val],
-                                                vert_line_list[v_val])
-            intersect_data = [intersect_point[1], intersect_point[0]]
-            intersect_list.append(intersect_data)
-
-    print('derived {0} points of intersection'.format(len(intersect_list)))
-    return intersect_list
-
 def column_counts(g_array):
     """
     column counts for neighbour update
@@ -324,7 +274,8 @@ class Tiles():
         layer_dict['Param']['epsg'] = 4326
         return layer_dict
 
-    def horizontal(self):
+    
+    def hor(self):
         """
         Horizontal Reference Points
 
@@ -334,7 +285,7 @@ class Tiles():
         #1/7 deriving vertical list of reference points from north to south for longitudes or x axis
         (angle, new_north, i, longitudes) = (180, self.north, 0, [])
         #print(east,new_north,south,'\n')
-        longitudes.append([[self.north, self.west], [self.north, self.east]])
+        longitudes.append(self.north)
 
         while new_north >= self.south:
             if i > 3:
@@ -344,12 +295,12 @@ class Tiles():
             p_val = point_radial_distance(latlong, angle, self.radial *\
                                            self.hor_seq[i])
             new_north = p_val[0]
-            longitudes.append([[p_val[0], self.west], [p_val[0], self.east]])
+            longitudes.append(p_val[0])
             i += 1
         return longitudes
 
-
-    def vertical(self):
+    
+    def vert(self):
         """
         #2/7 deriving horizontal list of reference points from east to west for latitudes or y axis
 
@@ -363,7 +314,7 @@ class Tiles():
 
         (angle, new_west, i, latitudes) = (90, self.west, 0, [])
 
-        latitudes.append([[self.north, self.west], [self.south, self.west]])
+        latitudes.append(self.west)
         while new_west <= self.east:
             if i > 3:
                 i = 0
@@ -372,11 +323,19 @@ class Tiles():
             p_val = point_radial_distance(latlong, angle, \
                                                self.radial*self.vert_seq[i])
             new_west = p_val[1]
-            latitudes.append([[self.north, p_val[1]], [self.south, p_val[1]]])
+            latitudes.append(p_val[1])
             i += 1
 
         return latitudes
 
+    def hor_vert(self,hor,vert):
+        coords =[]
+        for y_coord in iter(hor):
+            for  x_coord in iter(vert):
+                coords.append([x_coord,y_coord])
+        return coords
+                
+            
 
     def hex_array(self, intersect_list, max_h, max_v):
         """
@@ -689,17 +648,17 @@ class Tiles():
             val_list.append(neighbour_check(poly, ref_table_df, g_array))
 
         return val_list
-
+    
 
     def hexagons(self):
         """
         Process geojson Polygon array
         """
         print(self.params())
-        hors = self.horizontal()
-        verts = self.vertical()
-        intersects = intersections(hors, verts)
-        hex_array = self.hex_array(intersects, len(hors), len(verts))
+        hors = self.hor()
+        verts = self.vert()
+        the_coords = self.hor_vert(hors, verts)
+        hex_array = self.hex_array(the_coords, len(hors), len(verts))
         poi_hex_array = self.add_poly_poi(hex_array)
         (odd, even) = column_counts(poi_hex_array)
         nb_poi_hex_array = self.update_neighbours(poi_hex_array, odd, even)
@@ -716,10 +675,10 @@ class Tiles():
         Process geojson Polygon array
         """
         print(self.params())
-        hors = self.horizontal()
-        verts = self.vertical()
-        intersects = intersections(hors, verts)
-        box_array = self.box_array(intersects, len(hors), len(verts))
+        hors = self.hor()
+        verts = self.vert()
+        the_coords = self.hor_vert(hors, verts)
+        box_array = self.box_array(the_coords, len(hors), len(verts))
         poi_box_array = self.add_poly_poi(box_array)
         (odd, even) = column_counts(poi_box_array)
         nb_poi_box_array = self.update_neighbours(poi_box_array, odd, even)
