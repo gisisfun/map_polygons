@@ -38,16 +38,15 @@ def hex(bounds_north, bounds_south, bounds_east, bounds_west,
     
     nb_aus_hex_array = t_mod.hexagons()
     to_geojson_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
-                    format(theshape, theradial),'geojson', t_mod.slash)
+                    format(theshape, str(theradial)),\
+                           'geojson', t_mod.slash)
     to_kml_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
-                format(theshape, theradial),\
-                t_mod.kml_files_path\
-                ,t_mod.slash \
+                format(theshape, str(theradial)),\
+                t_mod.kml_files_path, t_mod.slash \
                 ,'Active_Fires')
     to_shp_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
-                format(theshape, theradial), \
-                t_mod.shape_files_path, \
-                t_mod.slash)
+                format(theshape, str(theradial)), \
+                t_mod.shape_files_path, t_mod.slash)
 
 def box(bounds_north, bounds_south, bounds_east, bounds_west, theradial):
     """
@@ -74,14 +73,14 @@ def box(bounds_north, bounds_south, bounds_east, bounds_west, theradial):
     
     nb_aus_box_array = t_mod.boxes()
     to_geojson_file(nb_aus_box_array, \
-                    'aus_{}_{}km_layer'.format(theshape, theradial), \
+                    'aus_{}_{}km_layer'.format(theshape, str(theradial)), \
                     t_mod.geojson_files_path, t_mod.slash)
     to_kml_file(nb_aus_box_array, 'aus_{}_{}km_layer'.
-                format(theshape, theradial), \
+                format(theshape, str(theradial)), \
                 t_mod.kml_files_path, t_mod.slash, \
                 'Active_Fires')
     to_shp_file(nb_aus_box_array, \
-                'aus_{}_{}km_layer'.format(theshape, theradial), \
+                'aus_{}_{}km_layer'.format(theshape, str(theradial)), \
                 t_mod.shape_files_path, t_mod.slash)
 
 
