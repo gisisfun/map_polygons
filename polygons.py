@@ -8,8 +8,8 @@ from utils import from_json_file, file_deploy, to_geojson_file, to_kml_file, \
 to_shp_file
 #from isotiles.visual import Visual
 
-
-def hexagons(bounds_north, bounds_south, bounds_east, bounds_west,
+ 
+def hex(bounds_north, bounds_south, bounds_east, bounds_west,
              theradial):
 
     """
@@ -49,7 +49,7 @@ def hexagons(bounds_north, bounds_south, bounds_east, bounds_west,
                 t_mod.shape_files_path, \
                 t_mod.slash)
 
-def boxes(bounds_north, bounds_south, bounds_east, bounds_west, theradial):
+def box(bounds_north, bounds_south, bounds_east, bounds_west, theradial):
     """
     Boxes specific functions to create hexagon mapping
     """
@@ -59,23 +59,30 @@ def boxes(bounds_north, bounds_south, bounds_east, bounds_west, theradial):
                   west=bounds_west, radial=theradial)
     print(t_mod.slash)
     #u_mod = Util(shape=theshape, radial=theradial)
-    ref_files_polygons('datasets', \
-                       t_mod.json_files_path, \
-                       t_mod.slash)
+    datasets = from_json_file('datasets',t_mod.json_files_path, t_mod.slash)
+    ref_data = datasets['DataSets']['Australia']['ShapeFormat']
+    file_deploy(ref_data)
+
+    ref_data = datasets['DataSets']['AGILDataset']['CSVFormat']
+    file_deploy(ref_data)
+
+    ref_data = datasets['DataSets']['MBSP']['CSVFormat']
+    file_deploy(ref_data)
+
+    ref_data = datasets['DataSets']['NASAActiveFireData']['ModisC61km']['CSVFormat']
+    file_deploy(ref_data)
+    
     nb_aus_box_array = t_mod.boxes()
     to_geojson_file(nb_aus_box_array, \
                     'aus_{}_{}km_layer'.format(theshape, theradial), \
-                    t_mod.geojson_files_path, \
-                    t_mod.slash)
+                    t_mod.geojson_files_path, t_mod.slash)
     to_kml_file(nb_aus_box_array, 'aus_{}_{}km_layer'.
                 format(theshape, theradial), \
-                t_mod.kml_files_path, \
-                t_mod.slash, \
+                t_mod.kml_files_path, t_mod.slash, \
                 'Active_Fires')
     to_shp_file(nb_aus_box_array, \
                 'aus_{}_{}km_layer'.format(theshape, theradial), \
-                t_mod.shape_files_path, \
-                t_mod.slash)
+                t_mod.shape_files_path, t_mod.slash)
 
 
 PARSER = argparse.ArgumentParser(
@@ -97,14 +104,14 @@ PARSER.add_argument('-rl', '--radial', default=57,
 PARSER.add_argument('-sh', '--shape', default='hex',
                     help="shape (hex or box)")
 
-
 ARGS = PARSER.parse_args()
+    
 if ARGS.shape == 'hex':
-    hexagons(float(ARGS.north), float(ARGS.south), float(ARGS.east),
+    hex(float(ARGS.north), float(ARGS.south), float(ARGS.east),
              float(ARGS.west), float(ARGS.radial))
 
 if ARGS.shape == "box":
-    boxes(float(ARGS.north), float(ARGS.south), float(ARGS.east),
+    box(float(ARGS.north), float(ARGS.south), float(ARGS.east),
           float(ARGS.west), float(ARGS.radial))
 
                 
