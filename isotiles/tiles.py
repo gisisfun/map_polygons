@@ -1,8 +1,6 @@
 """
 Map_polygons tiles module
 """
-
-#all
 import os
 import sys
 from math import sqrt
@@ -11,15 +9,20 @@ import numpy as np
 from geopy.distance import geodesic
 import matplotlib.path as mpltPath
 import shapefile #to be moved to util from add_poly_poi
+
+from isotiles.__init__ import Defaults
+from utils import points_in_polygon, coords_from_csv, \
+coords_from_csv_latin1
+#all
+
 from geojson import Polygon, Feature #,FeatureCollection
 
 
 sys.path.append('..')
 
-from isotiles.__init__ import Defaults
+
 #from isotiles.poi import POI
-from utils import points_in_polygon, coords_from_csv, \
-coords_from_csv_latin1
+
 
 
 def point_radial_distance(coords, brng, radial):
@@ -195,7 +198,7 @@ class Tiles():
         Shape filespath
         """
         return "kmlfiles"
-    
+
     @property
     def csv_files_path(self):
         """
@@ -274,7 +277,7 @@ class Tiles():
         layer_dict['Param']['epsg'] = 4326
         return layer_dict
 
-    
+
     def hor(self):
         """
         Horizontal Reference Points
@@ -299,7 +302,7 @@ class Tiles():
             i += 1
         return longitudes
 
-    
+
     def vert(self):
         """
         #2/7 deriving horizontal list of reference points from east to west for latitudes or y axis
@@ -328,21 +331,125 @@ class Tiles():
 
         return latitudes
 
-    def hor_vert(self,hor,vert):
-        coords =[]
+    def hor_vert(self, hor, vert):
+        """
+        hor_vert 1D array
+        
+        Input variables:
+        hor: horizontal (columns, longitudes)
+        vert: vertical (rows, latitudes)
+        """
+        coords = []
         for y_coord in iter(hor):
             for  x_coord in iter(vert):
-                coords.append([x_coord,y_coord])
+                coords.append([x_coord, y_coord])
         return coords
-                
-            
+
+    def hor_vert_matrix(self, hor, vert):
+        """
+        hor_vert matrix array
+        
+        Input variables:
+        hor: horizontal (columns, longitudes)
+        vert: vertical (rows, latitudes)
+        """
+        rows_and_columns = []
+        for y_coord in iter(hor):
+            columns = []
+            for x_coord in iter(vert):
+                columns.append([x_coord, y_coord])
+            rows_and_columns.append(columns)
+        return rows_and_columns
+
+    def hex_matrix(self, intersect_matrix, hor, vert):
+        """
+        Put it all together - deriving hexagon polygons from intersection data
+
+        Prerequisites:
+        hor_vert, hor, vert, Tiles
+
+        Input variables:
+        intersect_list:
+        max_h:
+        max_v:
+        """
+        print("hor", hor, "down", hor-2, "vert", vert, "across", vert // 4, \
+              'total', (hor-2)*(vert // 4))
+        g_array = []
+        return g_array
+
+
+#    def box_array(self, intersect_list, max_h, max_v):
+#        """
+#        Create array of box shaped polygons
+#
+#        Prerequisites:
+#        horizontal, vertical, Tiles
+#
+#        Input variables:
+#        Provided
+#        """
+#        self.shape = 'box'
+#        poly_id = 0
+#        (top_left, g_array, col, row) = (0, [], 1, 1)
+#        # g_array - array of geojson formatted geometry element
+#        print('\n4/7 deriving boxes polygons from intersection data')
+#        vertex = [top_left + 0, top_left + 1, top_left + max_v + 1, top_left + max_v]
+#
+#        while vertex[2] < max_h * max_v:
+#            poly_coords = [intersect_list[vertex[0]], \
+#                           intersect_list[vertex[1]], \
+#                           intersect_list[vertex[2]], \
+#                           intersect_list[vertex[3]], \
+#                           intersect_list[vertex[0]]]
+#            (vertex00, vertex01, vertex10, vertex20, vertex21, vertex31) = \
+#                       (intersect_list[vertex[0]][0], \
+#                        intersect_list[vertex[0]][1], \
+#                        intersect_list[vertex[1]][0], \
+#                        intersect_list[vertex[2]][0], \
+#                        intersect_list[vertex[2]][1], \
+#                        intersect_list[vertex[3]][1])
+#            centre_lat = vertex01 + (vertex21 - vertex01) / 2
+#            centre_lon = vertex00 + (vertex20 - vertex00) / 2
+#            bounds_n = vertex01
+#            bounds_s = vertex31
+#            bounds_e = vertex10
+#            bounds_w = vertex00
+#            if bounds_e > bounds_w:
+#                geopoly = Polygon([poly_coords])
+#                poly_id += 1
+#                geopoly = Feature(geometry=geopoly, \
+#                properties={"p": top_left, "a": poly_id-1, \
+#                              "lat": centre_lat, "lon": centre_lon, \
+#                              "N": bounds_n, "S": bounds_s, \
+#                              "E": bounds_e, "W": bounds_w, \
+#                              "row": row, "col": col, \
+#                              "Aust": 0, "p_N":-9, \
+#                              "p_NE":-9, "p_E":-9, \
+#                              "p_SE":-9, "p_S":-9, \
+#                              "p_SW":-9, "p_W":-9, \
+#                              "est_area": self.radial ** 2})
+#                g_array.append(geopoly)
+#                #append geojson geometry definition attributes to list
+#            else:
+#                row += 1
+#                col = 0
+#
+#            #increment values
+#            top_left += 1
+#            col += 1
+#            vertex = [top_left + 0, top_left + 1, top_left + max_v + 1, top_left + max_v]
+#
+#        print('\n5/7 boxes geojson dataset of {0} derived polygons'.format(len(g_array)))
+#
+#        return g_array
 
     def hex_array(self, intersect_list, max_h, max_v):
         """
         Put it all together - deriving hexagon polygons from intersection data
 
         Prerequisites:
-        intersections, horizontal, vertical, Tiles
+        hor_vert, hor, vert, Tiles
 
         Input variables:
         intersect_list:
@@ -604,6 +711,8 @@ class Tiles():
         """
         neighbour update of geojson Polygon array
         """
+        diff_col_count = odd_columns != even_columns
+            
         ref_table = []
         for g_rec in iter(g_array):
             ref_table.append([g_rec['properties']['a'], \
@@ -613,19 +722,24 @@ class Tiles():
         ref_table_df = pd.DataFrame(ref_table)
         ref_table_df.columns = ['arr', 'poly', 'row']
 
-        for g_rec in iter(g_array):
+        for g_row, g_rec in enumerate(g_array):
+            adjust = 0
+            if diff_col_count is True:
+                #if g_row % 2 == 1:
+                    #even
+                adjust = 1
             g_poly = g_rec['properties']['p']
             (pol_n, pol_ne, pol_e, pol_se, pol_s, pol_sw, pol_w, pol_nw) = \
             self.neighbours(g_array, g_poly, ref_table_df, \
                             odd_columns)
-            g_rec['properties']['p_N'] = pol_n
-            g_rec['properties']['p_NE'] = pol_ne
+            g_rec['properties']['p_N'] = pol_n-adjust*2
+            g_rec['properties']['p_NE'] = pol_ne-adjust
             g_rec['properties']['p_E'] = pol_e
-            g_rec['properties']['p_SE'] = pol_se
-            g_rec['properties']['p_S'] = pol_s
-            g_rec['properties']['p_SW'] = pol_sw
+            g_rec['properties']['p_SE'] = pol_se+adjust
+            g_rec['properties']['p_S'] = pol_s+adjust*2
+            g_rec['properties']['p_SW'] = pol_sw+adjust
             g_rec['properties']['p_W'] = pol_w
-            g_rec['properties']['p_NW'] = pol_nw
+            g_rec['properties']['p_NW'] = pol_nw-adjust
         return g_array
 
 
@@ -649,6 +763,16 @@ class Tiles():
 
         return val_list
     
+    def testing(self):
+        """
+        Process geojson Polygon array
+        """
+        print(self.params())
+        hors = self.hor()
+        verts = self.vert()
+        the_coords = self.hor_vert_matrix(hors, verts)
+        self.hex_matrix(the_coords, len(hors), len(verts))
+        return the_coords
 
     def hexagons(self):
         """
@@ -659,8 +783,19 @@ class Tiles():
         verts = self.vert()
         the_coords = self.hor_vert(hors, verts)
         hex_array = self.hex_array(the_coords, len(hors), len(verts))
+        
+        down = len(hors)-2
+        odd = len(verts)//4
+        even = (len(verts)-3)//4
+        est_total = (down/2)*(odd+even)
+        
+        print("hor", len(hors), "down", down, "vert", len(verts), \
+              "across (odd rows)", odd, "across (even rows)", \
+              even, "est total", est_total)
+        
         poi_hex_array = self.add_poly_poi(hex_array)
-        (odd, even) = column_counts(poi_hex_array)
+#        (odd, even) = column_counts(poi_hex_array)
+        print('odd', odd, 'even', even)
         nb_poi_hex_array = self.update_neighbours(poi_hex_array, odd, even)
         # cut out ocean polygons
         aus_hex_array = aus_poly_intersect(nb_poi_hex_array)
