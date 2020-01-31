@@ -259,9 +259,11 @@ class Tiles():
         Construct feedback of user variables for user
         """
         msg = """Making {0} shapes starting from {1},{2} to {3},{4} with
-    a radial length of {5} km"""
+ a radial length of {5} km.""" # Odd rows: {6} polygons, Even number rows: {7}
+# polygons, remainder points: {8)"""
         return  msg.format(self.shape, self.north, self.west, self.south,
-                           self.east, self.radial)
+                           self.east, self.radial) #, self.odd, self.even,
+#                           self.rem_lat)
 
 
     def metadata(self):
@@ -456,10 +458,12 @@ class Tiles():
         max_h:
         max_v:
         """
+
         (g_array, tabular_list) = ([], [])
         (lat_offset, top_left, poly_row_count) = \
         (4, 0, int(max_v / len(self.hor_seq)))
         rem_lat = max_v % (lat_offset + len(self.hor_seq))
+#        self.rem_lat = rem_lat
         p_tuple = ((False, True, True, True, False, True, True, True), \
                    (0, 0, -4, 0, 0, -4, -4, -4))
 
@@ -788,10 +792,11 @@ class Tiles():
         odd = len(verts)//4
         even = (len(verts)-3)//4
         est_total = (down/2)*(odd+even)
+        rem_lat = len(verts) % 8
         
         print("hor", len(hors), "down", down, "vert", len(verts), \
               "across (odd rows)", odd, "across (even rows)", \
-              even, "est total", est_total)
+              even, "rem_lat", rem_lat, "est total", est_total)
         
         poi_hex_array = self.add_poly_poi(hex_array)
 #        (odd, even) = column_counts(poi_hex_array)
