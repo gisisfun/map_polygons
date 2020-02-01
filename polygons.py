@@ -47,46 +47,6 @@ def hex(bounds_north, bounds_south, bounds_east, bounds_west,
     to_shp_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
                 format(theshape, str(int(theradial))), \
                 t_mod.shape_files_path, t_mod.slash)
-    
-def test(bounds_north, bounds_south, bounds_east, bounds_west,
-             theradial):
-
-    """
-    Hexagons specific functions to create hexagon mapping layer
-
-    """
-    theshape = 'hex'
-    t_mod = Tiles(shape=theshape, north=bounds_north,
-                  south=bounds_south, east=bounds_east,
-                  west=bounds_west, radial=theradial)
-    #u_mod = Util(shape=theshape, radial=theradial)
-    
-    
-#    datasets = from_json_file('datasets',t_mod.json_files_path, t_mod.slash)
-#    ref_data = datasets['DataSets']['Australia']['ShapeFormat']
-#    file_deploy(ref_data)
-#
-#    ref_data = datasets['DataSets']['AGILDataset']['CSVFormat']
-#    file_deploy(ref_data)
-#
-#    ref_data = datasets['DataSets']['MBSP']['CSVFormat']
-#    file_deploy(ref_data)
-#
-#    ref_data = datasets['DataSets']['NASAActiveFireData']['ModisC61km']['CSVFormat']
-#    file_deploy(ref_data)
-    
-    nb_aus_hex_array = t_mod.testing()
-    print(nb_aus_hex_array[1][1])
-#    to_geojson_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
-#                    format(theshape, str(int(theradial))),\
-#                           'geojson', t_mod.slash)
-#    to_kml_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
-#                format(theshape, str(int(theradial))),\
-#                t_mod.kml_files_path, t_mod.slash \
-#                ,'Active_Fires')
-#    to_shp_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
-#                format(theshape, str(int(theradial))), \
-#                t_mod.shape_files_path, t_mod.slash)
 
 def box(bounds_north, bounds_south, bounds_east, bounds_west, theradial):
     """
@@ -144,8 +104,7 @@ PARSER.add_argument('-sh', '--shape', default='hex',
                     help="shape (hex or box)")
 
 ARGS = PARSER.parse_args()
-#test(float(ARGS.north), float(ARGS.south), float(ARGS.east),
-#             float(ARGS.west), float(ARGS.radial))    
+    
 if ARGS.shape == 'hex':
     hex(float(ARGS.north), float(ARGS.south), float(ARGS.east),
              float(ARGS.west), float(ARGS.radial))
