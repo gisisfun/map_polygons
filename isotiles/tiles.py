@@ -269,7 +269,7 @@ class Tiles():
     def metadata(self):
         """
         Not Implemented to date
-#        """
+        """
         layer_dict = {'Bounds': {'Australia': {'North': self.north,
                                                'South': self.south,
                                                'West': self.west,
@@ -380,71 +380,6 @@ class Tiles():
         g_array = []
         return g_array
 
-
-#    def box_array(self, intersect_list, max_h, max_v):
-#        """
-#        Create array of box shaped polygons
-#
-#        Prerequisites:
-#        horizontal, vertical, Tiles
-#
-#        Input variables:
-#        Provided
-#        """
-#        self.shape = 'box'
-#        poly_id = 0
-#        (top_left, g_array, col, row) = (0, [], 1, 1)
-#        # g_array - array of geojson formatted geometry element
-#        print('\n4/7 deriving boxes polygons from intersection data')
-#        vertex = [top_left + 0, top_left + 1, top_left + max_v + 1, top_left + max_v]
-#
-#        while vertex[2] < max_h * max_v:
-#            poly_coords = [intersect_list[vertex[0]], \
-#                           intersect_list[vertex[1]], \
-#                           intersect_list[vertex[2]], \
-#                           intersect_list[vertex[3]], \
-#                           intersect_list[vertex[0]]]
-#            (vertex00, vertex01, vertex10, vertex20, vertex21, vertex31) = \
-#                       (intersect_list[vertex[0]][0], \
-#                        intersect_list[vertex[0]][1], \
-#                        intersect_list[vertex[1]][0], \
-#                        intersect_list[vertex[2]][0], \
-#                        intersect_list[vertex[2]][1], \
-#                        intersect_list[vertex[3]][1])
-#            centre_lat = vertex01 + (vertex21 - vertex01) / 2
-#            centre_lon = vertex00 + (vertex20 - vertex00) / 2
-#            bounds_n = vertex01
-#            bounds_s = vertex31
-#            bounds_e = vertex10
-#            bounds_w = vertex00
-#            if bounds_e > bounds_w:
-#                geopoly = Polygon([poly_coords])
-#                poly_id += 1
-#                geopoly = Feature(geometry=geopoly, \
-#                properties={"p": top_left, "a": poly_id-1, \
-#                              "lat": centre_lat, "lon": centre_lon, \
-#                              "N": bounds_n, "S": bounds_s, \
-#                              "E": bounds_e, "W": bounds_w, \
-#                              "row": row, "col": col, \
-#                              "Aust": 0, "p_N":-9, \
-#                              "p_NE":-9, "p_E":-9, \
-#                              "p_SE":-9, "p_S":-9, \
-#                              "p_SW":-9, "p_W":-9, \
-#                              "est_area": self.radial ** 2})
-#                g_array.append(geopoly)
-#                #append geojson geometry definition attributes to list
-#            else:
-#                row += 1
-#                col = 0
-#
-#            #increment values
-#            top_left += 1
-#            col += 1
-#            vertex = [top_left + 0, top_left + 1, top_left + max_v + 1, top_left + max_v]
-#
-#        print('\n5/7 boxes geojson dataset of {0} derived polygons'.format(len(g_array)))
-#
-#        return g_array
 
     def hex_array(self, intersect_list, max_h, max_v):
         """
@@ -791,15 +726,14 @@ class Tiles():
         down = len(hors)-2
         odd = len(verts)//4
         even = (len(verts)-3)//4
-        est_total = (down/2)*(odd+even)
         rem_lat = len(verts) % 8
         
         print("hor", len(hors), "down", down, "vert", len(verts), \
               "across (odd rows)", odd, "across (even rows)", \
-              even, "rem_lat", rem_lat, "est total", est_total)
+              even, "rem_lat", rem_lat)
         
         poi_hex_array = self.add_poly_poi(hex_array)
-#        (odd, even) = column_counts(poi_hex_array)
+        (odd, even) = column_counts(poi_hex_array)
         print('odd', odd, 'even', even)
         nb_poi_hex_array = self.update_neighbours(poi_hex_array, odd, even)
         # cut out ocean polygons
