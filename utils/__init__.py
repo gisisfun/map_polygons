@@ -777,39 +777,59 @@ def points_and_polygons(g_array):
     return point_list
 
 
-def neighbours(points_list, file_name, csv_files_path='csv', slash='/'):
+def add_poly_nb(g_array, poly_col):
     """
     Intersecting polygons list
 
-    Prerequisites:
-    hex_array or box_array, horizontal, vertical, Tiles
+
 
     Input variables:
-        points_list: array of points with id, x and y values
+    g_array: array of points with id, x and y values
 
     Output:
-        list of neighbouring polygons wrtten to file system
+    list of neighbouring polygons wrtten to file system
     """
-
+    points_list = []
+    for poly_data in iter(g_array):
+        poly = poly_data['properties'][poly_col]
+        for point in iter(poly_data['geometry']['coordinates'][0]):
+            latlong = str(point[0]) + str(point[1])
+            points_list.append([poly,latlong])
+            
     point_df = pd.DataFrame(points_list)
+    
     point_df.columns = ['poly', 'latlong']
-    point_df.to_csv('{}{}{}_points.csv'.format(csv_files_path,
-                                               slash, file_name), sep=',')
-    point_df_a = point_df  # make copy of dataframe
-    process_point_df = pd.merge(point_df, point_df_a, on='latlong')
+#    point_df.to_csv('{}{}{}_points.csv'.format(csv_files_path,
+#                                               slash, file_name), sep=',')
+    point_df_copy = point_df  # make copy of dataframe
+    process_point_df = pd.merge(point_df, point_df_copy, on='latlong')
     # merge columns of same dataframe on concatenated latlong
     process_point_df = process_point_df[(process_point_df['poly_x']
                                          != process_point_df['poly_y'])]
     # remove self references
     output_point_df = process_point_df[['poly_x', 'poly_y']].\
-                      copy().sort_values(by=['poly_x']).drop_duplicates()
+                        copy().sort_values(by=['poly_x']).drop_duplicates()
+                      
+    print(output_point_df)
+
+            
+    for g_rec, poly_data in enumerate(g_array):
+        is_poly =  output_point_df['poly_x'] == \
+        poly_data['properties'][poly_col]
+        poly_df = output_point_df[is_poly]
+        neighbours = ""
+        for index, row in poly_df.iterrows():
+            neighbours = neighbours + str(row['poly_y']) + "|"
+        g_array[g_rec]['properties']['p_NB'] = neighbours[:-1]      
     #just leave polygon greferences and filter output
 
-    output_point_df.to_csv('{}{}{}_neighbours.csv' \
-                           .format(csv_files_path, slash,\
-                                   file_name),\
-                           sep=',', \
-                           index=False)
+#    output_point_df.to_csv('{}{}{}_neighbours.csv' \
+#                           .format(csv_files_path, slash,\
+#                                   file_name),\
+#                           sep=',', \
+#                           index=False)
+    
+    return g_array
 
 
 def random_points_in_polygon(poly):
