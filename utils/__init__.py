@@ -799,8 +799,7 @@ def add_poly_nb(g_array, poly_col):
     point_df = pd.DataFrame(points_list)
     
     point_df.columns = ['poly', 'latlong']
-#    point_df.to_csv('{}{}{}_points.csv'.format(csv_files_path,
-#                                               slash, file_name), sep=',')
+
     point_df_copy = point_df  # make copy of dataframe
     process_point_df = pd.merge(point_df, point_df_copy, on='latlong')
     # merge columns of same dataframe on concatenated latlong
@@ -809,10 +808,7 @@ def add_poly_nb(g_array, poly_col):
     # remove self references
     output_point_df = process_point_df[['poly_x', 'poly_y']].\
                         copy().sort_values(by=['poly_x']).drop_duplicates()
-                      
-    print(output_point_df)
 
-            
     for g_rec, poly_data in enumerate(g_array):
         is_poly =  output_point_df['poly_x'] == \
         poly_data['properties'][poly_col]
@@ -821,7 +817,7 @@ def add_poly_nb(g_array, poly_col):
         for index, row in poly_df.iterrows():
             neighbours = neighbours + str(row['poly_y']) + "|"
         g_array[g_rec]['properties']['p_NB'] = neighbours[:-1]      
-    #just leave polygon greferences and filter output
+
 
 #    output_point_df.to_csv('{}{}{}_neighbours.csv' \
 #                           .format(csv_files_path, slash,\
