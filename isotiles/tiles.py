@@ -121,7 +121,7 @@ def neighbour_check(poly, ref_table_df, g_array):
         pass
     return val
 
-def aus_poly_intersect(g_array):
+def aus_poly_no_ocean(g_array):
     """
     Separate continental polygons from non continental
     """
@@ -161,6 +161,31 @@ class Tiles():
 
 
     @property
+    def inc_adj(self):
+        """
+        Increment offset for next hexagon
+        increment values fot cxceptions of unused count of latitudes values
+        """
+        return  [False, True, True, True, False, True, True, True]
+
+    @property
+    def inc_by_rem(self):
+        """
+        Increment offset for next hexagon
+        increment values fot cxceptions of unused count of latitudes values
+        """
+        return [0, 0, -4, 0, 0, -4, -4, -4]
+
+    @property
+    def odd_gt_even(self):
+        """
+        Short interval to next reference point
+        """
+        return  [True, False, True, False, False, True, True, False]
+
+ 
+
+    @property
     def short(self):
         """
         Short interval to next reference point
@@ -174,7 +199,6 @@ class Tiles():
         """
 
         return 1
-
 
     @property
     def slash(self):
@@ -269,7 +293,7 @@ class Tiles():
     def metadata(self):
         """
         Not Implemented to date
-        """
+#        """
         layer_dict = {'Bounds': {'Australia': {'North': self.north,
                                                'South': self.south,
                                                'West': self.west,
@@ -336,7 +360,7 @@ class Tiles():
     def hor_vert(self, hor, vert):
         """
         hor_vert 1D array
-        
+
         Input variables:
         hor: horizontal (columns, longitudes)
         vert: vertical (rows, latitudes)
@@ -350,7 +374,7 @@ class Tiles():
     def hor_vert_matrix(self, hor, vert):
         """
         hor_vert matrix array
-        
+
         Input variables:
         hor: horizontal (columns, longitudes)
         vert: vertical (rows, latitudes)
@@ -444,11 +468,7 @@ class Tiles():
                                        "lon": centre_lon, "N": bounds_n, \
                                        "S": bounds_s, "E": bounds_e, \
                                        "W": bounds_w, "est_area": est_area, \
-                                       "Aust": 0, "a": poly_id-1,\
-                                       "p_N":-9, "p_NE":-9, \
-                                       "p_E":-9, "p_SE":-9, \
-                                       "p_S":-9, "p_SW":-9, \
-                                       "p_W":-9, "p_NW":-9})
+                                       "Aust": 0})
                     if  bounds_e > bounds_w:
                         g_array.append(geopoly)
                         #append geojson geometry definition attributes to list
@@ -528,11 +548,7 @@ class Tiles():
                               "N": bounds_n, "S": bounds_s, \
                               "E": bounds_e, "W": bounds_w, \
                               "row": row, "col": col, \
-                              "Aust": 0, "p_N":-9, \
-                              "p_NE":-9, "p_E":-9, \
-                              "p_SE":-9, "p_S":-9, \
-                              "p_SW":-9, "p_W":-9, \
-                              "est_area": self.radial ** 2})
+                              "Aust": 0, "est_area": self.radial ** 2, })
                 g_array.append(geopoly)
                 #append geojson geometry definition attributes to list
             else:
@@ -645,74 +661,6 @@ class Tiles():
                         in_coords.append((point[0], point[1]-0.0001))
         return in_coords
 
-
-    def update_neighbours(self, g_array, odd_columns, even_columns):
-        """
-        neighbour update of geojson Polygon array
-        """
-        diff_col_count = odd_columns != even_columns
-            
-        ref_table = []
-        for g_rec in iter(g_array):
-            ref_table.append([g_rec['properties']['a'], \
-                              g_rec['properties']['p'], \
-                              g_rec['properties']['row']])
-
-        ref_table_df = pd.DataFrame(ref_table)
-        ref_table_df.columns = ['arr', 'poly', 'row']
-
-        for g_row, g_rec in enumerate(g_array):
-            adjust = 0
-            if diff_col_count is True:
-                #if g_row % 2 == 1:
-                    #even
-                adjust = 1
-            g_poly = g_rec['properties']['p']
-            (pol_n, pol_ne, pol_e, pol_se, pol_s, pol_sw, pol_w, pol_nw) = \
-            self.neighbours(g_array, g_poly, ref_table_df, \
-                            odd_columns)
-            g_rec['properties']['p_N'] = pol_n-adjust*2
-            g_rec['properties']['p_NE'] = pol_ne-adjust
-            g_rec['properties']['p_E'] = pol_e
-            g_rec['properties']['p_SE'] = pol_se+adjust
-            g_rec['properties']['p_S'] = pol_s+adjust*2
-            g_rec['properties']['p_SW'] = pol_sw+adjust
-            g_rec['properties']['p_W'] = pol_w
-            g_rec['properties']['p_NW'] = pol_nw-adjust
-        return g_array
-
-
-    def neighbours(self, g_array, poly, ref_table_df, column_count):
-        """
-        neighbour update of geojson hex Polygon array
-        """
-        nb_list = neighbour_poly_calc(poly, column_count)
-
-        poly_list = (nb_list[self.shape]['north'],
-                     nb_list[self.shape]['north_east'],
-                     nb_list[self.shape]['east'],
-                     nb_list[self.shape]['south_east'],
-                     nb_list[self.shape]['south'],
-                     nb_list[self.shape]['south_west'],
-                     nb_list[self.shape]['west'],
-                     nb_list[self.shape]['north_west'])
-        val_list = []
-        for poly in iter(poly_list):
-            val_list.append(neighbour_check(poly, ref_table_df, g_array))
-
-        return val_list
-    
-    def testing(self):
-        """
-        Process geojson Polygon array
-        """
-        print(self.params())
-        hors = self.hor()
-        verts = self.vert()
-        the_coords = self.hor_vert_matrix(hors, verts)
-        self.hex_matrix(the_coords, len(hors), len(verts))
-        return the_coords
-
     def hexagons(self):
         """
         Process geojson Polygon array
@@ -722,26 +670,20 @@ class Tiles():
         verts = self.vert()
         the_coords = self.hor_vert(hors, verts)
         hex_array = self.hex_array(the_coords, len(hors), len(verts))
-        
-        down = len(hors)-2
+
         odd = len(verts)//4
         even = (len(verts)-3)//4
-        rem_lat = len(verts) % 8
-        
-        print("hor", len(hors), "down", down, "vert", len(verts), \
-              "across (odd rows)", odd, "across (even rows)", \
-              even, "rem_lat", rem_lat)
+
+        print("across (odd rows)", odd, "across (even rows)", even)
         
         poi_hex_array = self.add_poly_poi(hex_array)
         (odd, even) = column_counts(poi_hex_array)
+        
         print('odd', odd, 'even', even)
-        nb_poi_hex_array = self.update_neighbours(poi_hex_array, odd, even)
-        # cut out ocean polygons
-        aus_hex_array = aus_poly_intersect(nb_poi_hex_array)
-        # add neighbouur reference data
-        nb_aus_hex_array = self.update_neighbours(aus_hex_array, odd, even)
-        # return output from function
-        return nb_aus_hex_array
+
+        aus_hex_array = aus_poly_no_ocean(poi_hex_array)
+
+        return aus_hex_array
 
 
     def boxes(self):
@@ -755,9 +697,8 @@ class Tiles():
         box_array = self.box_array(the_coords, len(hors), len(verts))
         poi_box_array = self.add_poly_poi(box_array)
         (odd, even) = column_counts(poi_box_array)
-        nb_poi_box_array = self.update_neighbours(poi_box_array, odd, even)
-        # cut out ocean polygons
-        aus_box_array = aus_poly_intersect(nb_poi_box_array)
+
+        aus_box_array = aus_poly_no_ocean(poi_box_array)
         # add neighbouur reference data
         nb_aus_box_array = self.update_neighbours(aus_box_array, odd, even)
         #print("100% progress: It's not over til it's over")
