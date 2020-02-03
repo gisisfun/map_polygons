@@ -37,12 +37,11 @@ def hex(bounds_north, bounds_south, bounds_east, bounds_west,
     file_deploy(ref_data)
     
     aus_hex_array = t_mod.hexagons()
-    to_shp_file(aus_hex_array, 'aus_{}_{}km_layer'.
+    nb_aus_hex_array = add_poly_nb(aus_hex_array,"p")
+    to_shp_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
                 format(theshape, str(int(theradial))), \
                 t_mod.shape_files_path, t_mod.slash)
-    
- 
-    nb_aus_hex_array = add_poly_nb(aus_hex_array,"p")
+
     to_kml_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
                 format(theshape, str(int(theradial))),\
                 t_mod.kml_files_path, t_mod.slash \
@@ -52,7 +51,7 @@ def hex(bounds_north, bounds_south, bounds_east, bounds_west,
                            'geojson', t_mod.slash)
 
     
-
+ 
 
 
 def box(bounds_north, bounds_south, bounds_east, bounds_west, theradial):
@@ -79,12 +78,11 @@ def box(bounds_north, bounds_south, bounds_east, bounds_west, theradial):
     file_deploy(ref_data)
     
     aus_box_array = t_mod.boxes()
-    to_shp_file(aus_box_array, \
+    nb_aus_box_array = add_poly_nb(aus_box_array,"p")
+    to_shp_file(nb_aus_box_array, \
                 'aus_{}_{}km_layer'.format(theshape, str(int(theradial))), \
                 t_mod.shape_files_path, t_mod.slash)
 
-    
-    nb_aus_box_array = add_poly_nb(aus_box_array,"p")
     to_kml_file(nb_aus_box_array, 'aus_{}_{}km_layer'.
                 format(theshape, str(int(theradial))), \
                 t_mod.kml_files_path, t_mod.slash, \
@@ -111,7 +109,7 @@ PARSER.add_argument('-be', '--east', default=169,
                     help="bounds east (-180 to 180)")
 PARSER.add_argument('-bw', '--west', default=96,
                     help="bounds west (-180 to 180)")
-PARSER.add_argument('-rl', '--radial', default=57,
+PARSER.add_argument('-rl', '--radial', default=59,
                     help="radial length in km")
 PARSER.add_argument('-sh', '--shape', default='hex',
                     help="shape (hex or box)")
