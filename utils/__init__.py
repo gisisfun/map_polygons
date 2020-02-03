@@ -393,7 +393,7 @@ def from_geojson_file(file_name, geojson_files_path='geojson', slash='/'):
     gj_dict = json.loads(gj_data)
     print(gj_dict)
     g_array = []
-    for gj_row, row_data in enumerate(gj_dict['features']):
+    for row_data in iter(gj_dict['features']):
         g_array.append(row_data)
     my_file.close()  # close file
     return g_array
@@ -471,7 +471,7 @@ def from_shp_file(file_name, shape_files_path='shapefiles', slash='/'):
     #get the field names
     fields = shape_file.fields
     column_list = []
-    for field_n, field_data in enumerate(fields[1:]):
+    for field_data in iter(fields[1:]):
         column_list.append(field_data[0])
 
     # data values with null geography
@@ -548,28 +548,28 @@ def to_shp_file(g_array, file_name, shape_files_path='shapefiles', slash='/'):
     prj_path = shp_path + '.prj'
     w_file = shapefile.Writer(shp_path) # , shapeType=3)
     #setup columns
-    props_dict = g_array[0]['properties']
-    i = 0
-    for key in props_dict:
-        if i < 2 or i > 8:
+    for i, key in enumerate(g_array[0]['properties']):
+
+        if isinstance(g_array[0]['properties'][key], int):
             w_file.field(key, 'N')
-        else:
-            w_file.field(key, 'N', decimal=10)
-        i = i + 1
+        if isinstance(g_array[0]['properties'][key], float):
+            w_file.field(key, 'F', decimal=10)
+        if isinstance(g_array[0]['properties'][key], str):
+            w_file.field(key, 'C')
 
-    num_poly = len(g_array)
-    for n_val in range(0, num_poly):
-        props_dict_rec = g_array[n_val]['properties']
+    for n_val, dict_val in enumerate(g_array):
         rec_str = "w_file.record("
-        i = 0
         #print('props_list',len(props_dict))
-        for key in props_dict_rec:
+        for i, key in enumerate(dict_val['properties']):
+            if isinstance(dict_val['properties'][key], str):
+                rec_str = rec_str + key + ' = "' + \
+                str(dict_val['properties'][key]) + '"'
+            else:
+                rec_str = rec_str + key + ' = ' + \
+                str(dict_val['properties'][key]) 
 
-            rec_str = rec_str + key + ' = ' + str(props_dict_rec[key])
-
-            if i is not len(props_dict)-1:
-                rec_str = rec_str + ','
-            i += 1
+            if i is not len(dict_val['properties'])-1:
+                rec_str = rec_str + ', '
 
         rec_str = rec_str + ' )'
         eval(rec_str)
@@ -622,7 +622,7 @@ def apply_classification(g_array, ref_col):
     """
     #get the values_list
     values_list = []
-    for i, val in enumerate(g_array):
+    for val in iter(g_array):
         values_list.append(val['properties'][ref_col])
 
     the_breaks = NaturalBreaks(values_list, 5)
@@ -644,7 +644,7 @@ def apply_classification(g_array, ref_col):
     c_hex_a_ref = ['ZZ000099', 'ZZ001AA6', 'ZZ0033B3', 'ZZ004DBF', 'ZZ004DCC',
                    'ZZ0066CC', 'ZZ0080D9', 'ZZ0099E6', 'ZZ0320FB', 'ZZ00CCFF']
     c_hex_a = []
-    for i, val in enumerate(c_hex_a_ref):
+    for val in iter(c_hex_a_ref):
         c_hex_a.append(val.replace('ZZ', 'FF'))
 
     break_distinct = list(dict.fromkeys(break_list))
@@ -794,12 +794,13 @@ def add_poly_nb(g_array, poly_col):
         poly = poly_data['properties'][poly_col]
         for point in iter(poly_data['geometry']['coordinates'][0]):
             latlong = str(point[0]) + str(point[1])
-            points_list.append([poly,latlong])
-            
-    point_df = pd.DataFrame(points_list)
-    
-    point_df.columns = ['poly', 'latlong']
+            points_list.append([poly, latlong])
 
+    point_df = pd.DataFrame(points_list)
+
+    point_df.columns = ['poly', 'latlong']
+#    point_df.to_csv('{}{}{}_points.csv'.format(csv_files_path,
+#                                               slash, file_name), sep=',')
     point_df_copy = point_df  # make copy of dataframe
     process_point_df = pd.merge(point_df, point_df_copy, on='latlong')
     # merge columns of same dataframe on concatenated latlong
@@ -810,21 +811,20 @@ def add_poly_nb(g_array, poly_col):
                         copy().sort_values(by=['poly_x']).drop_duplicates()
 
     for g_rec, poly_data in enumerate(g_array):
-        is_poly =  output_point_df['poly_x'] == \
+        is_poly = output_point_df['poly_x'] == \
         poly_data['properties'][poly_col]
         poly_df = output_point_df[is_poly]
         neighbours = ""
         for index, row in poly_df.iterrows():
             neighbours = neighbours + str(row['poly_y']) + "|"
-        g_array[g_rec]['properties']['p_NB'] = neighbours[:-1]      
-
+        g_array[g_rec]['properties']['p_NB'] = neighbours[:-1]
+    #just leave polygon greferences and filter output
 
 #    output_point_df.to_csv('{}{}{}_neighbours.csv' \
 #                           .format(csv_files_path, slash,\
 #                                   file_name),\
 #                           sep=',', \
 #                           index=False)
-    
     return g_array
 
 
