@@ -553,7 +553,11 @@ def to_shp_file(g_array, file_name, shape_files_path='shapefiles', slash='/'):
         if isinstance(g_array[0]['properties'][key], int):
             w_file.field(key, 'N')
         if isinstance(g_array[0]['properties'][key], float):
-            w_file.field(key, 'F', decimal=10)
+            if int(g_array[0]['properties'][key]) != \
+            g_array[0]['properties'][key]:
+                w_file.field(key, 'F', decimal=10)
+            else:
+                w_file.field(key, 'N')
         if isinstance(g_array[0]['properties'][key], str):
             w_file.field(key, 'C')
 
@@ -566,7 +570,7 @@ def to_shp_file(g_array, file_name, shape_files_path='shapefiles', slash='/'):
                 str(dict_val['properties'][key]) + '"'
             else:
                 rec_str = rec_str + key + ' = ' + \
-                str(dict_val['properties'][key]) 
+                str(dict_val['properties'][key])
 
             if i is not len(dict_val['properties'])-1:
                 rec_str = rec_str + ', '
@@ -652,7 +656,7 @@ def apply_classification(g_array, ref_col):
     #values_break = []
     old_val = []
     colour_breaks = []
-    for i, val in enumerate(values_list):
+    for val in iter(values_list):
         new_val = values_list.index(val) #[i for i, e in enumerate(values_n) if e is val]
         if new_val != old_val:
             #look up rgb colour values
