@@ -9,6 +9,7 @@ import json
 from pyunpack import Archive
 import numpy as np
 import shapefile
+from pycrs.load import from_file
 import simplekml
 from mapclassify import EqualInterval, NaturalBreaks, MaximumBreaks, \
 BoxPlot, Quantiles, Percentiles, FisherJenks, StdMean, UserDefined
@@ -18,6 +19,7 @@ import matplotlib.path as mpltPath
 
 from geojson import FeatureCollection, Polygon, Feature
 
+#https://automating-gis-processes.github.io/CSC18/lessons/L1/Intro-Python-GIS.html
 
 def tabular_dataframe(g_array):
     """
@@ -26,28 +28,13 @@ def tabular_dataframe(g_array):
     g_array: geojson Polygon data in array
     """
 
-#    tabular_list = []
-#    #num_coords = len(g_array[n]['geometry']['coordinates'][0])-2
-#    for i in range(0, num_coords):
-#        poly = g_array[n]['properties']['p']
-#        centre_lat = g_array[n]['properties']['lat']
-#        centre_lon = g_array[n]['properties']['long']
-#        bounds_n = g_array[n]['properties']['N']
-#        bounds_s = g_array[n]['properties']['S']
-#        bounds_e = g_array[n]['properties']['E']
-#        bounds_w = g_array[n]['properties']['W']
-#        tabular_line =[poly, centre_lat, centre_lon, \
-#                       bounds_n, bounds_s, bounds_e, bounds_w]
-#        tabular_list.append(tabular_line)
-#
-#    tabular_df = pd.DataFrame(tabular_list)
-#    #convert tabular array to tabular data frame
-#    tabular_df.columns = ['poly', 'lat', 'long', 'N', 'S', 'E', 'W']
-#    tabular_df.to_csv('csv{slash}{outfile}_dataset.csv' \
-#                      .format(outfile = outfile, slash = slash), \
-#                      sep = ',')
-#    return tabular_df
-    return g_array
+    tabular_list = []
+    for dict_val in iter(g_array):
+        tabular_list.append(dict_val['properties'])
+
+    tabular_data_df = pd.DataFrame(tabular_list)
+
+    return tabular_data_df
 
 def from_yaml(yaml_text):
     """
@@ -153,6 +140,7 @@ def file_deploy(resource_data, slash='/'):
     else:
         print('{} file in {} file format exists'\
               .format(resource_data['description'], resource_data['format']))
+
 
 
 def ref_files_polygons(def_file, path_datasets='jsonfiles', slash='/'):
@@ -368,6 +356,20 @@ def points_in_polygon(g_array, lat_longs, g_label):
 
     return g_array
 
+def get_geojson_crs(file_name, geojson_files_path='geojson', slash='/'):
+    """
+    Reads CRS value for geojson file
+
+    Input variables:
+        file_name: name of shape file with '.json' extension
+        geojson_path: path to location of geojson files
+        slash: os dependant directory delimiter:
+               forward slash '/' - 'posix'
+               backwards slash '\\' - 'nt'
+    """
+    full_file_path = "{}{}{}.json".format(geojson_files_path, slash, file_name)
+    return from_file(full_file_path)
+
 
 def from_geojson_file(file_name, geojson_files_path='geojson', slash='/'):
     """
@@ -426,6 +428,21 @@ def to_geojson_file(g_array, file_name, geojson_files_path='geojson', \
     #open file for writing geojson layer in geojson format
     my_file.write(str(content))  # write geojson layer to open file
     my_file.close()  # close file
+
+
+def get_shapefile_crs(file_name, shapefile_files_path='shapefiles', slash='/'):
+    """
+    Reads CRS value for shapefile
+
+    Input variables:
+        file_name: name of shape file with '.shp' extension
+        shape_file_path: path to location of shapefiles
+        slash: os dependant directory delimiter:
+               forward slash '/' - 'posix'
+               backwards slash '\\' - 'nt'
+    """
+    full_file_path = "{}{}{}.prj".format(shapefile_files_path, slash, file_name)
+    return from_file(full_file_path)
 
 
 def from_shp_file(file_name, shape_files_path='shapefiles', slash='/'):
@@ -548,7 +565,7 @@ def to_shp_file(g_array, file_name, shape_files_path='shapefiles', slash='/'):
     prj_path = shp_path + '.prj'
     w_file = shapefile.Writer(shp_path) # , shapeType=3)
     #setup columns
-    for i, key in enumerate(g_array[0]['properties']):
+    for key in iter(g_array[0]['properties']):
 
         if isinstance(g_array[0]['properties'][key], int):
             w_file.field(key, 'N')
@@ -561,24 +578,14 @@ def to_shp_file(g_array, file_name, shape_files_path='shapefiles', slash='/'):
         if isinstance(g_array[0]['properties'][key], str):
             w_file.field(key, 'C')
 
-    for n_val, dict_val in enumerate(g_array):
-        rec_str = "w_file.record("
+    for row, dict_val in enumerate(g_array):
+        myargs = {}
         #print('props_list',len(props_dict))
-        for i, key in enumerate(dict_val['properties']):
-            if isinstance(dict_val['properties'][key], str):
-                rec_str = rec_str + key + ' = "' + \
-                str(dict_val['properties'][key]) + '"'
-            else:
-                rec_str = rec_str + key + ' = ' + \
-                str(dict_val['properties'][key])
+        for key in iter(dict_val['properties']):
+            myargs[key] = str(dict_val['properties'][key])
 
-            if i is not len(dict_val['properties'])-1:
-                rec_str = rec_str + ', '
-
-        rec_str = rec_str + ' )'
-        eval(rec_str)
-
-        w_file.poly([g_array[n_val]['geometry']['coordinates'][0]])
+        w_file.record(**myargs)
+        w_file.poly([g_array[row]['geometry']['coordinates'][0]])
     w_file.close()
     # create the PRJ file
     msg = 'writing shapefile formatted dataset to file:' + \
