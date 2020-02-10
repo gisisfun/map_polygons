@@ -51,7 +51,7 @@ Download Links
 - **matplotlib** find points inside polygons used to filter the coastline, and points of interest of the interior.
 - **pyshp** for encoding ESRI shapefiles.
 
-Note: additional operating system libraries are not required for the python modules listed above (Thank you @psmaAaron). This will be useful if your IT department does not support the GDAL libraries/executables on the operating system.
+Note: additional operating system libraries are not required for the python modules listed above (Thank you @psmaAaron). This will be useful if your IT department does not support the installation of the proj, geos and GDAL libraries/executables on the operating system. The modulues are built-in to the geopandas module.
 
 *Post Processing* - poly_wt.py
 - **pyunpack** for downloading and unzipping content from the ABS website.
