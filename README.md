@@ -1,7 +1,7 @@
 # Map Polygons for Data Visualisation (Hexagons and Boxes)
 *A good visualisation is worth the wait(weight).*
 
-![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/polygons_output.png)
+![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/files/images/polygons_output.png)
 *output of polygons.py as png output and reference points for islands added in QGIS*
 
  *aus_hex_57km_layer*
@@ -22,23 +22,23 @@ Proceed to **poly_wt.py** to add the demographic data of your choice. In this ca
 
 **output of map_me.py**
 
-![hex_57km_rel_need_for_assistance_by_place_weight](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/hex_57km_rel_need_for_assistance_by_place_weight.png)
-![box_57km_rel_need_for_assistance_by_place_weight](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/box_57km_rel_need_for_assistance_by_place_weight.png)
+![hex_57km_rel_need_for_assistance_by_place_weight](https://raw.githubusercontent.com/gisisfun/map_polygons/master/files/images/hex_57km_rel_need_for_assistance_by_place_weight.png)
+![box_57km_rel_need_for_assistance_by_place_weight](https://raw.githubusercontent.com/gisisfun/map_polygons/master/files/images/box_57km_rel_need_for_assistance_by_place_weight.png)
 
  *hex_57km_place_11_16 and box_57km_place_11_16*
 
 Download Links
-- Shapefile Format: [ESRI .prj](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_place_11_16.prj), [ESRI .shp](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_place_11_16.shp), [ESRI .shx](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_place_11_16.shx), [ESRI .dbf](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_place_11_16.dbf)
-- [GeoJSON](https://github.com/downloads/gisisfun/map_polygons/geojson/hex_57km_place_11_16.json)
-- [KML](https://github.com/downloads/gisisfun/map_polygons/kmlfiles/hex_57km_place_11_16.kml)
+- Shapefile Format: [ESRI .prj](https://github.com/downloads/gisisfun/map_polygons/files/shapefiles/hex_57km_place_11_16.prj), [ESRI .shp](https://github.com/downloads/gisisfun/map_polygons/files/shapefiles/hex_57km_place_11_16.shp), [ESRI .shx](https://github.com/downloads/gisisfun/map_polygons/files/shapefiles/hex_57km_place_11_16.shx), [ESRI .dbf](https://github.com/downloads/gisisfun/map_polygons/files/shapefiles/hex_57km_place_11_16.dbf)
+- [GeoJSON](https://github.com/downloads/gisisfun/map_polygons/files/geojson/hex_57km_place_11_16.json)
+- [KML](https://github.com/downloads/gisisfun/map_polygons/files/kmlfiles/hex_57km_place_11_16.kml)
 
-![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/images/rel_need_for_assistance_by_area_weight.png)
+![alt text](https://raw.githubusercontent.com/gisisfun/map_polygons/master/files/images/rel_need_for_assistance_by_area_weight.png)
 
  *hex_57km_area_11_16*
 Download Links
-- Shapefile format: [ESRI .prj](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_area_11_16.prj), [ESRI .shp](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_area_11_16.shp), [ESRI .shx](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_area_11_16.shx), [ESRI .dbf](https://github.com/downloads/gisisfun/map_polygons/shapefiles/hex_57km_area_11_16.dbf)
-- [GeoJSON](https://github.com/downloads/gisisfun/map_polygons/geojson/hex_57km_area_11_16.json)
-- [KML](https://github.com/downloads/gisisfun/map_polygons/kmlfiles/hex_57km_area_11_16.kml)
+- Shapefile format: [ESRI .prj](https://github.com/downloads/gisisfun/map_polygons/files/shapefiles/hex_57km_area_11_16.prj), [ESRI .shp](https://github.com/downloads/gisisfun/map_polygons/files/shapefiles/hex_57km_area_11_16.shp), [ESRI .shx](https://github.com/downloads/gisisfun/map_polygons/files/files/shapefiles/hex_57km_area_11_16.shx), [ESRI .dbf](https://github.com/downloads/gisisfun/files/map_polygons/files/shapefiles/hex_57km_area_11_16.dbf)
+- [GeoJSON](https://github.com/downloads/gisisfun/map_polygons/files/geojson/hex_57km_area_11_16.json)
+- [KML](https://github.com/downloads/gisisfun/map_polygons/files/kmlfiles/hex_57km_area_11_16.kml)
 
 ## How does it work ##
 
