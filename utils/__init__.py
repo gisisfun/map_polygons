@@ -630,24 +630,6 @@ def to_shp_file(g_array, file_name, shape_files_path='shapefiles', slash='/'):
     prj.close()
 
 
-#def classify(class_list, break_value):
-#    """
-#    Class value for apply_classification function
-
-#    Input:
-#        class_list:
-#        break_value: minumum value of the reference chloreplath break value
-#
-#    Output:
-#        breaks_ref: value in class list greater than the break_value
-#    """
-#    classed = False
-#    for i, val in enumerate(class_list):
-#        if val >= break_value and classed is False:
-#            the_breaks_ref = val
-#            classed = True
-#    return the_breaks_ref
-
 def apply_classification(g_array, ref_col):
     """
     Apply cloreplath colour classification range to array of geojson polygon data
@@ -867,6 +849,24 @@ def add_poly_nb(g_array, poly_col):
 #                           index=False)
     return g_array
 
+def poly_drop(g_array,key):
+    """
+    Drop polygons by condition
+    
+    Input:
+    Input variables:
+        g_array: array of geojson polygon data
+        key: dictionary key for geojson polygon used to drop records
+        
+    Output:
+        isect_array: array of geojson polygon data with selected array rows        
+    """
+    isect_array = []
+
+    for poly_data in iter(g_array):
+        if poly_data['properties'][key] > 0:
+            isect_array.append(poly_data)
+    return isect_array
 
 def random_points_in_polygon(poly):
     """
