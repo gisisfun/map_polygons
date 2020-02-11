@@ -46,7 +46,7 @@ Download Links
 - **pandas** for csv file outputs.
 
 *Map Polygons* - polgons.py
-- **geopy** for projection based point calculations for list.
+- **geographiclib** for WGS84 projection based point calculations for lists.
 - **geojson** for encoding of the geometric shapes.
 - **matplotlib** find points inside polygons used to filter the coastline, and points of interest of the interior.
 - **pyshp** for encoding ESRI shapefiles.
