@@ -48,11 +48,7 @@ def hex(bounds_north, bounds_south, bounds_east, bounds_west,
                 ,'Active_Fires')
     to_geojson_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
                     format(theshape, str(int(theradial))),\
-                           'geojson', t_mod.slash)
-
-    
- 
-
+                           t_mod.geojson_files_path, t_mod.slash)
 
 def box(bounds_north, bounds_south, bounds_east, bounds_west, theradial):
     """
@@ -90,9 +86,6 @@ def box(bounds_north, bounds_south, bounds_east, bounds_west, theradial):
     to_geojson_file(nb_aus_box_array, \
                     'aus_{}_{}km_layer'.format(theshape, str(int(theradial))), \
                     t_mod.geojson_files_path, t_mod.slash)
-
-
-
 
 PARSER = argparse.ArgumentParser(
         prog='polygons',
