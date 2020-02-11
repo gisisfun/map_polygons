@@ -1,96 +1,78 @@
 <OGRVRTDataSource>
     <OGRVRTLayer name="Aust">
-        <SrcDataSource>shapefiles/AUS_2016_AUST.shp</SrcDataSource>
+        <SrcDataSource>files/shapefiles/AUS_2016_AUST.shp</SrcDataSource>
         <SrcLayer>AUS_2016_AUST</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shape_JSON">
-        <SrcDataSource>shapefiles/aus_hex_57km_layer.json</SrcDataSource>
-        <SrcLayer>hex_57km_layer</SrcLayer>
+        <SrcDataSource>files/geojson/aus_hex_57km_layer.json</SrcDataSource>
+        <SrcLayer>aus_hex_57km_layer</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4326</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shape">
-        <SrcDataSource>shapefiles/aus_hex_57km_layer.shp</SrcDataSource>
-        <SrcLayer>hex_57km_layer</SrcLayer>
+        <SrcDataSource>files/shapefiles/aus_hex_57km_layer.shp</SrcDataSource>
+        <SrcLayer>aus_hex_57km_layer</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shape_Aust">
-        <SrcDataSource>shapefiles/aust_hex_shape_57km.shp</SrcDataSource>
+        <SrcDataSource>files/shapefiles/aust_hex_shape_57km.shp</SrcDataSource>
         <SrcLayer>aust_hex_shape_57km</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="SA1_11">
-        <SrcDataSource>shapefiles/SA1_2011_AUST.shp</SrcDataSource>
+        <SrcDataSource>files/shapefiles/SA1_2011_AUST.shp</SrcDataSource>
         <SrcLayer>SA1_2011_AUST</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="SA1_16">
-        <SrcDataSource>shapefiles/SA1_2016_AUST.shp</SrcDataSource>
-        <SrcLayer>SA1_2016_AUST</SrcLayer>
-        <GeometryType>wkbPolygon</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
-    </OGRVRTLayer>
-    <OGRVRTLayer name="SA1_16">
-        <SrcDataSource>shapefiles/SA1_2016_AUST.shp</SrcDataSource>
+        <SrcDataSource>files/shapefiles/SA1_2016_AUST.shp</SrcDataSource>
         <SrcLayer>SA1_2016_AUST</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="Shape">
-        <SrcDataSource>shapefiles/aust_hex_shape_57km.shp</SrcDataSource>
+        <SrcDataSource>files/files/shapefiles/aust_hex_shape_57km.shp</SrcDataSource>
         <SrcLayer>aust_hex_shape_57km</SrcLayer>
         <GeometryType>wkbPolygon</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="POI_Source">
-        <SrcDataSource>shapefiles/gis_osm_pois_free_1.shp</SrcDataSource>
+        <SrcDataSource>files/files/shapefiles/gis_osm_pois_free_1.shp</SrcDataSource>
         <SrcLayer>gis_osm_pois_free_1</SrcLayer>
         <GeometryType>wkbPoint</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="POI">
-        <SrcDataSource>shapefiles/POI.shp</SrcDataSource>
+        <SrcDataSource>files/files/shapefiles/POI.shp</SrcDataSource>
         <SrcLayer>POI</SrcLayer>
         <GeometryType>wkbPoint</GeometryType>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
     <OGRVRTLayer name="AGIL_Locations">
-        <SrcDataSource>csv/agil_locations20190208.csv</SrcDataSource>
+        <SrcDataSource>files/csv/agil_locations20190208.csv</SrcDataSource>
         <SrcLayer>agil_locations20190208</SrcLayer>
         <GeometryType>wkbPoint</GeometryType>
         <GeometryField encoding="PointFromColumns" x="LONGITUDE" y="LATITUDE"/>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
-    <OGRVRTLayer name="AGIL_Shape">
-        <SrcDataSource>shapefiles/agil.shp</SrcDataSource>
-        <SrcLayer>agil</SrcLayer>
-        <GeometryType>wkbPoint</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
-    </OGRVRTLayer>
     <OGRVRTLayer name="MBSP_Database">
-        <SrcDataSource>csv/mbsp_database.csv</SrcDataSource>
+        <SrcDataSource>files/csv/mbsp_database.csv</SrcDataSource>
         <SrcLayer>mbsp_database</SrcLayer>
         <GeometryType>wkbPoint</GeometryType>
         <GeometryField encoding="PointFromColumns" x="Longitude" y="Latitude"/>
         <LayerSRS>EPSG:4823</LayerSRS>
     </OGRVRTLayer>
-    <OGRVRTLayer name="MBSP_Shape">
-        <SrcDataSource>shapefiles/mbsp.shp</SrcDataSource>
-        <SrcLayer>mbsp</SrcLayer>
-        <GeometryType>wkbPoint</GeometryType>
-        <LayerSRS>EPSG:4823</LayerSRS>
-    </OGRVRTLayer>
     <OGRVRTLayer name="Tabular_Place_Data">
-        <SrcDataSource>csv/tabular_hex_57km_11_16_place.csv</SrcDataSource>
+        <SrcDataSource>files/csv/tabular_hex_57km_11_16_place.csv</SrcDataSource>
         <SrcLayer>tabular_hex_57km_11_16_place</SrcLayer>
     </OGRVRTLayer>
     <OGRVRTLayer name="Tabular_Area_Data">
-        <SrcDataSource>csv/tabular_hex_57km_11_16_area.csv</SrcDataSource>
+        <SrcDataSource>files/csv/tabular_hex_57km_11_16_area.csv</SrcDataSource>
         <SrcLayer>tabular_hex_57km_11_16_area</SrcLayer>
     </OGRVRTLayer>
 </OGRVRTDataSource>
