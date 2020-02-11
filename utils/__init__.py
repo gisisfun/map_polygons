@@ -9,6 +9,7 @@ import json
 from pyunpack import Archive
 import numpy as np
 import shapefile
+from geographiclib.geodesic import Geodesic
 from pycrs.load import from_file
 import simplekml
 from mapclassify import EqualInterval, NaturalBreaks, MaximumBreaks, \
@@ -20,6 +21,34 @@ import matplotlib.path as mpltPath
 from geojson import FeatureCollection, Polygon, Feature
 
 #https://automating-gis-processes.github.io/CSC18/lessons/L1/Intro-Python-GIS.html
+
+def polygon_area(poly):
+    #geod = Geodesic(6378388, 1/297.0) # the international ellipsoid
+    geod = Geodesic.WGS84
+    p = geod.Polygon()
+
+    poly = [
+            [-63.1, -58], [-72.9, -74], [-71.9,-102], [-74.9,-102], [-74.3,-131],
+            [-77.5,-163], [-77.4, 163], [-71.7, 172], [-65.9, 140], [-65.7, 113],
+            [-66.6,  88], [-66.9,  59], [-69.8,  25], [-70.0,  -4], [-71.0, -14],
+            [-77.3, -33], [-77.9, -46], [-74.7, -61]
+            ]
+    for pnt in poly:
+        p.AddPoint(pnt[0], pnt[1])
+    num, perim, area = p.Compute()
+    return area
+
+def point_radial_distance(coords, brng, radial):
+    """
+    Calulate next point from coordinates and bearing
+
+    Dependencies:
+    None
+    """
+    #geod = Geodesic(6378388, 1/297.0) # the international ellipsoid
+    geod = Geodesic.WGS84
+    g = geod.Direct(coords[0], coords[1], brng, radial * 1000)
+    return  g['lat2'], g['lon2']
 
 def tabular_dataframe(g_array):
     """
