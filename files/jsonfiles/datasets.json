@@ -2,63 +2,63 @@
 {"Australia":{"ShapeFormat": 
 {"description": "ABS Australia",
                 "format": "Shape",
-                "file_path": "shapefiles/AUS_2016_AUST.shp",
+                "file_path": "files/shapefiles/AUS_2016_AUST.shp",
                 "down_url":  "http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_aus_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&5503B37F8055BFFECA2581640014462C&0&July%202016&24.07.2017&Latest",
-                "zip_dir": "shapefiles",
-                "zip_path": "shapefiles/1270055001_aus_2016_aust_shape.zip"}}, 
+                "zip_dir": "files/shapefiles",
+                "zip_path": "files/shapefiles/1270055001_aus_2016_aust_shape.zip"}}, 
 "StatisticalAreasLevel12011": 
 {"ShapeFormat":
 
                 {"description": "2011 ABS Statistical Areas Level 1",
                 "format":"Shape",
-                "file_path": "shapefiles/SA1_2011_AUST.shp", 
+                "file_path": "files/shapefiles/SA1_2011_AUST.shp", 
                 "down_url": "https://www.abs.gov.au/ausstats/subscriber.nsf/log?openagent&1270055001_sa1_2011_aust_shape.zip&1270.0.55.001&Data%20Cubes&24A18E7B88E716BDCA257801000D0AF1&0&July%202011&23.12.2010&Latest"
-,                "zip_dir": "shapefiles",
-                "zip_path": "shapefiles/1270055001_sa1_2011_aust_shape.zip"}},
+,                "zip_dir": "files/shapefiles",
+                "zip_path": "files/shapefiles/1270055001_sa1_2011_aust_shape.zip"}},
 
     "StatisticalAreasLevel12016":
 {"ShapeFormat":
 {"description":"2016 ABS Statistical Areas Level 1",
                 "format":"Shape",
-                "file_path": "shapefiles/SA1_2016_AUST.shp",
+                "file_path": "files/shapefiles/SA1_2016_AUST.shp",
                 "down_url": "https://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055001_sa1_2016_aust_shape.zip&1270.0.55.001&Data%20Cubes&6F308688D810CEF3CA257FED0013C62D&0&July%202016&12.07.2016&Latest", 
-                "zip_dir": "shapefiles", 
-                "zip_path":"shapefiles/1270055001_sa1_2016_aust_shape.zip"}},
+                "zip_dir": "files/shapefiles", 
+                "zip_path":"files/shapefiles/1270055001_sa1_2016_aust_shape.zip"}},
 "MBSP":
 {"CSVFormat": 
                 {"description": "Round 4 Mobile Black Spot Program (MBSP) database",
                 "format": "CSV",
-                "file_path": "csv/mbsp_database.csv",
+                "file_path": "files/csv/mbsp_database.csv",
                 "down_url": "https://data.gov.au/dataset/7be6e3ee-043a-4c47-a6eb-a97702419ccd/resource/c6b211ad-3aa2-4f53-8427-01b52a6433a7/download/mbsp_database.csv",
-                "zip_dir": "csv",
-                "zip_path": "csv/mbsp_database.csv"}},
+                "zip_dir": "files/csv",
+                "zip_path": "files/csv/mbsp_database.csv"}},
 
     "AGILDataset":{"CSVFormat":
 {"description": "AGIL DataSet",
                 "format": "CSV", 
-                "file_path": "csv/agil_locations20190208.csv",
+                "file_path": "files/csv/agil_locations20190208.csv",
                 "down_url": "https://data.gov.au/dataset/34b1c164-fbe8-44a0-84fd-467dba645aa7/resource/625e0a41-6a30-4c11-9a20-ac64ba5a1d1f/download/agil_locations20190208.csv", 
-                "zip_dir": "csv",
-                "zip_path": "csv/agil_locations20190208.csv"}},
+                "zip_dir": "files/csv",
+                "zip_path": "files/csv/agil_locations20190208.csv"}},
  "OpenStreetMaps":
 {"ShapeFormat":
                 {"description": "OpenStreetMaps",
  "format": "Shape", 
-"file_path": "shapefiles/gis_osm_places_free_1.shp", "down_url": "https://download.geofabrik.de/australia-oceania/australia-latest-free.shp.zip", 
-                "zip_dir": "shapefiles", 
-                "zip_path": "shapefiles/australia-latest-free.shp.zip"}},
+"file_path": "files/shapefiles/gis_osm_places_free_1.shp", "down_url": "https://download.geofabrik.de/australia-oceania/australia-latest-free.shp.zip", 
+                "zip_dir": "files/shapefiles", 
+                "zip_path": "files/shapefiles/australia-latest-free.shp.zip"}},
 
 "NASAActiveFireData":
 	{"VIIRS375m":
 		{"ShapeFormat":
 			{"description": "NASA Active Fire Data VIIRS 375m", 
 			"format": "Shape", 
-			"file_path": "shapefiles/VNP14IMGTDL_NRT_Australia_and_New_Zealand_24h.shp", 
+			"file_path": "files/shapefiles/VNP14IMGTDL_NRT_Australia_and_New_Zealand_24h.shp", 
 			"down_url": "https://firms.modaps.eosdis.nasa.gov/active_fire/viirs/shapes/zips/VNP14IMGTDL_NRT_Australia_and_New_Zealand_24h.zip", 
-			"zip_dir": "shapefiles", 
-			"shapefiles": "shapefiles/VNP14IMGTDL_NRT_Australia_and_New_Zealand_24h.zip"}, 
+			"zip_dir": "files/shapefiles", 
+			"shapefiles": "files/shapefiles/VNP14IMGTDL_NRT_Australia_and_New_Zealand_24h.zip"}, 
 	"CSVFormat":
-		{"description": "NASA Active Fire Data VIIRS 375 m", "format": "CSV", "file_path":"csv/VNP14IMGTDL_NRT_Australia_and_New_Zealand_24h.csv", "down_url": "https://firms.modaps.eosdis.nasa.gov/active_fire/viirs/text/VNP14IMGTDL_NRT_Australia_and_New_Zealand_24h.csv", "zip_dir": "csv", "zip_path": "csv/VNP14IMGTDL_NRT_Australia_and_New_Zealand_24h.csv"},
+		{"description": "NASA Active Fire Data VIIRS 375 m", "format": "CSV", "file_path":"files/csv/VNP14IMGTDL_NRT_Australia_and_New_Zealand_24h.csv", "down_url": "https://firms.modaps.eosdis.nasa.gov/active_fire/viirs/text/VNP14IMGTDL_NRT_Australia_and_New_Zealand_24h.csv", "zip_dir": "csv", "zip_path": "csv/VNP14IMGTDL_NRT_Australia_and_New_Zealand_24h.csv"},
 	"KMLFormat":
 {"description": "NASA Active Fire Data VIIRS 375m", "format": "KML", 
 "file_path": "kmlfiles/VNP14IMGTDL_NRT_Australia_and_New_Zealand_24h", 
@@ -69,12 +69,12 @@
 
 "ModisC61km": 
 	{"ShapeFormat":
-		{"description": "NASA Active Fire Data Modis C6 1km", "format": "Shape", "file_path": "shapefiles/MODIS_C6_Australia_and_New_Zealand_24h.shp", "down_url": "https://firms.modaps.eosdis.nasa.gov/active_fire/c6/shapes/zips/MODIS_C6_Australia_and_New_Zealand_24h.zip", "zip_dir": "shapefiles", "zip_path": "shapefiles/MODIS_C6_Australia_and_New_Zealand_24h.zip"},
+		{"description": "NASA Active Fire Data Modis C6 1km", "format": "Shape", "file_path": "files/shapefiles/MODIS_C6_Australia_and_New_Zealand_24h.shp", "down_url": "https://firms.modaps.eosdis.nasa.gov/active_fire/c6/shapes/zips/MODIS_C6_Australia_and_New_Zealand_24h.zip", "zip_dir": "files/shapefiles", "zip_path": "files/shapefiles/MODIS_C6_Australia_and_New_Zealand_24h.zip"},
 		"CSVFormat":
-			{"description": "NASA Active Fire Data Modis C6 1km", "format": "CSV", "file_path": "csv/MODIS_C6_Australia_and_New_Zealand_24h.csv", "down_url": "https://firms.modaps.eosdis.nasa.gov/data/active_fire/c6/csv/MODIS_C6_Australia_NewZealand_24h.csv", "zip_dir": "csv", "zip_path": "csv/MODIS_C6_Australia_and_New_Zealand_24h.csv"}, 
+			{"description": "NASA Active Fire Data Modis C6 1km", "format": "CSV", "file_path": "files/csv/MODIS_C6_Australia_and_New_Zealand_24h.csv", "down_url": "https://firms.modaps.eosdis.nasa.gov/data/active_fire/c6/csv/MODIS_C6_Australia_NewZealand_24h.csv", "zip_dir": "files/csv", "zip_path": "files/csv/MODIS_C6_Australia_and_New_Zealand_24h.csv"}, 
 			"KMLFormat":
                 {"description": "NASA Active Fire Data Modis C6 1km", 
-                "format": "KML", "file_path": "kmlfiles/MODIS_C6_Australia_and_New_Zealand_24h.kml", 
+                "format": "KML", "file_path": "files/kmlfiles/MODIS_C6_Australia_and_New_Zealand_24h.kml", 
                   "down_url": "https://firms.modaps.eosdis.nasa.gov/active_fire/c6/kml/MODIS_C6_Australia_and_New_Zealand_24h.kml", 
-                   "zip_dir": "kmlfiles", 
-                   "zip_path": "kmlfiles/MODIS_C6_Australia_and_New_Zealand_24h.kml"}}}}}
+                   "zip_dir": "files/kmlfiles", 
+                   "zip_path": "files/kmlfiles/MODIS_C6_Australia_and_New_Zealand_24h.kml"}}}}}
