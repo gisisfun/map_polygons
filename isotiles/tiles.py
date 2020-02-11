@@ -11,7 +11,7 @@ import shapefile #to be moved to util from add_poly_poi
 
 from isotiles.__init__ import Defaults
 from utils import points_in_polygon, coords_from_csv, \
-coords_from_csv_latin1, point_radial_distance
+coords_from_csv_latin1, point_radial_distance, poly_drop
 #all
 
 from geojson import Polygon, Feature #,FeatureCollection
@@ -36,87 +36,6 @@ def column_counts(g_array):
     #print(int(odd_columns), int(even_columns))
     return odd_columns, even_columns
 
-
-def neighbour_poly_calc(poly, column_count):
-    """
-    Neighbour cell calculations
-    """
-    neighbour_list = {"box": {\
-                              "north": (poly - (column_count*1-\
-                                                (poly % column_count))-\
-                                        (poly % column_count))-1, \
-                              "north_east": (poly - (column_count*1-\
-                                                      (poly % column_count))-\
-                                              (poly % column_count)),\
-                              "east": poly + 1,\
-                              "south_east": (poly + (column_count*1-\
-                                              (poly % column_count))+\
-                                              (poly % column_count))+2,\
-                              "south": (poly + (column_count*1-\
-                                              (poly % column_count))+\
-                                              (poly % column_count))+1,\
-                              "south_west": (poly + (column_count*1-\
-                                                   (poly % column_count))+\
-                                                   (poly % column_count)),
-                              "west": poly - 1,\
-                               "north_west": (poly - (column_count*1-\
-                                                   (poly % column_count))-\
-                                                   (poly % column_count))-2},\
-                       "hex":{\
-                              "north": (poly - (column_count*2-\
-                                                (poly % column_count))-\
-                                                (poly % column_count)),\
-                              "north_east": (poly - (column_count*1-(poly % \
-                                                  column_count))-\
-                                                  (poly % column_count)),\
-                              "east": poly + 1,\
-                              "south_east": (poly+(column_count*1-\
-                                                        (poly % \
-                                                         column_count))+\
-                                                        (poly % column_count)),\
-                              "south": (poly + (column_count*2-\
-                                                (poly % column_count))+\
-                                                (poly % column_count)),\
-                              "south_west": (poly + (column_count*1-\
-                                                          (poly % \
-                                                           column_count))+\
-                                                           (poly % column_count\
-                                                            ))-1,\
-                              "west": poly - 1,\
-                              "north_west": (poly - (column_count*1-\
-                                                     (poly % column_count))-\
-                                                     (poly % column_count))-1\
-    }}
-
-    return neighbour_list
-
-def neighbour_check(poly, ref_table_df, g_array):
-    """
-    Checks for existing polygon
-    """
-    val = -9
-    try:
-        ref_q = ref_table_df[(ref_table_df['poly'] == poly)]
-        arr_data = g_array[int(ref_q['arr'])]
-        val = poly
-    except IndexError:
-        pass
-    except TypeError:
-        pass
-    return val
-
-def aus_poly_no_ocean(g_array):
-    """
-    Separate continental polygons from non continental
-    """
-    (num_poly, isect_array) = (len(g_array), [])
-    a_val = 0
-    for poly in range(0, num_poly):
-        if g_array[poly]['properties']['Aust'] > 0:
-            g_array[poly]['properties']['a'] = a_val
-            isect_array.append(g_array[poly])
-            a_val += 1
-    return isect_array
 
 class Tiles():
     """
@@ -159,15 +78,6 @@ class Tiles():
         increment values fot cxceptions of unused count of latitudes values
         """
         return [0, 0, -4, 0, 0, -4, -4, -4]
-
-    @property
-    def odd_gt_even(self):
-        """
-        Short interval to next reference point
-        """
-        return  [True, False, True, False, False, True, True, False]
-
- 
 
     @property
     def short(self):
@@ -228,7 +138,6 @@ class Tiles():
         """
         return "geojson"
 
-
     @property
     def hor_seq(self):
         """
@@ -254,13 +163,13 @@ class Tiles():
             vert_seq = [self.long, self.long,
                         self.long, self.long]
         return vert_seq
+    
     @property
     def filename(self):
         """
         Construct filename string
         """
         return '{}_{}km'.format(self.shape, self.radial)
-
 
     def params(self):
         """
@@ -370,24 +279,6 @@ class Tiles():
                 columns.append([x_coord, y_coord])
             rows_and_columns.append(columns)
         return rows_and_columns
-
-    def hex_matrix(self, intersect_matrix, hor, vert):
-        """
-        Put it all together - deriving hexagon polygons from intersection data
-
-        Prerequisites:
-        hor_vert, hor, vert, Tiles
-
-        Input variables:
-        intersect_list:
-        max_h:
-        max_v:
-        """
-        print("hor", hor, "down", hor-2, "vert", vert, "across", vert // 4, \
-              'total', (hor-2)*(vert // 4))
-        g_array = []
-        return g_array
-
 
     def hex_array(self, intersect_list, max_h, max_v):
         """
@@ -665,7 +556,7 @@ class Tiles():
         
         print('odd', odd, 'even', even)
 
-        aus_hex_array = aus_poly_no_ocean(poi_hex_array)
+        aus_hex_array = poly_drop(poi_hex_array,'Aust')
 
         return aus_hex_array
 
@@ -682,7 +573,7 @@ class Tiles():
         poi_box_array = self.add_poly_poi(box_array)
         (odd, even) = column_counts(poi_box_array)
 
-        aus_box_array = aus_poly_no_ocean(poi_box_array)
+        aus_box_array = poly_drop(poi_box_array)
         # add neighbouur reference data
         nb_aus_box_array = self.update_neighbours(aus_box_array, odd, even)
         #print("100% progress: It's not over til it's over")
