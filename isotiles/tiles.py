@@ -11,7 +11,8 @@ import shapefile #to be moved to util from add_poly_poi
 
 from isotiles.__init__ import Defaults
 from utils import points_in_polygon, coords_from_csv, \
-coords_from_csv_latin1, point_radial_distance, poly_drop
+coords_from_csv_latin1, point_radial_distance, poly_drop, \
+path_slash
 #all
 
 from geojson import Polygon, Feature #,FeatureCollection
@@ -108,35 +109,35 @@ class Tiles():
         """
         Shape filespath
         """
-        return "shapefiles"
+        return "files/shapefiles"
 
     @property
     def kml_files_path(self):
         """
         Shape filespath
         """
-        return "kmlfiles"
+        return "files/kmlfiles"
 
     @property
     def csv_files_path(self):
         """
         Shape filespath
         """
-        return "csv"
+        return "files/csv"
 
     @property
     def json_files_path(self):
         """
         Shape filespath
         """
-        return "jsonfiles"
+        return "files/jsonfiles"
 
     @property
     def geojson_files_path(self):
         """
         Shape filespath
         """
-        return "geojson"
+        return "files/geojson"
 
     @property
     def hor_seq(self):
@@ -444,7 +445,7 @@ class Tiles():
         """
         #u_mod = Util()
         # load the shapefile
-        shape_file = shapefile.Reader("shapefiles/AUS_2016_AUST")
+        shape_file = shapefile.Reader("files/shapefiles/AUS_2016_AUST")
 
         # shapefile contains multipolygons
         shapes = shape_file.shapes()
@@ -460,25 +461,28 @@ class Tiles():
         poly_array = points_in_polygon(g_array, coords, 'Boundary')
 
         print('Adding Island points')
-        coords = coords_from_csv('islands.csv', 1, 2)
+        coords = coords_from_csv('islands.csv', 1, 2,self.csv_files_path)
         next_poly_array = points_in_polygon(poly_array, coords, 'Island')
 
         print('Adding GNAF Locality points')
-        coords = coords_from_csv('aug_gnaf_2019_locality.csv', 4, 3)
+        coords = coords_from_csv('aug_gnaf_2019_locality.csv', 4, 3, \
+                                 self.csv_files_path)
         poly_array = points_in_polygon(next_poly_array, coords, 'Locality')
 
         print('NASA Active fire Data MODIS C6 Australia and New Zealand 24h')
         coords = coords_from_csv('MODIS_C6_Australia_and_New_Zealand_24h.csv',\
-                                 1, 0)
+                                 1, 0, self.csv_files_path)
         next_poly_array = points_in_polygon(poly_array, coords, \
                                                   'Active_Fires')
 
         print('National Mobile Blackspot program')
-        coords = coords_from_csv_latin1('mbsp_database.csv', 6, 5)
+        coords = coords_from_csv_latin1('mbsp_database.csv', 6, 5, \
+                                        self.csv_files_path)
         poly_array = points_in_polygon(next_poly_array, coords, 'MBSP')
 
         print('AGIL Locations')
-        coords = coords_from_csv('agil_locations20190208.csv', 3, 2)
+        coords = coords_from_csv('agil_locations20190208.csv', 3, 2, \
+                                 self.csv_files_path)
         next_poly_array = points_in_polygon(poly_array, coords, 'AGIL')
 
         print('Polygons Centroids and Offset Vertices')
@@ -502,7 +506,11 @@ class Tiles():
         generate coords inside map layer polygons to fill continent
         """
         # load the shapefile
-        shape_file = shapefile.Reader("shapefiles/AUS_2016_AUST")
+        shape_file = shapefile.Reader(\
+                                      path_slash(self.shape_files_path,\
+                                                 '/',self.slash) + \
+                                                 self.slash +\
+                                                 "AUS_2016_AUST")
         # shapefile contains multipolygons
         shapes = shape_file.shapes()
         big_coords = shapes[0].points

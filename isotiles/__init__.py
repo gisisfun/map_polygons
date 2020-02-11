@@ -30,35 +30,35 @@ class Defaults:
         """
         Path to GeoJSON files
         """
-        return 'kmlfiles'
+        return 'files/kmlfiles'
 
     @property
     def json_files_path(self):
         """
         Path to JSON files
         """
-        return 'jsonfiles'
+        return 'files/jsonfiles'
 
     @property
     def geojson_path(self):
         """
         Path to GeoJSON files
         """
-        return 'geojson'
+        return 'files/geojson'
 
     @property
     def csv_files_path(self):
         """
         Path to images files
         """
-        return 'csv'
+        return 'files/csv'
 
     @property
     def images_path(self):
         """
         Path to images files
         """
-        return 'images'
+        return 'files/images'
 
     @property
     def sql_files_path(self):
@@ -79,14 +79,14 @@ class Defaults:
         """
         Path to Virtual File Template (VRT) files
         """
-        return 'vrt'
+        return 'files/vrt'
 
     @property
     def shape_files_path(self):
         """
         Long interval to next reference point
         """
-        return 'shapefiles'
+        return 'files/shapefiles'
 
 
     @property

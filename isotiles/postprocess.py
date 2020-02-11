@@ -78,7 +78,7 @@ class PostProcess():
         """
         Shape filespath
         """
-        return "jsonfiles"
+        return "files/jsonfiles"
 
     @property
     def extn(self):
