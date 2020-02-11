@@ -6,34 +6,18 @@ import sys
 from math import sqrt
 import pandas as pd
 import numpy as np
-from geopy.distance import geodesic
 import matplotlib.path as mpltPath
 import shapefile #to be moved to util from add_poly_poi
 
 from isotiles.__init__ import Defaults
 from utils import points_in_polygon, coords_from_csv, \
-coords_from_csv_latin1
+coords_from_csv_latin1, point_radial_distance
 #all
 
 from geojson import Polygon, Feature #,FeatureCollection
 
 
 sys.path.append('..')
-
-
-#from isotiles.poi import POI
-
-
-
-def point_radial_distance(coords, brng, radial):
-    """
-    Calulate next point from coordinates and bearing
-
-    Dependencies:
-    None
-    """
-    return geodesic(kilometers=radial).destination(point=coords, bearing=brng)
-
 
 def column_counts(g_array):
     """
