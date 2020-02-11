@@ -136,6 +136,22 @@ def f_name(shape, radial):
     return shape + '_' + str(radial) + 'km'
 
 
+def path_slash(path, old_slash, new_slash):
+    """
+    Change directory slash character
+    the slash is an os dependant directory delimiter:
+               forward slash '/' - 'posix'
+               backwards slash '\\' - 'nt'
+    Input:
+        path:
+            old_slash:
+            new slash:
+    Output:
+        files dwonloaded if necessary and deployed to file system with
+        reference to os dependant slash
+    """
+    return str(path).replace(str(old_slash),str(new_slash))
+
 def file_deploy(resource_data, slash='/'):
     """
     Deploy downloaded files
@@ -150,7 +166,7 @@ def file_deploy(resource_data, slash='/'):
         reference to os dependant slash
     """
 
-    if not os.path.isfile(resource_data['file_path'].replace('/', slash)):
+    if not os.path.isfile(path_slash(resource_data['file_path'],'/', slash)):
         print('Downloading {} file in {} file format'\
               .format(resource_data['format'], resource_data['description']))
 
@@ -164,8 +180,8 @@ def file_deploy(resource_data, slash='/'):
             print('Unzipping {} file in {} file format'\
                 .format(resource_data['description'], resource_data['format']))
             print('extracting files')
-            Archive(resource_data['zip_path'].replace('/', slash)).\
-                    extractall(resource_data['zip_dir'].replace('/', slash))
+            Archive(path_slash(resource_data['zip_path'],'/', slash)).\
+                    extractall(path_slash(resource_data['zip_dir'],'/', slash))
     else:
         print('{} file in {} file format exists'\
               .format(resource_data['description'], resource_data['format']))
@@ -201,7 +217,8 @@ def ref_files_polygons(def_file, path_datasets='jsonfiles', slash='/'):
     file_deploy(ref_data)
 
 
-def ref_files_poly_wt(file_name='datasets', json_files_path='jsonfiles', slash='/'):
+def ref_files_poly_wt(file_name='datasets', json_files_path='jsonfiles', \
+                      slash='/'):
     """
     Get reference files for poly_wt.py
 
@@ -213,10 +230,11 @@ def ref_files_poly_wt(file_name='datasets', json_files_path='jsonfiles', slash='
         file_name: name of defintions file in 'json' format with .json' extension
 
     Output:
-        files dwonloaded if necessary and deployed to file system
+        files downloaded if necessary and deployed to file system
     """
     #def_file = 'datasets'
-    datasets = from_json_file(file_name, json_files_path, slash)
+    datasets = from_json_file(file_name, path_slash(json_files_path,'/',slash), \
+                              slash)
 
     ref_data = datasets['DataSets']['Australia']['ShapeFormat']
     file_deploy(ref_data)
@@ -259,8 +277,8 @@ def coords_from_csv_latin1(file_name, lon_col, lat_col, csv_files_path='csv',\
         lineterminator='\r\n',
         quoting=csv.QUOTE_MINIMAL)
 
-    with open('{}{}{}'.format(csv_files_path, slash, file_name),
-              encoding='latin1') as csvfile:
+    with open('{}{}{}'.format(path_slash(csv_files_path,'/',slash), slash, \
+              file_name), encoding='latin1') as csvfile:
         data = list(csv.reader(csvfile, dialect='mydialect'))
 
     longs = []
@@ -306,8 +324,8 @@ def coords_from_csv(file_name, lon_col, lat_col, csv_files_path='csv', slash='/'
         quoting=csv.QUOTE_MINIMAL)
 
 
-    with open('{}{}{}'.format(csv_files_path, slash, file_name),
-              newline='', encoding='utf-8') \
+    with open('{}{}{}'.format(path_slash(csv_files_path,'/',slash), slash, \
+              file_name), newline='', encoding='utf-8') \
               as csvfile:
         data = list(csv.reader(csvfile, dialect='mydialect'))
 
@@ -331,7 +349,8 @@ def from_json_file(file_name, json_files_path='jsonfiles', slash='/'):
         json_dict: disctionary string with configuration data
     """
 
-    full_file_path = '{}{}{}.json'.format(json_files_path, slash, file_name)
+    full_file_path = '{}{}{}.json'.format(path_slash(json_files_path,'/',slash), \
+                      slash, file_name)
     json_file = open(full_file_path, "r")
     json_file_text = json_file.read()
     json_dict = json.loads(json_file_text)
@@ -396,7 +415,8 @@ def get_geojson_crs(file_name, geojson_files_path='geojson', slash='/'):
                forward slash '/' - 'posix'
                backwards slash '\\' - 'nt'
     """
-    full_file_path = "{}{}{}.json".format(geojson_files_path, slash, file_name)
+    full_file_path = "{}{}{}.json".format(path_slash(geojson_files_path,'/',slash), \
+                      slash, file_name)
     return from_file(full_file_path)
 
 
@@ -417,7 +437,8 @@ def from_geojson_file(file_name, geojson_files_path='geojson', slash='/'):
 
     print('reading geojson formatted dataset from file:{}.json'.
           format(file_name))
-    my_file = open('{}{}{}.json'.format(geojson_files_path, slash, file_name), 'r')
+    my_file = open('{}{}{}.json'.format(path_slash(geojson_files_path,'/',slash), \
+                   slash, file_name), 'r')
     #open file for reading geojson layer in geojson format
     gj_data = my_file.read()
     # read geojson layer to open file
@@ -452,14 +473,15 @@ def to_geojson_file(g_array, file_name, geojson_files_path='geojson', \
     content = FeatureCollection(g_array)
     print('writing geojson formatted dataset to file:' +\
            file_name +'.json')
-    my_file = open('{}{}{}.json'.format(geojson_files_path, slash,
-                                        file_name), 'w')
+    my_file = open('{}{}{}.json'.format(\
+                   path_slash(geojson_files_path,'/',slash), slash,file_name), \
+    'w')
     #open file for writing geojson layer in geojson format
     my_file.write(str(content))  # write geojson layer to open file
     my_file.close()  # close file
 
 
-def get_shapefile_crs(file_name, shapefile_files_path='shapefiles', slash='/'):
+def get_shapefile_crs(file_name, shape_files_path='shapefiles', slash='/'):
     """
     Reads CRS value for shapefile
 
@@ -470,7 +492,9 @@ def get_shapefile_crs(file_name, shapefile_files_path='shapefiles', slash='/'):
                forward slash '/' - 'posix'
                backwards slash '\\' - 'nt'
     """
-    full_file_path = "{}{}{}.prj".format(shapefile_files_path, slash, file_name)
+    full_file_path = "{}{}{}.prj".format(\
+                      path_slash(shape_files_path,'/',slash), \
+                      slash, file_name)
     return from_file(full_file_path)
 
 
@@ -494,7 +518,9 @@ def from_shp_file(file_name, shape_files_path='shapefiles', slash='/'):
     #fName,fPath
     #tabular_list = []
 
-    shape_file_full_path = '{}{}{}'.format(shape_files_path, slash, file_name)
+    shape_file_full_path = '{}{}{}'.format(\
+                            path_slash(shape_files_path,'/',slash), \
+                            slash, file_name)
     shape_file = shapefile.Reader(shape_file_full_path)
     shapes = shape_file.shapes()
     #how many empty and real polgons and subpolygons
@@ -590,7 +616,7 @@ def to_shp_file(g_array, file_name, shape_files_path='shapefiles', slash='/'):
     """
 
     #tabular_list = []
-    shp_path = shape_files_path + slash + file_name
+    shp_path = path_slash(shape_files_path,'/',slash) + slash + file_name
     prj_path = shp_path + '.prj'
     w_file = shapefile.Writer(shp_path) # , shapeType=3)
     #setup columns
@@ -710,7 +736,9 @@ def to_kml_file(g_array, file_name, \
 
     # End New Bit
     ###
-    full_file_path = '{}{}{}.kml'.format(kml_files_path, slash, file_name)
+    full_file_path = '{}{}{}.kml'.format(\
+                      path_slash(kml_files_path,'/',slash), \
+                      slash, file_name)
     kml = simplekml.Kml()
 
     #setup columns
