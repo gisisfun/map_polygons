@@ -133,13 +133,13 @@ class Defaults:
         """
         Projection values
         """
-        proj_dict = {"Projection":{"WGS84":{"epsg": '4326', "name": 'WGS 84', \
+        proj_dict = {"Projection":{"WGS84":{{"epsg": '4326',"elipsoid": 'WGS 1984', "name": 'WGS 84', \
                                             "perimeter": 6378137, \
                                             "inv_flat": 298.257223563},\
-                                    "GDA94":{"epsg": '4283', "name": 'GDA 94', \
+                                    "GDA94":{"epsg": '4283',"elipsoid": 'GRS 1980',  "name": 'GDA 94', \
                                              "perimeter": 6378137, \
                                              "inv_flat": 298.257222101},\
-                                    "GDA2020":{"epsg": '7844', \
+                                    "GDA2020":{"epsg": '7844',"elipsoid": 'GRS 1980',"epsg": '7844', \
                                                "name": 'GDA 2020', \
                                                "perimeter": 6378137, \
                                                "inv_flat": 298.257222101}}}
