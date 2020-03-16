@@ -34,8 +34,8 @@ df.to_csv("/home/pi/Documents/map_polygons/new_LGA_2019_AUST.csv", header = True
 new_df = pd.DataFrame([])
 for i, row in df.iterrows():
     for neigbour_name in iter(row.NEIGHBOURS_NAME.split(',')):
-        print(row.LGA_CODE19, row.LGA_NAME19, neigbour_name)
-        new_df = new_df.append({'LGA_CODE19': row.LGA_CODE19, 'LGA_NAME19': row.LGA_NAME19,"NEIGHBOUR": neigbour_name}, ignore_index=True)
+        print(row.LGA_CODE19, row.LGA_NAME19, neigbour_name.strip())
+        new_df = new_df.append({'LGA_CODE19': row.LGA_CODE19, 'LGA_NAME19': row.LGA_NAME19,"NEIGHBOUR": neigbour_name.strip()}, ignore_index=True)
 
 #print(new_df)
 
