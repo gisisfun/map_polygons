@@ -23,6 +23,9 @@ sys.path.append('..')
 def column_counts(g_array):
     """
     column counts for neighbour update
+    :param g_array: geojson Polygon data in array
+        
+    :Retuen (odd_columns, even_columns):
     """
     ref_table = []
     for g_rec in iter(g_array):
@@ -201,9 +204,6 @@ class Tiles():
     def hor(self):
         """
         Horizontal Reference Points
-
-        Dependencies:
-        Tiles
         """
         #1/7 deriving vertical list of reference points from north to south for longitudes or x axis
         (angle, new_north, i, longitudes) = (180, self.north, 0, [])
@@ -225,13 +225,8 @@ class Tiles():
 
     def vert(self):
         """
-        #2/7 deriving horizontal list of reference points from east to west for latitudes or y axis
-
-        Prerequisites:
-        Tiles
-
-        Input variables:
-        Provided
+        derivation of horizontal list of reference points 
+        from east to west for latitudes or y axis
         """
         print('east {0} west {1}'.format(self.east, self.west))
 
@@ -253,11 +248,12 @@ class Tiles():
 
     def hor_vert(self, hor, vert):
         """
-        hor_vert 1D array
+        horizontal and vertical 1D array
 
-        Input variables:
-        hor: horizontal (columns, longitudes)
-        vert: vertical (rows, latitudes)
+        :param hor: horizontal (columns, longitudes)
+        :param vert: vertical (rows, latitudes)
+        
+        :return coords:
         """
         coords = []
         for y_coord in iter(hor):
@@ -267,11 +263,12 @@ class Tiles():
 
     def hor_vert_matrix(self, hor, vert):
         """
-        hor_vert matrix array
+        horizontal and vertical  matrix array
 
-        Input variables:
-        hor: horizontal (columns, longitudes)
-        vert: vertical (rows, latitudes)
+        :param hor: horizontal (columns, longitudes)
+        :param vert: vertical (rows, latitudes)
+        
+        :return rows_and_columns:
         """
         rows_and_columns = []
         for y_coord in iter(hor):
@@ -285,13 +282,12 @@ class Tiles():
         """
         Put it all together - deriving hexagon polygons from intersection data
 
-        Prerequisites:
-        hor_vert, hor, vert, Tiles
 
-        Input variables:
-        intersect_list:
-        max_h:
-        max_v:
+        :param intersect_list:
+        :param max_h: 
+        :param max_v:
+            
+        :return g_array: geojson Polygon data in array
         """
 
         (g_array, tabular_list) = ([], [])
@@ -386,8 +382,14 @@ class Tiles():
         Prerequisites:
         horizontal, vertical, Tiles
 
-        Input variables:
-        Provided
+        :param intersect_list: 
+        :param max_h:
+        :param max_v:
+            
+        :return g_array: geojson Polygon data in array
+            
+        >>> box_array(intersect_list, max_h, max_v)
+        
         """
         self.shape = 'box'
         poly_id = 0
@@ -442,6 +444,10 @@ class Tiles():
     def add_poly_poi(self, g_array):
         """
         Polulates polygons with poi to identifiy contental features without gdal
+        :param g_array: geojson Polygon data in array
+            
+        :return g_array: geojson Polygon data in array
+        >>> add_poly_poi(g_array)
         """
         #u_mod = Util()
         # load the shapefile
@@ -504,6 +510,9 @@ class Tiles():
     def aus_poly_coords(self, g_array):
         """
         generate coords inside map layer polygons to fill continent
+        :param g_array: geojson Polygon data in array
+            
+        :return g_array: geojson Polygon data in array
         """
         # load the shapefile
         shape_file = shapefile.Reader(\
