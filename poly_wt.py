@@ -14,8 +14,8 @@ def area_wt(the_shape, the_radial):
     """
     Area based weighting used to post process the polygon data set
 
-    :param the_shape:
-    :param the_radial:
+    :param: the_shape
+    :param: the_radial
     """
     p_mod = PostProcess(shape=the_shape, radial=the_radial)
     #u_mod = Util(shape=the_shape, radial=the_radial)
@@ -97,8 +97,8 @@ def area_wt(the_shape, the_radial):
 def place_wt(the_shape, the_radial):
     """
     Place count based weighting used to post process the polygon data set
-    :param the_shape:
-    :param the_radial:
+    :param: the_shape
+    :param: the_radial
     """
     p_mod = PostProcess(shape=the_shape, radial=the_radial)
     #u_mod = Util(shape=the_shape, radial=the_radial)
