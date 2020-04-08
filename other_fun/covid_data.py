@@ -20,8 +20,7 @@ from datetime import datetime
 
 
 
-def narrow(file_name):
-    file_name = 'time_series_covid19_confirmed_global.csv'
+def narrow(file_name,col_name):
             
     file_path = ['COVID-19',
                  'csse_covid_19_data',
@@ -31,7 +30,7 @@ def narrow(file_name):
 
     idvars = ['Province/State','Country/Region','Lat','Long']
     narrow_df = pd.melt(cv_df,id_vars=idvars,var_name='date',
-                        value_name='confirmed')
+                        value_name=col_name)
 
     #fix formatting of date column
     narrow_df.date = pd.to_datetime(narrow_df.date)
@@ -40,13 +39,24 @@ def narrow(file_name):
 
 aust = geopandas.read_file('STE_2016_AUST.shp')
 
-narrow_conf_df = narrow('time_series_covid19_confirmed_global.csv')
-
+narrow_conf_df = narrow('time_series_covid19_confirmed_global.csv','confirmed')
+narrow_death_df = narrow('time_series_covid19_deaths_global.csv','death')
+narrow_recovery_df = narrow('time_series_covid19_recovered_global.csv','recovery')
 #split out data set for australia
 aust_conf_cv = narrow_conf_df.set_index(narrow_conf_df['Country/Region']).\
     loc['Australia',]
 
-aust_conf_cv.groupby('date')['confirmed'].sum().plot()
+aust_death_cv = narrow_death_df.set_index(narrow_death_df['Country/Region']).\
+    loc['Australia',]
+
+aust_recovery_cv = narrow_recovery_df.set_index(narrow_recovery_df['Country/Region']).\
+    loc['Australia',]
+
+# charts
+fig, (ax1, ax2, ax3) = plt.subplots(nrows=3, sharex=True, sharey=False)
+aust_conf_cv.groupby('date')['confirmed'].sum().plot(ax=ax1, title="Confirmed")
+aust_death_cv.groupby('date')['death'].sum().plot(ax=ax2, title="Deaths")
+aust_recovery_cv.groupby('date')['recovery'].sum().plot(ax=ax3, title="Recovery")
 
 #choose most recent date 
 end_date = datetime.strftime(narrow_conf_df.date.max(),"%m/%d/%Y")
