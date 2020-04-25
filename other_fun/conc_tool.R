@@ -1,7 +1,13 @@
+if(!require("tidyr")){
+  install.packages("tidyr")
+  library(tidyr)
+}
+
 if(!require("dplyr")) {
   install.packages("dplyr")
   library(dplyr)
 }
+
 if(!require("tcltk")){
   install.packages("tcltk")
   library(tcltk)
@@ -19,7 +25,7 @@ weights_file="Inputs/ABS_MB_2016_with_URP16.TXT"
 #or file.choose(caption="Select geography weighting file",multi=FALSE,filter=Filters)
 conc_file="Results/SA22016_AECFED2019_MB2016_based-test.txt"
 #or file.choose(caption="Select concordance file name",multi=FALSE,filter=Filters)
-# or tk_choose.dir(default = "", caption = "Select directory")
+
 # weights file
 mb_pops <- read.table(weights_file, sep="\t",header=TRUE)
 print(paste('mb_pops',names(mb_pops)))
@@ -106,7 +112,8 @@ from_to_conc <- from_to_pop %>%
   select(from_code,from_name=from_name.x,to_code,to_name,Shared_2016_Pop=partial_pop,-from_name.y,Tot_Pop=mb_pop) %>%
   mutate(Proportion = Shared_2016_Pop/Tot_Pop) %>%
   select(from_code, from_name, Shared_2016_Pop, Proportion, to_code, to_name,-Tot_Pop) %>%
-  arrange(from_code)
+  arrange(from_code) %>%
+  replace_na(list(Proportion=0))
 
 # apply original geography codes and names
 names(from_to_conc) <- c(from_names[1],from_names[2],'Shared_2016_Pop','Proportion',to_names[1],to_names[2])
