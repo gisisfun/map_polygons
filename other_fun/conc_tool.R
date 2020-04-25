@@ -19,7 +19,7 @@ weights_file="Inputs/ABS_MB_2016_with_URP16.TXT"
 #or file.choose(caption="Select geography weighting file",multi=FALSE,filter=Filters)
 conc_file="Results/SA22016_AECFED2019_MB2016_based-test.txt"
 #or file.choose(caption="Select concordance file name",multi=FALSE,filter=Filters)
-
+# or tk_choose.dir(default = "", caption = "Select directory")
 # weights file
 mb_pops <- read.table(weights_file, sep="\t",header=TRUE)
 print(paste('mb_pops',names(mb_pops)))
