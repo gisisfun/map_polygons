@@ -1,4 +1,4 @@
-coif(!require("dplyr")) {
+if(!require("dplyr")) {
   install.packages("dplyr")
   library(dplyr)
 }
