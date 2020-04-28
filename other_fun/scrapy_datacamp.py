@@ -7,7 +7,7 @@ Created on Thu Apr 23 21:58:02 2020
 """
 import pandas as pd
 from scrapy import Selector
-
+import matplotlib.pyplot as plt
 thefile = open('webpage.txt','r')
 html = thefile.read()
 sel = Selector(text=html)
@@ -27,5 +27,10 @@ for i,course in enumerate(course_list):
     
 my_courses = pd.DataFrame(list(zip(lang_list,course_list)), \
                columns =['Technology','Course_Name'])
+print('all courses')
+print(my_courses.groupby('Course_Name', as_index=False)['Technology'].count())
+print('technology by course count')
+print(my_courses.groupby('Technology', as_index=False)['Course_Name'].count())
 
-my_courses.groupby('Course_Name', as_index=False)['Technology'].count()
+my_courses.groupby('Technology', as_index=False)['Course_Name'].count().plot('Technology', kind='bar')
+plt.show()
