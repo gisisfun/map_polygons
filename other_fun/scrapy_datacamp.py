@@ -34,3 +34,16 @@ print(my_courses.groupby('Technology', as_index=False)['Course_Name'].count())
 
 my_courses.groupby('Technology', as_index=False)['Course_Name'].count().plot('Technology', kind='bar')
 plt.show()
+
+print("Skill Tracks")
+track_names = sel.css('div.track-block__main h4::text').extract()
+print(track_names)
+track_comp = sel.css('div div h5::text').extract()
+print(track_comp)
+
+
+other=sel.css('span.dc-dropdown--nav__track-name::text').extract()
+print(other)
+my_tech = my_courses.Technology.unique()
+python_courses = my_courses[my_courses.Technology=="python"]['Course_Name'].sort_values().reset_index(drop=True)
+r_courses = my_courses[my_courses.Technology=="r"]['Course_Name'].sort_values().reset_index(drop=True)
