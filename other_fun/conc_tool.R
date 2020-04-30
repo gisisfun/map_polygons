@@ -21,7 +21,7 @@ from_geog_file <- file.path("Inputs","SA22016.TXT")
 to_geog_file <- file.path("Inputs","FED2019.TXT") #or file.choose()
 #or file.choose(caption="Select destination geography file",multi=FALSE,filter=Filters)
 
-weights_file <- file.path"Inputs","ABS_MB_2016_with_URP16.TXT")
+weights_file <- file.path("Inputs","ABS_MB_2016_with_URP16.TXT")
 #or file.choose(caption="Select geography weighting file",multi=FALSE,filter=Filters)
 conc_file <- "Results/SA22016_AECFED2019_MB2016_based-test.txt"
 #or file.choose(caption="Select concordance file name",multi=FALSE,filter=Filters)
