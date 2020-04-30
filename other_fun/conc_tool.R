@@ -15,15 +15,15 @@ if(!require("tcltk")){
 
 Filters <- matrix(c("Text",".txt"), byrow=TRUE)
 
-from_geog_file="Inputs/SA22016.TXT" 
+from_geog_file <- "Inputs/SA22016.TXT" 
 #or file.choose(caption="Select source geography file",multi=FALSE,filter=Filters)
 
-to_geog_file="Inputs/FED2019.TXT" #or file.choose()
+to_geog_file <- "Inputs/FED2019.TXT" #or file.choose()
 #or file.choose(caption="Select destination geography file",multi=FALSE,filter=Filters)
 
-weights_file="Inputs/ABS_MB_2016_with_URP16.TXT"
+weights_file <- "Inputs/ABS_MB_2016_with_URP16.TXT"
 #or file.choose(caption="Select geography weighting file",multi=FALSE,filter=Filters)
-conc_file="Results/SA22016_AECFED2019_MB2016_based-test.txt"
+conc_file <- "Results/SA22016_AECFED2019_MB2016_based-test.txt"
 #or file.choose(caption="Select concordance file name",multi=FALSE,filter=Filters)
 
 # weights file
