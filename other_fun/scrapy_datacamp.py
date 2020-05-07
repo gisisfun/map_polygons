@@ -61,10 +61,9 @@ print('XP by topic')
 #scape web page for content
 dc_topic_names = sel.css(css_per_topic_names).extract()
 dc_topic_data = sel.css(css_per_topic_data).extract()[:12]
-dc_topic_data = just_words(test,nothing,['XP'])
+dc_topic_data = just_words(dc_topic_data,nothing,['XP'])
 # clean tex and convert to integer
-dc_topic_data = [int(re.sub('[\sA-Z]','',test)) 
-                 for test in dc_topic_data]
+dc_topic_data = [int(x) for x in dc_topic_data]
 
 my_topic_xp = pd.DataFrame(list(zip(dc_topic_names,dc_topic_data)), \
                columns =['Topic','XP'])
@@ -74,7 +73,7 @@ my_topic_xp.sort_values(by='XP',ascending=False,inplace=True)
 
 
 plt.bar(x=my_topic_xp.Topic,height=my_topic_xp.XP)
-plt.xticks(rotation=60)
+plt.xticks(rotation=90)
 plt.ylabel("XP")
 plt.xlabel("Topic")
 plt.title("Topics by XP")
