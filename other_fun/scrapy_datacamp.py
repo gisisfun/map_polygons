@@ -9,6 +9,32 @@ from scrapy import Selector
 import matplotlib.pyplot as plt
 import re
 
+def just_words(raw_html):
+    '''
+    Finds all words in html 
+    
+    input:
+        raw_html - list of strings returned from scrapy query
+        
+    returns:
+        list of strings without html text
+    '''
+    non_words = ['0', 'block__main', 'class', 
+                 'dc', 'div', 'h4', 'mb',
+                 'mt', 'p', 'track', 'u']
+    final_list=[]
+    for y in track_names:
+        words_l=[]
+        html_words =re.findall('[\w]+',y)
+        for x in html_words:
+            if x not in non_words:
+                if x =='amp':
+                    words_l.append('&')
+                else:
+                    words_l.append(x)
+        final_list.append(' '.join(words_l))
+    return final_list
+
 xsel_lang_list = '//div[contains(@class,"course-block__technology course-block__technology--")]'
 css_course_list = 'h4.course-block__title::text'
 css_dc_counts = 'strong.dc-u-m-none::text'
@@ -92,15 +118,15 @@ print("Skill Tracks")
 css_track_names ='div.track-block__main'
 track_names = sel.css(css_track_names).extract()
 #print(track_names)
-track_names = [re.sub('     ',' ',re.sub(r'<.*>','',re.sub(r'<.*">','',test)))
- for test in track_names]
-
-track_names = [''.join(x.split('\n')).
-               replace('  ',' ').
-               replace('  ',' ').
-               replace('  ',' ').
-               strip()  for x in track_names]
-
+#track_names = [re.sub('     ',' ',re.sub(r'<.*>','',re.sub(r'<.*">','',test)))
+# for test in track_names]
+#
+#track_names = [''.join(x.split('\n')).
+#               replace('  ',' ').
+#               replace('  ',' ').
+#               replace('  ',' ').
+#               strip()  for x in track_names]
+track_names = just_words(track_names)
 my_tracks = pd.DataFrame(list(track_names), \
                columns =['Skill_Track'])
 my_tracks.Skill_Track = my_tracks.Skill_Track.str.replace('\n ','').str.strip()
