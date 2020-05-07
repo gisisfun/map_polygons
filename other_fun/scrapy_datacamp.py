@@ -51,7 +51,9 @@ css_per_topic_data = 'p.dc-u-mt-0::text' #first 12
 css_other_track = 'span.dc-dropdown--nav__track-name::text'
 css_track_comp = 'div div h5::text'
 #css_track_names = 'div.track-block__main h4::text'
-
+css_urls = 'a::attr(href)'
+css_course_urls = 'a.course-block__link::attr(href)'
+css_topic_urls = 'a.shim::attr(href)'
 thefile = open('my_profile.txt','r')
 
 html = thefile.read()
@@ -89,9 +91,10 @@ print('all courses')
 course_list = sel.css(css_course_list).extract()
 lang_raw=sel.xpath(xsel_lang_list).extract()
 lang_list=just_words(lang_raw,is_amp,['0'])
+course_urls=sel.css(css_course_urls).extract()
 
-my_courses = pd.DataFrame(list(zip(lang_list,course_list)), \
-               columns =['Technology','Course_Name'])
+my_courses = pd.DataFrame(list(zip(lang_list,course_list,course_urls)), \
+               columns =['Technology','Course_Name',"URL"])
 my_courses.Technology = my_courses.Technology.str.title()
 my_courses.Course_Name = my_courses.Course_Name.str.title()
 
