@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 # -*- coding: utf-8 -*-
 """
 Created on Thu Apr 23 21:58:02 2020
@@ -21,9 +21,10 @@ def just_words(raw_html):
     '''
     non_words = ['0', 'block__main', 'class', 
                  'dc', 'div', 'h4', 'mb',
-                 'mt', 'p', 'track', 'u']
+                 'mt', 'p', 'track', 'u',
+                 'course','block__technology']
     final_list=[]
-    for y in track_names:
+    for y in raw_html:
         words_l=[]
         html_words =re.findall('[\w]+',y)
         for x in html_words:
@@ -76,25 +77,17 @@ dc_counts = sel.css(css_dc_counts).extract()
 print('Total XP',dc_counts[0])
 print('Total Courses',dc_counts[1])
 print('Total Exercises',dc_counts[2])
-#xp = int(re.findall('.*[0-9].*',xp)[0]
-#.replace('XP','').replace(",","")
-#.strip())
+
+print()
+print('all courses')
 course_list = sel.css(css_course_list).extract()
-lang_list = sel.xpath(xsel_lang_list).extract()
 
-
-lang_list = [re.sub('<.*.--','',re.sub('"></div>','',x)) for x in lang_list]
-#lang_list=[ test[len(test)-91:-8] for test in lang_list]
+lang_list=just_words(sel.xpath(xsel_lang_list).extract())
 
 my_courses = pd.DataFrame(list(zip(lang_list,course_list)), \
                columns =['Technology','Course_Name'])
 my_courses.Technology = my_courses.Technology.str.title()
 my_courses.Course_Name = my_courses.Course_Name.str.title()
-#print('all courses')
-
-#print(my_courses.groupby('Course_Name', as_index=False)['Technology'].count())
-#print('technology by course count')
-#print(my_courses.groupby('Technology', as_index=False)['Course_Name'].count())
 
 my_courses.groupby('Technology', as_index=False)['Course_Name'].count().plot('Technology', kind='bar')
 plt.xticks(rotation=45)
@@ -117,15 +110,7 @@ print("Skill Tracks")
 #
 css_track_names ='div.track-block__main'
 track_names = sel.css(css_track_names).extract()
-#print(track_names)
-#track_names = [re.sub('     ',' ',re.sub(r'<.*>','',re.sub(r'<.*">','',test)))
-# for test in track_names]
-#
-#track_names = [''.join(x.split('\n')).
-#               replace('  ',' ').
-#               replace('  ',' ').
-#               replace('  ',' ').
-#               strip()  for x in track_names]
+
 track_names = just_words(track_names)
 my_tracks = pd.DataFrame(list(track_names), \
                columns =['Skill_Track'])
