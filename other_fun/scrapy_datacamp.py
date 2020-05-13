@@ -13,9 +13,7 @@ from docx import Document
 
 document = Document()
 
-
-
-def print_me(text,to_docx=True):
+def print_me(text='',to_docx=True):
     if (to_docx):
         document.add_paragraph(text)
     print(text)
@@ -109,8 +107,8 @@ print_me('Total XP '+dc_counts[0])
 print_me('Total Courses'+dc_counts[1])
 print_me('Total Exercises '+dc_counts[2])
 
-print()
-print('all courses')
+print_me()
+print_me('all courses')
 course_list = sel.css(css_course_list).extract()
 lang_raw=sel.xpath(xsel_lang_list).extract()
 lang_list=just_words(lang_raw,is_amp,['0'])
