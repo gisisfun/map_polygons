@@ -9,6 +9,17 @@ from scrapy import Selector
 import matplotlib.pyplot as plt
 import re
 
+from docx import Document
+
+document = Document()
+
+
+
+def print_me(text,to_docx=True):
+    if (to_docx):
+        document.add_paragraph(text)
+    print(text)
+
 
 def just_words(raw_html,func,non_extra=[]):
     '''
@@ -54,12 +65,19 @@ css_track_comp = 'div div h5::text'
 css_urls = 'a::attr(href)'
 css_course_urls = 'a.course-block__link::attr(href)'
 css_topic_urls = 'a.shim::attr(href)'
+css_titles_text = 'title::text'
+css_track_names ='div.track-block__main'
+
+
 thefile = open('my_profile.txt','r')
 
 html = thefile.read()
 sel = Selector(text=html)
+the_title = sel.css(css_titles_text).extract_first()
 
-print('XP by topic')
+print_me(the_title)
+print('')
+print_me('XP by topic')
 #scape web page for content
 dc_topic_names = sel.css(css_per_topic_names).extract()
 dc_topic_data = sel.css(css_per_topic_data).extract()[:12]
@@ -79,12 +97,17 @@ plt.xticks(rotation=90)
 plt.ylabel("XP")
 plt.xlabel("Topic")
 plt.title("Topics by XP")
-plt.savefig('topic_chart.png')
+#plt.gcf().subplots_adjust(bottom=1)
+plt.savefig('topic_chart.png',bbox_inches="tight")
 plt.show()
+
+document.add_picture('topic_chart.png')
+
 dc_counts = sel.css(css_dc_counts).extract()
-print('Total XP',dc_counts[0])
-print('Total Courses',dc_counts[1])
-print('Total Exercises',dc_counts[2])
+
+print_me('Total XP '+dc_counts[0])
+print_me('Total Courses'+dc_counts[1])
+print_me('Total Exercises '+dc_counts[2])
 
 print()
 print('all courses')
@@ -102,29 +125,33 @@ my_courses.groupby('Technology', as_index=False)['Course_Name'].count().plot('Te
 plt.xticks(rotation=45)
 plt.title("Courses by Technology")
 plt.ylabel('Courses')
+#plt.gcf().subplots_adjust(bottom=1)
+plt.savefig('tech_chart.png',bbox_inches="tight")
 plt.show()
-print(my_courses.groupby('Technology').count())
+document.add_picture('tech_chart.png')
+table=my_courses.groupby('Technology').count()
+print_me(str(table))
 print()
-print('Python Courses')
-print(my_courses
+print_me('Python Courses')
+print_me(str(my_courses
       .loc[my_courses.Technology=='Python','Course_Name']
-      .sort_values().reset_index(drop=True))
+      .sort_values().reset_index(drop=True)))
 print()
-print('R Courses')
-print(my_courses
+print_me('R Courses')
+print_me(str(my_courses
       .loc[my_courses.Technology=='R','Course_Name']
-      .sort_values().reset_index(drop=True))
+      .sort_values().reset_index(drop=True)))
 
-print("Skill Tracks")
+print_me("Skill Tracks")
 #
-css_track_names ='div.track-block__main'
+
 track_names = sel.css(css_track_names).extract()
 
 track_names = just_words(track_names,is_amp,['0'])
 my_tracks = pd.DataFrame(list(track_names), \
                columns =['Skill_Track'])
 my_tracks.Skill_Track = my_tracks.Skill_Track.str.replace('\n ','').str.strip()
-print(my_tracks)
+print_me(str(my_tracks))
 
 
 track_comp = sel.css(css_track_comp).extract()
@@ -133,3 +160,7 @@ track_comp = sel.css(css_track_comp).extract()
 other=sel.css(css_other_track).extract()
 #print(other)
 my_tech = my_courses.Technology.unique()
+
+
+
+document.save('test.docx')
