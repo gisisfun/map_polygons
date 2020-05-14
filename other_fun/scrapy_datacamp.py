@@ -11,9 +11,37 @@ import re
 
 from docx import Document
 
-document = Document()
 
-def print_me(text='',to_docx=True):
+document = Document()
+paragraphs = document.paragraphs
+
+from docx.shared import Pt
+
+style = document.styles['Normal']
+font = style.font
+font.name = 'Arial'
+font.size = Pt(10)
+
+document.styles['Normal']
+
+def doctable(data, tabletitle):
+    data = pd.DataFrame(data)  # My input data is in the 2D list form
+    document.add_heading(tabletitle)
+    table = document.add_table(rows=1, cols=2)
+    hdr_cells = table.rows[0].cells
+    for i,val in enumerate(data.columns):
+        hdr_cells[i].text = val
+#    hdr_cells[1].text = 'Id'
+    table = document.add_table(rows=(data.shape[0]), cols=data.shape[1])  # First row are table headers!
+    #document.styles("Normal")
+    for i, column in enumerate(data) :
+        for row in range(data.shape[0]) :
+            table.cell(row, i).line_spacing = 0.5
+            table.cell(row, i).text = str(data[column][row])
+
+
+
+def print_me(text='',to_docx=True, style='Normal'):
     if (to_docx):
         document.add_paragraph(text)
     print(text)
@@ -72,10 +100,13 @@ thefile = open('my_profile.txt','r')
 html = thefile.read()
 sel = Selector(text=html)
 the_title = sel.css(css_titles_text).extract_first()
-
-print_me(the_title)
+document.add_heading(the_title, 0)
+print(the_title)
 print('')
-print_me('XP by topic')
+
+document.add_heading('XP Points by Topic', level=1)
+print('XP by topic')
+
 #scape web page for content
 dc_topic_names = sel.css(css_per_topic_names).extract()
 dc_topic_data = sel.css(css_per_topic_data).extract()[:12]
@@ -104,11 +135,13 @@ document.add_picture('topic_chart.png')
 dc_counts = sel.css(css_dc_counts).extract()
 
 print_me('Total XP '+dc_counts[0])
-print_me('Total Courses'+dc_counts[1])
+print_me('Total Courses '+dc_counts[1])
 print_me('Total Exercises '+dc_counts[2])
 
 print_me()
-print_me('all courses')
+document.add_heading('All Courses', level=1)
+print('All Courses')
+
 course_list = sel.css(css_course_list).extract()
 lang_raw=sel.xpath(xsel_lang_list).extract()
 lang_list=just_words(lang_raw,is_amp,['0'])
@@ -127,20 +160,33 @@ plt.ylabel('Courses')
 plt.savefig('tech_chart.png',bbox_inches="tight")
 plt.show()
 document.add_picture('tech_chart.png')
-table=my_courses.groupby('Technology').count()
-print_me(str(table))
-print()
-print_me('Python Courses')
-print_me(str(my_courses
-      .loc[my_courses.Technology=='Python','Course_Name']
-      .sort_values().reset_index(drop=True)))
-print()
-print_me('R Courses')
-print_me(str(my_courses
-      .loc[my_courses.Technology=='R','Course_Name']
-      .sort_values().reset_index(drop=True)))
 
-print_me("Skill Tracks")
+
+
+tech_table=my_courses. \
+groupby('Technology',as_index=False)['Course_Name']. \
+count().rename(columns={"Course_Name":"Course_Count"})
+
+doctable(tech_table,"Course count by Technology (Language)")
+#    row_cells[2].text = desc
+
+print(tech_table)
+print()
+python_courses = my_courses \
+      .loc[my_courses.Technology=='Python','Course_Name'] \
+      .sort_values().reset_index(drop=True)
+doctable(python_courses,"Python Courses List")
+print('Python Courses')
+print(python_courses)
+r_courses = my_courses \
+    .loc[my_courses.Technology=='R','Course_Name'] \
+    .sort_values().reset_index(drop=True)
+print()
+doctable(r_courses,"R Courses List")
+print('R Courses')
+print(r_courses)
+
+
 #
 
 track_names = sel.css(css_track_names).extract()
@@ -149,7 +195,9 @@ track_names = just_words(track_names,is_amp,['0'])
 my_tracks = pd.DataFrame(list(track_names), \
                columns =['Skill_Track'])
 my_tracks.Skill_Track = my_tracks.Skill_Track.str.replace('\n ','').str.strip()
-print_me(str(my_tracks))
+doctable(my_tracks,"Skill Tracks")
+print("Skill Tracks")
+print(my_tracks)
 
 
 track_comp = sel.css(css_track_comp).extract()
