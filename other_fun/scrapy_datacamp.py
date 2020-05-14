@@ -107,6 +107,10 @@ print('')
 document.add_heading('XP Points by Topic', level=1)
 print('XP by topic')
 
+dc_counts = sel.css(css_dc_counts).extract()
+print_me('Total XP '+dc_counts[0]+' Total Courses '+dc_counts[1] + 
+         ' Total Exercises '+dc_counts[2])
+
 #scape web page for content
 dc_topic_names = sel.css(css_per_topic_names).extract()
 dc_topic_data = sel.css(css_per_topic_data).extract()[:12]
@@ -132,13 +136,7 @@ plt.show()
 
 document.add_picture('topic_chart.png')
 
-dc_counts = sel.css(css_dc_counts).extract()
-
-print_me('Total XP '+dc_counts[0])
-print_me('Total Courses '+dc_counts[1])
-print_me('Total Exercises '+dc_counts[2])
-
-print_me()
+document.add_page_break()
 document.add_heading('All Courses', level=1)
 print('All Courses')
 
@@ -171,24 +169,27 @@ doctable(tech_table,"Course count by Technology (Language)")
 #    row_cells[2].text = desc
 
 print(tech_table)
-print()
+
+document.add_page_break()
 python_courses = my_courses \
       .loc[my_courses.Technology=='Python','Course_Name'] \
       .sort_values().reset_index(drop=True)
 doctable(python_courses,"Python Courses List")
+
 print('Python Courses')
 print(python_courses)
 r_courses = my_courses \
     .loc[my_courses.Technology=='R','Course_Name'] \
     .sort_values().reset_index(drop=True)
-print()
+    
+document.add_page_break()
 doctable(r_courses,"R Courses List")
 print('R Courses')
 print(r_courses)
 
 
 #
-
+document.add_page_break()
 track_names = sel.css(css_track_names).extract()
 
 track_names = just_words(track_names,is_amp,['0'])
