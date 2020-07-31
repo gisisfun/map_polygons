@@ -3,6 +3,10 @@
 """
 Created on Thu Apr 23 21:58:02 2020
 @author: me
+
+DataCamp Summary of Courses Tracks and Projects
+Sourced from html from profile page (my_profile.txt) and pdf certificates 
+sotored in subdirectories (Courses, Skills, Career)
 """
 import pdftotext
 import os
@@ -119,23 +123,36 @@ def is_amp(f_value):
     if f_value=="amp":
         output='&'   
     return output
+
 if __name__ == "__main__":
-    xsel_lang_list = '//div[contains(@class,"course-block__technology course-block__technology--")]'
-    css_course_list = 'h4.course-block__title::text'
+    #course_as = sel.css( 'div.course-block > a' )
+    # Selecting all href attributes chaining with css
+    #hrefs_from_css = course_as.css( '::attr(href)' )
+    # Selecting all href attributes chaining with xpath
+    #hrefs_from_xpath = course_as.xpath( './@href' )
     css_dc_counts = 'strong.dc-u-m-none::text'
+
+    xsel_course_lang = '//div[contains(@class,"course-block__technology course-block__technology--")]'
+
+    css_course_list = 'h4.course-block__title::text'
+    css_course_urls = 'a.course-block__link::attr(href)'
+    css_course_descriptions = 'p.course-block__description::text'
+    
     css_per_topic_names = 'h4.dc-u-mb-4::text' 
     css_per_topic_data = 'p.dc-u-mt-0::text' #first 12
     css_other_track = 'span.dc-dropdown--nav__track-name::text'
+    css_topic_urls = 'section.profile-topics a.shim::attr(href)'
+    
+    css_track_names ='div.track-block__main'
+    css_track_urls = 'section.profile-tracks a.shim::attr(href)'
     css_track_comp = 'div div h5::text'
     #css_track_names = 'div.track-block__main h4::text'
     css_urls = 'a::attr(href)'
-    css_course_urls = 'a.course-block__link::attr(href)'
-    css_topic_urls = 'section.profile-topics a.shim::attr(href)'
+
     css_titles_text = 'title::text'
-    css_track_names ='div.track-block__main'
-    css_track_urls = 'section.profile-tracks a.shim::attr(href)'
     css_project_urls='section.profile-courses a.shim::attr(href)'
     css_project_names='section.profile-courses h5.dc-project-block__title::text'
+    
     thefile = open('my_profile.txt','r')
 
     print('getting pdf cert data')
@@ -198,12 +215,17 @@ if __name__ == "__main__":
     print('All Courses')
 
     course_list = sel.css(css_course_list).extract()
-    lang_raw=sel.xpath(xsel_lang_list).extract()
+    lang_raw=sel.xpath(xsel_course_lang).extract()
     lang_list=just_words(lang_raw,is_amp,['0'])
     course_urls=sel.css(css_course_urls).extract()
+    course_descriptions=just_words(\
+                                   sel.css(css_course_descriptions).extract(),\
+                                   nothing)
 
-    my_courses = pd.DataFrame(list(zip(lang_list,course_list,course_list,course_urls)), \
-                              columns =['Technology','Course_Name','Course_Raw','URL'])
+    my_courses = pd.DataFrame(list(zip(lang_list,course_list,course_list,\
+                                       course_descriptions,course_urls)), \
+                              columns =['Technology','Course_Name','Course_Raw'\
+                                        ,'Description','URL'])
 
     my_courses.Technology = my_courses.Technology.str.title()
     my_courses.Course_Name = my_courses.Course_Name.str.title()
