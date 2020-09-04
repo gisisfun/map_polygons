@@ -29,41 +29,8 @@ def read_poi(fname,tab=False):
     df=pd.read_csv(fname,sep=sep_char)
     return df
 
-def gnaf_agil_db(engine, metadata, connection):
-    t_locality = Table('LOCALITY', metadata, autoload=True, 
-                         autoload_with=engine)
-    t_locality_point = Table('LOCALITY_POINT', metadata, autoload=True, 
-                               autoload_with=engine)
-    
-    print('locality_point')
-    print(t_locality_point.columns.keys())
-    print('locality')
-    print(t_locality.columns.keys())
-    
 
-    
-    ilocs_stmt = select([t_locality.columns.locality_pid,
-                   t_locality.columns.locality_name,
-                   t_locality.columns.state_pid,
-                   t_locality_point.columns.latitude,
-                   t_locality_point.columns.longitude,
-                   t_locality.columns.locality_class_code])
-    ilocs_stmt = ilocs_stmt.where(
-            and_(t_locality.columns.locality_pid == t_locality_point.columns.locality_pid,
-                 t_locality.columns.locality_class_code == 'I'))
-    ilocs_stmt = ilocs_stmt.order_by(t_locality.columns.locality_pid)
-    
-    results = connection.execute(ilocs_stmt).fetchall()
-    df = pd.DataFrame(results)
-
-    # Set Column names
-    df.columns = results[0].keys()
-    gdf = gpd.GeoDataFrame(
-        df, geometry=gpd.points_from_xy(df.longitude, df.latitude,))
-    
-    return gdf
-
-def closest_addresses(v_stmt,row,tolerance = 1):
+def closest_addresses_agil(v_stmt,row,tolerance = 1):
 
     v_stmt_loop = v_stmt.where(
             and_(v_address_view.columns.Longitude.between(int(row.LONGITUDE)-tolerance,
@@ -127,7 +94,7 @@ def get_agil_datagovau():
     agil_joined_gdf=gpd.GeoDataFrame(agil_joined,geometry=geom,crs="EPSG:4283")
     return agil_joined_gdf
 
-def add_cols(df,id_col,id_name):
+def add_cols_agil(df,id_col,id_name):
     rafile = gpd.read_file('shape/RA_2016_AUST.shp')
     rafile['RA_NAME16'] = rafile['RA_NAME16'].str.replace('.\(.*\)','')
     
@@ -249,52 +216,52 @@ def close_connection(connection):
 #ADDRESS_MESH_BLOCK_2016 -> ADDRESS_MESH_BLOCK_2016_PID,ADDRESS_DETAIL_PID,MB_2016_PID
 #MB_2016 -> MB_2016_PID,MB_2016_CODE
 
-#print('address view')
-#engine,metadata,connection = start_engine('gnaf_may_2020_new')
-#v_address_view= Table('ADDRESS_TBL2',metadata, autoload=True, 
-#                       autoload_with=engine)
-#print(v_address_view.columns.keys())
+print('address view')
+engine,metadata,connection = start_engine('gnaf_may_2020_new')
+v_address_view= Table('ADDRESS_TBL2',metadata, autoload=True, 
+                       autoload_with=engine)
+print(v_address_view.columns.keys())
+
+
+closest=[]
+df = get_agil_datagovau()
+df = df[df['NFLAG']=='P']
+v_stmt = select([v_address_view.columns.Address_Detail_PID,
+v_address_view.columns.Latitude, v_address_view.columns.Longitude,
+v_address_view.columns.AddressText])
 #
-#
-#closest=[]
-#df = get_agil_datagovau()
-#df = df[df['NFLAG']=='P']
-#v_stmt = select([v_address_view.columns.Address_Detail_PID,
-#v_address_view.columns.Latitude, v_address_view.columns.Longitude,
-#v_address_view.columns.AddressText])
-##
-#for index,row in df.iterrows():
-#    #limit by bounding box
-#    tolerance = 1
-#
-#    while True:
-#        print('trying tolerance', tolerance,' degree and row \n',row)
-#        small_data, found = closest_address(v_stmt,row,tolerance)
-#        print(index,small_data)
-#        if found == True:
-#            break
-#        else:
-#            tolerance += 1 
-# 
-#    
-#    closest.append(small_data)
-#
-#
-#
-#close_connection(connection)
-#print(closest)
-#
-#df_closest=pd.DataFrame(closest,columns=['Address_Detail_PID','AddressText',
-#                                         'address_latitude','address_longitude',
-#                                         'LCODE','NAME',
-#                                         'locality_latitude',
-#                                         'locality_longitude','distance_km'])
-#df_closest.to_csv('closest_agil_3.csv')
+for index,row in df.iterrows():
+    #limit by bounding box
+    tolerance = 1
+
+    while True:
+        print('trying tolerance', tolerance,' degree and row \n',row)
+        small_data, found = closest_address_agil(v_stmt,row,tolerance)
+        print(index,small_data)
+        if found == True:
+            break
+        else:
+            tolerance += 1 
+ 
+    
+    closest.append(small_data)
+
+
+
+close_connection(connection)
+print(closest)
+
+df_closest=pd.DataFrame(closest,columns=['Address_Detail_PID','AddressText',
+                                         'address_latitude','address_longitude',
+                                         'LCODE','NAME',
+                                         'locality_latitude',
+                                         'locality_longitude','distance_km'])
+df_closest.to_csv('closest_agil_3.csv')
     
     
     
     
 df_closest = read_poi('closest_agil_3.csv')
-df_out = add_cols(df_closest,'LCODE','NAME')
+df_out = add_cols_agil(df_closest,'LCODE','NAME')
 
 
