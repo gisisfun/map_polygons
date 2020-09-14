@@ -29,8 +29,41 @@ def read_poi(fname,tab=False):
     df=pd.read_csv(fname,sep=sep_char)
     return df
 
+def gnaf_agil_db(engine, metadata, connection):
+    t_locality = Table('LOCALITY', metadata, autoload=True, 
+                         autoload_with=engine)
+    t_locality_point = Table('LOCALITY_POINT', metadata, autoload=True, 
+                               autoload_with=engine)
+    
+    print('locality_point')
+    print(t_locality_point.columns.keys())
+    print('locality')
+    print(t_locality.columns.keys())
+    
 
-def closest_addresses_agil(v_stmt,row,tolerance = 1):
+    
+    ilocs_stmt = select([t_locality.columns.locality_pid,
+                   t_locality.columns.locality_name,
+                   t_locality.columns.state_pid,
+                   t_locality_point.columns.latitude,
+                   t_locality_point.columns.longitude,
+                   t_locality.columns.locality_class_code])
+    ilocs_stmt = ilocs_stmt.where(
+            and_(t_locality.columns.locality_pid == t_locality_point.columns.locality_pid,
+                 t_locality.columns.locality_class_code == 'I'))
+    ilocs_stmt = ilocs_stmt.order_by(t_locality.columns.locality_pid)
+    
+    results = connection.execute(ilocs_stmt).fetchall()
+    df = pd.DataFrame(results)
+
+    # Set Column names
+    df.columns = results[0].keys()
+    gdf = gpd.GeoDataFrame(
+        df, geometry=gpd.points_from_xy(df.longitude, df.latitude,))
+    
+    return gdf
+
+def closest_addresses(v_stmt,row,tolerance = 1):
 
     v_stmt_loop = v_stmt.where(
             and_(v_address_view.columns.Longitude.between(int(row.LONGITUDE)-tolerance,
@@ -94,7 +127,7 @@ def get_agil_datagovau():
     agil_joined_gdf=gpd.GeoDataFrame(agil_joined,geometry=geom,crs="EPSG:4283")
     return agil_joined_gdf
 
-def add_cols_agil(df,id_col,id_name):
+def add_cols(df,id_col,id_name):
     rafile = gpd.read_file('shape/RA_2016_AUST.shp')
     rafile['RA_NAME16'] = rafile['RA_NAME16'].str.replace('.\(.*\)','')
     
@@ -128,10 +161,12 @@ def add_cols_agil(df,id_col,id_name):
     return df_out
 
 def post_agil():
-    df_closest = pd.read_csv('closest_agil_3.csv')
+    closest = pd.read_csv('closest_agil_3.csv')
     agil_names_url="https://data.gov.au/data/dataset/34b1c164-fbe8-44a0-84fd-467dba645aa7/resource/6947c036-6383-44f3-a867-0fa0c2a48d6b/download/agil_names20190208.csv"
     agil_locations_url="https://data.gov.au/data/dataset/34b1c164-fbe8-44a0-84fd-467dba645aa7/resource/625e0a41-6a30-4c11-9a20-ac64ba5a1d1f/download/agil_locations20190208.csv"
-
+    
+    
+    
     agil_names = pd.read_csv(agil_names_url)
     agil_locations = pd.read_csv(agil_locations_url)
     agil_joined = pd.merge(agil_locations,agil_names,on='LCODE')
@@ -141,11 +176,11 @@ def post_agil():
     rafile = gpd.read_file('shape/RA_2016_AUST.shp')
     agil_remote_gdf = gpd.sjoin(agil_joined_gdf, rafile[['RA_NAME16','geometry']][rafile.geometry!=None], how='left', op='within')
     p_agil = agil_remote_gdf.loc[agil_remote_gdf['NFLAG']=='P',['LCODE','NAME','STATE','LONGITUDE','LATITUDE','RA_NAME16']]
-    #a_agil = agil_remote_gdf[agil_remote_gdf.NFLAG=='A']
+    a_agil = agil_remote_gdf[agil_remote_gdf.NFLAG=='A']
     
     
     # stages 1 and 2 - convert to inputs to geospatial and base process
-    ref_agil= pd.merge(df_closest, p_agil, left_on='LCODE', right_on='LCODE', 
+    ref_agil= pd.merge(closest, p_agil, left_on='LCODE', right_on='LCODE', 
                        how='left')
     ref_agil['locality_longlat_RA16'] = ref_agil.RA_NAME16.str.replace('.\(.*\)','')
     process_dataset_1 = ref_agil[['LCODE','NAME_y','locality_latitude',
@@ -158,7 +193,8 @@ def post_agil():
     process_dataset_1_gdf = gpd.GeoDataFrame(process_dataset_1,geometry=geom,
                                       crs="EPSG:4283")
     process_dataset_2_gdf = gpd.sjoin(process_dataset_1_gdf, 
-                                rafile[['RA_NAME16','geometry']][rafile.geometry!=None], 
+                                rafile[['RA_NAME16',
+                                        'geometry']][rafile.geometry!=None], 
                                 how='left', op='within')
     process_dataset_2_gdf['AddressText'] = process_dataset_2_gdf.AddressText.str.strip()
     process_dataset_2_gdf['address_longlat_RA16'] = process_dataset_2_gdf.RA_NAME16.str.replace('.\(.*\)','')
@@ -168,24 +204,37 @@ def post_agil():
     process_dataset_2_gdf['RA16_Diff_Flag'] = process_dataset_2_gdf.RA16_Diff_Flag.apply(lambda x:int(x))
     
     #stage 3 - drop working columns and output primary list
-    process_dataset_3 = process_dataset_2_gdf.drop(['geometry','index_right','RA_NAME16'], axis = 1)
+    process_dataset_3 = process_dataset_2_gdf.drop(['geometry','index_right',
+                                                    'RA_NAME16'], axis = 1)
     
     process_dataset_3.to_csv('csv/new_closest_wout_alts.csv')
-    agil_joined_ref = agil_joined[['LCODE','NCODE','NAME','NFLAG']]
+    #agil_joined_ref = agil_joined[['LCODE','NCODE','NAME','NFLAG']]
+    
     
     #stage 4 and 5 - replace with alternate name references and output complete list
-    process_dataset_4 = pd.merge(process_dataset_3, agil_joined_ref, on='LCODE'
-                                 ,how='left')
-    process_dataset_4['NAME'] = process_dataset_4.NAME_y
-    process_dataset_5 = process_dataset_4.drop(['NCODE','NAME_y'],
-                                               axis=1)
-    
-    process_dataset_5[['LCODE', 'NAME', 'NFLAG','locality_latitude', 
-                   'locality_longitude','locality_longlat_RA16', 
-                   'distance_km', 'Address_Detail_PID','AddressText', 
-                   'address_latitude', 'address_longitude',
-                   'address_longlat_RA16', 'RA16_Diff_Flag']].\
-                   to_csv('csv/new_closest_agil_w_alts.csv',index=False)
+    process_dataset_4 = pd.merge(process_dataset_3,agil_names[['LCODE','NCODE'
+                                                               ,'NAME','NFLAG']],\
+                                  on='LCODE',how='inner')
+    process_dataset_4 = process_dataset_4[['LCODE', 'NCODE','NAME', 'NFLAG',
+                                           'locality_latitude', 
+                                           'locality_longitude',
+                                           'locality_longlat_RA16', 
+                                           'distance_km', 
+                                           'Address_Detail_PID',
+                                           'AddressText', 
+                                           'address_latitude', 
+                                           'address_longitude',
+                                           'address_longlat_RA16', 
+                                           'RA16_Diff_Flag']]
+
+
+
+    process_dataset_4[['LCODE', 'NAME', 'NCODE','NFLAG','locality_latitude', 
+                       'locality_longitude','locality_longlat_RA16', 
+                       'distance_km', 'Address_Detail_PID','AddressText', 
+                       'address_latitude', 'address_longitude',
+                       'address_longlat_RA16', 'RA16_Diff_Flag']].\
+                       to_csv('csv/new_closest_agil_w_alts.csv',index=False)
 
 def mb_aust():
     mbact = gpd.read_file('shape/MB_2016_ACT.shp')
@@ -236,7 +285,7 @@ for index,row in df.iterrows():
 
     while True:
         print('trying tolerance', tolerance,' degree and row \n',row)
-        small_data, found = closest_address_agil(v_stmt,row,tolerance)
+        small_data, found = closest_address(v_stmt,row,tolerance)
         print(index,small_data)
         if found == True:
             break
@@ -257,11 +306,11 @@ df_closest=pd.DataFrame(closest,columns=['Address_Detail_PID','AddressText',
                                          'locality_latitude',
                                          'locality_longitude','distance_km'])
 df_closest.to_csv('closest_agil_3.csv')
-    
-    
-    
-    
-df_closest = read_poi('closest_agil_3.csv')
-df_out = add_cols_agil(df_closest,'LCODE','NAME')
+
+
+post_agil()    
+
+#df_closest = read_poi('closest_agil_3.csv')
+#df_out = add_cols(df_closest,'LCODE','NAME')
 
 
