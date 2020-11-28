@@ -3,7 +3,6 @@
 """
 Created on Thu Apr 23 21:58:02 2020
 @author: me
-
 DataCamp Summary of Courses Tracks and Projects
 Sourced from html from profile page (my_profile.txt) and pdf certificates 
 sotored in subdirectories (Courses, Skills, Career)
@@ -16,44 +15,40 @@ from scrapy import Selector
 import matplotlib.pyplot as plt
 import re
 
-from docx import Document
 
-
-document = Document()
-paragraphs = document.paragraphs
-
-from docx.shared import Pt
-
-style = document.styles['Normal']
-font = style.font
-font.name = 'Arial'
-font.size = Pt(10)
-
-document.styles['Normal']
-
-def extract(page_text,c_type):
-    ref=re.findall('#\d+.\d+',page_text)
+def extract_pdf_data(page_text,c_type):
     page_lines = page_text.split('\n')
-    if c_type=='Courses':        
-        if len(page_lines[5]) < 1:
-            course = page_lines[4]
-        else:
-            course = page_lines[4]+' '+page_lines[5]
-        date = re.findall('[A-Z][a-z]{2}\s\d{2},\s\d{4}',page_text)[0]
+    ref=page_lines[0]
+    #print(page_lines)
+    #if c_type=='Courses':        
+    if len(page_lines) == 5:
+        course = page_lines[2].replace(' Track','')
+        date = page_lines[3]
     else:
-        course = page_lines[2]
-        date=np.nan
+        course = page_lines[2]+' '+page_lines[3]
+        date = page_lines[4]
+    #else:
+    #    course = page_lines[2].replace(' Track','')
+    #    date=np.nan
+    print(ref,course,date)
     return ref,course,date
 
-def find_cert_pdf_files(path_to_files):
+def extract_pdf_courses(path_to_files):
     list_out=[]
     for (root,dirs,files) in os.walk(path_to_files, topdown=True):
         print(dirs,root)
         dirs_list=dirs
         for dir_name in dirs_list:
-            the_path=path_to_files +'/'+dir_name
+            the_path=path_to_files +'/'+ dir_name
             for (root,dirs,files) in os.walk(the_path, topdown=True):
                 #print("bbbb",path_to_files,files)
+                if len(root.split('/')) >2:
+                    course_or_track = root.split('/')[2]
+                    print(course_or_track,root)
+                    if course_or_track in ['Skill','Career']:
+                        c_type = course_or_track
+                    else:
+                        c_type = 'Course'
                 if 'certificate.pdf' in files:
                     
                     the_file=''+root+'/certificate.pdf'
@@ -65,30 +60,14 @@ def find_cert_pdf_files(path_to_files):
                         for page in pdf:
                             #print(page)
                             page_text= page
-                            (ref, course, date) = extract(page_text, dir_name)
-                            list_out.append([ref[0], course, date, dir_name])
+                            
+                            (ref, course, date) = extract_pdf_data(page_text,
+                            dir_name)
+                            
+                            list_out.append([ref,
+                                             course,
+                                             date, c_type])
         return list_out
-
-def doctable(data, tabletitle):
-    data = pd.DataFrame(data)  # My input data is in the 2D list form
-    document.add_heading(tabletitle)
-    table = document.add_table(rows=1, cols=2)
-    #not working
-    #hdr_cells = table.rows[0].cells
-    #for i,val in enumerate(data.columns):
-    #    print(i)
-        #hdr_cells[i].text = val
-    table = document.add_table(rows=(data.shape[0]), cols=data.shape[1])  # First row are table headers!
-    #document.styles("Normal")
-    for i, column in enumerate(data) :
-        for row in range(data.shape[0]) :
-            table.cell(row, i).line_spacing = 0.5
-            table.cell(row, i).text = str(data[column][row])
-
-def print_me(text='',to_docx=True, style='Normal'):
-    if (to_docx):
-        document.add_paragraph(text)
-    print(text)
 
 
 def just_words(raw_html,func,non_extra=[]):
@@ -156,7 +135,7 @@ if __name__ == "__main__":
     thefile = open('my_profile.txt','r')
 
     print('getting pdf cert data')
-    cert_list = find_cert_pdf_files('Datacamp')
+    cert_list = extract_pdf_courses('Datacamp')
                 
     cert_df = pd.DataFrame(cert_list, columns=['ref','course','date','c_type'])
     #cert_df.ref = cert_df.ref.str.strip()
@@ -164,7 +143,9 @@ if __name__ == "__main__":
                      .str.replace('COMPLETED ON','')\
                      .str.strip()\
                      .str.replace(' Track','')
-    cert_df['date_fmt'] = pd.to_datetime(cert_df.date)
+                     
+    cert_df['date_fmt'] = cert_df.date
+    #pd.to_datetime(cert_df.date)
     cert_df['course'] = cert_df.course.str.replace('Ef cient','Efficient')
     cert_df['course_lower'] = cert_df.course.str.lower()
     
@@ -172,18 +153,16 @@ if __name__ == "__main__":
     html = thefile.read()
     sel = Selector(text=html)
     the_title = sel.css(css_titles_text).extract_first()
-    document.add_heading(the_title, 0)
     print(the_title)
     print('')
-
-    document.add_heading('XP Points by Topic', level=1)
     print('XP by topic')
 
     dc_counts = sel.css(css_dc_counts).extract()
-    print_me('Total XP '+dc_counts[0]+' Total Courses '+dc_counts[1] + 
+    print('Total XP '+dc_counts[0]+' Total Courses '+dc_counts[1] + 
              ' Total Exercises '+dc_counts[2])
-    cert_counts = cert_df.c_type.value_counts()
-    print_me('Skill Tracks '+str(cert_counts[1])+' Career Tracks '+str(cert_counts[2])) 
+#    cert_counts = cert_df.c_type.value_counts()
+          
+#    print(cert_counts) 
     #scape web page for content
     dc_topic_names = sel.css(css_per_topic_names).extract()
     dc_topic_data = sel.css(css_per_topic_data).extract()[:12]
@@ -206,12 +185,9 @@ if __name__ == "__main__":
     plt.savefig('topic_chart.png',bbox_inches="tight")
     plt.show()
 
-    document.add_picture('topic_chart.png')
 
 
     
-    document.add_page_break()
-    document.add_heading('All Courses', level=1)
     print('All Courses')
 
     course_list = sel.css(css_course_list).extract()
@@ -226,7 +202,7 @@ if __name__ == "__main__":
                                        course_descriptions,course_urls)), \
                               columns =['Technology','Course_Name','Course_Raw'\
                                         ,'Description','URL'])
-
+    
     my_courses.Technology = my_courses.Technology.str.title()
     my_courses.Course_Name = my_courses.Course_Name.str.title()
     my_courses['course_lower'] = my_courses.Course_Name.str.lower().str.strip()
@@ -236,75 +212,73 @@ if __name__ == "__main__":
                                          on='course_lower', 
                                          sort=False, suffixes=('_x', '_y'))
 
-    my_courses.groupby('Technology', as_index=False)['Course_Name'].count().plot('Technology', kind='bar')
+    my_courses.groupby('Technology', as_index=False)['Course_Name'].count()
+    
+    tech_table=my_courses. \
+    groupby('Technology',as_index=False)['Course_Name']. \
+    count().rename(columns={"Course_Name":"Course_Count"})
+    tech_table['Technology']  = tech_table.Technology.astype("category")
+    tech_table.sort_values(by='Course_Count',ascending=False,inplace=True)
+    tech_table.plot('Technology', kind='bar')
     plt.xticks(rotation=45)
     plt.title("Courses by Technology")
     plt.ylabel('Courses')
     #plt.gcf().subplots_adjust(bottom=1)
     plt.savefig('tech_chart.png',bbox_inches="tight")
     plt.show()
-    document.add_picture('tech_chart.png')
 
-    tech_table=my_courses. \
-    groupby('Technology',as_index=False)['Course_Name']. \
-    count().rename(columns={"Course_Name":"Course_Count"})
-
-    doctable(tech_table,"Course count by Technology (Language)")
+#
     #    row_cells[2].text = desc
     print(tech_table)
 
-    document.add_page_break()
+    writer = pd.ExcelWriter('datacamp_certs.xlsx', engine = 'xlsxwriter')
+
+    print('Python Courses')
     python_courses = courses_join_df[['ref','Course_Name','date','Technology']]\
     .loc[courses_join_df.Technology=='Python'] \
           .sort_values(by='Course_Name').reset_index(drop=True)
-          
-    doctable(python_courses[['ref','Course_Name','date']],"Python Courses List")
-
-    print('Python Courses')
-    print(python_courses)
+    print(python_courses[['ref','Course_Name','date']])
+    python_courses.to_excel(writer, sheet_name='Python Courses')
+    
+    print('R Courses')    
     r_courses = my_courses \
         .loc[my_courses.Technology=='R','Course_Name'] \
-        .sort_values().reset_index(drop=True)
-    
-    document.add_page_break()
-    
+        .sort_values().reset_index(drop=True)    
     r_courses = courses_join_df[['ref','Course_Name','date','Technology']]\
     .loc[courses_join_df.Technology=='R'] \
           .sort_values(by='Course_Name').reset_index(drop=True)
           
-    doctable(r_courses[['ref','Course_Name','date']],"R Course List")
-    print('R Courses')
-    print(r_courses)
+    print(r_courses[['ref','Course_Name','date']])
+    r_courses.to_excel(writer,sheet_name='R Courses')
 
-    document.add_page_break()
     track_names = sel.css(css_track_names).extract()
 
     track_names = just_words(track_names,is_amp,['0'])
-    my_tracks = pd.DataFrame(list(track_names), \
+    wp_tracks = pd.DataFrame(list(track_names), \
                              columns =['Skill_Track'])
-    my_tracks.Skill_Track = my_tracks.Skill_Track.str.\
+    wp_tracks.Skill_Track = wp_tracks.Skill_Track.str.\
                             replace('\n ','').\
                             str.strip()
     # add cert data
-    tracks_join_df = pd.DataFrame.merge(my_tracks, cert_df, how='left', 
+    tracks_join_df = pd.DataFrame.merge(wp_tracks, cert_df, how='left', 
                                         left_on='Skill_Track', right_on='course', 
                                         sort=False, suffixes=('_x', '_y'))
 
-    doctable(tracks_join_df[['ref','course','c_type']],"Career and Skill Tracks")
     
-    document.add_page_break()
+    my_tracks_df = tracks_join_df[['ref','course','date','c_type']]
     print("Skill Tracks")
-    print(my_tracks)
-    
+    print(my_tracks_df)
+    my_tracks_df.to_excel(writer, sheet_name='Tracks')
+    writer.save()
+    writer.close()    
     project_names = sel.css(css_project_names).extract()
     project_urls = sel.css(css_project_urls).extract()
     my_projects = pd.DataFrame(list(zip(project_names,project_urls)), \
                                columns =['Project','URL'])
 
-    doctable(my_projects.Project,"Projects")
     print("Projects")
     print(my_projects.Project)
 
     my_tech = my_courses.Technology.unique()
 
-    document.save('test.docx')
+
