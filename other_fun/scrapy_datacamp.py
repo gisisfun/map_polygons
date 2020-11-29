@@ -14,6 +14,8 @@ import pandas as pd
 from scrapy import Selector
 import matplotlib.pyplot as plt
 import re
+import spacy
+from itertools import repeat
 
 
 def extract_pdf_data(page_text,c_type):
@@ -80,10 +82,19 @@ def just_words(raw_html,func,non_extra=[]):
     returns:
         list of strings without html text
     '''
+
+#    nlp = spacy.load('en_core_web_sm')
+
+#   text = "I bland: , hello"
+#    doc = nlp(text)
+#    words = [word.text for word in doc]
+#
+#    print(' '.join([word for word in words if word.isalpha()]))
+
     non_words = ['block__main', 'class', 
                  'dc', 'div', 'h4', 'mb',
                  'mt', 'p', 'track', 'u',
-                 'course','block__technology'] + non_extra
+                 'course','block__technology','...'] + non_extra
     final_list=[]
     for y in raw_html:
         words_l=[]
@@ -113,10 +124,28 @@ if __name__ == "__main__":
 
     xsel_course_lang = '//div[contains(@class,"course-block__technology course-block__technology--")]'
 
+    css_python_course_names = "div.course-block__technology--python + div.course-block__body h4.course-block__title::text"
+    css_python_course_desc = "div.course-block__technology--python + div.course-block__body h4.course-block__title + p.course-block__description::text"
+
+    css_r_course_names = "div.course-block__technology--r + div.course-block__body h4.course-block__title::text"
+    css_r_course_desc = "div.course-block__technology--r + div.course-block__body h4.course-block__title + p.course-block__description::text"
+
+    css_sql_course_names = "div.course-block__technology--sql + div.course-block__body h4.course-block__title::text"
+    css_sql_course_desc = "div.course-block__technology--sql + div.course-block__body h4.course-block__title + p.course-block__description::text"
+
+    css_scala_course_names = "div.course-block__technology--scala + div.course-block__body h4.course-block__title::text"
+    css_scala_course_desc = "div.course-block__technology--scala + div.course-block__body h4.course-block__title + p.course-block__description::text"
+
+    css_shell_course_names = "div.course-block__technology--shell + div.course-block__body h4.course-block__title::text"
+    css_shell_course_desc = "div.course-block__technology--shell + div.course-block__body h4.course-block__title + p.course-block__description::text"
+
+    css_theory_course_names = "div.course-block__technology--theory + div.course-block__body h4.course-block__title::text"
+    css_theory_course_desc = "div.course-block__technology--theory + div.course-block__body h4.course-block__title + p.course-block__description::text"
+
+
     css_course_list = 'h4.course-block__title::text'
     css_course_urls = 'a.course-block__link::attr(href)'
     css_course_descriptions = 'p.course-block__description::text'
-    
     css_per_topic_names = 'h4.dc-u-mb-4::text' 
     css_per_topic_data = 'p.dc-u-mt-0::text' #first 12
     css_other_track = 'span.dc-dropdown--nav__track-name::text'
@@ -146,9 +175,17 @@ if __name__ == "__main__":
                      
     cert_df['date_fmt'] = cert_df.date
     #pd.to_datetime(cert_df.date)
-    cert_df['course'] = cert_df.course.str.replace('Ef cient','Efficient')
+    cert_df['course'] = cert_df.course.str.replace('So ware','Software')
+    cert_df['course'] = cert_df.course.str.replace('E cient','Efficient')
+    cert_df['course'] = cert_df.course.str.replace("Air ow","Airflow")
+    #cert_df['course'] = cert_df.course.str.replace(":","")
+    cert_df['course'] = cert_df.course.str.replace("Classi cation",
+           "Classification")
+    cert_df['course'] = cert_df.course.str.replace("Classi ers","Classifiers")
     cert_df['course_lower'] = cert_df.course.str.lower()
     
+    # initalize new excel file
+    writer = pd.ExcelWriter('datacamp_certs.xlsx', engine = 'xlsxwriter')
 
     html = thefile.read()
     sel = Selector(text=html)
@@ -172,6 +209,7 @@ if __name__ == "__main__":
 
     my_topic_xp = pd.DataFrame(list(zip(dc_topic_names,dc_topic_data)), \
                                columns =['Topic','XP'])
+    my_topic_xp.Topic =  my_topic_xp.Topic.str.strip()
     # make category
     my_topic_xp.Topic = my_topic_xp.Topic.astype("category")
     my_topic_xp.sort_values(by='XP',ascending=False,inplace=True)
@@ -185,18 +223,38 @@ if __name__ == "__main__":
     plt.savefig('topic_chart.png',bbox_inches="tight")
     plt.show()
 
-
+    my_topic_xp.to_excel(writer, index=False, sheet_name='Topic XP')
 
     
     print('All Courses')
+    r_course_names = sel.css(css_r_course_names).extract()
+    r_course_desc = [line.strip() for line in 
+                         sel.css(css_r_course_desc).extract()]
+    r_course = list(zip(r_course_names,
+                        r_course_desc,
+                        repeat('r')))
+    
+    python_course_names = sel.css(css_python_course_names).extract()
+    python_course_desc = [line.strip() for line in 
+                         sel.css(css_python_course_desc).extract()]    
+    python_course = list(zip(python_course_names,
+                             python_course_desc,
+                             repeat('python')))
+
+    sql_course_names = sel.css(css_sql_course_names).extract()
+    sql_course_desc = [line.strip() for line in 
+                         sel.css(css_sql_course_desc).extract()]    
+    sql_course = list(zip(sql_course_names,
+                          sql_course_desc,
+                          repeat('sql')))
 
     course_list = sel.css(css_course_list).extract()
     lang_raw=sel.xpath(xsel_course_lang).extract()
     lang_list=just_words(lang_raw,is_amp,['0'])
     course_urls=sel.css(css_course_urls).extract()
-    course_descriptions=just_words(\
-                                   sel.css(css_course_descriptions).extract(),\
-                                   nothing)
+    course_descriptions=[line.strip() for line in 
+                         sel.css(css_course_descriptions).extract()]
+
 
     my_courses = pd.DataFrame(list(zip(lang_list,course_list,course_list,\
                                        course_descriptions,course_urls)), \
@@ -230,26 +288,41 @@ if __name__ == "__main__":
 #
     #    row_cells[2].text = desc
     print(tech_table)
+    tech_table.to_excel(writer, index=False, sheet_name='Courses by Technology')
 
-    writer = pd.ExcelWriter('datacamp_certs.xlsx', engine = 'xlsxwriter')
 
     print('Python Courses')
-    python_courses = courses_join_df[['ref','Course_Name','date','Technology']]\
+    python_courses = courses_join_df[['ref','Course_Name','date',
+                                      'Description', 'Technology']]\
     .loc[courses_join_df.Technology=='Python'] \
           .sort_values(by='Course_Name').reset_index(drop=True)
     print(python_courses[['ref','Course_Name','date']])
-    python_courses.to_excel(writer, sheet_name='Python Courses')
+    python_courses.to_excel(writer, index=False, sheet_name='Python Courses')
     
     print('R Courses')    
     r_courses = my_courses \
         .loc[my_courses.Technology=='R','Course_Name'] \
         .sort_values().reset_index(drop=True)    
-    r_courses = courses_join_df[['ref','Course_Name','date','Technology']]\
+    r_courses = courses_join_df[['ref','Course_Name','date',
+                                 'Description','Technology']]\
     .loc[courses_join_df.Technology=='R'] \
           .sort_values(by='Course_Name').reset_index(drop=True)
           
     print(r_courses[['ref','Course_Name','date']])
-    r_courses.to_excel(writer,sheet_name='R Courses')
+    r_courses.to_excel(writer, index=False, sheet_name='R Courses')
+
+    print('SQL Courses')    
+    sql_courses = my_courses \
+        .loc[my_courses.Technology=='Sql','Course_Name'] \
+        .sort_values().reset_index(drop=True)    
+    sql_courses = courses_join_df[['ref','Course_Name','date',
+                                 'Description','Technology']]\
+    .loc[courses_join_df.Technology=='Sql'] \
+          .sort_values(by='Course_Name').reset_index(drop=True)
+          
+    print(sql_courses[['ref','Course_Name','date']])
+    sql_courses.to_excel(writer,index=False,sheet_name='SQL Courses')
+
 
     track_names = sel.css(css_track_names).extract()
 
