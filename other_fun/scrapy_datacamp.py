@@ -212,9 +212,9 @@ if __name__ == "__main__":
     my_topic_xp.Topic =  my_topic_xp.Topic.str.strip()
     # make category
     my_topic_xp.Topic = my_topic_xp.Topic.astype("category")
-    my_topic_xp.sort_values(by='XP',ascending=False,inplace=True)
-
-    plt.bar(x=my_topic_xp.Topic,height=my_topic_xp.XP)
+    my_topic_xp.sort_values(by='XP',ascending=True,inplace=True)
+    #my_topic_xp.plot(kind='barh')
+    plt.barh(y=my_topic_xp.Topic,width=my_topic_xp.XP)
     plt.xticks(rotation=90)
     plt.ylabel("XP")
     plt.xlabel("Topic")
@@ -276,9 +276,9 @@ if __name__ == "__main__":
     groupby('Technology',as_index=False)['Course_Name']. \
     count().rename(columns={"Course_Name":"Course_Count"})
     tech_table['Technology']  = tech_table.Technology.astype("category")
-    tech_table.sort_values(by='Course_Count',ascending=False,inplace=True)
-    tech_table.plot('Technology', kind='bar')
-    plt.xticks(rotation=45)
+    tech_table.sort_values(by='Course_Count',ascending=True,inplace=True)
+    tech_table.plot('Technology', kind='barh')
+    #plt.xticks(rotation=45)
     plt.title("Courses by Technology")
     plt.ylabel('Courses')
     #plt.gcf().subplots_adjust(bottom=1)
