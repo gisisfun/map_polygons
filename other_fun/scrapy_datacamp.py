@@ -9,13 +9,19 @@ sotored in subdirectories (Courses, Skills, Career)
 """
 import pdftotext
 import os
-import numpy as np
+#import numpy as np
 import pandas as pd
 from scrapy import Selector
 import matplotlib.pyplot as plt
 import re
-import spacy
+#import spacy
+from wordcloud import WordCloud
+from nltk.stem import WordNetLemmatizer 
+  
+
 from itertools import repeat
+import json
+from datetime import datetime
 
 
 def extract_pdf_data(page_text,c_type):
@@ -120,6 +126,13 @@ if __name__ == "__main__":
     #hrefs_from_css = course_as.css( '::attr(href)' )
     # Selecting all href attributes chaining with xpath
     #hrefs_from_xpath = course_as.xpath( './@href' )
+    
+    # courses page css definitions
+    css_c_course_name='h2.css-1mzwl36-baseStyle-baseHeaderStyle-multiLineStyle::text'
+    css_c_course_desc='h2.css-1mzwl36-baseStyle-baseHeaderStyle-multiLineStyle + p::text'
+    css_json='script#__NEXT_DATA__::text'
+
+    # profile page css definitions
     css_dc_counts = 'strong.dc-u-m-none::text'
 
     xsel_course_lang = '//div[contains(@class,"course-block__technology course-block__technology--")]'
@@ -160,7 +173,8 @@ if __name__ == "__main__":
     css_titles_text = 'title::text'
     css_project_urls='section.profile-courses a.shim::attr(href)'
     css_project_names='section.profile-courses h5.dc-project-block__title::text'
-    
+    thecourses= open('all_courses.txt','r')
+
     thefile = open('my_profile.txt','r')
 
     print('getting pdf cert data')
@@ -174,7 +188,7 @@ if __name__ == "__main__":
                      .str.replace(' Track','')
                      
     cert_df['date_fmt'] = cert_df.date
-    #pd.to_datetime(cert_df.date)
+
     cert_df['course'] = cert_df.course.str.replace('So ware','Software')
     cert_df['course'] = cert_df.course.str.replace('E cient','Efficient')
     cert_df['course'] = cert_df.course.str.replace("Air ow","Airflow")
@@ -183,12 +197,25 @@ if __name__ == "__main__":
            "Classification")
     cert_df['course'] = cert_df.course.str.replace("Classi ers","Classifiers")
     cert_df['course_lower'] = cert_df.course.str.lower()
-    
+
     # initalize new excel file
     writer = pd.ExcelWriter('datacamp_certs.xlsx', engine = 'xlsxwriter')
 
+
+        
+    all_course_html = thecourses.read()
+    all_course_sel = Selector(text=all_course_html)
+    json_text = [x.replace('\\u[a-z0-9](4)','') for x in all_course_sel.css(css_json).extract()]
+    origdict = json.loads(json_text[0])
+    thedict = origdict['props']['pageProps']['initialChunks'][0]['items']
+
+    #dicts=[d.append() for d in origdict['props']['pageProps']['initialChunks'][0]['items']]
+
+    
     html = thefile.read()
     sel = Selector(text=html)
+    
+    
     the_title = sel.css(css_titles_text).extract_first()
     print(the_title)
     print('')
@@ -214,14 +241,19 @@ if __name__ == "__main__":
     my_topic_xp.Topic = my_topic_xp.Topic.astype("category")
     my_topic_xp.sort_values(by='XP',ascending=True,inplace=True)
     #my_topic_xp.plot(kind='barh')
-    plt.barh(y=my_topic_xp.Topic,width=my_topic_xp.XP)
-    plt.xticks(rotation=90)
-    plt.ylabel("XP")
-    plt.xlabel("Topic")
-    plt.title("Topics by XP")
+    #fig,(ax1,ax2,ax3) = plt.subplots(1,3,figsize=(15,3))
+    fig,((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2,figsize=(10,6))
+    
+    fig.tight_layout(h_pad=5, w_pad=5)
+    ax1.barh(y=my_topic_xp.Topic,width=my_topic_xp.XP)
+    #ax1.xticks(rotation=90)
+    ax1.set_ylabel("XP")
+    ax1.set_xlabel("Topic")
+    ax1.set_title("Topics by XP",size=14)
+    plt.setp(ax1.get_xticklabels(), rotation=45, ha='right')
     #plt.gcf().subplots_adjust(bottom=1)
-    plt.savefig('topic_chart.png',bbox_inches="tight")
-    plt.show()
+    #plt.savefig('topic_chart.png',bbox_inches="tight")
+    #plt.show()
 
     my_topic_xp.to_excel(writer, index=False, sheet_name='Topic XP')
 
@@ -248,42 +280,75 @@ if __name__ == "__main__":
                           sql_course_desc,
                           repeat('sql')))
 
-    course_list = sel.css(css_course_list).extract()
+    scraped_course_list = sel.css(css_course_list).extract()
     lang_raw=sel.xpath(xsel_course_lang).extract()
-    lang_list=just_words(lang_raw,is_amp,['0'])
-    course_urls=sel.css(css_course_urls).extract()
-    course_descriptions=[line.strip() for line in 
+    scraped_tech_list=just_words(lang_raw,is_amp,['0'])
+    scraped_urls_list=sel.css(css_course_urls).extract()
+    scraped_desc_list=[line.strip() for line in 
                          sel.css(css_course_descriptions).extract()]
 
 
-    my_courses = pd.DataFrame(list(zip(lang_list,course_list,course_list,\
-                                       course_descriptions,course_urls)), \
-                              columns =['Technology','Course_Name','Course_Raw'\
-                                        ,'Description','URL'])
+    scraped_courses = pd.DataFrame(list(zip(scraped_tech_list,
+                                            scraped_course_list,
+                                            scraped_desc_list,
+                                            scraped_urls_list)), \
+                              columns =['Technology',
+                                        'Course_Name',
+                                        'Description',
+                                        'URL'])
     
-    my_courses.Technology = my_courses.Technology.str.title()
-    my_courses.Course_Name = my_courses.Course_Name.str.title()
-    my_courses['course_lower'] = my_courses.Course_Name.str.lower().str.strip()
-    
+    scraped_courses.Technology = scraped_courses.Technology.str.title()
+    scraped_courses.Course_Name = scraped_courses.Course_Name.str.title()
+    scraped_courses['course_lower'] = scraped_courses.Course_Name.str.lower().str.strip()
+    course_counts_df = pd.get_dummies(scraped_courses.Technology)
+    courses_and_counts= pd.concat([scraped_courses,course_counts_df],
+                                  axis=1,sort=False)
     # add cert data
-    courses_join_df = pd.DataFrame.merge(my_courses, cert_df, how='left', 
+    courses_and_certs = pd.DataFrame.merge(courses_and_counts, cert_df, how='left', 
                                          on='course_lower', 
                                          sort=False, suffixes=('_x', '_y'))
-
-    my_courses.groupby('Technology', as_index=False)['Course_Name'].count()
+    courses_and_certs['date_completed'] = pd.to_datetime(courses_and_certs.date_fmt)
+    courses_and_certs['week'] = courses_and_certs['date_completed'].dt.week
+    courses_and_certs['month'] = courses_and_certs['date_completed'].dt.month
+    courses_and_certs['year'] = courses_and_certs['date_completed'].dt.year
+    courses_and_certs.set_index(courses_and_certs['date_completed'],inplace=True)
+    scraped_courses.groupby('Technology', as_index=False)['Course_Name'].count()
     
-    tech_table=my_courses. \
-    groupby('Technology',as_index=False)['Course_Name']. \
+    tech_table=scraped_courses. \
+     groupby('Technology',as_index=False)['Course_Name']. \
     count().rename(columns={"Course_Name":"Course_Count"})
     tech_table['Technology']  = tech_table.Technology.astype("category")
     tech_table.sort_values(by='Course_Count',ascending=True,inplace=True)
-    tech_table.plot('Technology', kind='barh')
-    #plt.xticks(rotation=45)
-    plt.title("Courses by Technology")
-    plt.ylabel('Courses')
-    #plt.gcf().subplots_adjust(bottom=1)
-    plt.savefig('tech_chart.png',bbox_inches="tight")
-    plt.show()
+    tech_table.plot.barh('Technology', legend=False,ax=ax2)
+    ax2.set_title("DataCamp Courses by Technology",size=14)
+    ax2.set_ylabel('Courses')
+    
+    
+    # word could ax3
+    #import nltk
+    #nltk.download()
+    #nltk.download('wordnet')
+    lemmatizer = WordNetLemmatizer() 
+    joined_course_text = lemmatizer.lemmatize(' ' .join(scraped_course_list))
+    stop_words=['Intermediate','Introduction','to','in','working','for','and'
+                ,'with','Data', 'Science','Learning','writing','programming',
+                'everyone','the','toolbox','dealing','foundations','building',
+                'efficient','part','thinking','of','oriented']
+    ## Generate the word cloud from the east_of_eden string
+    cloud_courses = WordCloud(background_color="white",
+                              stopwords=stop_words).generate(joined_course_text)
+    ax3.imshow(cloud_courses, interpolation='bilinear')
+    ax3.axis("off")
+    ax3.set_title("Word Cloud of DataCamp Course Names",size=14)
+    
+    courses_and_certs.resample('1 w')['Python','Theory',
+                              'R','Sql','Scala',
+                              'Shell','Tableau',
+                              'Power_Bi','Excel'].sum().plot(ax=ax4)
+    ax4.set_title("DataCamp Course Completion by Technology")
+    ax4.legend(loc='upper right', frameon=False)
+    fig.savefig('DataCamp ' + datetime.isoformat(datetime.today())[:10]+'.png',bbox_inches="tight")
+    fig.show()
 
 #
     #    row_cells[2].text = desc
@@ -292,32 +357,32 @@ if __name__ == "__main__":
 
 
     print('Python Courses')
-    python_courses = courses_join_df[['ref','Course_Name','date',
+    python_courses = courses_and_certs[['ref','Course_Name','date',
                                       'Description', 'Technology']]\
-    .loc[courses_join_df.Technology=='Python'] \
+    .loc[courses_and_certs.Technology=='Python'] \
           .sort_values(by='Course_Name').reset_index(drop=True)
     print(python_courses[['ref','Course_Name','date']])
     python_courses.to_excel(writer, index=False, sheet_name='Python Courses')
     
     print('R Courses')    
-    r_courses = my_courses \
-        .loc[my_courses.Technology=='R','Course_Name'] \
+    r_courses = courses_and_certs \
+        .loc[courses_and_certs.Technology=='R','Course_Name'] \
         .sort_values().reset_index(drop=True)    
-    r_courses = courses_join_df[['ref','Course_Name','date',
+    r_courses = courses_and_certs[['ref','Course_Name','date',
                                  'Description','Technology']]\
-    .loc[courses_join_df.Technology=='R'] \
+    .loc[courses_and_certs.Technology=='R'] \
           .sort_values(by='Course_Name').reset_index(drop=True)
           
     print(r_courses[['ref','Course_Name','date']])
     r_courses.to_excel(writer, index=False, sheet_name='R Courses')
 
     print('SQL Courses')    
-    sql_courses = my_courses \
-        .loc[my_courses.Technology=='Sql','Course_Name'] \
+    sql_courses = courses_and_certs \
+        .loc[courses_and_certs.Technology=='Sql','Course_Name'] \
         .sort_values().reset_index(drop=True)    
-    sql_courses = courses_join_df[['ref','Course_Name','date',
+    sql_courses = courses_and_certs[['ref','Course_Name','date',
                                  'Description','Technology']]\
-    .loc[courses_join_df.Technology=='Sql'] \
+    .loc[courses_and_certs.Technology=='Sql'] \
           .sort_values(by='Course_Name').reset_index(drop=True)
           
     print(sql_courses[['ref','Course_Name','date']])
@@ -333,12 +398,12 @@ if __name__ == "__main__":
                             replace('\n ','').\
                             str.strip()
     # add cert data
-    tracks_join_df = pd.DataFrame.merge(wp_tracks, cert_df, how='left', 
+    tracks_and_certs = pd.DataFrame.merge(wp_tracks, cert_df, how='left', 
                                         left_on='Skill_Track', right_on='course', 
                                         sort=False, suffixes=('_x', '_y'))
 
     
-    my_tracks_df = tracks_join_df[['ref','course','date','c_type']]
+    my_tracks_df = tracks_and_certs[['ref','course','date','c_type']]
     print("Skill Tracks")
     print(my_tracks_df)
     my_tracks_df.to_excel(writer, sheet_name='Tracks')
@@ -352,6 +417,23 @@ if __name__ == "__main__":
     print("Projects")
     print(my_projects.Project)
 
-    my_tech = my_courses.Technology.unique()
+    my_tech = courses_and_certs.Technology.unique()
+    
+    # Tokenize the article into sentences: sentences
+# lemmatize
+# Import spacy
+    
+#import spacy
+#
+## Instantiate the English model: nlp
+#nlp = spacy.load('en',tagger=False,parser=False,matcher=False)
+#
+## Create a new document: doc
+#doc = nlp(article)
+#
+## Print all of the found entities and their labels
+#for ent in doc.ents:
+#    print(ent.label_, ent.text)
 
+    
 
