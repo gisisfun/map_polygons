@@ -17,7 +17,7 @@ import re
 #import spacy
 from wordcloud import WordCloud
 from nltk.stem import WordNetLemmatizer 
-  
+import nltk
 
 from itertools import repeat
 import json
@@ -119,6 +119,28 @@ def is_amp(f_value):
     if f_value=="amp":
         output='&'   
     return output
+
+def list_ne(sent_list): #,pos):
+    """Process list of course names for point of speech tags
+    """
+    token_sentences = [nltk.word_tokenize(sent) for sent in sent_list]
+    pos_sentences = [nltk.pos_tag(sent) for sent in token_sentences]
+    #print(pos_sentences[:5])
+
+    chunked_sentences = nltk.ne_chunk_sents(pos_sentences,binary=True)
+    ne_list=[]
+    ne_raw=[]
+    # Test for stems of the tree with 'NE' tags
+    for sent in chunked_sentences:
+        ne_line=[]
+        for chunk in sent:
+            ne_raw.append(chunk)
+            if hasattr(chunk, "label") and chunk.label() == "NE":# and chunk[0][1] == pos:
+                ne_line.append(chunk[0][0])
+                print(chunk)
+                ne_words = ' '.join(ne_line)
+                ne_list.append(ne_words)        
+    return ne_list
 
 if __name__ == "__main__":
     #course_as = sel.css( 'div.course-block > a' )
@@ -328,12 +350,18 @@ if __name__ == "__main__":
     #import nltk
     #nltk.download()
     #nltk.download('wordnet')
-    lemmatizer = WordNetLemmatizer() 
-    joined_course_text = lemmatizer.lemmatize(' ' .join(scraped_course_list))
+    lemmatizer = WordNetLemmatizer()
+    course_name_raw = list_ne(cert_df.course.values)
+    course_desc_raw = list_ne(scraped_courses.Description.values)
+    raw_data = ' ' .join(course_desc_raw) + ' '.join(course_name_raw)
+    joined_course_text = lemmatizer.lemmatize(raw_data)
     stop_words=['Intermediate','Introduction','to','in','working','for','and'
-                ,'with','Data', 'Science','Learning','writing','programming',
-                'everyone','the','toolbox','dealing','foundations','building',
-                'efficient','part','thinking','of','oriented']
+                ,'with','Data', 'Science','get','use','learn','Learning',
+                'writing','programming','everyone','the','toolbox','dealing',
+                'foundations','building','efficient','part','thinking','of',
+                'oriented','level','continue','master','postg','sas',
+                'consolidate','dive','create','imitate','discover','explore',
+                'school','case','exploratory','advanced']
     ## Generate the word cloud from the east_of_eden string
     cloud_courses = WordCloud(background_color="white",
                               stopwords=stop_words).generate(joined_course_text)
@@ -349,7 +377,12 @@ if __name__ == "__main__":
     ax4.legend(loc='upper right', frameon=False)
     fig.savefig('DataCamp ' + datetime.isoformat(datetime.today())[:10]+'.png',bbox_inches="tight")
     fig.show()
-
+    #a = list_ne(cert_df.course.values)
+    #a = list_ne(scraped_courses.Description.values)
+    #nlp_certs_string= ' '.join(a)
+    #nlp_certs = WordCloud(background_color="white", 
+    #stopwords=stop_words).generate(nlp_certs_string)
+    #plt.imshow(nlp_certs, interpolation='bilinear')
 #
     #    row_cells[2].text = desc
     print(tech_table)
