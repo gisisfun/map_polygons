@@ -2,6 +2,7 @@
 Creates a tessellating polygon data set:
 counts of Coastline (Boundary), Islands and GNAF locality (Locality)
 """
+import os
 import argparse
 from isotiles.tiles import Tiles
 from utils import from_json_file, file_deploy, to_geojson_file, to_kml_file, \
@@ -23,7 +24,7 @@ def hex(bounds_north, bounds_south, bounds_east, bounds_west,
     #u_mod = Util(shape=theshape, radial=theradial)
     
     
-    datasets = from_json_file('datasets',t_mod.json_files_path, t_mod.slash)
+    datasets = from_json_file('datasets.json',t_mod.json_files_path)
     ref_data = datasets['DataSets']['Australia']['ShapeFormat']
     file_deploy(ref_data)
 
@@ -38,17 +39,18 @@ def hex(bounds_north, bounds_south, bounds_east, bounds_west,
     
     aus_hex_array = t_mod.hexagons()
     nb_aus_hex_array = add_poly_nb(aus_hex_array,"p")
-    to_shp_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
-                format(theshape, str(int(theradial))), \
-                t_mod.shape_files_path, t_mod.slash)
-
-    to_kml_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
-                format(theshape, str(int(theradial))),\
-                t_mod.kml_files_path, t_mod.slash \
-                ,'Active_Fires')
-    to_geojson_file(nb_aus_hex_array, 'aus_{}_{}km_layer'.
-                    format(theshape, str(int(theradial))),\
-                           t_mod.geojson_files_path, t_mod.slash)
+    
+    
+    f_path_shp = os.path.join(t_mod.shape_files_path,'aus_{}_{}km_layer'.
+                format(theshape, str(int(theradial))))
+    f_path_kml = os.path.join(t_mod.kml_files_path,'aus_{}_{}km_layer'.
+                format(theshape, str(int(theradial))))
+    f_path_geojson = os.path.join(t_mod.geojson_files_path,'aus_{}_{}km_layer'.
+                    format(theshape, str(int(theradial))))
+    
+    to_shp_file(nb_aus_hex_array, f_path_shp)
+    to_kml_file(nb_aus_hex_array, f_path_kml,'Active_Fires')    
+    to_geojson_file(nb_aus_hex_array, f_path_geojson)
 
 def box(bounds_north, bounds_south, bounds_east, bounds_west, theradial):
     """
@@ -58,9 +60,8 @@ def box(bounds_north, bounds_south, bounds_east, bounds_west, theradial):
     t_mod = Tiles(shape=theshape, north=bounds_north,
                   south=bounds_south, east=bounds_east,
                   west=bounds_west, radial=theradial)
-    print(t_mod.slash)
     #u_mod = Util(shape=theshape, radial=theradial)
-    datasets = from_json_file('datasets',t_mod.json_files_path, t_mod.slash)
+    datasets = from_json_file('datasets.json',t_mod.json_files_path)
     ref_data = datasets['DataSets']['Australia']['ShapeFormat']
     file_deploy(ref_data)
 
@@ -75,17 +76,16 @@ def box(bounds_north, bounds_south, bounds_east, bounds_west, theradial):
     
     aus_box_array = t_mod.boxes()
     nb_aus_box_array = add_poly_nb(aus_box_array,"p")
-    to_shp_file(nb_aus_box_array, \
-                'aus_{}_{}km_layer'.format(theshape, str(int(theradial))), \
-                t_mod.shape_files_path, t_mod.slash)
+    f_path_shp = os.path.join(t_mod.shape_files_path,
+                'aus_{}_{}km_layer'.format(theshape, str(int(theradial))))
+    f_path_kml = os.path.join(t_mod.kml_files_path,
+                'aus_{}_{}km_layer'.format(theshape, str(int(theradial))))
+    f_path_geojson = os.path.join(t_mod.geojson_files_path,
+                'aus_{}_{}km_layer'.format(theshape, str(int(theradial))))
 
-    to_kml_file(nb_aus_box_array, 'aus_{}_{}km_layer'.
-                format(theshape, str(int(theradial))), \
-                t_mod.kml_files_path, t_mod.slash, \
-                'Active_Fires')
-    to_geojson_file(nb_aus_box_array, \
-                    'aus_{}_{}km_layer'.format(theshape, str(int(theradial))), \
-                    t_mod.geojson_files_path, t_mod.slash)
+    to_shp_file(nb_aus_box_array, f_path_shp)
+    to_kml_file(nb_aus_box_array, f_path_kml, 'Active_Fires')
+    to_geojson_file(nb_aus_box_array, f_path_geojson)
 
 PARSER = argparse.ArgumentParser(
         prog='polygons',
