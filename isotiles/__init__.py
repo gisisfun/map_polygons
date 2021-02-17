@@ -100,15 +100,6 @@ class Defaults:
         return os_dict[my_os]['ogr2ogr'] # '/usr/bin/ogr2ogr'
 
     @property
-    def slash(self):
-        """
-        OS dependant path slash character.
-        """
-        my_os = str(os.name)
-        os_dict = {"posix":{"slash": "/"}, "nt":{"slash": '\\'}}
-        return os_dict[my_os]['slash'] # '/'
-
-    @property
     def extn(self):
         """
         OS dependant filename of mod_spatialite library file.
@@ -133,7 +124,7 @@ class Defaults:
         """
         Projection values
         """
-        proj_dict = {"Projection":{"WGS84":{{"epsg": '4326',"elipsoid": 'WGS 1984', "name": 'WGS 84', \
+        proj_dict = {"Projection":{"WGS84":{"epsg": '4326',"elipsoid": 'WGS 1984', "name": 'WGS 84', \
                                             "perimeter": 6378137, \
                                             "inv_flat": 298.257223563},\
                                     "GDA94":{"epsg": '4283',"elipsoid": 'GRS 1980',  "name": 'GDA 94', \

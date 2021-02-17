@@ -8,11 +8,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.path as mpltPath
 import shapefile #to be moved to util from add_poly_poi
-
+from itertools import product
 from isotiles.__init__ import Defaults
 from utils import points_in_polygon, coords_from_csv, \
-coords_from_csv_latin1, point_radial_distance, poly_drop, \
-path_slash
+coords_from_csv_latin1, point_radial_distance, poly_drop
 #all
 
 from geojson import Polygon, Feature #,FeatureCollection
@@ -112,35 +111,35 @@ class Tiles():
         """
         Shape filespath
         """
-        return "files/shapefiles"
+        return os.path.join("files","shapefiles")
 
     @property
     def kml_files_path(self):
         """
         Shape filespath
         """
-        return "files/kmlfiles"
+        return os.path.join("files","kmlfiles")
 
     @property
     def csv_files_path(self):
         """
         Shape filespath
         """
-        return "files/csv"
+        return os.path.join("files","csv")
 
     @property
     def json_files_path(self):
         """
         Shape filespath
         """
-        return "files/jsonfiles"
+        return os.path.join("files","jsonfiles")
 
     @property
     def geojson_files_path(self):
         """
         Shape filespath
         """
-        return "files/geojson"
+        return os.path.join("files","geojson")
 
     @property
     def hor_seq(self):
@@ -246,37 +245,6 @@ class Tiles():
 
         return latitudes
 
-    def hor_vert(self, hor, vert):
-        """
-        horizontal and vertical 1D array
-
-        :param hor: horizontal (columns, longitudes)
-        :param vert: vertical (rows, latitudes)
-        
-        :return coords:
-        """
-        coords = []
-        for y_coord in iter(hor):
-            for  x_coord in iter(vert):
-                coords.append([x_coord, y_coord])
-        return coords
-
-    def hor_vert_matrix(self, hor, vert):
-        """
-        horizontal and vertical  matrix array
-
-        :param hor: horizontal (columns, longitudes)
-        :param vert: vertical (rows, latitudes)
-        
-        :return rows_and_columns:
-        """
-        rows_and_columns = []
-        for y_coord in iter(hor):
-            columns = []
-            for x_coord in iter(vert):
-                columns.append([x_coord, y_coord])
-            rows_and_columns.append(columns)
-        return rows_and_columns
 
     def hex_array(self, intersect_list, max_h, max_v):
         """
@@ -325,7 +293,7 @@ class Tiles():
                 centre_lat = vertex01 + (vertex51 - vertex01) / 2
                 centre_lon = vertex00 + (vertex50 - vertex00) / 2
 
-                if (centre_lat is not last_lat_row) or last_lat_row is 0:
+                if (centre_lat != last_lat_row) or last_lat_row == 0:
                     (bounds_n, bounds_s, bounds_e, bounds_w) = \
                                         (vertex01, vertex31, vertex20, vertex50)
                     last_lat_row = centre_lat
@@ -516,10 +484,8 @@ class Tiles():
         """
         # load the shapefile
         shape_file = shapefile.Reader(\
-                                      path_slash(self.shape_files_path,\
-                                                 '/',self.slash) + \
-                                                 self.slash +\
-                                                 "AUS_2016_AUST")
+                                      os.path.join(self.shape_files_path,                       
+                                                 "AUS_2016_AUST"))
         # shapefile contains multipolygons
         shapes = shape_file.shapes()
         big_coords = shapes[0].points
@@ -545,6 +511,7 @@ class Tiles():
             arr_min[1], arr_max[0], arr_min[0])
             in_bbox = False
             for point in unique_coords:
+#            for point in unique_coords:
                 if point[1] < bounds_n and point[1] > bounds_s and \
                    point[0] < bounds_e and point[0] > bounds_w:
                     in_bbox = True
@@ -560,7 +527,7 @@ class Tiles():
         print(self.params())
         hors = self.hor()
         verts = self.vert()
-        the_coords = self.hor_vert(hors, verts)
+        the_coords = list(product(verts,hors))
         hex_array = self.hex_array(the_coords, len(hors), len(verts))
 
         odd = len(verts)//4
@@ -585,7 +552,7 @@ class Tiles():
         print(self.params())
         hors = self.hor()
         verts = self.vert()
-        the_coords = self.hor_vert(hors, verts)
+        the_coords = list(product(verts,hors))
         box_array = self.box_array(the_coords, len(hors), len(verts))
         poi_box_array = self.add_poly_poi(box_array)
         (odd, even) = column_counts(poi_box_array)
