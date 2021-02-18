@@ -6,6 +6,9 @@ Created on Fri Feb 19 07:50:30 2021
 @author: me
 """
 
+#https://stackoverflow.com/questions/3659142/bulk-insert-with-sqlalchemy-orm
+#https://docs.sqlalchemy.org/en/14/faq/performance.html#i-m-inserting-400-000-rows-with-the-orm-and-it-s-really-slow
+
 import psycopg2
 def query(conn,sql_st):
     cur = conn.cursor()
