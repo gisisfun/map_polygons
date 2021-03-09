@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Apr 23 21:58:02 2020
-@author: me
+@author: Damien Clarke
 DataCamp Summary of Courses Tracks and Projects
 Sourced from html from profile page (my_profile.txt) and pdf certificates 
 sotored in subdirectories (Courses, Skills, Career)
@@ -22,6 +22,7 @@ import nltk
 from itertools import repeat
 import json
 from datetime import datetime
+from fuzzywuzzy import process
 
 
 def extract_pdf_data(page_text,c_type):
@@ -40,6 +41,28 @@ def extract_pdf_data(page_text,c_type):
     #    date=np.nan
     print(ref,course,date)
     return ref,course,date
+
+def fuzzy_merge(df_1, df_2, key1, key2, threshold=90, limit=2):
+    """
+    :param df_1: the left table to join
+    :param df_2: the right table to join
+    :param key1: key column of the left table
+    :param key2: key column of the right table
+    :param threshold: how close the matches should be to return a match, based on Levenshtein distance
+    :param limit: the amount of matches that will get returned, these are sorted high to low
+    :return: dataframe with boths keys and matches
+    """
+    # https://stackoverflow.com/questions/13636848/is-it-possible-to-do-fuzzy-match-merge-with-python-pandas
+    s = df_2[key2].tolist()
+    
+    m = df_1[key1].apply(lambda x: process.extract(x, s, limit=limit))    
+    df_1['matches'] = m
+    
+    m2 = df_1['matches'].apply(lambda x: ', '.join([i[0] for i in x if i[1] >= threshold]))
+    df_1['matches'] = m2
+    m2_list  = df_1['matches'].tolist()
+    df_1['matches'] = [x.split(', ')[0] for x in m2_list]
+    return df_1
 
 def extract_pdf_courses(path_to_files):
     list_out=[]
@@ -143,61 +166,40 @@ def list_ne(sent_list): #,pos):
     return ne_list
 
 if __name__ == "__main__":
-    #course_as = sel.css( 'div.course-block > a' )
-    # Selecting all href attributes chaining with css
-    #hrefs_from_css = course_as.css( '::attr(href)' )
-    # Selecting all href attributes chaining with xpath
-    #hrefs_from_xpath = course_as.xpath( './@href' )
-    
-    # courses page css definitions
-    css_c_course_name='h2.css-1mzwl36-baseStyle-baseHeaderStyle-multiLineStyle::text'
-    css_c_course_desc='h2.css-1mzwl36-baseStyle-baseHeaderStyle-multiLineStyle + p::text'
-    css_json='script#__NEXT_DATA__::text'
 
     # profile page css definitions
-    css_dc_counts = 'strong.dc-u-m-none::text'
-
-    xsel_course_lang = '//div[contains(@class,"course-block__technology course-block__technology--")]'
-
-    css_python_course_names = "div.course-block__technology--python + div.course-block__body h4.course-block__title::text"
-    css_python_course_desc = "div.course-block__technology--python + div.course-block__body h4.course-block__title + p.course-block__description::text"
-
-    css_r_course_names = "div.course-block__technology--r + div.course-block__body h4.course-block__title::text"
-    css_r_course_desc = "div.course-block__technology--r + div.course-block__body h4.course-block__title + p.course-block__description::text"
-
-    css_sql_course_names = "div.course-block__technology--sql + div.course-block__body h4.course-block__title::text"
-    css_sql_course_desc = "div.course-block__technology--sql + div.course-block__body h4.course-block__title + p.course-block__description::text"
-
-    css_scala_course_names = "div.course-block__technology--scala + div.course-block__body h4.course-block__title::text"
-    css_scala_course_desc = "div.course-block__technology--scala + div.course-block__body h4.course-block__title + p.course-block__description::text"
-
-    css_shell_course_names = "div.course-block__technology--shell + div.course-block__body h4.course-block__title::text"
-    css_shell_course_desc = "div.course-block__technology--shell + div.course-block__body h4.course-block__title + p.course-block__description::text"
-
-    css_theory_course_names = "div.course-block__technology--theory + div.course-block__body h4.course-block__title::text"
-    css_theory_course_desc = "div.course-block__technology--theory + div.course-block__body h4.course-block__title + p.course-block__description::text"
-
-
-    css_course_list = 'h4.course-block__title::text'
-    css_course_urls = 'a.course-block__link::attr(href)'
-    css_course_descriptions = 'p.course-block__description::text'
-    css_per_topic_names = 'h4.dc-u-mb-4::text' 
-    css_per_topic_data = 'p.dc-u-mt-0::text' #first 12
-    css_other_track = 'span.dc-dropdown--nav__track-name::text'
-    css_topic_urls = 'section.profile-topics a.shim::attr(href)'
     
-    css_track_names ='div.track-block__main'
-    css_track_urls = 'section.profile-tracks a.shim::attr(href)'
-    css_track_comp = 'div div h5::text'
-    #css_track_names = 'div.track-block__main h4::text'
-    css_urls = 'a::attr(href)'
+    xsel_course_lang = '//div[contains(@class,"course-block__technology course-block__technology--")]'
+    css_dict ={ 'python_course_names': "div.course-block__technology--python + div.course-block__body h4.course-block__title::text",
+    'python_course_desc': "div.course-block__technology--python + div.course-block__body h4.course-block__title + p.course-block__description::text",
+    'r_course_names': "div.course-block__technology--r + div.course-block__body h4.course-block__title::text",
+    'r_course_desc': "div.course-block__technology--r + div.course-block__body h4.course-block__title + p.course-block__description::text",
+    'sql_course_names': "div.course-block__technology--sql + div.course-block__body h4.course-block__title::text",
+    'sql_course_desc': "div.course-block__technology--sql + div.course-block__body h4.course-block__title + p.course-block__description::text",
+    'scala_course_names': "div.course-block__technology--scala + div.course-block__body h4.course-block__title::text",
+    'scala_course_desc': "div.course-block__technology--scala + div.course-block__body h4.course-block__title + p.course-block__description::text",
+    'shell_course_names': "div.course-block__technology--shell + div.course-block__body h4.course-block__title::text",
+    'shell_course_desc': "div.course-block__technology--shell + div.course-block__body h4.course-block__title + p.course-block__description::text",
+    'theory_course_names': "div.course-block__technology--theory + div.course-block__body h4.course-block__title::text",
+    'theory_course_desc': "div.course-block__technology--theory + div.course-block__body h4.course-block__title + p.course-block__description::text",
+    'dc_counts': 'strong.dc-u-m-none::text', 
+    'course_list': 'h4.course-block__title::text',
+    'course_urls': 'a.course-block__link::attr(href)',
+    'course_descriptions': 'p.course-block__description::text',
+    'per_topic_names': 'h4.dc-u-mb-4::text', 
+    'per_topic_data':  'p.dc-u-mt-0::text',
+    'track_names': 'div.track-block__main',
+    'other_track': 'span.dc-dropdown--nav__track-name::text',
+    'topic_urls': 'section.profile-topics a.shim::attr(href)',
+    'track_urls': 'section.profile-tracks a.shim::attr(href)',
+    'track_comp': 'div div h5::text',
+    'urls': 'a::attr(href)',
+    'titles_text': 'title::text',
+    'project_urls': 'section.profile-courses a.shim::attr(href)',
+    'project_names': 'section.profile-courses h5.dc-project-block__title::text'}
 
-    css_titles_text = 'title::text'
-    css_project_urls='section.profile-courses a.shim::attr(href)'
-    css_project_names='section.profile-courses h5.dc-project-block__title::text'
-    thecourses= open('all_courses.txt','r')
 
-    thefile = open('my_profile.txt','r')
+    profile_page = open('my_profile.txt','r')
 
     print('getting pdf cert data')
     cert_list = extract_pdf_courses('Datacamp')
@@ -223,35 +225,23 @@ if __name__ == "__main__":
     # initalize new excel file
     writer = pd.ExcelWriter('datacamp_certs.xlsx', engine = 'xlsxwriter')
 
-
-        
-    all_course_html = thecourses.read()
-    all_course_sel = Selector(text=all_course_html)
-    json_text = [x.replace('\\u[a-z0-9](4)','') for x in all_course_sel.css(css_json).extract()]
-    origdict = json.loads(json_text[0])
-    thedict = origdict['props']['pageProps']['initialChunks'][0]['items']
-
-    #dicts=[d.append() for d in origdict['props']['pageProps']['initialChunks'][0]['items']]
-
     
-    html = thefile.read()
+    html = profile_page.read()
     sel = Selector(text=html)
     
     
-    the_title = sel.css(css_titles_text).extract_first()
+    the_title = sel.css(css_dict['titles_text']).extract_first()
     print(the_title)
     print('')
     print('XP by topic')
 
-    dc_counts = sel.css(css_dc_counts).extract()
+    dc_counts = sel.css(css_dict['dc_counts']).extract()
     print('Total XP '+dc_counts[0]+' Total Courses '+dc_counts[1] + 
              ' Total Exercises '+dc_counts[2])
-#    cert_counts = cert_df.c_type.value_counts()
-          
-#    print(cert_counts) 
-    #scape web page for content
-    dc_topic_names = sel.css(css_per_topic_names).extract()
-    dc_topic_data = sel.css(css_per_topic_data).extract()[:12]
+
+    # scrape web page for content
+    dc_topic_names = sel.css(css_dict['per_topic_names']).extract()
+    dc_topic_data = sel.css(css_dict['per_topic_data']).extract()[:12]
     dc_topic_data = just_words(dc_topic_data,nothing,['XP'])
     # clean tex and convert to integer
     dc_topic_data = [int(x) for x in dc_topic_data]
@@ -259,55 +249,60 @@ if __name__ == "__main__":
     my_topic_xp = pd.DataFrame(list(zip(dc_topic_names,dc_topic_data)), \
                                columns =['Topic','XP'])
     my_topic_xp.Topic =  my_topic_xp.Topic.str.strip()
+    
     # make category
     my_topic_xp.Topic = my_topic_xp.Topic.astype("category")
     my_topic_xp.sort_values(by='XP',ascending=True,inplace=True)
-    #my_topic_xp.plot(kind='barh')
-    #fig,(ax1,ax2,ax3) = plt.subplots(1,3,figsize=(15,3))
-    fig,((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2,figsize=(10,6))
-    
-    fig.tight_layout(h_pad=5, w_pad=5)
+
+
+    fig,((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2,figsize=(15,8),
+         constrained_layout=True)
+    fig.suptitle('Data Camp Course Progress ' +
+                 datetime.strftime(datetime.today(),format='%d/%m/%Y'),
+                 fontsize=24)
+    fig.text(0, 0,  
+         'See the source code: https://https://github.com/gisisfun/map_polygons/blob/master/other_fun/scrapy_datacamp.py',  
+         style = 'italic', 
+         fontsize = 14, 
+         color = "green")
+    #fig.tight_layout(h_pad=15, w_pad=15)
     ax1.barh(y=my_topic_xp.Topic,width=my_topic_xp.XP)
-    #ax1.xticks(rotation=90)
-    ax1.set_ylabel("XP")
-    ax1.set_xlabel("Topic")
+
+    ax1.set_ylabel("Topic")
+    ax1.set_xlabel("XP")
     ax1.set_title("Topics by XP",size=14)
     plt.setp(ax1.get_xticklabels(), rotation=45, ha='right')
-    #plt.gcf().subplots_adjust(bottom=1)
-    #plt.savefig('topic_chart.png',bbox_inches="tight")
-    #plt.show()
 
     my_topic_xp.to_excel(writer, index=False, sheet_name='Topic XP')
 
-    
     print('All Courses')
-    r_course_names = sel.css(css_r_course_names).extract()
+    r_course_names = sel.css(css_dict['r_course_names']).extract()
     r_course_desc = [line.strip() for line in 
-                         sel.css(css_r_course_desc).extract()]
+                         sel.css(css_dict['r_course_desc']).extract()]
     r_course = list(zip(r_course_names,
                         r_course_desc,
                         repeat('r')))
     
-    python_course_names = sel.css(css_python_course_names).extract()
+    python_course_names = sel.css(css_dict['python_course_names']).extract()
     python_course_desc = [line.strip() for line in 
-                         sel.css(css_python_course_desc).extract()]    
+                         sel.css(css_dict['python_course_desc']).extract()]    
     python_course = list(zip(python_course_names,
                              python_course_desc,
                              repeat('python')))
 
-    sql_course_names = sel.css(css_sql_course_names).extract()
+    sql_course_names = sel.css(css_dict['sql_course_names']).extract()
     sql_course_desc = [line.strip() for line in 
-                         sel.css(css_sql_course_desc).extract()]    
+                         sel.css(css_dict['sql_course_desc']).extract()]    
     sql_course = list(zip(sql_course_names,
                           sql_course_desc,
                           repeat('sql')))
 
-    scraped_course_list = sel.css(css_course_list).extract()
+    scraped_course_list = sel.css(css_dict['course_list']).extract()
     lang_raw=sel.xpath(xsel_course_lang).extract()
     scraped_tech_list=just_words(lang_raw,is_amp,['0'])
-    scraped_urls_list=sel.css(css_course_urls).extract()
+    scraped_urls_list=sel.css(css_dict['course_urls']).extract()
     scraped_desc_list=[line.strip() for line in 
-                         sel.css(css_course_descriptions).extract()]
+                         sel.css(css_dict['course_descriptions']).extract()]
 
 
     scraped_courses = pd.DataFrame(list(zip(scraped_tech_list,
@@ -323,12 +318,18 @@ if __name__ == "__main__":
     scraped_courses.Course_Name = scraped_courses.Course_Name.str.title()
     scraped_courses['course_lower'] = scraped_courses.Course_Name.str.lower().str.strip()
     course_counts_df = pd.get_dummies(scraped_courses.Technology)
-    courses_and_counts= pd.concat([scraped_courses,course_counts_df],
+    course_counts= pd.concat([scraped_courses,course_counts_df],
                                   axis=1,sort=False)
-    # add cert data
-    courses_and_certs = pd.DataFrame.merge(courses_and_counts, cert_df, how='left', 
-                                         on='course_lower', 
-                                         sort=False, suffixes=('_x', '_y'))
+ 
+    # fix ... issue with course names in scraped data using fuzzy wuzzy
+    course_counts_clean = fuzzy_merge(course_counts, cert_df, 'course_lower', 'course_lower', threshold=80)
+    course_counts_clean['course_lower']=course_counts_clean['matches']
+
+   # add cert data
+    courses_and_certs = pd.DataFrame.merge(course_counts_clean, cert_df, how='left', 
+                                         on='course_lower',sort=False)
+
+    # add more columns
     courses_and_certs['date_completed'] = pd.to_datetime(courses_and_certs.date_fmt)
     courses_and_certs['week'] = courses_and_certs['date_completed'].dt.week
     courses_and_certs['month'] = courses_and_certs['date_completed'].dt.month
@@ -336,10 +337,13 @@ if __name__ == "__main__":
     courses_and_certs.set_index(courses_and_certs['date_completed'],inplace=True)
     scraped_courses.groupby('Technology', as_index=False)['Course_Name'].count()
     
+    #data prep for chart
     tech_table=scraped_courses. \
      groupby('Technology',as_index=False)['Course_Name']. \
     count().rename(columns={"Course_Name":"Course_Count"})
+    
     tech_table['Technology']  = tech_table.Technology.astype("category")
+    
     tech_table.sort_values(by='Course_Count',ascending=True,inplace=True)
     tech_table.plot.barh('Technology', legend=False,ax=ax2)
     ax2.set_title("DataCamp Courses by Technology",size=14)
@@ -353,7 +357,7 @@ if __name__ == "__main__":
     lemmatizer = WordNetLemmatizer()
     course_name_raw = list_ne(cert_df.course.values)
     course_desc_raw = list_ne(scraped_courses.Description.values)
-    raw_data = ' ' .join(course_desc_raw) + ' '.join(course_name_raw)
+    raw_data = '. ' .join(course_desc_raw) + '. '.join(course_name_raw) + ' R' *4
     joined_course_text = lemmatizer.lemmatize(raw_data)
     stop_words=['Intermediate','Introduction','to','in','working','for','and'
                 ,'with','Data', 'Science','get','use','learn','Learning',
@@ -372,19 +376,15 @@ if __name__ == "__main__":
     courses_and_certs.resample('1 w')['Python','Theory',
                               'R','Sql','Scala',
                               'Shell','Tableau',
-                              'Power_Bi','Excel'].sum().plot(ax=ax4)
+                              'Power_Bi','Excel',
+                              'Spreadsheets'].sum().plot(ax=ax4)
     ax4.set_title("DataCamp Course Completion by Technology")
     ax4.legend(loc='upper right', frameon=False)
     fig.savefig('DataCamp ' + datetime.isoformat(datetime.today())[:10]+'.png',bbox_inches="tight")
     fig.show()
-    #a = list_ne(cert_df.course.values)
-    #a = list_ne(scraped_courses.Description.values)
-    #nlp_certs_string= ' '.join(a)
-    #nlp_certs = WordCloud(background_color="white", 
-    #stopwords=stop_words).generate(nlp_certs_string)
-    #plt.imshow(nlp_certs, interpolation='bilinear')
+
 #
-    #    row_cells[2].text = desc
+    print('Tech Table')
     print(tech_table)
     tech_table.to_excel(writer, index=False, sheet_name='Courses by Technology')
 
@@ -422,7 +422,7 @@ if __name__ == "__main__":
     sql_courses.to_excel(writer,index=False,sheet_name='SQL Courses')
 
 
-    track_names = sel.css(css_track_names).extract()
+    track_names = sel.css(css_dict['track_names']).extract()
 
     track_names = just_words(track_names,is_amp,['0'])
     wp_tracks = pd.DataFrame(list(track_names), \
@@ -440,10 +440,10 @@ if __name__ == "__main__":
     print("Skill Tracks")
     print(my_tracks_df)
     my_tracks_df.to_excel(writer, sheet_name='Tracks')
-    writer.save()
+    #writer.save()
     writer.close()    
-    project_names = sel.css(css_project_names).extract()
-    project_urls = sel.css(css_project_urls).extract()
+    project_names = sel.css(css_dict['project_names']).extract()
+    project_urls = sel.css(css_dict['project_urls']).extract()
     my_projects = pd.DataFrame(list(zip(project_names,project_urls)), \
                                columns =['Project','URL'])
 
@@ -452,21 +452,8 @@ if __name__ == "__main__":
 
     my_tech = courses_and_certs.Technology.unique()
     
-    # Tokenize the article into sentences: sentences
-# lemmatize
-# Import spacy
-    
-#import spacy
-#
-## Instantiate the English model: nlp
-#nlp = spacy.load('en',tagger=False,parser=False,matcher=False)
-#
-## Create a new document: doc
-#doc = nlp(article)
-#
-## Print all of the found entities and their labels
-#for ent in doc.ents:
-#    print(ent.label_, ent.text)
+   
 
     
+
 
