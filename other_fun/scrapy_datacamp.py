@@ -5,7 +5,7 @@ Created on Thu Apr 23 21:58:02 2020
 @author: Damien Clarke
 DataCamp Summary of Courses Tracks and Projects
 Sourced from html from profile page (my_profile.txt) and pdf certificates 
-sotored in subdirectories (Courses, Skills, Career)
+stored in subdirectories (Courses, Skills, Career)
 """
 import pdftotext
 import os
