@@ -81,23 +81,16 @@ def extract_pdf_courses(path_to_files, verbose=False):
                     else:
                         c_type = 'Course'
                 if 'certificate.pdf' in files:
-                    
                     the_file=''+root+'/certificate.pdf'
                     # Load your PDF
                     with open(the_file, "rb") as f:
                         pdf = pdftotext.PDF(f)
-
                         # Iterate over all the pages
                         for page in pdf:
-                            
                             page_text= page
-                            
                             (ref, course, date) = extract_pdf_data(page_text,
                             dir_name)
-                            
-                            list_out.append([ref,
-                                             course,
-                                             date, c_type])
+                            list_out.append([ref,course,date, c_type])
         return list_out
 
 
@@ -157,6 +150,32 @@ def list_ne(sent_list,verbose=False):
                 ne_list.append(ne_words)        
     return ne_list
 
+
+def scrape_tracks(sel,css_dict,pdf_certs):
+    print("Skill Tracks")
+    track_names = sel.css(css_dict['track_names']).extract()
+
+    track_names = just_words(track_names,is_amp,['0'])
+    wp_tracks = pd.DataFrame(list(track_names), \
+                             columns =['Skill_Track'])
+    wp_tracks.Skill_Track = wp_tracks.Skill_Track.str.\
+                            replace('\n ','').\
+                            str.strip()
+    # add cert data
+    df = pd.DataFrame.merge(wp_tracks, pdf_certs, how='left', 
+                                        left_on='Skill_Track', right_on='course', 
+                                        sort=False, suffixes=('_x', '_y'))
+    return df
+
+def scrape_projects(sel,css_dict):
+    print("Projects") 
+    names = sel.css(css_dict['project_names']).extract()
+    urls = sel.css(css_dict['project_urls']).extract()
+    df = pd.DataFrame(list(zip(names,urls)), columns =['Project','URL']).\
+                                   reset_index(drop=True)
+                                 
+    return df
+
 def lang_worksheets(df,wb,verbose=False):
     tech = df.Technology.unique()
     if verbose == True:
@@ -171,7 +190,6 @@ def lang_worksheets(df,wb,verbose=False):
 if __name__ == "__main__":
 
     # profile page css definitions
-    
     xpath_dict ={'course_lang': '//div[contains(@class,"course-block__technology course-block__technology--")]'}
     css_dict ={ 'python_course_names': "div.course-block__technology--python + div.course-block__body h4.course-block__title::text",
     'python_course_desc': "div.course-block__technology--python + div.course-block__body h4.course-block__title + p.course-block__description::text",
@@ -216,18 +234,17 @@ if __name__ == "__main__":
     print('getting pdf cert data')
     cert_list = extract_pdf_courses('Datacamp')
                 
-    cert_df = pd.DataFrame(cert_list, columns=['ref','course','date','c_type'])
+    certs_pdf = pd.DataFrame(cert_list, columns=['ref','course','date','c_type'])
     #cert_df.ref = cert_df.ref.str.strip()
-    cert_df.course = cert_df.course\
+    certs_pdf.course = certs_pdf.course\
                      .str.replace('COMPLETED ON','')\
                      .str.strip()\
                      .str.replace(' Track','')
     for _ in range(len(pdf_bad)):
-        cert_df['course'] = cert_df.course.str.replace(pdf_bad[_][0],
+        certs_pdf['course'] = certs_pdf.course.str.replace(pdf_bad[_][0],
                pdf_bad[_][1])
-        
-                 
-    cert_df['course_lower'] = cert_df.course.str.lower()
+                   
+    certs_pdf['course_lower'] = certs_pdf.course.str.lower()
 
     # initalize new excel file
     writer = pd.ExcelWriter('datacamp_certs.xlsx', engine = 'xlsxwriter')
@@ -280,28 +297,6 @@ if __name__ == "__main__":
 
     my_topic_xp.to_excel(writer, index=False, sheet_name='Topic XP')
 
-    print('All Courses')
-    r_course_names = sel.css(css_dict['r_course_names']).extract()
-    r_course_desc = [line.strip() for line in 
-                         sel.css(css_dict['r_course_desc']).extract()]
-    r_course = list(zip(r_course_names,
-                        r_course_desc,
-                        repeat('r')))
-    
-    python_course_names = sel.css(css_dict['python_course_names']).extract()
-    python_course_desc = [line.strip() for line in 
-                         sel.css(css_dict['python_course_desc']).extract()]    
-    python_course = list(zip(python_course_names,
-                             python_course_desc,
-                             repeat('python')))
-
-    sql_course_names = sel.css(css_dict['sql_course_names']).extract()
-    sql_course_desc = [line.strip() for line in 
-                         sel.css(css_dict['sql_course_desc']).extract()]    
-    sql_course = list(zip(sql_course_names,
-                          sql_course_desc,
-                          repeat('sql')))
-
     course_list_scraped = sel.css(css_dict['course_list']).extract()
     lang_raw=sel.xpath(xpath_dict['course_lang']).extract()
     tech_list_scraped=just_words(lang_raw,is_amp,['0'])
@@ -321,17 +316,18 @@ if __name__ == "__main__":
     courses_scraped['course_lower'] = courses_scraped.Course_Name.str.lower()\
                                       .str.strip()
     
-    course_dummies = pd.get_dummies(courses_scraped.Technology)
-    course_counts= pd.concat([courses_scraped,course_dummies],
+    # course_dummies = pd.get_dummies(courses_scraped.Technology)
+    course_counts= pd.concat([courses_scraped,
+                              pd.get_dummies(courses_scraped.Technology)],
                                   axis=1,sort=False)
  
     # fix ... issue with course names in scraped data using fuzzy wuzzy
-    course_clean = fuzzy_merge(course_counts, cert_df, 'course_lower', 'course_lower', threshold=80)
+    course_clean = fuzzy_merge(course_counts, certs_pdf, 'course_lower', 'course_lower', threshold=80)
     course_clean['course_lower']=course_clean['matches']
 
    # add cert data
-    courses_and_certs = pd.DataFrame.merge(course_clean, cert_df, how='left', 
-                                         on='course_lower',sort=False)
+    courses_and_certs = pd.merge(course_clean, certs_pdf, how='left',
+                                 on='course_lower',sort=False)
 
     # add more columns
     courses_and_certs['date_completed'] = pd.to_datetime(courses_and_certs.date)
@@ -342,11 +338,11 @@ if __name__ == "__main__":
     courses_scraped.groupby('Technology', as_index=False)['Course_Name'].count()
     
     #data prep for chart
-    tech_table=courses_scraped. \
+    tech_table = courses_scraped. \
      groupby('Technology',as_index=False)['Course_Name']. \
     count().rename(columns={"Course_Name":"Course_Count"})
     
-    tech_table['Technology']  = tech_table.Technology.astype("category")
+    tech_table['Technology'] = tech_table.Technology.astype("category")
     
     tech_table.sort_values(by='Course_Count',ascending=True,inplace=True)
     tech_table.plot.barh('Technology', legend=False,ax=ax2)
@@ -354,7 +350,7 @@ if __name__ == "__main__":
     ax2.set_ylabel('Courses')
     
     lemmatizer = WordNetLemmatizer()
-    course_name_raw = list_ne(cert_df.course.values)
+    course_name_raw = list_ne(certs_pdf.course.values)
     course_desc_raw = list_ne(courses_scraped.Description.values)
     raw_data = '. ' .join(course_desc_raw) + '. '.join(course_name_raw) + ' R' *4
     joined_course_text = lemmatizer.lemmatize(raw_data)
@@ -373,42 +369,22 @@ if __name__ == "__main__":
     fig.savefig('DataCamp ' + datetime.isoformat(datetime.today())[:10]+'.png',bbox_inches="tight")
     fig.show()
 
-
     print('Tech Table')
     print(tech_table)
-    
     
     print("Courses and Certs")
     courses_and_certs.groupby('Technology')[['ref','Course_Name',
                              'date','Description', 'Technology']].apply(lang_worksheets,
                              wb=writer)
 
-    
-    print("Skill Tracks")
-    track_names = sel.css(css_dict['track_names']).extract()
+    my_tracks = scrape_tracks(sel,css_dict,certs_pdf)
+    my_tracks = my_tracks[['ref','course','date','c_type']]
+    print(my_tracks)
+    my_tracks.to_excel(writer, sheet_name='Tracks')
 
-    track_names = just_words(track_names,is_amp,['0'])
-    wp_tracks = pd.DataFrame(list(track_names), \
-                             columns =['Skill_Track'])
-    wp_tracks.Skill_Track = wp_tracks.Skill_Track.str.\
-                            replace('\n ','').\
-                            str.strip()
-    # add cert data
-    tracks_and_certs = pd.DataFrame.merge(wp_tracks, cert_df, how='left', 
-                                        left_on='Skill_Track', right_on='course', 
-                                        sort=False, suffixes=('_x', '_y'))
-    
-    my_tracks_df = tracks_and_certs[['ref','course','date','c_type']]
-    print(my_tracks_df)
-    my_tracks_df.to_excel(writer, sheet_name='Tracks')
-
-    print("Projects") 
-    project_names = sel.css(css_dict['project_names']).extract()
-    project_urls = sel.css(css_dict['project_urls']).extract()
-    my_projects = pd.DataFrame(list(zip(project_names,project_urls)), \
-                               columns =['Project','URL']).\
-                               reset_index(drop=True)
-
+    print("Projects")
+    my_projects = scrape_projects(sel,css_dict)
     print(my_projects.Project)
     my_projects.to_excel(writer, sheet_name='Projects')
     writer.close()
+    
