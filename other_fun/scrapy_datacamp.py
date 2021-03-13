@@ -64,6 +64,9 @@ def fuzzy_merge(df_1, df_2, key1, key2, threshold=90, limit=2):
 
 def extract_pdf_courses(path_to_files, verbose=False):
     list_out=[]
+    pdf_bad =[['So ware','Software'],['E cient','Efficient'],
+              ['Air ow','Airflow'],['E ects','Effects'],['lea et','leaflet'],
+               ['Classi cation','Classification'],['Classi iers','Classifiers']]
     for (root,dirs,files) in os.walk(path_to_files):
         if verbose == True:
             print(dirs,root)
@@ -91,7 +94,15 @@ def extract_pdf_courses(path_to_files, verbose=False):
                             (ref, course, date) = extract_pdf_data(page_text,
                             dir_name)
                             list_out.append([ref,course,date, c_type])
-        return list_out
+    # fix missing letters in PDF import
+    df = pd.DataFrame(list_out, columns=['ref','course','date','c_type'])
+    df.course = df.course.str.strip().str.replace(' Track','')
+    for _ in range(len(pdf_bad)):
+        df['course'] = df.course.str.replace(pdf_bad[_][0],
+               pdf_bad[_][1])
+                   
+    df['course_lower'] = df.course.str.lower()
+    return df
 
 
 def just_words(raw_html,func,non_extra=[]):
@@ -151,6 +162,74 @@ def list_ne(sent_list,verbose=False):
     return ne_list
 
 
+def scrape_topics(sel,css_dict):
+    print('XP by topic')
+    names = sel.css(css_dict['per_topic_names']).extract()
+    data = sel.css(css_dict['per_topic_data']).extract()[:12]
+    data = just_words(data,nothing,['XP'])
+    # clean text and convert to integer
+    data = [int(x) for x in data]
+
+    topics = pd.DataFrame(list(zip(names,data)), \
+                               columns =['Topic','XP'])
+    topics.Topic =  topics.Topic.str.strip()
+    
+    # make category
+    topics.Topic = topics.Topic.astype("category")
+    topics.sort_values(by='XP',ascending=True,inplace=True)
+    return topics
+
+def scrape_courses(sel,css_dict,certs_pdf):
+    # all charts
+    course_list_scraped = sel.css(css_dict['course_list']).extract()
+    lang_raw=sel.xpath(xpath_dict['course_lang']).extract()
+    tech_list_scraped=just_words(lang_raw,is_amp,['0'])
+    urls_list_scraped=sel.css(css_dict['course_urls']).extract()
+    desc_list_scraped=[line.strip() for line in 
+                         sel.css(css_dict['course_descriptions']).extract()]
+
+    courses_scraped = pd.DataFrame(list(zip(tech_list_scraped,
+                                           course_list_scraped,
+                                           desc_list_scraped,
+                                           urls_list_scraped)), \
+                            columns =['Technology','Course_Name',
+                                      'Description','URL'])
+    
+    courses_scraped.Technology = courses_scraped.Technology.str.title()
+    courses_scraped.Course_Name = courses_scraped.Course_Name.str.title()
+    courses_scraped['course_lower'] = courses_scraped.Course_Name.str.lower()\
+                                      .str.strip()
+    courses_scraped.groupby('Technology', as_index=False)['Course_Name'].count()
+    # fix ... issue with course names in scraped data using fuzzy wuzzy
+    course_clean = fuzzy_merge(courses_scraped, certs_pdf, 'course_lower', 'course_lower', threshold=80)
+    course_clean['course_lower']=course_clean['matches']
+    
+    # course_dummies = pd.get_dummies(courses_scraped.Technology)
+    course_counts= pd.concat([course_clean,
+                              pd.get_dummies(course_clean.Technology)],
+                                  axis=1,sort=False)
+    return course_counts
+
+def cert_courses(course_counts,certs_pdf):    
+
+   # add cert data
+    courses = pd.merge(course_counts, certs_pdf, how='left',
+                                 on='course_lower',sort=False)
+    # add more columns
+    courses['date_completed'] = pd.to_datetime(courses.date)
+    courses['week'] = courses['date_completed'].dt.week
+    courses.set_index(courses['date_completed'],inplace=True)
+    return courses
+
+def scrape_summary(sel,css_dict):
+    the_title = sel.css(css_dict['titles_text']).extract_first()
+
+    dc_counts = sel.css(css_dict['dc_counts']).extract()
+    summary = '{} \n Total XP {} Total Courses {} Total Exercises {}'.\
+    format(the_title,dc_counts[0],dc_counts[1],dc_counts[2])
+    return summary
+
+
 def scrape_tracks(sel,css_dict,pdf_certs):
     print("Skill Tracks")
     track_names = sel.css(css_dict['track_names']).extract()
@@ -185,6 +264,16 @@ def lang_worksheets(df,wb,verbose=False):
     df.reset_index(drop=True,inplace=True)
 
     df.to_excel(wb, index=False, sheet_name=str(tech[0]))
+    
+def process_wordcloud(courses_scraped):
+
+    lemmatizer = WordNetLemmatizer()
+    course_name_raw = list_ne(certs_pdf.course.values)
+    course_desc_raw = list_ne(courses_scraped.Description.values)
+    raw_data = '. ' .join(course_desc_raw) + '. '.join(course_name_raw) + ' R' *4
+    joined_course_text = lemmatizer.lemmatize(raw_data)
+    
+    return joined_course_text
 
 
 if __name__ == "__main__":
@@ -218,65 +307,40 @@ if __name__ == "__main__":
     'titles_text': 'title::text',
     'project_urls': 'section.profile-courses a.shim::attr(href)',
     'project_names': 'section.profile-courses h5.dc-project-block__title::text'}
-    
-    pdf_bad =[['So ware','Software'],['E cient','Efficient'],['Air ow','Airflow']]
-  
-    stop_words = ['Intermediate','Introduction','to','in','working','for','and'
-                  ,'with','Data', 'Science','get','use','learn','Learning',
-                  'writing','programming','everyone','the','toolbox','dealing',
-                  'foundations','building','efficient','part','thinking','of',
-                  'oriented','level','continue','master','postg','sas',
-                  'consolidate','dive','create','imitate','discover','explore',
-                  'school','case','exploratory','advanced']
+
 
     profile_page = open('my_profile.txt','r')
 
-    print('getting pdf cert data')
-    cert_list = extract_pdf_courses('Datacamp')
-                
-    certs_pdf = pd.DataFrame(cert_list, columns=['ref','course','date','c_type'])
-    #cert_df.ref = cert_df.ref.str.strip()
-    certs_pdf.course = certs_pdf.course\
-                     .str.replace('COMPLETED ON','')\
-                     .str.strip()\
-                     .str.replace(' Track','')
-    for _ in range(len(pdf_bad)):
-        certs_pdf['course'] = certs_pdf.course.str.replace(pdf_bad[_][0],
-               pdf_bad[_][1])
-                   
-    certs_pdf['course_lower'] = certs_pdf.course.str.lower()
-
     # initalize new excel file
     writer = pd.ExcelWriter('datacamp_certs.xlsx', engine = 'xlsxwriter')
-
+    # intialise scrapy selectotor for page
     html = profile_page.read()
     sel = Selector(text=html)
+    print(scrape_summary(sel,css_dict))
+
+    # scrape web page for content for chart #1 - topics
+    my_topic_xp = scrape_topics(sel,css_dict)
+    certs_pdf = extract_pdf_courses('Datacamp')
+    courses_scraped = scrape_courses(sel,css_dict,certs_pdf)
+    courses_and_certs = cert_courses(courses_scraped,certs_pdf)
+
+    # data prep for chart #2 - DataCamp Courses by Technology - tech table
+    tech_table = courses_scraped. \
+     groupby('Technology',as_index=False)['Course_Name']. \
+    count().rename(columns={"Course_Name":"Course_Count"})
     
-    the_title = sel.css(css_dict['titles_text']).extract_first()
-    print(the_title)
-    print('')
-    print('XP by topic')
-
-    dc_counts = sel.css(css_dict['dc_counts']).extract()
-    print('Total XP '+dc_counts[0]+' Total Courses '+dc_counts[1] + 
-             ' Total Exercises '+dc_counts[2])
-
-    # scrape web page for content
-    dc_topic_names = sel.css(css_dict['per_topic_names']).extract()
-    dc_topic_data = sel.css(css_dict['per_topic_data']).extract()[:12]
-    dc_topic_data = just_words(dc_topic_data,nothing,['XP'])
-    # clean tex and convert to integer
-    dc_topic_data = [int(x) for x in dc_topic_data]
-
-    my_topic_xp = pd.DataFrame(list(zip(dc_topic_names,dc_topic_data)), \
-                               columns =['Topic','XP'])
-    my_topic_xp.Topic =  my_topic_xp.Topic.str.strip()
+    tech_table['Technology'] = tech_table.Technology.astype("category")
     
-    # make category
-    my_topic_xp.Topic = my_topic_xp.Topic.astype("category")
-    my_topic_xp.sort_values(by='XP',ascending=True,inplace=True)
-
-
+    tech_table.sort_values(by='Course_Count',ascending=True,inplace=True)
+    my_topic_xp.to_excel(writer, index=False, sheet_name='Topic XP')
+        
+    # data for chart #3 Word Cloud of DataCamp Course Names
+    joined_course_text = process_wordcloud(courses_scraped)
+    # data for chart #4 - DataCamp Course Completion by Technology
+    tech_list = courses_and_certs.columns[5:-7]
+    weekly_completion = courses_and_certs.resample('1 w')[tech_list].sum()
+    
+    # layout for all charts 
     fig,((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2,figsize=(15,8),
          constrained_layout=True)
     fig.suptitle('Data Camp Course Progress ' +
@@ -287,82 +351,36 @@ if __name__ == "__main__":
          style = 'italic', 
          fontsize = 14, 
          color = "green")
-    #fig.tight_layout(h_pad=15, w_pad=15)
+    
+    # chart #1 - Topics by XP
     ax1.barh(y=my_topic_xp.Topic,width=my_topic_xp.XP)
 
     ax1.set_ylabel("Topic")
     ax1.set_xlabel("XP")
     ax1.set_title("Topics by XP",size=14)
     plt.setp(ax1.get_xticklabels(), rotation=45, ha='right')
-
-    my_topic_xp.to_excel(writer, index=False, sheet_name='Topic XP')
-
-    course_list_scraped = sel.css(css_dict['course_list']).extract()
-    lang_raw=sel.xpath(xpath_dict['course_lang']).extract()
-    tech_list_scraped=just_words(lang_raw,is_amp,['0'])
-    urls_list_scraped=sel.css(css_dict['course_urls']).extract()
-    desc_list_scraped=[line.strip() for line in 
-                         sel.css(css_dict['course_descriptions']).extract()]
-
-    courses_scraped = pd.DataFrame(list(zip(tech_list_scraped,
-                                           course_list_scraped,
-                                           desc_list_scraped,
-                                           urls_list_scraped)), \
-                            columns =['Technology','Course_Name',
-                                      'Description','URL'])
     
-    courses_scraped.Technology = courses_scraped.Technology.str.title()
-    courses_scraped.Course_Name = courses_scraped.Course_Name.str.title()
-    courses_scraped['course_lower'] = courses_scraped.Course_Name.str.lower()\
-                                      .str.strip()
-    
-    # course_dummies = pd.get_dummies(courses_scraped.Technology)
-    course_counts= pd.concat([courses_scraped,
-                              pd.get_dummies(courses_scraped.Technology)],
-                                  axis=1,sort=False)
- 
-    # fix ... issue with course names in scraped data using fuzzy wuzzy
-    course_clean = fuzzy_merge(course_counts, certs_pdf, 'course_lower', 'course_lower', threshold=80)
-    course_clean['course_lower']=course_clean['matches']
-
-   # add cert data
-    courses_and_certs = pd.merge(course_clean, certs_pdf, how='left',
-                                 on='course_lower',sort=False)
-
-    # add more columns
-    courses_and_certs['date_completed'] = pd.to_datetime(courses_and_certs.date)
-    courses_and_certs['week'] = courses_and_certs['date_completed'].dt.week
-    courses_and_certs['month'] = courses_and_certs['date_completed'].dt.month
-    courses_and_certs['year'] = courses_and_certs['date_completed'].dt.year
-    courses_and_certs.set_index(courses_and_certs['date_completed'],inplace=True)
-    courses_scraped.groupby('Technology', as_index=False)['Course_Name'].count()
-    
-    #data prep for chart
-    tech_table = courses_scraped. \
-     groupby('Technology',as_index=False)['Course_Name']. \
-    count().rename(columns={"Course_Name":"Course_Count"})
-    
-    tech_table['Technology'] = tech_table.Technology.astype("category")
-    
-    tech_table.sort_values(by='Course_Count',ascending=True,inplace=True)
+    # chart #2 - DataCamp Courses by Technology
     tech_table.plot.barh('Technology', legend=False,ax=ax2)
     ax2.set_title("DataCamp Courses by Technology",size=14)
     ax2.set_ylabel('Courses')
     
-    lemmatizer = WordNetLemmatizer()
-    course_name_raw = list_ne(certs_pdf.course.values)
-    course_desc_raw = list_ne(courses_scraped.Description.values)
-    raw_data = '. ' .join(course_desc_raw) + '. '.join(course_name_raw) + ' R' *4
-    joined_course_text = lemmatizer.lemmatize(raw_data)
-
-    ## Generate the word cloud from the east_of_eden string
+    # chart #3 - Word Cloud of DataCamp Course Names
+    stop_words = ['Intermediate','Introduction','to','in','working','for','and'
+          ,'with','Data', 'Science','get','use','learn','Learning',
+          'writing','programming','everyone','the','toolbox','dealing',
+          'foundations','building','efficient','part','thinking','of',
+          'oriented','level','continue','master','postg','sas',
+          'consolidate','dive','create','imitate','discover','explore',
+          'school','case','exploratory','advanced']
     cloud_courses = WordCloud(background_color="white",
                               stopwords=stop_words).generate(joined_course_text)
     ax3.imshow(cloud_courses, interpolation='bilinear')
     ax3.axis("off")
     ax3.set_title("Word Cloud of DataCamp Course Names",size=14)
-    tech_list = courses_and_certs.columns[5:-9]
-    courses_and_certs.resample('1 w')[tech_list].sum().plot(ax=ax4)
+    
+    # chart #4 - DataCamp Course Completion by Technology
+    weekly_completion.plot(ax=ax4)
 
     ax4.set_title("DataCamp Course Completion by Technology")
     ax4.legend(loc='upper right', frameon=False)
