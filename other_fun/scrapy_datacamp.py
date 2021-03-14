@@ -4,8 +4,32 @@
 Created on Thu Apr 23 21:58:02 2020
 @author: Damien Clarke
 DataCamp Summary of Courses Tracks and Projects
-Sourced from html from profile page (my_profile.txt) and pdf certificates 
+Sourced from html from profile page (my_profile.txt) and pdf certificates
 stored in subdirectories (Courses, Skills, Career)
+
+scrapy_datacamp.py (this code)
+my_profile.txt (html source dumped to file)
+
+DataCamp --|
+           | -Courses- | 
+           |           | -Course Name- |
+           |                           | -certificate.pdf
+           | -Tracks- |
+           |          | -Skills      - |
+                                       | -Track Name- |
+           |                                          | -certificate.pdf  
+           |          | -Career-       | 
+                                       | -Track Name- |
+                                                      | -certificate.pdf             
+                                               
+
+
+Uses a range of Python knowledge gained from Data Camp Courses
+- Web page scraping
+- Natural Language Processing
+- Data Cleaning
+- Data Visualisation
+_ Excel Document creation
 """
 import pdftotext
 import os
@@ -16,7 +40,7 @@ import matplotlib.pyplot as plt
 import re
 #import spacy
 from wordcloud import WordCloud
-from nltk.stem import WordNetLemmatizer 
+from nltk.stem import WordNetLemmatizer
 import nltk
 
 from itertools import repeat
@@ -26,9 +50,17 @@ from fuzzywuzzy import process
 
 
 def extract_pdf_data(page_text,c_type,verbose=False):
+    """
+    Extract text from loaded PDF files
+
+    :param page_text:
+    :param c_type:
+    :param verbose:  (Default value = False)
+    :returns: dataframe with boths keys and matches
+    """
     page_lines = page_text.split('\n')
     ref=page_lines[0]
-        
+
     if len(page_lines) == 5:
         course = page_lines[2].replace(' Track','')
         date = page_lines[3]
@@ -38,43 +70,56 @@ def extract_pdf_data(page_text,c_type,verbose=False):
 
     if verbose == True:
         print(ref,course,date)
-    return ref,course,date
+    return ref, course, date
 
 def fuzzy_merge(df_1, df_2, key1, key2, threshold=90, limit=2):
     """
+    fuzzy matching by levestein distance of columns in dataframes
+    
+    sourced from
+    https://stackoverflow.com/questions/13636848/is-it-possible-to-do-fuzzy-match-merge-with-python-pandas
+
     :param df_1: the left table to join
     :param df_2: the right table to join
     :param key1: key column of the left table
     :param key2: key column of the right table
-    :param threshold: how close the matches should be to return a match, based on Levenshtein distance
-    :param limit: the amount of matches that will get returned, these are sorted high to low
-    :return: dataframe with boths keys and matches
+    :param threshold: how close the matches should be to return a match, based on Levenshtein distance (Default value = 90)
+    :param limit: the amount of matches that will get returned, these are sorted high to low (Default value = 2)
+    :returns: dataframe with boths keys and matches
+
     """
-    # https://stackoverflow.com/questions/13636848/is-it-possible-to-do-fuzzy-match-merge-with-python-pandas
     s = df_2[key2].tolist()
-    
-    m = df_1[key1].apply(lambda x: process.extract(x, s, limit=limit))    
+
+    m = df_1[key1].apply(lambda x: process.extract(x, s, limit=limit))
     df_1['matches'] = m
-    
+
     m2 = df_1['matches'].apply(lambda x: ', '.join([i[0] for i in x if i[1] >= threshold]))
     df_1['matches'] = m2
     m2_list  = df_1['matches'].tolist()
     df_1['matches'] = [x.split(', ')[0] for x in m2_list]
     return df_1
 
-def extract_pdf_courses(path_to_files, verbose=False):
+def extract_pdf_courses(pdf_path, verbose=False):
+    """
+    Load and extract data from pdf certificate files.
+
+    :param pdf_path: path to pdf files
+    :param verbose:  (Default value = False)
+    :returns: dataframe with course indata from certificates
+
+    """
     list_out=[]
     pdf_bad =[['So ware','Software'],['E cient','Efficient'],
               ['Air ow','Airflow'],['E ects','Effects'],['lea et','leaflet'],
                ['Classi cation','Classification'],['Classi iers','Classifiers']]
-    for (root,dirs,files) in os.walk(path_to_files):
+    for (root,dirs,files) in os.walk(pdf_path):
         if verbose == True:
             print(dirs,root)
-        dirs_list=dirs
-        for dir_name in dirs_list:
-            the_path=path_to_files +'/'+ dir_name
+        #dirs_list = dirs
+        for dir_name in dirs:
+            the_path = pdf_path +'/'+ dir_name
             for (root,dirs,files) in os.walk(the_path, topdown=True):
-                
+
                 if len(root.split('/')) >2:
                     course_or_track = root.split('/')[2]
                     if verbose == True:
@@ -100,23 +145,26 @@ def extract_pdf_courses(path_to_files, verbose=False):
     for _ in range(len(pdf_bad)):
         df['course'] = df.course.str.replace(pdf_bad[_][0],
                pdf_bad[_][1])
-                   
+
     df['course_lower'] = df.course.str.lower()
     return df
 
 
 def just_words(raw_html,func,non_extra=[]):
     """
-    Finds all words in html 
-    
+    Finds all words in html
+
     input:
         raw_html - list of strings returned from scrapy query
-        
-    returns:
-        list of strings without html text
+
+    :param raw_html:
+    :param func:
+    :param non_extra:  (Default value = [])
+    :returns: list of strings without html text
+
     """
 
-    non_words = ['block__main', 'class', 
+    non_words = ['block__main', 'class',
                  'dc', 'div', 'h4', 'mb',
                  'mt', 'p', 'track', 'u',
                  'course','block__technology','...'] + non_extra
@@ -131,16 +179,31 @@ def just_words(raw_html,func,non_extra=[]):
     return final_list
 
 def nothing(value):
+    """
+    Blank dummy function for just_words
+
+    :param value: data input for just_words
+
+    """
     return value
 
 def is_amp(f_value):
+    """
+
+    :param f_value:
+
+    """
     output=f_value
     if f_value=="amp":
-        output='&'   
+        output='&'
     return output
 
-def list_ne(sent_list,verbose=False): 
+def list_ne(sent_list,verbose=False):
     """Process list of course names for point of speech tags
+
+    :param sent_list:
+    :param verbose:  (Default value = False)
+
     """
     token_sentences = [nltk.word_tokenize(sent) for sent in sent_list]
     pos_sentences = [nltk.pos_tag(sent) for sent in token_sentences]
@@ -158,11 +221,18 @@ def list_ne(sent_list,verbose=False):
                 if verbose == True:
                     print(chunk)
                 ne_words = ' '.join(ne_line)
-                ne_list.append(ne_words)        
+                ne_list.append(ne_words)
     return ne_list
 
 
 def scrape_topics(sel,css_dict):
+    """
+    Extract topics data from webpage
+
+    :param sel: scrapy selector object
+    :param css_dict: css locator dictionary
+
+    """
     print('XP by topic')
     names = sel.css(css_dict['per_topic_names']).extract()
     data = sel.css(css_dict['per_topic_data']).extract()[:12]
@@ -173,19 +243,27 @@ def scrape_topics(sel,css_dict):
     topics = pd.DataFrame(list(zip(names,data)), \
                                columns =['Topic','XP'])
     topics.Topic =  topics.Topic.str.strip()
-    
+
     # make category
     topics.Topic = topics.Topic.astype("category")
     topics.sort_values(by='XP',ascending=True,inplace=True)
     return topics
 
 def scrape_courses(sel,css_dict,certs_pdf):
+    """
+    Extract course data from webpage
+
+    :param sel: scrapy selector object
+    :param css_dict: css locator dictionary
+    :param certs_pdf:
+
+    """
     # all charts
     course_list_scraped = sel.css(css_dict['course_list']).extract()
     lang_raw=sel.xpath(xpath_dict['course_lang']).extract()
     tech_list_scraped=just_words(lang_raw,is_amp,['0'])
     urls_list_scraped=sel.css(css_dict['course_urls']).extract()
-    desc_list_scraped=[line.strip() for line in 
+    desc_list_scraped=[line.strip() for line in
                          sel.css(css_dict['course_descriptions']).extract()]
 
     courses_scraped = pd.DataFrame(list(zip(tech_list_scraped,
@@ -194,7 +272,7 @@ def scrape_courses(sel,css_dict,certs_pdf):
                                            urls_list_scraped)), \
                             columns =['Technology','Course_Name',
                                       'Description','URL'])
-    
+
     courses_scraped.Technology = courses_scraped.Technology.str.title()
     courses_scraped.Course_Name = courses_scraped.Course_Name.str.title()
     courses_scraped['course_lower'] = courses_scraped.Course_Name.str.lower()\
@@ -203,14 +281,21 @@ def scrape_courses(sel,css_dict,certs_pdf):
     # fix ... issue with course names in scraped data using fuzzy wuzzy
     course_clean = fuzzy_merge(courses_scraped, certs_pdf, 'course_lower', 'course_lower', threshold=80)
     course_clean['course_lower']=course_clean['matches']
-    
+
     # course_dummies = pd.get_dummies(courses_scraped.Technology)
     course_counts= pd.concat([course_clean,
                               pd.get_dummies(course_clean.Technology)],
                                   axis=1,sort=False)
     return course_counts
 
-def cert_courses(course_counts,certs_pdf):    
+def cert_courses(course_counts,certs_pdf):
+    """
+    Merges certificate data for the webpage
+
+    :param sel: scrapy selector object
+    :param css_dict: css locator dictionary
+
+    """
 
    # add cert data
     courses = pd.merge(course_counts, certs_pdf, how='left',
@@ -222,6 +307,13 @@ def cert_courses(course_counts,certs_pdf):
     return courses
 
 def scrape_summary(sel,css_dict):
+    """
+    Extract summary data from webpage
+
+    :param sel: scrapy selector object
+    :param css_dict: css locator dictionary
+
+    """
     the_title = sel.css(css_dict['titles_text']).extract_first()
 
     dc_counts = sel.css(css_dict['dc_counts']).extract()
@@ -231,6 +323,15 @@ def scrape_summary(sel,css_dict):
 
 
 def scrape_tracks(sel,css_dict,pdf_certs):
+    """
+    Extract track data for the webpage
+
+    :param sel: scrapy selector object
+    :param css_dict: css locator dictionary
+    :param pdf_certs: processed pdf certificate dataframe
+    
+
+    """
     print("Skill Tracks")
     track_names = sel.css(css_dict['track_names']).extract()
 
@@ -241,21 +342,36 @@ def scrape_tracks(sel,css_dict,pdf_certs):
                             replace('\n ','').\
                             str.strip()
     # add cert data
-    df = pd.DataFrame.merge(wp_tracks, pdf_certs, how='left', 
-                                        left_on='Skill_Track', right_on='course', 
+    df = pd.DataFrame.merge(wp_tracks, pdf_certs, how='left',
+                                        left_on='Skill_Track', right_on='course',
                                         sort=False, suffixes=('_x', '_y'))
     return df
 
 def scrape_projects(sel,css_dict):
-    print("Projects") 
+    """
+    Extract projects data from webpage
+
+    :param sel: scrapy selector object
+    :param css_dict: css locator dictionary
+
+    """
+    print("Projects")
     names = sel.css(css_dict['project_names']).extract()
     urls = sel.css(css_dict['project_urls']).extract()
     df = pd.DataFrame(list(zip(names,urls)), columns =['Project','URL']).\
                                    reset_index(drop=True)
-                                 
+
     return df
 
 def lang_worksheets(df,wb,verbose=False):
+    """
+    Append workseet to workbook object
+
+    :param df: tabular data 
+    :param wb: workbook object
+    :param verbose:  (Default value = False)
+
+    """
     tech = df.Technology.unique()
     if verbose == True:
         print(tech)
@@ -264,15 +380,22 @@ def lang_worksheets(df,wb,verbose=False):
     df.reset_index(drop=True,inplace=True)
 
     df.to_excel(wb, index=False, sheet_name=str(tech[0]))
-    
-def process_wordcloud(courses_scraped):
+
+def process_wordcloud(courses_scraped, certs_pdf):
+    """
+    Create data source for wordcloud using natural language processing 
+
+    :param courses_scraped: 
+    :param certs_pdf:
+
+    """
 
     lemmatizer = WordNetLemmatizer()
     course_name_raw = list_ne(certs_pdf.course.values)
     course_desc_raw = list_ne(courses_scraped.Description.values)
     raw_data = '. ' .join(course_desc_raw) + '. '.join(course_name_raw) + ' R' *4
     joined_course_text = lemmatizer.lemmatize(raw_data)
-    
+
     return joined_course_text
 
 
@@ -292,11 +415,11 @@ if __name__ == "__main__":
     'shell_course_desc': "div.course-block__technology--shell + div.course-block__body h4.course-block__title + p.course-block__description::text",
     'theory_course_names': "div.course-block__technology--theory + div.course-block__body h4.course-block__title::text",
     'theory_course_desc': "div.course-block__technology--theory + div.course-block__body h4.course-block__title + p.course-block__description::text",
-    'dc_counts': 'strong.dc-u-m-none::text', 
+    'dc_counts': 'strong.dc-u-m-none::text',
     'course_list': 'h4.course-block__title::text',
     'course_urls': 'a.course-block__link::attr(href)',
     'course_descriptions': 'p.course-block__description::text',
-    'per_topic_names': 'h4.dc-u-mb-4::text', 
+    'per_topic_names': 'h4.dc-u-mb-4::text',
     'per_topic_data':  'p.dc-u-mt-0::text',
     'track_names': 'div.track-block__main',
     'other_track': 'span.dc-dropdown--nav__track-name::text',
@@ -328,30 +451,30 @@ if __name__ == "__main__":
     tech_table = courses_scraped. \
      groupby('Technology',as_index=False)['Course_Name']. \
     count().rename(columns={"Course_Name":"Course_Count"})
-    
+
     tech_table['Technology'] = tech_table.Technology.astype("category")
-    
+
     tech_table.sort_values(by='Course_Count',ascending=True,inplace=True)
     my_topic_xp.to_excel(writer, index=False, sheet_name='Topic XP')
-        
+
     # data for chart #3 Word Cloud of DataCamp Course Names
-    joined_course_text = process_wordcloud(courses_scraped)
+    joined_course_text = process_wordcloud(courses_scraped, certs_pdf)
     # data for chart #4 - DataCamp Course Completion by Technology
     tech_list = courses_and_certs.columns[5:-7]
     weekly_completion = courses_and_certs.resample('1 w')[tech_list].sum()
-    
-    # layout for all charts 
+
+    # layout for all charts
     fig,((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2,figsize=(15,8),
          constrained_layout=True)
     fig.suptitle('Data Camp Course Progress ' +
                  datetime.strftime(datetime.today(),format='%d/%m/%Y'),
                  fontsize=24)
-    fig.text(0, 0,  
-         'See the source code: https://https://github.com/gisisfun/map_polygons/blob/master/other_fun/scrapy_datacamp.py',  
-         style = 'italic', 
-         fontsize = 14, 
+    fig.text(0, 0,
+         'See the source code: https://https://github.com/gisisfun/map_polygons/blob/master/other_fun/scrapy_datacamp.py',
+         style = 'italic',
+         fontsize = 14,
          color = "green")
-    
+
     # chart #1 - Topics by XP
     ax1.barh(y=my_topic_xp.Topic,width=my_topic_xp.XP)
 
@@ -359,12 +482,12 @@ if __name__ == "__main__":
     ax1.set_xlabel("XP")
     ax1.set_title("Topics by XP",size=14)
     plt.setp(ax1.get_xticklabels(), rotation=45, ha='right')
-    
+
     # chart #2 - DataCamp Courses by Technology
     tech_table.plot.barh('Technology', legend=False,ax=ax2)
     ax2.set_title("DataCamp Courses by Technology",size=14)
     ax2.set_ylabel('Courses')
-    
+
     # chart #3 - Word Cloud of DataCamp Course Names
     stop_words = ['Intermediate','Introduction','to','in','working','for','and'
           ,'with','Data', 'Science','get','use','learn','Learning',
@@ -378,7 +501,7 @@ if __name__ == "__main__":
     ax3.imshow(cloud_courses, interpolation='bilinear')
     ax3.axis("off")
     ax3.set_title("Word Cloud of DataCamp Course Names",size=14)
-    
+
     # chart #4 - DataCamp Course Completion by Technology
     weekly_completion.plot(ax=ax4)
 
@@ -389,7 +512,7 @@ if __name__ == "__main__":
 
     print('Tech Table')
     print(tech_table)
-    
+
     print("Courses and Certs")
     courses_and_certs.groupby('Technology')[['ref','Course_Name',
                              'date','Description', 'Technology']].apply(lang_worksheets,
@@ -405,4 +528,3 @@ if __name__ == "__main__":
     print(my_projects.Project)
     my_projects.to_excel(writer, sheet_name='Projects')
     writer.close()
-    
