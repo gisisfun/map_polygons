@@ -14,13 +14,13 @@ DataCamp --|
            | -Courses- | 
            |           | -Course Name- |
            |                           | -certificate.pdf
-           | -Tracks- |
-           |          | -Skills      - |
+           | -Tracks-  |
+           |           | -Skills      -|
                                        | -Track Name- |
            |                                          | -certificate.pdf  
-           |          | -Career-       | 
+           |           | -Career-      | 
                                        | -Track Name- |
-                                                      | -certificate.pdf             
+           |                                          | -certificate.pdf             
                                                
 
 
