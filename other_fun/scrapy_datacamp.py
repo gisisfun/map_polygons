@@ -403,34 +403,18 @@ if __name__ == "__main__":
 
     # profile page css definitions
     xpath_dict ={'course_lang': '//div[contains(@class,"course-block__technology course-block__technology--")]'}
-    css_dict ={ 'python_course_names': "div.course-block__technology--python + div.course-block__body h4.course-block__title::text",
-    'python_course_desc': "div.course-block__technology--python + div.course-block__body h4.course-block__title + p.course-block__description::text",
-    'r_course_names': "div.course-block__technology--r + div.course-block__body h4.course-block__title::text",
-    'r_course_desc': "div.course-block__technology--r + div.course-block__body h4.course-block__title + p.course-block__description::text",
-    'sql_course_names': "div.course-block__technology--sql + div.course-block__body h4.course-block__title::text",
-    'sql_course_desc': "div.course-block__technology--sql + div.course-block__body h4.course-block__title + p.course-block__description::text",
-    'scala_course_names': "div.course-block__technology--scala + div.course-block__body h4.course-block__title::text",
-    'scala_course_desc': "div.course-block__technology--scala + div.course-block__body h4.course-block__title + p.course-block__description::text",
-    'shell_course_names': "div.course-block__technology--shell + div.course-block__body h4.course-block__title::text",
-    'shell_course_desc': "div.course-block__technology--shell + div.course-block__body h4.course-block__title + p.course-block__description::text",
-    'theory_course_names': "div.course-block__technology--theory + div.course-block__body h4.course-block__title::text",
-    'theory_course_desc': "div.course-block__technology--theory + div.course-block__body h4.course-block__title + p.course-block__description::text",
-    'dc_counts': 'strong.dc-u-m-none::text',
-    'course_list': 'h4.course-block__title::text',
-    'course_urls': 'a.course-block__link::attr(href)',
-    'course_descriptions': 'p.course-block__description::text',
-    'per_topic_names': 'h4.dc-u-mb-4::text',
+    css_dict ={'dc_counts': '.dc-u-m-none::text',
+    'course_list': '.course-block__title::text',
+    'course_urls': '.course-block__link::attr(href)',
+    'course_descriptions': '.course-block__description::text',
+    'per_topic_names': '.dc-u-mb-4::text',
     'per_topic_data':  'p.dc-u-mt-0::text',
-    'track_names': 'div.track-block__main',
-    'other_track': 'span.dc-dropdown--nav__track-name::text',
+    'track_names': '.track-block__main',
     'topic_urls': 'section.profile-topics a.shim::attr(href)',
     'track_urls': 'section.profile-tracks a.shim::attr(href)',
-    'track_comp': 'div div h5::text',
-    'urls': 'a::attr(href)',
     'titles_text': 'title::text',
     'project_urls': 'section.profile-courses a.shim::attr(href)',
-    'project_names': 'section.profile-courses h5.dc-project-block__title::text'}
-
+    'project_names': '.dc-project-block__title::text'}
 
     profile_page = open('my_profile.txt','r')
 
@@ -443,6 +427,9 @@ if __name__ == "__main__":
 
     # scrape web page for content for chart #1 - topics
     my_topic_xp = scrape_topics(sel,css_dict)
+    
+    my_topic_xp.to_excel(writer, index=False, sheet_name='Topic XP')
+    
     certs_pdf = extract_pdf_courses('Datacamp')
     courses_scraped = scrape_courses(sel,css_dict,certs_pdf)
     courses_and_certs = cert_courses(courses_scraped,certs_pdf)
@@ -455,7 +442,9 @@ if __name__ == "__main__":
     tech_table['Technology'] = tech_table.Technology.astype("category")
 
     tech_table.sort_values(by='Course_Count',ascending=True,inplace=True)
-    my_topic_xp.to_excel(writer, index=False, sheet_name='Topic XP')
+    
+    tech_table.to_excel(writer, index=False, sheet_name='Tech Counts')
+
 
     # data for chart #3 Word Cloud of DataCamp Course Names
     joined_course_text = process_wordcloud(courses_scraped, certs_pdf)
