@@ -36,6 +36,7 @@ pdf_paths <- function() {
                              recursive = TRUE,pattern = "certificate.pdf$")
    #pdf_text(fred[1]) %>% str_split('\n')
   map(course_files,pdf_read)
+  map_chr(bbb,~ as.character(.x)) %>% str_split('"')
 }
 
 scrape_xpath_list <- function(html,x_path){
