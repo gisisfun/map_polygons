@@ -12,6 +12,7 @@ library(stringr)
 #
 #library(pdftools)
 
+
 # Verbose regular expressions
 # library(rebus)  
 
@@ -22,15 +23,19 @@ library(stringr)
 # string matching
 #library(fuzzywuzzyR)
 
+pdf_read <- function(url) {
+  pdf_text(url) %>% str_split('\n') 
+}
 
-read_pdfs <- function(){
+pdf_paths <- function() {
   course_files <- list.files('Datacamp/Courses', full.names = TRUE, 
                              recursive = TRUE,pattern = "certificate.pdf$")
   skill_files <- list.files('Datacamp/Tracks/Skill', full.names = TRUE, 
                             recursive = TRUE,pattern = "certificate.pdf$")
   career_files <- list.files('Datacamp/Tracks/Career', full.names = TRUE,
                              recursive = TRUE,pattern = "certificate.pdf$")
-  
+   #pdf_text(fred[1]) %>% str_split('\n')
+  map(course_files,pdf_read)
 }
 
 scrape_xpath_list <- function(html,x_path){
