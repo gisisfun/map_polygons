@@ -9,6 +9,9 @@ library(purrr)
 # String manipulation
 library(stringr)   
 
+#
+#library(pdftools)
+
 # Verbose regular expressions
 # library(rebus)  
 
