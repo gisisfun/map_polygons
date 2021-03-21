@@ -13,12 +13,22 @@ library(stringr)
 # library(rebus)  
 
 
-
 # Eases DateTime manipulation
 #library(lubridate)
 
 # string matching
 #library(fuzzywuzzyR)
+
+
+read_pdfs <- function(){
+  course_files <- list.files('DataCamp/Courses', full.names = TRUE, 
+                             recursive = TRUE,pattern = "certificate.pdf$")
+  skill_files <- list.files('DataCamp/Tracks/Skill', full.names = TRUE, 
+                            recursive = TRUE,pattern = "certificate.pdf$")
+  career_files <- list.files('DataCamp/Tracks/Career', full.names = TRUE,
+                             recursive = TRUE,pattern = "certificate.pdf$")
+  
+}
 
 scrape_xpath_list <- function(html,x_path){
   text_out <- html %>% 
@@ -75,5 +85,6 @@ fred2$Technology <- str_sub(fred2$Technology, end=-9)
 
 # html_nodes_text <- compose(html_text,html_nodes)
 # print(html %% html_nodes_text(css_list[['dc_counts']]))
+
 
 
