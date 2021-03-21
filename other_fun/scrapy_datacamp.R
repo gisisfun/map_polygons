@@ -21,11 +21,11 @@ library(stringr)
 
 
 read_pdfs <- function(){
-  course_files <- list.files('DataCamp/Courses', full.names = TRUE, 
+  course_files <- list.files('Datacamp/Courses', full.names = TRUE, 
                              recursive = TRUE,pattern = "certificate.pdf$")
-  skill_files <- list.files('DataCamp/Tracks/Skill', full.names = TRUE, 
+  skill_files <- list.files('Datacamp/Tracks/Skill', full.names = TRUE, 
                             recursive = TRUE,pattern = "certificate.pdf$")
-  career_files <- list.files('DataCamp/Tracks/Career', full.names = TRUE,
+  career_files <- list.files('Datacamp/Tracks/Career', full.names = TRUE,
                              recursive = TRUE,pattern = "certificate.pdf$")
   
 }
