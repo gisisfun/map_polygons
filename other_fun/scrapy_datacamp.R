@@ -74,7 +74,14 @@ pdf_paths <- function() {
  courses <- raw_df(course_files,'Course')
  skill <- raw_df(course_files,'Skill')
  career <- raw_df(course_files,'Career')
- out <- rbind(courses,skill,career)
+ out <- rbind(courses,skill,career) %>% 
+mutate(course = str_replace(course,'So ware','Software')) %>% 
+mutate(course = str_replace(course,'E cient','Efficient')) %>% 
+mutate(course = str_replace(course,'Air ow','Airflow')) %>% 
+mutate(course = str_replace(course,'E ects','Effects')) %>% 
+mutate(course = str_replace(course,'lea et','leaflet'))%>%
+mutate(course = str_replace(course,'Classi cation','Classification'))%>%
+mutate(course = str_replace(course,'Classi iers','Classifiers'))
 }
 
 scrape_xpath_list <- function(html,x_path){
@@ -197,10 +204,14 @@ html <- read_html('my_profile.txt')
 print(scrape_summary(html,css_list))
 fred2 <-  scrape_courses(html,css_list,xpath_list) 
 fred2$Technology <- str_sub(fred2$Technology, end=-9) 
-fred3 <- pdf_paths()
+fred3 <- pdf_paths() 
+
 names(fred3)
+
+fred4 <- fred3 %>% mutate(course = str_replace(course,'E cient','Efficient'))
 # html_nodes_text <- compose(html_text,html_nodes)
 # print(html %% html_nodes_text(css_list[['dc_counts']]))
 #fred3 %>% mutate(course = ifelse(extra == "",paste(course),paste(course,date,sep=" "))) %>% mutate(date = ifelse(extra == "",paste(date),paste(extra))) %>% select(-extra) %>% mutate(Type = 'Course')
+
 
 
