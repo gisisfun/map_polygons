@@ -43,7 +43,8 @@ library(pdftools)
 #library(lubridate)
 
 # string matching
-#library(fuzzywuzzyR)
+#library(fuzzyjoin)
+
 
 pdf_read <- function(url) {
   pdf_text(url) %>% str_split('\n') 
@@ -202,16 +203,19 @@ css_list[['dc_counts']]
 html <- read_html('my_profile.txt')
 
 print(scrape_summary(html,css_list))
-fred2 <-  scrape_courses(html,css_list,xpath_list) 
-fred2$Technology <- str_sub(fred2$Technology, end=-9) 
-fred3 <- pdf_paths() 
+courses <-  scrape_courses(html,css_list,xpath_list) 
+courses$Technology <- str_sub(fred2$Technology, end=-9) 
+certs <- pdf_paths() 
 
-names(fred3)
+names(certs)
 
 fred4 <- fred3 %>% mutate(course = str_replace(course,'E cient','Efficient'))
 # html_nodes_text <- compose(html_text,html_nodes)
 # print(html %% html_nodes_text(css_list[['dc_counts']]))
-#fred3 %>% mutate(course = ifelse(extra == "",paste(course),paste(course,date,sep=" "))) %>% mutate(date = ifelse(extra == "",paste(date),paste(extra))) %>% select(-extra) %>% mutate(Type = 'Course')
+
+courses %>%
+  stringdist_left_join(certs,method="jaccard", by = c(a = "b"),distance_col="distance") %>% 
+  filter(distance < 0.4)
 
 
 
