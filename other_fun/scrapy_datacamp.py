@@ -10,7 +10,7 @@ stored in subdirectories (Courses, Skills, Career)
 scrapy_datacamp.py (this code)
 my_profile.txt (html source dumped to file)
 
-DataCamp --|
+Datacamp --|
            | -Courses- | 
            |           | -Course Name- |
            |                           | -certificate.pdf
@@ -30,6 +30,9 @@ Uses a range of Python knowledge gained from Data Camp Courses
 - Data Cleaning
 - Data Visualisation
 _ Excel Document creation
+
+and a new R version of the code under development
+https://github.com/gisisfun/map_polygons/blob/master/other_fun/scrapy_datacamp.R
 """
 import pdftotext
 import os
