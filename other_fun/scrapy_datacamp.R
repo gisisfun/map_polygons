@@ -22,6 +22,8 @@ library(stringr)
 #
 library(pdftools)
 
+#
+library(caret)
 
 # Verbose regular expressions
 # library(rebus)  
@@ -140,6 +142,11 @@ courses_and_certs<- function(courses,certs) {
   courses_match <- courses[!three_dots,]
   courses_join_match <- courses_match %>%
     merge(course_certs,by.x='Course_Name', by.y='course') %>% bind_rows(courses_fuzzy_trunc)
+  
+  dummy <- dummyVars(" ~ Technology", data=courses_join_match)
+  
+  dummy_df <- courses_join_match %>% 
+    bind_cols(data.frame(predict(dummy, newdata = courses_join_match)))
 }
 
  
@@ -155,23 +162,20 @@ css_list[['dc_counts']]
 html <- read_html('my_profile.txt')
 print(scrape_summary(html,css_list))
 
-print(scrape_summary(html,css_list))
 courses <-  scrape_courses(html,css_list,xpath_list) 
-#courses$Technology <- str_sub(fred2$Technology, end=-9)
-courses$Technology <- str_sub(fred2$Technology, end=-9) 
+courses['Technology'] <- str_sub(courses$Technology, end=-9) 
+courses['Technology'] <- str_replace(courses$Technology,'<div class="course-block__technology course-block__technology--','')
 
 certs <- pdf_paths() 
 
 names(certs)
 
-# html_nodes_text <- compose(html_text,html_nodes)
-# print(html %% html_nodes_text(css_list[['dc_counts']]))
-
-#stringdist_inner_join(certs,method="jaccard", by = c(Course_Name = "course"),distance_col="distance")
-# filter(distance>0.04,distance < 0.0905) %>%
 
 
-print(courses_and_certs(courses,certs))
+courses_data <- courses_and_certs(courses,certs)
+
+
+
 
 
 
