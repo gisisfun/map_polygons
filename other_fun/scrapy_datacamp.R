@@ -43,14 +43,13 @@ library(pdftools)
 #library(lubridate)
 
 # string matching
-#library(fuzzyjoin)
-
+library(fuzzyjoin)
 
 pdf_read <- function(url) {
-  pdf_text(url) %>% str_split('\n') 
+   pdf_text(url) %>% str_split('\n') 
 }
 
-raw_df <-  function(raw_list,label) {
+raw_df <-  function(raw_list,type_label) {
   raw_pdf <- map(raw_list,pdf_read)
   lines <- map_chr(raw_pdf,~ as.character(.x)) %>% str_split('"') 
   line1 <- lines %>% map(~.x[2]) %>% unlist()
@@ -59,10 +58,10 @@ raw_df <-  function(raw_list,label) {
   line4 <- lines %>% map(~.x[8]) %>% unlist()
   line5 <- lines %>% map(~.x[10]) %>% unlist()
 
-  processed <- data.frame(cert_no = line1,course = line3, date = line4, extra = line5) %>%
+  processed <- data.frame(path = raw_list,cert_no = line1,course = line3, date = line4, extra = line5) %>%
       mutate(course = ifelse(extra == "",paste(course),paste(course,date,sep=" "))) %>%
       mutate(date = ifelse(extra == "",paste(date),paste(extra))) %>%
-      select(-extra) %>% mutate(Type = label)
+      select(-extra) %>% mutate(Type = type_label)
 }
 
 pdf_paths <- function() {
@@ -73,16 +72,16 @@ pdf_paths <- function() {
   career_files <- list.files('Datacamp/Tracks/Career', full.names = TRUE,
                              recursive = TRUE,pattern = "certificate.pdf$")
  courses <- raw_df(course_files,'Course')
- skill <- raw_df(course_files,'Skill')
- career <- raw_df(course_files,'Career')
- out <- rbind(courses,skill,career) %>% 
+ skill <- raw_df(skill_files,'Skill')
+ career <- raw_df(career_files,'Career')
+ rbind(courses,skill,career) %>% 
 mutate(course = str_replace(course,'So ware','Software')) %>% 
 mutate(course = str_replace(course,'E cient','Efficient')) %>% 
 mutate(course = str_replace(course,'Air ow','Airflow')) %>% 
 mutate(course = str_replace(course,'E ects','Effects')) %>% 
 mutate(course = str_replace(course,'lea et','leaflet'))%>%
 mutate(course = str_replace(course,'Classi cation','Classification'))%>%
-mutate(course = str_replace(course,'Classi iers','Classifiers'))
+mutate(course = str_replace(course,'Classi ers','Classifiers'))
 }
 
 scrape_xpath_list <- function(html,x_path){
@@ -117,7 +116,7 @@ scrape_summary <- function(html,css_list){
 }
 
 scrape_courses <- function(html,css_list,xpath_list){
-  lang <-  scrape_xpath_list(html,xpath_list[['course_lang']])  %>% str_replace('<div class=\"course-block__technology course-block__technology--','') 
+  lang <-  scrape_xpath_list(html,xpath_list[['course_lang']])#  %>% str_replace('<div class=\"course-block__technology course-block__technology--','') 
   course_vec <- scrape_css_list(html,css_list[['course_list']]) 
   urls <- scrape_css_attr(html,css_list[['course_urls']]) 
   desc <- scrape_css_list(html,css_list[['course_descriptions']]) %>% str_replace('\n','') %>% str_trim()
@@ -209,13 +208,26 @@ certs <- pdf_paths()
 
 names(certs)
 
-fred4 <- fred3 %>% mutate(course = str_replace(course,'E cient','Efficient'))
 # html_nodes_text <- compose(html_text,html_nodes)
 # print(html %% html_nodes_text(css_list[['dc_counts']]))
 
-courses %>%
-  stringdist_left_join(certs,method="jaccard", by = c(a = "b"),distance_col="distance") %>% 
-  filter(distance < 0.4)
+#stringdist_inner_join(certs,method="jaccard", by = c(Course_Name = "course"),distance_col="distance")
+# filter(distance>0.04,distance < 0.0905) %>%
+course_certs <- filter(certs,Type=="Course") %>% mutate(Type=Type)
+
+three_dots <- str_detect(courses$Course_Name,'\\.\\.')
+
+courses_trunc <- courses[three_dots,]
+
+courses_fuzzy_trunc <- courses_trunc %>%
+  stringdist_left_join(course_certs,method="jaccard", max_dist = 0.2,by = c(Course_Name = "course"),distance_col="distance") %>% 
+   select(-distance) %>% mutate(Course_Name=course) %>% 
+  select(Course_Name,Technology,Description,URL,path,cert_no,date,Type,-course)
+
+courses_match <- courses[!three_dots,]
+courses_join_match <- courses_match %>%
+  merge(course_certs,by.x='Course_Name', by.y='course') %>% bind_rows(courses_fuzzy_trunc)
+
 
 
 
