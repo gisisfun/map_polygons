@@ -204,9 +204,11 @@ time_data$date = as.Date(rownames(time_data))
 chart_data <- gather(time_data, values=c(r,python,excel,git,power_bi,theory,
                            tableau,sql,spreadsheets,shell,scala) )
 
-ggplot(chart_data,aes(x=date,y=value,color=key)) + geom_line()
+ggplot(chart_data,aes(x=date,y=value,color=key)) + geom_line() +
+  labs(title = "Data Camp Course Progress", 
+       caption = "Source: https://github.com/gisisfun/map_polygons/blob/master/other_fun/scrapy_datacamp.R")
 
-
+ggsave('R_plot.png')
 
 
 # b <- period.apply(time_data[,c("python")], INDEX = ep, FUN = sum)
