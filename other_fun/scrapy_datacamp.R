@@ -43,8 +43,10 @@ library(caret)
 
 # Eases DateTime manipulation
 #library(lubridate)
+#or
+library(xts)
 
-# string matching
+# fuzzy string matching
 library(fuzzyjoin)
 
 pdf_read <- function(url) {
@@ -149,7 +151,12 @@ courses_and_certs<- function(courses,certs) {
     bind_cols(data.frame(predict(dummy, newdata = courses_join_match)))
 }
 
- 
+time_series <- function(courses_certs) {
+  date_prep <- courses_certs %>% select(starts_with("Technology"),-Technology)
+  names(date_prep) <- gsub(x = names(date_prep), pattern = "Technology", replacement = "") 
+  time_data <- xts(date_prep,order.by = as.Date(courses_certs$date, "%b %d, %Y"))
+}
+
 
 
 xpath_list= list(course_lang =  '//div[contains(@class,"course-block__technology course-block__technology--")]')
@@ -170,13 +177,9 @@ certs <- pdf_paths()
 
 names(certs)
 
+courses_certs <- courses_and_certs(courses,certs)
 
-
-courses_data <- courses_and_certs(courses,certs)
-
-
-
-
+time_data <- time_series(courses_certs)
 
 
 
