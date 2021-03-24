@@ -25,6 +25,8 @@ library(pdftools)
 #
 library(caret)
 
+library(dplyr)
+
 # Verbose regular expressions
 # library(rebus)  
 
@@ -40,6 +42,7 @@ library(caret)
 # Verbose regular expressions
 # library(rebus)  
 
+libray(ggplot2)
 
 # Eases DateTime manipulation
 #library(lubridate)
@@ -152,9 +155,18 @@ courses_and_certs<- function(courses,certs) {
 }
 
 time_series <- function(courses_certs) {
-  date_prep <- courses_certs %>% select(starts_with("Technology"),-Technology)
+  date_prep <- courses_certs %>% select(starts_with("Technology"),-Technology) 
+  %>% mutateif(as.numeric())
   names(date_prep) <- gsub(x = names(date_prep), pattern = "Technology", replacement = "") 
-  time_data <- xts(date_prep,order.by = as.Date(courses_certs$date, "%b %d, %Y"))
+  time_raw <- xts(date_prep,order.by = as.Date(courses_certs$date, "%b %d, %Y"))
+  
+  ep <- endpoints(time_raw, on = "weeks")
+  
+  sum_cols <- map(names(time_raw),~ period.apply(time_raw[,c(.x)], INDEX = ep, FUN = sum))
+  
+  time_data <- data.frame(sum_cols[[1]],sum_cols[[2]],sum_cols[[3]],sum_cols[[4]],sum_cols[[5]],
+                  sum_cols[[6]],sum_cols[[7]],sum_cols[[8]],sum_cols[[9]],sum_cols[[10]],
+                  sum_cols[[11]])
 }
 
 
@@ -179,7 +191,28 @@ names(certs)
 
 courses_certs <- courses_and_certs(courses,certs)
 
-time_data <- time_series(courses_certs)
+c <- time_series(courses_certs)
+ep <- endpoints(c, on = "weeks")
+
+sum_cols <- map(names(c),~ period.apply(c[,c(.x)], INDEX = ep, FUN = sum))
+
+time_data <- data.frame(sum_cols[[1]],sum_cols[[2]],sum_cols[[3]],sum_cols[[4]],sum_cols[[5]],
+                        sum_cols[[6]],sum_cols[[7]],sum_cols[[8]],sum_cols[[9]],sum_cols[[10]],
+                        sum_cols[[11]])
+time_data$date = as.Date(rownames(time_data))
+
+chart_data <- gather(time_data, values=c(r,python,excel,git,power_bi,theory,
+                           tableau,sql,spreadsheets,shell,scala) )
+
+ggplot(chart_data,aes(x=date,y=value,color=key)) + geom_line()
+
+
+
+
+# b <- period.apply(time_data[,c("python")], INDEX = ep, FUN = sum)
+# b <- period.apply(time_data[,c("python")], INDEX = ep, FUN = sum)
+# cbind(a,b)
+
 
 
 
