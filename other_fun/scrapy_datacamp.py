@@ -462,7 +462,7 @@ if __name__ == "__main__":
          'See the source code: https://https://github.com/gisisfun/map_polygons/blob/master/other_fun/scrapy_datacamp.py',
          style = 'italic',
          fontsize = 14,
-         color = "green")
+         color = "black")
 
     # chart #1 - Topics by XP
     ax1.barh(y=my_topic_xp.Topic,width=my_topic_xp.XP)
@@ -484,7 +484,8 @@ if __name__ == "__main__":
           'foundations','building','efficient','part','thinking','of',
           'oriented','level','continue','master','postg','sas',
           'consolidate','dive','create','imitate','discover','explore',
-          'school','case','exploratory','advanced']
+          'school','case','exploratory','advanced','Python','SQL','Machine',
+          'Deep']
     cloud_courses = WordCloud(background_color="white",
                               stopwords=stop_words).generate(joined_course_text)
     ax3.imshow(cloud_courses, interpolation='bilinear')
@@ -496,6 +497,8 @@ if __name__ == "__main__":
 
     ax4.set_title("DataCamp Course Completion by Technology")
     ax4.legend(loc='upper right', frameon=False)
+    ax4.set_ylabel("Cumulative Course Count")
+    ax4.set_xlabel("Time (One Week interval)")
     fig.savefig('DataCamp ' + datetime.isoformat(datetime.today())[:10]+'.png',bbox_inches="tight")
     fig.show()
 
