@@ -10,7 +10,7 @@ stored in subdirectories (Courses, Skills, Career)
 scrapy_datacamp.py (this code)
 my_profile.txt (html source dumped to file)
 
-Datacamp --|
+DataCamp --|
            | -Courses- | 
            |           | -Course Name- |
            |                           | -certificate.pdf
@@ -30,9 +30,6 @@ Uses a range of Python knowledge gained from Data Camp Courses
 - Data Cleaning
 - Data Visualisation
 _ Excel Document creation
-
-and a new R version of the code under development
-https://github.com/gisisfun/map_polygons/blob/master/other_fun/scrapy_datacamp.R
 """
 import pdftotext
 import os
@@ -495,7 +492,7 @@ if __name__ == "__main__":
     ax3.set_title("Word Cloud of DataCamp Course Names",size=14)
 
     # chart #4 - DataCamp Course Completion by Technology
-    weekly_completion.plot(ax=ax4)
+    weekly_completion.cumsum().plot(ax=ax4)
 
     ax4.set_title("DataCamp Course Completion by Technology")
     ax4.legend(loc='upper right', frameon=False)
