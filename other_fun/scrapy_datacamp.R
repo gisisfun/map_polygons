@@ -215,9 +215,9 @@ names(certs)
 
 courses_certs <- courses_and_certs(courses,certs)
 
-raw_xts <- time_series(courses_certs)
-cumsum_xts <- cumsum(raw_xts)
-twoweeks_ep <- endpoints(cumsum_xts, on = "weeks")
+daily_xts <- time_series(courses_certs)
+daily_cumsum_xts <- cumsum(daily_xts)
+twoweeks_ep <- endpoints(daily_cumsum_xts, on = "weeks")
 
 twoweeks_xts <- cumsum_xts[twoweeks_ep]
 
