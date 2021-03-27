@@ -229,9 +229,18 @@ chart_data <- gather(sum_cols_df, values=-date )
 #c(r,python,excel,git,power_bi,theory,tableau,sql,spreadsheets,shell,scala)
 chart_data %>% filter(key %in% c("r","python","sql")) %>% 
   ggplot(aes(x=date,y=value,color=key)) + geom_line() + geom_line() +
-  labs(title = "R, Python and SQL Cumulative Course Progress",
+  labs(title = "R, Python and SQL Course Cumulative  Progress",
        caption = "Source: https://github.com/gisisfun/map_polygons/blob/master/other_fun/scrapy_datacamp.R") +
   xlab("Time (Two Week interval)") +
   ylab("Cumulative Course Count") +
   geom_smooth(method="glm",se=FALSE, method.args = list(family = "poisson"))
 ggsave("R_Python.png")
+
+chart_data %>% filter(!key %in% c("r","python","sql")) %>% 
+  ggplot(aes(x=date,y=value,color=key)) + geom_line() + geom_line() +
+  labs(title = "Other Courses Cumulative Progress",
+       caption = "Source: https://github.com/gisisfun/map_polygons/blob/master/other_fun/scrapy_datacamp.R") +
+  xlab("Time (Two Week interval)") +
+  ylab("Cumulative Course Count") +
+  geom_smooth(method="glm",se=FALSE, method.args = list(family = "poisson"))
+ggsave("Other.png")
