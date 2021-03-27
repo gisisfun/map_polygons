@@ -215,16 +215,17 @@ names(certs)
 
 courses_certs <- courses_and_certs(courses,certs)
 
-c <- time_series(courses_certs)
-data_xts <- cumsum(c)
-ep <- endpoints(c, on = "weeks")
+raw_xts <- time_series(courses_certs)
+cumsum_xts <- cumsum(raw_xts)
+twoweeks <- endpoints(cumsum_xts, on = "weeks")
 
-sum_cols <- data_xts[ep]
+twoweeks_xts <- cumsum_xts[twoweeks]
 
-sum_cols_df <- as.data.frame(sum_cols)
-sum_cols_df$date <- as.Date(rownames(sum_cols_df))
+twoweeks_df <- as.data.frame(twoweeks_xts)
+twoweeks_df$date <- as.Date(rownames(twoweeks_df))
 
-chart_data <- gather(sum_cols_df, values=-date )
+chart_data <- gather(twoweeks_df, values=-date )
+
 
 #c(r,python,excel,git,power_bi,theory,tableau,sql,spreadsheets,shell,scala)
 chart_data %>% filter(key %in% c("r","python","sql")) %>% 
@@ -244,3 +245,10 @@ chart_data %>% filter(!key %in% c("r","python","sql")) %>%
   ylab("Cumulative Course Count") +
   geom_smooth(method="glm",se=FALSE, method.args = list(family = "poisson"))
 ggsave("Other.png")
+
+
+
+
+
+
+
