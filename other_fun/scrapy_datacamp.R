@@ -153,6 +153,23 @@ scrape_summary <- function(html,css_list){
   summary <- paste(the_title,'\n Total XP',dc_counts[2],'Total Courses',dc_counts[3],'Total Exercises', dc_counts[4],sep=' ')
 }
 
+
+scrape_tracks <- function(html,css_list,certs){
+  track_certs <-certs %>% filter(Type %in% c("Career","Skill")) 
+  name <- scrape_css_list(html,css_list[['track_names']]) %>% 
+    str_replace_all('\n','') %>%
+    str_replace('        ',' ') %>%
+    str_replace('   ',' ') %>%
+    str_replace('  with',' with') %>%
+    str_trim() %>%
+    str_c(.," Track")
+  
+  tracks_raw <- data.frame(course = name) 
+  tracks <- merge(tracks_raw,track_certs,by='course')
+  tracks$date <- as.Date(tracks$date,"%b %d,%Y")
+}
+
+
 scrape_courses <- function(html,css_list,xpath_list){
   lang <-  scrape_xpath_list(html,xpath_list[['course_lang']])#  %>% str_replace('<div class=\"course-block__technology course-block__technology--','') 
   course_vec <- scrape_css_list(html,css_list[['course_list']]) 
