@@ -217,9 +217,9 @@ courses_certs <- courses_and_certs(courses,certs)
 
 raw_xts <- time_series(courses_certs)
 cumsum_xts <- cumsum(raw_xts)
-twoweeks <- endpoints(cumsum_xts, on = "weeks")
+twoweeks_ep <- endpoints(cumsum_xts, on = "weeks")
 
-twoweeks_xts <- cumsum_xts[twoweeks]
+twoweeks_xts <- cumsum_xts[twoweeks_ep]
 
 twoweeks_df <- as.data.frame(twoweeks_xts)
 twoweeks_df$date <- as.Date(rownames(twoweeks_df))
