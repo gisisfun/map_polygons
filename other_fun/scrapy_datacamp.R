@@ -55,6 +55,8 @@ library(pdftools)
 library(caret)
 
 library(dplyr)
+# arima
+library(astsa)
 
 # Verbose regular expressions
 # library(rebus)  
@@ -214,63 +216,22 @@ names(certs)
 courses_certs <- courses_and_certs(courses,certs)
 
 c <- time_series(courses_certs)
+data_xts <- cumsum(c)
 ep <- endpoints(c, on = "weeks")
 
-sum_cols <- map(names(c),~ period.apply(c[,c(.x)], INDEX = ep, FUN = sum))
+sum_cols <- data_xts[ep]
 
-time_data_orig<- data.frame(sum_cols[[1]],sum_cols[[2]],sum_cols[[3]],sum_cols[[4]],sum_cols[[5]],
-                        sum_cols[[6]],sum_cols[[7]],sum_cols[[8]],sum_cols[[9]],sum_cols[[10]],
-                        sum_cols[[11]])
+sum_cols_df <- as.data.frame(sum_cols)
+sum_cols_df$date <- as.Date(rownames(sum_cols_df))
 
-time_data <- data.frame(sum_cols[[1]],sum_cols[[2]],sum_cols[[3]],sum_cols[[4]],sum_cols[[5]],
-                            sum_cols[[6]],sum_cols[[7]],sum_cols[[8]],sum_cols[[9]],sum_cols[[10]],
-                            sum_cols[[11]])
-
-
-time_data$date <- as.Date(rownames(time_data_orig))
-
-chart_data <- gather(time_data, values=-date )
-
-ggplot(chart_data,aes(x=date,y=value,color=key)) + geom_line() +
-  labs(title = "Data Camp Course Progress",
-       caption = "Source: https://github.com/gisisfun/map_polygons/blob/master/other_fun/scrapy_datacamp.R")
-
-ggsave('R_plot.png')
-
-cum_sum <-function(df,col) {
-df %>% select(date,.[[col]]) %>%
-  mutate(counts_cum = cumsum(.[[col]])) %>% 
-    pull(counts_cum)
-}
-
-sql_cum <- time_data %>% select(date,sql) %>%
-  mutate(counts_cum = cumsum(sql)) %>% 
-  pull(counts_cum)
-
-time_data_cum <- data.frame(time_data$date,
-                            cum_sum(time_data,"python"),
-                            cum_sum(time_data,"r"),sql_cum)
-#map(names(time_data_orig),~ cum_sum(time_data,.x),df=time_data)
-names(time_data_cum) <- c("date","python","r","sql")
-
-chart_data2 <- gather(time_data_cum, values=-date )
+chart_data <- gather(sum_cols_df, values=-date )
 
 #c(r,python,excel,git,power_bi,theory,tableau,sql,spreadsheets,shell,scala)
-ggplot(chart_data2,aes(x=date,y=value,color=key)) + geom_line() + geom_line() +
+chart_data %>% filter(key %in% c("r","python","sql")) %>% 
+  ggplot(aes(x=date,y=value,color=key)) + geom_line() + geom_line() +
   labs(title = "R, Python and SQL Cumulative Course Progress",
        caption = "Source: https://github.com/gisisfun/map_polygons/blob/master/other_fun/scrapy_datacamp.R") +
   xlab("Time (Two Week interval)") +
   ylab("Cumulative Course Count") +
   geom_smooth(method="glm",se=FALSE, method.args = list(family = "poisson"))
 ggsave("R_Python.png")
-
-
-
-
-# b <- period.apply(time_data[,c("python")], INDEX = ep, FUN = sum)
-# b <- period.apply(time_data[,c("python")], INDEX = ep, FUN = sum)
-# cbind(a,b)
-
-
-
-
