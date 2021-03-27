@@ -221,7 +221,7 @@ sum_cols <- map(names(c),~ period.apply(c[,c(.x)], INDEX = ep, FUN = sum))
 time_data_orig<- data.frame(sum_cols[[1]],sum_cols[[2]],sum_cols[[3]],sum_cols[[4]],sum_cols[[5]],
                         sum_cols[[6]],sum_cols[[7]],sum_cols[[8]],sum_cols[[9]],sum_cols[[10]],
                         sum_cols[[11]])
-# workaround
+
 time_data <- data.frame(sum_cols[[1]],sum_cols[[2]],sum_cols[[3]],sum_cols[[4]],sum_cols[[5]],
                             sum_cols[[6]],sum_cols[[7]],sum_cols[[8]],sum_cols[[9]],sum_cols[[10]],
                             sum_cols[[11]])
@@ -260,7 +260,8 @@ ggplot(chart_data2,aes(x=date,y=value,color=key)) + geom_line() + geom_line() +
   labs(title = "R, Python and SQL Cumulative Course Progress",
        caption = "Source: https://github.com/gisisfun/map_polygons/blob/master/other_fun/scrapy_datacamp.R") +
   xlab("Time (Two Week interval)") +
-  ylab("Cumulative Course Count")
+  ylab("Cumulative Course Count") +
+  geom_smooth(method="glm",se=FALSE, method.args = list(family = "poisson"))
 ggsave("R_Python.png")
 
 
