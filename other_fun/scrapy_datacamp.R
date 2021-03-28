@@ -155,7 +155,7 @@ scrape_summary <- function(html,css_list){
 
 
 scrape_tracks <- function(html,css_list,certs){
-  track_certs <-certs %>% filter(Type %in% c("Career","Skill")) 
+  certs_tracks <-certs %>% filter(Type %in% c("Career","Skill")) 
   name <- scrape_css_list(html,css_list[['track_names']]) %>% 
     str_replace_all('\n','') %>%
     str_replace('        ',' ') %>%
@@ -165,9 +165,10 @@ scrape_tracks <- function(html,css_list,certs){
     str_c(.," Track")
   
   tracks_raw <- data.frame(course = name) 
-  tracks <- merge(tracks_raw,track_certs,by='course')
-  tracks$date <- as.Date(tracks$date,"%b %d,%Y")
-}
+  tracks <- merge(tracks_raw,certs_tracks,by='course') %>% 
+    mutate(date = as.Date(date,"%b %d, %Y"))  %>% 
+    arrange(date)
+  }
 
 
 scrape_courses <- function(html,css_list,xpath_list){
@@ -231,6 +232,7 @@ certs <- pdf_paths()
 names(certs)
 
 courses_certs <- courses_and_certs(courses,certs)
+tracks_certs <- scrape_tracks(html,css_list,certs)
 
 daily_xts <- time_series(courses_certs)
 daily_cumsum_xts <- cumsum(daily_xts)
@@ -262,6 +264,8 @@ chart_data %>% filter(!key %in% c("r","python","sql")) %>%
   ylab("Cumulative Course Count") +
   geom_smooth(method="glm",se=FALSE, method.args = list(family = "poisson"))
 ggsave("Other.png")
+
+
 
 
 
