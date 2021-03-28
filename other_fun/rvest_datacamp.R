@@ -73,7 +73,7 @@ library(astsa)
 # Verbose regular expressions
 # library(rebus)  
 
-libray(ggplot2)
+library(ggplot2)
 
 # Eases DateTime manipulation
 #library(lubridate)
