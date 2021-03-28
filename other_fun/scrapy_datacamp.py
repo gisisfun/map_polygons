@@ -522,7 +522,7 @@ if __name__ == "__main__":
     weekly_completion.cumsum().plot(ax=ax4)
 
     ax4.set_title("DataCamp Course Completion by Technology")
-    ax4.legend( title='title', bbox_to_anchor=(1.05, 1), loc='upper left')
+    ax4.legend( title='Legend', bbox_to_anchor=(1.05, 1), loc='upper left')
     #ax4.legend(loc='upper right', frameon=False)
     ax4.set_ylabel("Cumulative Course Count")
     ax4.set_xlabel("Time (One Week interval)")
