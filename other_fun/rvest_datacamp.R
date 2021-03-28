@@ -249,7 +249,7 @@ chart_data <- gather(twoweeks_df, values=-date )
 #c(r,python,excel,git,power_bi,theory,tableau,sql,spreadsheets,shell,scala)
 chart_data %>% filter(key %in% c("r","python","sql")) %>% 
   ggplot(aes(x=date,y=value,color=key)) + geom_line() + geom_line() +
-  labs(title = "R, Python and SQL Course Cumulative  Progress",
+  labs(title = "R, Python and SQL Course Cumulative Progress",
        subtitle="Track certificate completion dates marked as vertical dotted lines",
        caption = "Source: https://github.com/gisisfun/map_polygons/blob/master/other_fun/rvest_datacamp.R") +
   xlab("Time (Two Week interval)") +
