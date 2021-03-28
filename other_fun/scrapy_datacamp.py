@@ -471,7 +471,7 @@ if __name__ == "__main__":
     my_tracks = my_tracks[['ref','course','date','c_type']]
     my_tracks.dropna(axis=0,inplace=True)
     print(my_tracks)
-    my_tracks.to_excel(writer, sheet_name='Tracks')
+    my_tracks.to_excel(writer,index=False, sheet_name='Tracks')
 
     print("Projects")
     my_projects = scrape_projects(sel,css_dict)
