@@ -250,10 +250,12 @@ chart_data <- gather(twoweeks_df, values=-date )
 chart_data %>% filter(key %in% c("r","python","sql")) %>% 
   ggplot(aes(x=date,y=value,color=key)) + geom_line() + geom_line() +
   labs(title = "R, Python and SQL Course Cumulative  Progress",
+       subtitle="Track certificate completion dates marked as vertical dotted lines",
        caption = "Source: https://github.com/gisisfun/map_polygons/blob/master/other_fun/rvest_datacamp.R") +
   xlab("Time (Two Week interval)") +
   ylab("Cumulative Course Count") +
-  geom_smooth(method="glm",se=FALSE, method.args = list(family = "poisson"))
+  geom_smooth(method="glm",se=FALSE, method.args = list(family = "poisson")) +
+  geom_vline(xintercept=as.vector(tracks_certs$date), linetype="dotted")
 ggsave("R_Python.png")
 
 chart_data %>% filter(!key %in% c("r","python","sql")) %>% 
