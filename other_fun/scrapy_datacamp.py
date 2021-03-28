@@ -469,6 +469,7 @@ if __name__ == "__main__":
     my_tracks = scrape_tracks(sel,css_dict,certs_pdf)
     my_tracks['date'] = pd.to_datetime(my_tracks['date'], format = '%b %d, %Y')
     my_tracks = my_tracks[['ref','course','date','c_type']]
+    my_tracks.dropna(axis=0,inplace=True)
     print(my_tracks)
     my_tracks.to_excel(writer, sheet_name='Tracks')
 
@@ -526,11 +527,7 @@ if __name__ == "__main__":
     #ax4.legend(loc='upper right', frameon=False)
     ax4.set_ylabel("Cumulative Course Count")
     ax4.set_xlabel("Time (One Week interval)")
-    #ax4.axvline(x=list(my_tracks.date), ymin=0,colors='black',ymax=100,linestyles='dashed')
-    x = list(my_tracks.date)
-    x.pop(1)
-    #[ax4.axvline(_x, colo='black',linestyle="dotted') for _x in x]
-    [ax4.axvline(_x, linewidth=1, color='k',linestyle='--') for _x in x]
+    [ax4.axvline(_x, linewidth=1, color='k',linestyle='--') for _x in list(my_tracks.date)]
     #.vlines(x, ymin, ymax, colors='k', linestyles='solid', label='', *, data=None, **kwargs)[source]
     fig.savefig('DataCamp ' + datetime.isoformat(datetime.today())[:10]+'.png',bbox_inches="tight")
     fig.show()
