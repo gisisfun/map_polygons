@@ -11,16 +11,16 @@ scrapy_datacamp.py (this code)
 my_profile.txt (html source dumped to file)
 
 DataCamp --|
-           | -Courses- | 
-           |           | -Course Name- |
-           |                           | -certificate.pdf
-           | -Tracks-  |
-           |           | -Skills      -|
-                                       | -Track Name- |
-           |                                          | -certificate.pdf  
-           |           | -Career-      | 
-                                       | -Track Name- |
-           |                                          | -certificate.pdf             
+           \ -Courses- \ 
+           |           \ -Course Name- \
+           |                           \ -certificate.pdf
+           \ -Tracks-  \
+                       \ -Skills      -\
+                       |               \ -Track Name- \
+                       |                               \-certificate.pdf  
+                       \ -Career-      \ 
+                                       \ -Track Name- \
+                                                      \ -certificate.pdf             
                                                
 
 
@@ -42,6 +42,8 @@ import re
 from wordcloud import WordCloud
 from nltk.stem import WordNetLemmatizer
 import nltk
+# uncomment to download nltk support files
+# nltk.download('all')
 
 from itertools import repeat
 import json
@@ -332,6 +334,7 @@ def scrape_tracks(sel,css_dict,pdf_certs):
     
 
     """
+    certs_tracks = pdf_certs[pdf_certs['c_type'].isin(["Skill","Career"])]
     print("Skill Tracks")
     track_names = sel.css(css_dict['track_names']).extract()
 
@@ -342,9 +345,10 @@ def scrape_tracks(sel,css_dict,pdf_certs):
                             replace('\n ','').\
                             str.strip()
     # add cert data
-    df = pd.DataFrame.merge(wp_tracks, pdf_certs, how='left',
+    df = pd.DataFrame.merge(wp_tracks, certs_tracks, how='left',
                                         left_on='Skill_Track', right_on='course',
                                         sort=False, suffixes=('_x', '_y'))
+    df['course_lower'] = df['Skill_Track'].str.lower()
     return df
 
 def scrape_projects(sel,css_dict):
@@ -452,6 +456,28 @@ if __name__ == "__main__":
     tech_list = courses_and_certs.columns[5:-7]
     weekly_completion = courses_and_certs.resample('1 w')[tech_list].sum()
 
+
+
+    print('Tech Table')
+    print(tech_table)
+
+    print("Courses and Certs")
+    courses_and_certs.groupby('Technology')[['ref','Course_Name',
+                             'date','Description', 'Technology']].apply(lang_worksheets,
+                             wb=writer)
+
+    my_tracks = scrape_tracks(sel,css_dict,certs_pdf)
+    my_tracks['date'] = pd.to_datetime(my_tracks['date'], format = '%b %d, %Y')
+    my_tracks = my_tracks[['ref','course','date','c_type']]
+    print(my_tracks)
+    my_tracks.to_excel(writer, sheet_name='Tracks')
+
+    print("Projects")
+    my_projects = scrape_projects(sel,css_dict)
+    print(my_projects.Project)
+    my_projects.to_excel(writer, sheet_name='Projects')
+    writer.close()
+
     # layout for all charts
     fig,((ax1, ax2), (ax3, ax4)) = plt.subplots(2,2,figsize=(15,8),
          constrained_layout=True)
@@ -459,9 +485,9 @@ if __name__ == "__main__":
                  datetime.strftime(datetime.today(),format='%d/%m/%Y'),
                  fontsize=24)
     fig.text(0, 0,
-         'See the source code: https://https://github.com/gisisfun/map_polygons/blob/master/other_fun/scrapy_datacamp.py',
+         'Source code: https://https://github.com/gisisfun/map_polygons/blob/master/other_fun/scrapy_datacamp.py',
          style = 'italic',
-         fontsize = 14,
+         fontsize = 13,
          color = "black")
 
     # chart #1 - Topics by XP
@@ -496,27 +522,11 @@ if __name__ == "__main__":
     weekly_completion.cumsum().plot(ax=ax4)
 
     ax4.set_title("DataCamp Course Completion by Technology")
-    ax4.legend(loc='upper right', frameon=False)
+    ax4.legend( title='title', bbox_to_anchor=(1.05, 1), loc='upper left')
+    #ax4.legend(loc='upper right', frameon=False)
     ax4.set_ylabel("Cumulative Course Count")
     ax4.set_xlabel("Time (One Week interval)")
+    #ax4.axvline(x=list(my_tracks.date), ymin=0,colors='black',ymax=100,linestyles='dashed')
+    #.vlines(x, ymin, ymax, colors='k', linestyles='solid', label='', *, data=None, **kwargs)[source]
     fig.savefig('DataCamp ' + datetime.isoformat(datetime.today())[:10]+'.png',bbox_inches="tight")
     fig.show()
-
-    print('Tech Table')
-    print(tech_table)
-
-    print("Courses and Certs")
-    courses_and_certs.groupby('Technology')[['ref','Course_Name',
-                             'date','Description', 'Technology']].apply(lang_worksheets,
-                             wb=writer)
-
-    my_tracks = scrape_tracks(sel,css_dict,certs_pdf)
-    my_tracks = my_tracks[['ref','course','date','c_type']]
-    print(my_tracks)
-    my_tracks.to_excel(writer, sheet_name='Tracks')
-
-    print("Projects")
-    my_projects = scrape_projects(sel,css_dict)
-    print(my_projects.Project)
-    my_projects.to_excel(writer, sheet_name='Projects')
-    writer.close()
