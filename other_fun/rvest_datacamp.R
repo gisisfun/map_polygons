@@ -55,8 +55,11 @@ library(pdftools)
 library(caret)
 
 library(dplyr)
+library(xlsx)
+library(tidytext)
+library(ggpubr)
 # arima
-library(astsa)
+#library(astsa)
 
 # Verbose regular expressions
 # library(rebus)  
@@ -234,6 +237,9 @@ names(certs)
 courses_certs <- courses_and_certs(courses,certs)
 tracks_certs <- scrape_tracks(html,css_list,certs)
 
+
+#write.xlsx(USArrests, file="myworkbook.xlsx", sheetName="USA Arrests",col.names=TRUE, row.names=TRUE, append=FALSE)
+
 daily_xts <- time_series(courses_certs)
 daily_cumsum_xts <- cumsum(daily_xts)
 twoweeks_ep <- endpoints(daily_cumsum_xts, on = "weeks")
@@ -249,7 +255,7 @@ chart_data <- gather(twoweeks_df, values=-date )
 #c(r,python,excel,git,power_bi,theory,tableau,sql,spreadsheets,shell,scala)
 chart_data %>% filter(key %in% c("r","python","sql")) %>% 
   ggplot(aes(x=date,y=value,color=key)) + geom_line() + geom_line() +
-  labs(title = "R, Python and SQL Course Cumulative Progress",
+  labs(title = "R, Python and SQL Course Cumulative  Progress",
        subtitle="Track certificate completion dates marked as vertical dotted lines",
        caption = "Source: https://github.com/gisisfun/map_polygons/blob/master/other_fun/rvest_datacamp.R") +
   xlab("Time (Two Week interval)") +
@@ -266,11 +272,6 @@ chart_data %>% filter(!key %in% c("r","python","sql")) %>%
   ylab("Cumulative Course Count") +
   geom_smooth(method="glm",se=FALSE, method.args = list(family = "poisson"))
 ggsave("Other.png")
-
-
-
-
-
 
 
 
