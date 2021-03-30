@@ -249,7 +249,7 @@ twoweeks_xts <- daily_cumsum_xts[twoweeks_ep]
 twoweeks_df <- as.data.frame(twoweeks_xts)
 twoweeks_df$date <- as.Date(rownames(twoweeks_df))
 
-chart_data <- gather(twoweeks_df, values=-date )
+chart_data <- gather(twoweeks_df,key = key ,value = value, -date )
 
 
 #c(r,python,excel,git,power_bi,theory,tableau,sql,spreadsheets,shell,scala)
