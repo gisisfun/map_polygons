@@ -238,7 +238,16 @@ courses_certs <- courses_and_certs(courses,certs)
 tracks_certs <- scrape_tracks(html,css_list,certs)
 
 
-#write.xlsx(USArrests, file="myworkbook.xlsx", sheetName="USA Arrests",col.names=TRUE, row.names=TRUE, append=FALSE)
+write.xlsx(tracks_certs, file="myworkbook.xlsx", sheetName="Tracks",col.names=TRUE, row.names=FALSE, append=FALSE)
+
+unique_tech <- unique(courses_certs$Technology)
+for (tech in unique_tech) {
+tech_df <- courses_certs %>% filter(Technology==tech)
+write.xlsx(tech_df,file="myworkbook.xlsx", sheetName=tech,col.names=TRUE, row.names=FALSE, append=TRUE)
+}
+
+#courses_certs <- pmap(~tech_to_excel(.x,unique_tech))
+#map(unique_tech,tech_to_excel)
 
 daily_xts <- time_series(courses_certs)
 daily_cumsum_xts <- cumsum(daily_xts)
@@ -272,7 +281,4 @@ chart_data %>% filter(!key %in% c("r","python","sql")) %>%
   ylab("Cumulative Course Count") +
   geom_smooth(method="glm",se=FALSE, method.args = list(family = "poisson"))
 ggsave("Other.png")
-
-
-
 
