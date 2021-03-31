@@ -25,6 +25,7 @@
 # - Data Cleaning
 # - Data Visualisation 
 # - Excel Document creation - TODO
+# source() and rmarkdown
 
 
 #General-purpose data wrangling
