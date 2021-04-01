@@ -24,8 +24,10 @@
 # - Natural Language Processing - TODO
 # - Data Cleaning
 # - Data Visualisation 
-# - Excel Document creation - TODO
-# source() and rmarkdown
+# TODO
+# - Excel Document creation 
+# - source() and rmarkdown
+# - rmarkdown::render('fred.rmd', 'pdf_document')
 
 
 #General-purpose data wrangling
