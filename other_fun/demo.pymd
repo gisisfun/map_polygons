@@ -1,0 +1,41 @@
+---
+title: "Untitled"
+author: "me"
+date: "4/1/2021"
+output: pdf_document
+---
+
+```{python,echo=False}
+import matplotlib.pyplot as plt
+```
+
+## Python Markdown
+
+This is an Ptyhon Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using Python Markdown see <https://pystitch.github.io>. You can also add the following to your code
+
+
+
+From the command line
+
+```
+stitch input_file.md -o output_file.html
+```
+
+
+
+```{python,echo=False}
+x = list(range(0,11))
+print(x)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{python,echo=False}
+y = list(range(0,11))
+plt.plot(x,y)
+plt.show()
+```
+
+Note that the `echo = False` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
