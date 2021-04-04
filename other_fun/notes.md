@@ -27,18 +27,19 @@ install.packages(c('rmarkdown','DiagrammeR'))
 
 <https://graphviz.readthedocs.io/en/stable/manual.html>
 
+### graphviz
 
-### Installation
+#### Installation
 ```
-pip3 install knotr
 sudo apt install graphviz
 pip3 install graphviz
-pip3 install pyment
 ```
+
 
 ### pyment
 
 #### Installation
+
 ```
 pip3 install pyment
 ```
@@ -47,7 +48,13 @@ pip3 install pyment
 
 ### stitch
 
-#### From the command line
+#### Installation
+
+```
+pip3 install knotr
+````
+
+#### command line
 
 ```
 stitch input_file.md -o output_file.html
