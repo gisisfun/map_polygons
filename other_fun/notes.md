@@ -33,8 +33,14 @@ install.packages(c('rmarkdown','DiagrammeR'))
 pip3 install knotr
 sudo apt install graphviz
 pip3 install graphviz
+pip3 install pyment
 ```
-### From the command line
+
+### pyment
+
+### stitch
+
+#### From the command line
 
 ```
 stitch input_file.md -o output_file.html
