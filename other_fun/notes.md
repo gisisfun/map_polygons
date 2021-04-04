@@ -2,6 +2,7 @@
 
 ## R
 <https://rmarkdown.rstudio.com/>
+
 <https://rich-iannone.github.io/DiagrammeR/graphviz_and_mermaid.html>
 
 
@@ -23,6 +24,7 @@ install.packages(c('rmarkdown','DiagrammeR'))
 ## Python
 
 <https://pystitch.github.io/>
+
 <https://graphviz.readthedocs.io/en/stable/manual.html>
 
 
