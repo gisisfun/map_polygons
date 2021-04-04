@@ -38,6 +38,13 @@ pip3 install pyment
 
 ### pyment
 
+#### Installation
+```
+pip3 install pyment
+```
+
+
+
 ### stitch
 
 #### From the command line
