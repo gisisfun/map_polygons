@@ -2,36 +2,35 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sat Apr  3 13:31:35 2021
-
 @author: me
 """
 # https://graphviz.readthedocs.io/en/stable/examples.html#g-c-n-py
 
-from txtoflow import txtoflow
-
-txtoflow.generate(
-    '''
-    First Node;
-    if (A != 10) {
-        B;
-    } else if (Just a String) {
-        Another String;
-    } else {
-        Else Body;
-        More Statements;
-        while (While also works) {
-            While Body;
-        }
-        Link back;
-    }
-    Final Node;
-    '''
-)
-
-
+#from txtoflow import txtoflow
+#
+#txtoflow.generate(
+#    '''
+#    First Node;
+#    if (A != 10) {
+#        B;
+#    } else if (Just a String) {
+#        Another String;
+#    } else {
+#        Else Body;
+#        More Statements;
+#        while (While also works) {
+#            While Body;
+#        }
+#        Link back;
+#    }
+#    Final Node;
+#    '''
+#)
 
 
-from graphviz import Digraph,Graph
+
+
+from graphviz import Digraph,Source
 
 dot = Digraph(comment='DataCamp_Charts',node_attr={"rankdir":"LR"})
 dot.attr(rankdir='LR')
@@ -71,9 +70,55 @@ dot.edge('Chart','Document',label='TODO')
 dot.edge('Tracks','Dataset',label='TODO')
 dot.edge('Courses','Dataset',label='TODO')
 #dot.edge('B', 'L', constraint='false')
-dot.format='png'
+
+dot_src = Source("""// DataCamp_Charts
+digraph {
+	node [rankdir=LR]
+	rankdir=LR
+	node [shape=ellipse]
+	PDF [label="PDF Files" shape=box]
+	Certs [label=Certificates shape=ellipse]
+	HTML [label="HTML File" shape=box]
+	Courses_s [label="Scraped
+Courses" shape=ellipse]
+	Topics [label="Scraped
+Topics" shape=ellipse]
+	Tracks_s [label="Scraped
+Tracks" shape=ellipse]
+	Tracks [label="Tracks
+Certs" shape=ellipse]
+	Courses [label="Courses
+Certs" shape=ellipse]
+	Excel [label=Excel shape=box]
+	Chart [label=Chart shape=box]
+	Document [label="Word or
+PDF Document" shape=box]
+	Dataset [label="Data set
+for BI Tool" shape=box]
+	PDF -> Certs [label="Extract Text"]
+	HTML -> Courses_s [label=Scrape]
+	HTML -> Tracks_s [label=Scrape]
+	HTML -> Topics [label=Scrape]
+	Courses_s -> Courses [label=fuzzy]
+	Certs -> Courses [label=clean]
+	Tracks_s -> Tracks [label=""]
+	Certs -> Tracks [label="Fix missing letters"]
+	Tracks -> Excel [label=""]
+	Courses -> Excel [label=filter]
+	Topics -> Excel [label=""]
+	Tracks -> Chart [label=reshape]
+	Courses -> Chart [label=reshape]
+	Tracks -> Document [label=TODO]
+	Courses -> Document [label=TODO]
+	Chart -> Document [label=TODO]
+	Tracks -> Dataset [label=TODO]
+	Courses -> Dataset [label=TODO]
+}""")
+
+
+dot_src.format='png'
 print(dot.source)
-dot.render('test-output/datacamp_certs.gv', view=True)
+dot_src.render('test-output/datacamp_certs.gv', view=True)
 dot
 #g = Graph('G', filename='process.gv', engine='sfdp')
 #
