@@ -90,7 +90,7 @@ library(xts)
 library(fuzzyjoin)
 
 pdf_read <- function(url) {
-   pdf_text(url) %>% str_split('\n') 
+  pdf_text(url) %>% str_split('\n') 
 }
 
 raw_df <-  function(raw_list,type_label) {
@@ -101,11 +101,11 @@ raw_df <-  function(raw_list,type_label) {
   line3 <- lines %>% map(~.x[6]) %>% unlist()
   line4 <- lines %>% map(~.x[8]) %>% unlist()
   line5 <- lines %>% map(~.x[10]) %>% unlist()
-
+  
   processed <- data.frame(path = raw_list,cert_no = line1,course = line3, date = line4, extra = line5) %>%
-      mutate(course = ifelse(extra == "",paste(course),paste(course,date,sep=" "))) %>%
-      mutate(date = ifelse(extra == "",paste(date),paste(extra))) %>%
-      select(-extra) %>% mutate(Type = type_label)
+    mutate(course = ifelse(extra == "",paste(course),paste(course,date,sep=" "))) %>%
+    mutate(date = ifelse(extra == "",paste(date),paste(extra))) %>%
+    select(-extra) %>% mutate(Type = type_label)
 }
 
 pdf_paths <- function() {
@@ -115,17 +115,20 @@ pdf_paths <- function() {
                             recursive = TRUE,pattern = "certificate.pdf$")
   career_files <- list.files('Datacamp/Tracks/Career', full.names = TRUE,
                              recursive = TRUE,pattern = "certificate.pdf$")
- courses <- raw_df(course_files,'Course')
- skill <- raw_df(skill_files,'Skill')
- career <- raw_df(career_files,'Career')
- rbind(courses,skill,career) %>% 
-mutate(course = str_replace(course,'So ware','Software')) %>% 
-mutate(course = str_replace(course,'E cient','Efficient')) %>% 
-mutate(course = str_replace(course,'Air ow','Airflow')) %>% 
-mutate(course = str_replace(course,'E ects','Effects')) %>% 
-mutate(course = str_replace(course,'lea et','leaflet'))%>%
-mutate(course = str_replace(course,'Classi cation','Classification'))%>%
-mutate(course = str_replace(course,'Classi ers','Classifiers'))
+  courses <- raw_df(course_files,'Course')
+  skill <- raw_df(skill_files,'Skill')
+  career <- raw_df(career_files,'Career')
+  rbind(courses,skill,career) %>% 
+    mutate(course = str_replace(course,'So ware','Software')) %>% 
+    mutate(course = str_replace(course,'E cient','Efficient')) %>% 
+    mutate(course = str_replace(course,'Air ow','Airflow')) %>% 
+    mutate(course = str_replace(course,'E ects','Effects')) %>% 
+    mutate(course = str_replace(course,'lea et','leaflet'))%>%
+    mutate(course = str_replace(course,'Classi cation','Classification'))%>%
+    mutate(course = str_replace(course,'Classi ers','Classifiers')) %>% 
+    mutate(date=str_replace(date,'\\\\r','')) %>%
+    mutate(cert_no=str_replace(cert_no,'\\\\r','')) %>%
+    mutate(course=str_replace(course,'\\\\r',''))
 }
 
 scrape_xpath_list <- function(html,x_path){
@@ -174,7 +177,7 @@ scrape_tracks <- function(html,css_list,certs){
   tracks <- merge(tracks_raw,certs_tracks,by='course') %>% 
     mutate(date = as.Date(date,"%b %d, %Y"))  %>% 
     arrange(date)
-  }
+}
 
 
 scrape_courses <- function(html,css_list,xpath_list){
@@ -184,11 +187,22 @@ scrape_courses <- function(html,css_list,xpath_list){
   desc <- scrape_css_list(html,css_list[['course_descriptions']]) %>% str_replace('\n','') %>% str_trim()
   courses <- data.frame(Technology = lang,Course_Name = course_vec, Description = desc,URL = urls)
   #courses$Technology <- str_sub(courses$Technology, end=-9) 
-   }
+}
 
+
+to_timeseries <- function(courses_certs) {
+  date_prep <- courses_certs %>% filter(!is.na(date)) %>%
+    select(starts_with("Technology"),-Technology) 
+  # fix is.na bit please
+  date_ref <- courses_certs %>% filter(!is.na(date))
+  names(date_prep) <- gsub(x = names(date_prep), pattern = "Technology",
+                           replacement = "") 
+  time_raw <- xts(date_prep,order.by = as.Date(date_ref$date,
+                                               "%b %d, %Y") )
+}
 
 courses_and_certs<- function(courses,certs) {
-  course_certs <- filter(certs,Type=="Course") %>% mutate(Type=Type)
+  course_certs <- filter(certs,Type=="Course") 
   
   three_dots <- str_detect(courses$Course_Name,'\\.\\.')
   
@@ -209,13 +223,6 @@ courses_and_certs<- function(courses,certs) {
     bind_cols(data.frame(predict(dummy, newdata = courses_join_match)))
 }
 
-time_series <- function(courses_certs) {
-  date_prep <- courses_certs %>% select(starts_with("Technology"),-Technology)
-  #date_prep <- date_prep  %>% mutate_if(as.numeric())
-  names(date_prep) <- gsub(x = names(date_prep), pattern = "Technology", replacement = "") 
-  time_raw <- xts(date_prep,order.by = as.Date(courses_certs$date, "%b %d, %Y") )
-  
-}
 
 
 
@@ -241,18 +248,20 @@ courses_certs <- courses_and_certs(courses,certs)
 tracks_certs <- scrape_tracks(html,css_list,certs)
 
 
-write.xlsx(tracks_certs, file="myworkbook.xlsx", sheetName="Tracks",col.names=TRUE, row.names=FALSE, append=FALSE)
+write.xlsx(tracks_certs, file="myworkbook.xlsx", sheetName="Tracks", 
+           col.names=TRUE, row.names=FALSE, append=FALSE)
 
 unique_tech <- unique(courses_certs$Technology)
 for (tech in unique_tech) {
-tech_df <- courses_certs %>% filter(Technology==tech)
-write.xlsx(tech_df,file="myworkbook.xlsx", sheetName=tech,col.names=TRUE, row.names=FALSE, append=TRUE)
+  tech_df <- courses_certs %>% filter(Technology==tech)
+  write.xlsx(tech_df,file="myworkbook.xlsx", sheetName=tech,
+             col.names=TRUE, row.names=FALSE, append=TRUE)
 }
 
 #courses_certs <- pmap(~tech_to_excel(.x,unique_tech))
 #map(unique_tech,tech_to_excel)
 
-daily_xts <- time_series(courses_certs)
+daily_xts <- to_timeseries(courses_certs)
 daily_cumsum_xts <- cumsum(daily_xts)
 twoweeks_ep <- endpoints(daily_cumsum_xts, on = "weeks")
 
@@ -284,4 +293,3 @@ chart_data %>% filter(!key %in% c("r","python","sql")) %>%
   ylab("Cumulative Course Count") +
   geom_smooth(method="glm",se=FALSE, method.args = list(family = "poisson"))
 ggsave("Other.png")
-
