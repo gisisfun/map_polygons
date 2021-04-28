@@ -41,8 +41,8 @@ import nltk
 # uncomment to download nltk support files
 # nltk.download('all')
 
-from itertools import repeat
-import json
+#from itertools import repeat
+#import json
 from datetime import datetime
 from fuzzywuzzy import process
 
@@ -55,23 +55,31 @@ def extract_pdf_data(page_text,c_type,verbose=False):
     :param verbose:  (Default value = False)
     :returns: dataframe with boths keys and matches
     """
-    page_lines = page_text.split('\n')
+    page_lines = [line.replace('\r','') for line
+                  in page_text.split('\n') ]
+    page_lines.pop()
     ref=page_lines[0]
 
     if len(page_lines) == 5:
         course = page_lines[2].replace(' Track','')
         date = page_lines[3]
-    else:
+    elif len(page_lines) == 4:
         course = page_lines[2]+' '+page_lines[3]
         date = page_lines[4]
+    elif len(page_lines) == 13:
+        if page_lines[10] == '':
+            course = page_lines[9]
+        else:
+            course = page_lines[9]+' '+page_lines[10]
+        date = page_lines[12]     
 
     if verbose == True:
-        print(ref,course,date)
+        print(ref,course,date,page_lines)
     return ref, course, date
 
 def fuzzy_merge(df_1, df_2, key1, key2, threshold=90, limit=2):
     """
-    fuzzy matching by levestein distance of columns in dataframes
+    fuzzy matching by levenstein distance of columns in dataframes
     
     sourced from
     https://stackoverflow.com/questions/13636848/is-it-possible-to-do-fuzzy-match-merge-with-python-pandas
@@ -105,16 +113,17 @@ def extract_pdf_courses(pdf_path, verbose=False):
     pdf_bad =[['So ware','Software'],['E cient','Efficient'],
               ['Air ow','Airflow'],['E ects','Effects'],['lea et','leaflet'],
                ['Classi cation','Classification'],['Classi iers','Classifiers']]
+    slash_sep = os.path.sep
     for (root,dirs,files) in os.walk(pdf_path):
         if verbose == True:
             print(dirs,root)
         #dirs_list = dirs
         for dir_name in dirs:
-            the_path = pdf_path +'/'+ dir_name
-            for (root,dirs,files) in os.walk(the_path, topdown=True):
-
-                if len(root.split('/')) >2:
-                    course_or_track = root.split('/')[2]
+            the_path = os.path.join(pdf_path, dir_name)
+            for (root, dirs, files) in os.walk(the_path, topdown = True):
+                c_type = "None"
+                if len(root.split(slash_sep)) >2:
+                    course_or_track = root.split(slash_sep)[2]
                     if verbose == True:
                         print(course_or_track,root)
                     if course_or_track in ['Skill','Career']:
@@ -122,7 +131,7 @@ def extract_pdf_courses(pdf_path, verbose=False):
                     else:
                         c_type = 'Course'
                 if 'certificate.pdf' in files:
-                    the_file=''+root+'/certificate.pdf'
+                    the_file =  os.path.join(root,'certificate.pdf')
                     # Load your PDF
                     with open(the_file, "rb") as f:
                         pdf = pdftotext.PDF(f)
@@ -436,7 +445,7 @@ if __name__ == "__main__":
     my_tracks['date'] = pd.to_datetime(my_tracks['date'], format = '%b %d, %Y')
     my_tracks = my_tracks[['ref','course','date','c_type']].\
     dropna(axis=0).\
-    reset_index(drop=True
+    reset_index(drop=True)
 #    my_tracks.dropna(axis=0,inplace=True)
 #    my_tracks.reset_index(drop=True,inplace=True)
 #    print(my_tracks)
@@ -500,3 +509,4 @@ if __name__ == "__main__":
     #.vlines(x, ymin, ymax, colors='k', linestyles='solid', label='', *, data=None, **kwargs)[source]
     fig.savefig('DataCamp ' + datetime.isoformat(datetime.today())[:10]+'.png',bbox_inches="tight")
     fig.show()
+
