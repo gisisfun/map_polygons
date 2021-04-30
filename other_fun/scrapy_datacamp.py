@@ -58,20 +58,16 @@ def extract_pdf_data(page_text,c_type,verbose=False):
     page_lines = [line.replace('\r','') for line
                   in page_text.split('\n') ]
     page_lines.pop()
+    page_lines  = list(filter(None, page_lines))
+    
     ref=page_lines[0]
 
-    if len(page_lines) == 5:
+    if len(page_lines) == 4:
         course = page_lines[2].replace(' Track','')
         date = page_lines[3]
-    elif len(page_lines) == 4:
+    elif len(page_lines) == 5:
         course = page_lines[2]+' '+page_lines[3]
-        date = page_lines[4]
-    elif len(page_lines) == 13:
-        if page_lines[10] == '':
-            course = page_lines[9]
-        else:
-            course = page_lines[9]+' '+page_lines[10]
-        date = page_lines[12]     
+        date = page_lines[4]    
 
     if verbose == True:
         print(ref,course,date,page_lines)
