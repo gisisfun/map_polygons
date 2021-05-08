@@ -35,6 +35,10 @@ sudo apt install graphviz
 pip3 install graphviz
 ```
 
+### erdantic
+
+pip3 install erdantic
+
 
 ### pyment
 
