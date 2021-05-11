@@ -69,7 +69,7 @@ dtm <- dtm[,colSums(dtm) > 2]
 set.seed(12345)
 
 model <- FitLdaModel(dtm = dtm, 
-                     k = 20,
+                     k = 50,
                      iterations = 500, # I usually recommend at least 500 iterations or more
                      burnin = 180,
                      alpha = 0.1,
@@ -78,12 +78,12 @@ model <- FitLdaModel(dtm = dtm,
                      calc_likelihood = TRUE,
                      calc_coherence = TRUE,
                      calc_r2 = TRUE,
-                     cpus = 4) 
+                     cpus = 2) 
 assignments <- predict(model, dtm,
                        method = "gibbs", 
                        iterations = 500,
                        burnin = 180,
-                       cpus = 4)
+                       cpus = 2)
 
 # predictions with dot
 assignments_dot <- predict(model, dtm,
@@ -91,11 +91,14 @@ assignments_dot <- predict(model, dtm,
 
 # theta gives P(topick|documentd), phi gives P(tokenv|topick), and gamma gives P(topick|tokenv)
 
-# compare
+# compare for tenth
 barplot(rbind(assignments[10,], assignments_dot[10,]),
         col = c("red", "blue"), las = 2, beside = TRUE)
 legend("topright", legend = c("gibbs", "dot"), col = c("red", "blue"), 
        fill = c("red", "blue"))
+# theta gives P(topick|documentd), phi gives P(tokenv|topick), and gamma gives P(topick|tokenv)
+# for topic 3 t_3 
+head(sort(model[["gamma"]][3,],decreasing=TRUE),10)
        
 
 
@@ -103,6 +106,13 @@ fred2 <- data.frame(max= max.col(assignments),
 top = unlist(lapply( max.col(assignments),function(x) colnames(assignments)[x])),
 val = apply(assignments,1,max))
 rownames(fred2) <- rownames(assignments)
-# theta gives P(topick|documentd), phi gives P(tokenv|topick), and gamma gives P(topick|tokenv)
-# for topic 20 t_20 
-model[["gamma"]][20,]
+
+# R-squared 
+# - only works for probabilistic models like LDA and CTM 
+model$r2
+#> [1] 0.2747765
+
+# log Likelihood (does not consider the prior) 
+plot(model[["log_likelihood"]], type = "l")
+             
+             
