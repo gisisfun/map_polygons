@@ -1,3 +1,5 @@
+# one of these is not like the others
+# https://cran.r-project.org/web/packages/textmineR/vignettes/c_topic_modeling.html
 library(textmineR)
 
 # load nih_sample data set from textmineR
