@@ -9,3 +9,7 @@ processed <- raw_data %>%
     names_to_split = case_when(is.na(Common.Name) ~ Scientific.Name,
                           TRUE ~ Common.Name)) %>% 
     separate_rows(names_to_split,sep=", ")
+# remove extra text after word a word e.g. Koala so we can find Koalas
+processed$search_name[grep("Koala",processed$search_name)[1]] = "Koala"
+# delete the incorrectly created row data 
+processed <- processed[-grep("Koala",processed$Common.Name)[2],] 
