@@ -9,24 +9,37 @@ f_name <- '20201012spcs.csv'
 library(stringr)
 library(tidyverse)
 url <- 'https://data.gov.au/data/dataset/ae652011-f39e-4c6c-91b8-1dc2d2dfee8f/resource/c478a397-e1e9-4292-950c-e0f9ed9430c8/download/20201012spcs.csv'
+boa_file <- "Gutenberg eBook of The Birds of Australia vol 1.txt"
+# more nlp fun
+birds_of_australia <- paste(readLines(boa_file), collapse=" ")
 
+boa_list <- unlist(strsplit(birds_of_australia, "\\.\\s\\D")) 
+boa_df <- data.frame(line_no = seq(1,length(boa_list)),text = tolower(boa_list))
 raw_ebpc <- read.csv(f_name,na.strings="-")
 processed_ebpc <- raw_ebpc %>%  
   mutate(
     report_name = case_when(is.na(Common.Name) ~ Scientific.Name,
+                            Common.Name == "a tree" ~ Scientific.Name,
+                            Common.Name == "a grass" ~ Scientific.Name,
                                  TRUE ~ sapply(strsplit(Common.Name,", "), `[`, 1)),
     search_name = case_when(is.na(Common.Name) ~ Scientific.Name,
                           TRUE ~ Common.Name)) %>% 
-    separate_rows(search_name,sep=", ")
+    separate_rows(search_name,sep=", ") %>%
+  mutate( search_name = case_when(search_name=='a tree' ~ Scientific.Name,
+                                  search_name=='a grass' ~ Scientific.Name,
+                                  TRUE ~ tolower(str_replace_all(search_name, 
+                                                                 "[^[:alnum:] ]", ""))),
+          report_name = str_replace_all(report_name, "[^[:alnum:] ]", ""))
+  
 
 # remove extra text after word Koala so we can find Koalas
-processed_ebpc$search_name[grep("Koala",processed_ebpc$search_name)[1]] = "Koala"
+processed_ebpc$search_name[grep("Koala",processed_ebpc$search_name)[1]] = "koala"
 # delete the incorrectly created row data 
 processed_ebpc <- processed_ebpc[-grep("Koala",processed_ebpc$Common.Name)[2],] 
 
-# more nlp fun
-birds_of_australia <- paste(readLines("Gutenberg eBook of The Birds of Australia vol 1.txt"), collapse=" ")
-# split to lines
-l <- unlist(strsplit(birds_of_australia, "\\.\\s\\D"))
-# return lines where "Falcon" is present
-l[grep("Falcon",l)]
+fred <- lapply(paste(processed_ebpc$search_name," ",sep=""),grep,boa_df$text)
+names(fred) <- processed_ebpc$search_name
+fred <- fred[lapply(fred, length) > 0]
+ddd <- data.frame(boa_refs = unlist(fred))
+
+# l[grep("Falcon",boa_list)]
