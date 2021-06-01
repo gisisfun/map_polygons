@@ -1,4 +1,6 @@
-# https://www.environment.gov.au/sprat-public/action/report;jsessionid=58C270AA45555ECC99353FD07B9D8A2D
+# https://data.gov.au/data/dataset/threatened-species-state-lists/resource/c478a397-e1e9-4292-950c-e0f9ed9430c8
+# 'https://data.gov.au/data/dataset/ae652011-f39e-4c6c-91b8-1dc2d2dfee8f/resource/c478a397-e1e9-4292-950c-e0f9ed9430c8/download/20201012spcs.csv'
+# '20201012spcs.csv'
 
 # Project Gutenberg's The Birds of Australia, Vol. 1 of 7
 # https://www.gutenberg.org/ebooks/65002
@@ -27,6 +29,7 @@ processed_ebpc <- raw_ebpc %>%
     separate_rows(search_name,sep=", ") %>%
   mutate( search_name = case_when(search_name=='a tree' ~ Scientific.Name,
                                   search_name=='a grass' ~ Scientific.Name,
+                                  nchar(search_name)<4 ~ Scientific.Name,
                                   TRUE ~ tolower(str_replace_all(search_name, 
                                                                  "[^[:alnum:] ]", ""))),
           report_name = str_replace_all(report_name, "[^[:alnum:] ]", ""))
@@ -47,9 +50,17 @@ processed_ebpc$search_name[grep("Koala",processed_ebpc$search_name)[1]] = "koala
 # ddd['project'] = test[ddd$id,'project']
 # rownames(ddd) <- NULL
 # ddd$names <- gsub("[0-9]", "", ddd$names)
-# test <- data.frame( description =  c("a large fin whale (drop bear)","a small fin whale"
-#                                      ,"a southern right whale"),
-#                     project = c("project 1","project 1","project 2"))
-
+test <- data.frame( description =  c("a large fin whale (drop bear)","a small fin whale"
+                                     ,"a southern right whale"),
+                    project = c("project 1","project 1","project 2"))
+fred <- lapply(paste(processed_ebpc$search_name,sep=""),grep,test$description)
+names(fred) <- processed_ebpc$search_name
+fred <- fred[lapply(fred, length) > 0]
+ddd <- data.frame(id = unlist(fred))
+ddd$names <- rownames(ddd)
+ddd['project'] = test[ddd$id,'project']
+rownames(ddd) <- NULL
+ddd$names <- gsub("[0-9]", "", ddd$names)
+ddd <- ddd[!duplicated(ddd$project),]
 
 # l[grep("Falcon",boa_list)]
