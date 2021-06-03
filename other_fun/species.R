@@ -55,7 +55,7 @@ test <- data.frame( description =  c("a large fin whale (drop bear)","a small fi
                     project = c("project 1","project 1","project 2"))
 
 # fixed=TRUE
-fred <- lapply(paste(processed_ebpc$search_name,sep=""),grep,test$description)
+fred <- lapply(paste(processed_ebpc$search_name,sep=""),grep,test$description,fixed=TRUE)
 names(fred) <- processed_ebpc$search_name
 fred <- fred[lapply(fred, length) > 0]
 ddd <- data.frame(id = unlist(fred))
