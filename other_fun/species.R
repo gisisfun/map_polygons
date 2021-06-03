@@ -65,6 +65,6 @@ ddd$names <- rownames(ddd)
 ddd['project'] = test[ddd$id,'project']
 rownames(ddd) <- NULL
 ddd$names <- gsub("[0-9]", "", ddd$names)
-ddd <- ddd[!duplicated(ddd$project),]
+ddd %>% select (-id) %>% distinct(names,project)
 
 # l[grep("Falcon",boa_list)]
