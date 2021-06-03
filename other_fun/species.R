@@ -30,9 +30,11 @@ processed_ebpc <- raw_ebpc %>%
   mutate( search_name = case_when(search_name=='a tree' ~ Scientific.Name,
                                   search_name=='a grass' ~ Scientific.Name,
                                   nchar(search_name)<4 ~ Scientific.Name,
-                                  TRUE ~ tolower(str_replace_all(search_name, 
-                                                                 "[^[:alnum:] ]", ""))),
-          report_name = str_replace_all(report_name, "[^[:alnum:] ]", ""))
+                                  TRUE ~ tolower(search_name))
+         
+         #tolower(str_replace_all(search_name, 
+         #                                                        "[^[:alnum:] ]", ""))),
+          #report_name = str_replace_all(report_name, "[^[:alnum:] ]", ""))
   
 
 # remove extra text after word Koala so we can find Koalas
