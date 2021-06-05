@@ -8,6 +8,7 @@
 f_name <- '01062021-074408-report.csv'
 library(stringr)
 library(tidyverse)
+library(readr)
 url <- 'https://data.gov.au/data/dataset/ae652011-f39e-4c6c-91b8-1dc2d2dfee8f/resource/c478a397-e1e9-4292-950c-e0f9ed9430c8/download/20201012spcs.csv'
 # boa_file <- "Gutenberg eBook of The Birds of Australia vol 1.txt"
 # more nlp fun
@@ -16,33 +17,36 @@ url <- 'https://data.gov.au/data/dataset/ae652011-f39e-4c6c-91b8-1dc2d2dfee8f/re
 #boa_list <- unlist(strsplit(birds_of_australia, "\\.\\s\\D")) 
 #boa_df <- data.frame(line_no = seq(1,length(boa_list)),text = tolower(boa_list))
 
-test_df <- data.frame( description =  c("a large fin whale (drop bear)","a small fin whale"
+test_df <- data.frame( description =  c("a large fin whale and koala (drop bear)","a small fin whale"
                                      ,"a southern right whale"),
                     project = c("project 1","project 1","project 2"))
 
 ref_data <- test_df %>% mutate(search_text = description, 
                                project = project)
 
-raw_ebpc <- read.csv(f_name,na.strings="-", skip=1)
+raw_ebpc <- read_csv(f_name,skip=1) 
+names(raw_ebpc ) <- sub(" ", ".", names(raw_ebpc ))
+#read.csv(f_name,na.strings="-", skip=1)
 processed_ebpc <- raw_ebpc %>%  
-  mutate(
+  mutate( 
     report_name = case_when(is.na(Common.Name) ~ Scientific.Name,
                             Common.Name == "a tree" ~ Scientific.Name,
                             Common.Name == "a grass" ~ Scientific.Name,
-                                 TRUE ~ sapply(strsplit(Common.Name,", "), `[`, 1)),
+                            TRUE ~ sapply(strsplit(Common.Name,", "), `[`, 1)),
     search_name = case_when(is.na(Common.Name) ~ Scientific.Name,
-                          TRUE ~ Common.Name)) %>% 
+                            TRUE ~ Common.Name)) #%>% 
     separate_rows(search_name,sep=", ") %>%
   mutate( search_name = case_when(search_name=='a tree' ~ Scientific.Name,
                                   search_name=='a grass' ~ Scientific.Name,
-                                  nchar(search_name)<4 ~ Scientific.Name,
-                                  TRUE ~ tolower(search_name))
+                                  grep("Koala",search_name,ignore.case=TRUE)==1 ~ "koala",
+                                  nchar(search_name)<3 ~ Scientific.Name,
+                                  TRUE ~ tolower(search_name)))
  # %>% map(paste(processed_ebpc$search_name,sep=""),
   #       grep,ref_data$search_text,
    #                 fixed=TRUE,ignore.case=TRUE)
          
 # remove extra text after word Koala so we can find Koalas
-processed_ebpc$search_name[grep("Koala",processed_ebpc$search_name)[1]] = "koala"
+#processed_ebpc$search_name[grep("Koala",processed_ebpc$search_name)[1]] = "koala"
 # delete the incorrectly created row data 
 # processed_ebpc <- processed_ebpc[-grep("koala",processed_ebpc$Common.Name)[2],] 
 
@@ -59,12 +63,11 @@ processed_ebpc$search_name[grep("Koala",processed_ebpc$search_name)[1]] = "koala
 
 # fixed=TRUE,ignore.case=TRUE
 link_list <- lapply(paste(processed_ebpc$search_name,sep=""),
-                    grep,ref_data$search_text,
-                    fixed=TRUE,ignore.case=TRUE)
+                    grep,ref_data$search_text,fixed=TRUE,ignore.case=TRUE)
 names(link_list) <- processed_ebpc$search_name
 link_list <- link_list[lapply(link_list, length) > 0]
 link_df <- data.frame(id = unlist(link_list))
-link_df['project'] = test[link_df$id,'project']
+link_df['project'] = ref_data[link_df$id,'project']
 link_df['name_raw'] = names(unlist(link_list))
 rownames(link_df) <- NULL
 link_df$name <- gsub("[0-9]", "", link_df$name_raw)
