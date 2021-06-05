@@ -57,14 +57,14 @@ test <- data.frame( description =  c("a large fin whale (drop bear)","a small fi
                     project = c("project 1","project 1","project 2"))
 
 # fixed=TRUE,ignore.case=TRUE
-fred <- lapply(paste(processed_ebpc$search_name,sep=""),grep,test$description,fixed=TRUE)
-names(fred) <- processed_ebpc$search_name
+link_list <- lapply(paste(processed_ebpc$search_name,sep=""),grep,test$description,fixed=TRUE)
+names(link_list) <- processed_ebpc$search_name
 fred <- fred[lapply(fred, length) > 0]
-ddd <- data.frame(id = unlist(fred))
-ddd$names <- rownames(ddd)
-ddd['project'] = test[ddd$id,'project']
-rownames(ddd) <- NULL
-ddd$names <- gsub("[0-9]", "", ddd$names)
-ddd %>% select (-id) %>% distinct(names,project)
+link_df <- data.frame(id = unlist(link_list))
+link_df['project'] = test[link_df$id,'project']
+link_df['name'] = names(unlist(link_list))
+rownames(link_df) <- NULL
+link_df$name <- gsub("[0-9]", "", link_df$name)
+link_df %>% select (-id) %>% distinct(name,project)
 
 # l[grep("Falcon",boa_list)]
