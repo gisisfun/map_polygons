@@ -25,9 +25,9 @@ ref_data <- test_df %>% mutate(search_text = description,
                                project = project)
 
 raw_ebpc <- read_csv(f_name,skip=1) 
-names(raw_ebpc ) <- sub(" ", ".", names(raw_ebpc ))
-#read.csv(f_name,na.strings="-", skip=1)
-processed_ebpc <- raw_ebpc %>%  
+
+link_df <- raw_ebpc %>%
+  dplyr::rename_all(make.names) %>%
   mutate( 
     report_name = case_when(is.na(Common.Name) ~ Scientific.Name,
                             Common.Name == "a tree" ~ Scientific.Name,
@@ -38,38 +38,11 @@ processed_ebpc <- raw_ebpc %>%
     separate_rows(search_name,sep=", ") %>%
   mutate( search_name = case_when(search_name=='a tree' ~ Scientific.Name,
                                   search_name=='a grass' ~ Scientific.Name,
+                                  str_detect(search_name,fixed("koala")) ~ "koala",
                                   nchar(search_name)<3 ~ Scientific.Name,
-                                  TRUE ~ tolower(search_name)))
- # %>% map(paste(processed_ebpc$search_name,sep=""),
-  #       grep,ref_data$search_text,
-   #                 fixed=TRUE,ignore.case=TRUE)
-         
-# remove extra text after word Koala so we can find Koalas
-#processed_ebpc$search_name[grep("Koala",processed_ebpc$search_name)[1]] = "koala"
-# delete the incorrectly created row data 
-# processed_ebpc <- processed_ebpc[-grep("koala",processed_ebpc$Common.Name)[2],] 
-
-# fred <- lapply(paste(processed_ebpc$search_name," ",sep=""),grep,boa_df$text)
-# mmm <- sapply(paste(processed_ebpc$search_name," ",sep=""),grep,boa_df$text)
-# data.frame(mmm)
-# names(fred) <- processed_ebpc$search_name
-# fred <- fred[lapply(fred, length) > 0]
-# ddd <- data.frame(id = unlist(fred))
-# ddd$names <- rownames(ddd)
-# ddd['project'] = test[ddd$id,'project']
-# rownames(ddd) <- NULL
-# ddd$names <- gsub("[0-9]", "", ddd$names)
-
-# fixed=TRUE,ignore.case=TRUE
-link_list <- lapply(paste(processed_ebpc$search_name,sep=""),
-                    grep,ref_data$search_text,fixed=TRUE,ignore.case=TRUE)
-names(link_list) <- processed_ebpc$search_name
-link_list <- link_list[lapply(link_list, length) > 0]
-link_df <- data.frame(id = unlist(link_list))
-link_df['project'] = ref_data[link_df$id,'project']
-link_df['name_raw'] = names(unlist(link_list))
-rownames(link_df) <- NULL
-link_df$name <- gsub("[0-9]", "", link_df$name_raw)
-link_df %>% select (-id) %>% distinct(name,project)
-
-# l[grep("Falcon",boa_list)]
+                                  TRUE ~ tolower(search_name))) %>% 
+  mutate(lookup = map(paste(search_name,sep=""),grep,ref_data$search_text,
+      fixed=TRUE,ignore.case=TRUE)) %>% 
+  unnest(lookup) %>% 
+  mutate( project = ref_data[lookup,'project']) %>% 
+  distinct(report_name,project)
