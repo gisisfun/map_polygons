@@ -16,6 +16,12 @@ url <- 'https://data.gov.au/data/dataset/ae652011-f39e-4c6c-91b8-1dc2d2dfee8f/re
 #boa_list <- unlist(strsplit(birds_of_australia, "\\.\\s\\D")) 
 #boa_df <- data.frame(line_no = seq(1,length(boa_list)),text = tolower(boa_list))
 
+test_df <- data.frame( description =  c("a large fin whale (drop bear)","a small fin whale"
+                                     ,"a southern right whale"),
+                    project = c("project 1","project 1","project 2"))
+
+ref_data <- test_df %>% mutate(search_text = description, 
+                               project = project)
 
 raw_ebpc <- read.csv(f_name,na.strings="-", skip=1)
 processed_ebpc <- raw_ebpc %>%  
@@ -52,19 +58,18 @@ processed_ebpc$search_name[grep("Koala",processed_ebpc$search_name)[1]] = "koala
 # ddd['project'] = test[ddd$id,'project']
 # rownames(ddd) <- NULL
 # ddd$names <- gsub("[0-9]", "", ddd$names)
-test <- data.frame( description =  c("a large fin whale (drop bear)","a small fin whale"
-                                     ,"a southern right whale"),
-                    project = c("project 1","project 1","project 2"))
 
 # fixed=TRUE,ignore.case=TRUE
-link_list <- lapply(paste(processed_ebpc$search_name,sep=""),grep,test$description,fixed=TRUE)
+link_list <- lapply(paste(processed_ebpc$search_name,sep=""),
+                    grep,ref_data$search_text,
+                    fixed=TRUE,ignore.case=TRUE)
 names(link_list) <- processed_ebpc$search_name
-fred <- fred[lapply(fred, length) > 0]
+link_list <- link_list[lapply(link_list, length) > 0]
 link_df <- data.frame(id = unlist(link_list))
 link_df['project'] = test[link_df$id,'project']
-link_df['name'] = names(unlist(link_list))
+link_df['name_raw'] = names(unlist(link_list))
 rownames(link_df) <- NULL
-link_df$name <- gsub("[0-9]", "", link_df$name)
+link_df$name <- gsub("[0-9]", "", link_df$name_raw)
 link_df %>% select (-id) %>% distinct(name,project)
 
 # l[grep("Falcon",boa_list)]
