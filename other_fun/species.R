@@ -1,8 +1,7 @@
-# https://data.gov.au/data/dataset/threatened-species-state-lists/resource/c478a397-e1e9-4292-950c-e0f9ed9430c8
-# 'https://data.gov.au/data/dataset/ae652011-f39e-4c6c-91b8-1dc2d2dfee8f/resource/c478a397-e1e9-4292-950c-e0f9ed9430c8/download/20201012spcs.csv'
-# '20201012spcs.csv'
+# https://www.environment.gov.au/sprat-public/
 
-f_name <- '01062021-074408-report.csv'
+
+f_name <- '05062021-063319-report.csv'
 library(stringr)
 library(tidyverse)
 library(readr)
@@ -32,16 +31,15 @@ link_df <- raw_epbc %>%
                             Common.Name == "a grass" ~ Scientific.Name,
                             TRUE ~ sapply(strsplit(Common.Name,", "), `[`, 1)),
     search_name = case_when(is.na(Common.Name) ~ Scientific.Name,
-                            TRUE ~ Common.Name)) %>% 
+                            TRUE ~ paste(Common.Name,sep=""))) %>% 
   separate_rows(search_name,sep=", ") %>%
   mutate(search_name = case_when(search_name=='a tree' ~ Scientific.Name,
                                   search_name=='a grass' ~ Scientific.Name,
                                   str_detect(Common.Name,fixed("Koala")) ~ "koala",
                                   nchar(search_name)<3 ~ Scientific.Name,
                                   TRUE ~ tolower(search_name))) %>% 
-  mutate(lookup = map(paste(search_name," ",sep=""),grep,ref_data$search_text,
+  mutate(lookup = map(paste(" ",search_name,sep=""),grep,ref_data$search_text,
       fixed=TRUE,ignore.case=TRUE)) %>% 
   unnest(lookup) %>% 
   mutate( project = ref_data[lookup,'project']) %>% 
   distinct(report_name,project)
-         
