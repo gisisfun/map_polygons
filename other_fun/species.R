@@ -2,9 +2,6 @@
 # 'https://data.gov.au/data/dataset/ae652011-f39e-4c6c-91b8-1dc2d2dfee8f/resource/c478a397-e1e9-4292-950c-e0f9ed9430c8/download/20201012spcs.csv'
 # '20201012spcs.csv'
 
-# Project Gutenberg's The Birds of Australia, Vol. 1 of 7
-# https://www.gutenberg.org/ebooks/65002
-# https://www.gutenberg.org/files/65002/65002-0.txt
 f_name <- '01062021-074408-report.csv'
 library(stringr)
 library(tidyverse)
@@ -24,10 +21,11 @@ test_df <- data.frame( description =  c("a large fin whale and koala (drop bear)
 ref_data <- test_df %>% mutate(search_text = description, 
                                project = project)
 
-raw_ebpc <- read_csv(f_name,skip=1) 
+raw_epbc <- read_csv(f_name,skip=1) 
 
-link_df <- raw_ebpc %>%
+link_df <- raw_epbc %>%
   dplyr::rename_all(make.names) %>%
+  filter(!is.na(EPBC.Threat.Status)) %>%
   mutate( 
     report_name = case_when(is.na(Common.Name) ~ Scientific.Name,
                             Common.Name == "a tree" ~ Scientific.Name,
@@ -46,3 +44,4 @@ link_df <- raw_ebpc %>%
   unnest(lookup) %>% 
   mutate( project = ref_data[lookup,'project']) %>% 
   distinct(report_name,project)
+         
