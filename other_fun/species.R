@@ -36,10 +36,10 @@ link_df <- raw_epbc %>%
     separate_rows(search_name,sep=", ") %>%
   mutate( search_name = case_when(search_name=='a tree' ~ Scientific.Name,
                                   search_name=='a grass' ~ Scientific.Name,
-                                  str_detect(search_name,fixed("koala")) ~ "koala",
+                                  str_detect(Common.Name,fixed("Koala")) ~ "koala",
                                   nchar(search_name)<3 ~ Scientific.Name,
                                   TRUE ~ tolower(search_name))) %>% 
-  mutate(lookup = map(paste(search_name,sep=""),grep,ref_data$search_text,
+  mutate(lookup = map(paste(search_name," ",sep=""),grep,ref_data$search_text,
       fixed=TRUE,ignore.case=TRUE)) %>% 
   unnest(lookup) %>% 
   mutate( project = ref_data[lookup,'project']) %>% 
