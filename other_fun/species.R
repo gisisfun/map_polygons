@@ -33,8 +33,8 @@ link_df <- raw_epbc %>%
                             TRUE ~ sapply(strsplit(Common.Name,", "), `[`, 1)),
     search_name = case_when(is.na(Common.Name) ~ Scientific.Name,
                             TRUE ~ Common.Name)) %>% 
-    separate_rows(search_name,sep=", ") %>%
-  mutate( search_name = case_when(search_name=='a tree' ~ Scientific.Name,
+  separate_rows(search_name,sep=", ") %>%
+  mutate(search_name = case_when(search_name=='a tree' ~ Scientific.Name,
                                   search_name=='a grass' ~ Scientific.Name,
                                   str_detect(Common.Name,fixed("Koala")) ~ "koala",
                                   nchar(search_name)<3 ~ Scientific.Name,
