@@ -37,12 +37,10 @@ processed_ebpc <- raw_ebpc %>%
                                   search_name=='a grass' ~ Scientific.Name,
                                   nchar(search_name)<4 ~ Scientific.Name,
                                   TRUE ~ tolower(search_name))
+ # %>% map(paste(processed_ebpc$search_name,sep=""),
+  #       grep,ref_data$search_text,
+   #                 fixed=TRUE,ignore.case=TRUE)
          
-         #tolower(str_replace_all(search_name, 
-         #                                                        "[^[:alnum:] ]", ""))),
-          #report_name = str_replace_all(report_name, "[^[:alnum:] ]", ""))
-  
-
 # remove extra text after word Koala so we can find Koalas
 processed_ebpc$search_name[grep("Koala",processed_ebpc$search_name)[1]] = "koala"
 # delete the incorrectly created row data 
