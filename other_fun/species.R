@@ -67,6 +67,14 @@ summary_table <- link_df %>%
   summarise(count=n())
 print(summary_table)
 
+# a column chart 
+link_df %>% 
+  group_by(EPBC.Threat.Status,Taxon.Group) %>%
+  summarise(project_count=n()) %>%
+  ggplot(aes(x=EPBC.Threat.Status, y=project_count)) +
+  geom_col(aes(fill = Taxon.Group)) +
+  ggtitle("EBPC Threatened Species by Taxonomy Group in test data")
+
 # todo 
 # read input from Excel file format
 # save tables to Excel file Format
