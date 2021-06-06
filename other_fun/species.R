@@ -1,5 +1,6 @@
 # https://www.environment.gov.au/sprat-public/
 
+
 f_name <- '05062021-063319-report.csv'
 library(stringr)
 library(tidyverse)
@@ -14,10 +15,10 @@ url <- 'https://data.gov.au/data/dataset/ae652011-f39e-4c6c-91b8-1dc2d2dfee8f/re
 
 # some test project data
 test_df <- data.frame( description =  c("a large fin whale and koala (drop bear)","a small fin whale"
-                                     ,"a southern right whale"),
-                    project_name = c("project 1","project 1","project 2"),
+                                     ,"a southern right whale","Australian white ibis (Threskiornis molucca) or Bin Chicken"),
+                    project_name = c("project 1","project 1","project 2","project 3"),
                     
-                    project_id = c("p1","p1","p2"))
+                    project_id = c("p1","p1","p2","p3"))
 
 # standardise the test data column names for analysis
 ref_data <- test_df %>% mutate(search_text = description,
@@ -28,12 +29,20 @@ ref_data <- test_df %>% mutate(search_text = description,
 raw_epbc <- read_csv(f_name,skip=1) %>% dplyr::rename_all(make.names)  %>%
   filter(!is.na(EPBC.Threat.Status))
 
+# list of generic common names
+# need some code needed to generate this vector in the future
+gen_names <- c("a tree","a land snail","a fern","a daisy","a grass",
+               "a herb","a filmy fern","a hellicaronid land animal",
+               "a leek-orchid","a mint-bush","A native bee","a palm",
+               "a sedge","a short-tongued bee","a shrub","a bottlebrush",
+               "a creeper, Clematis","a triggerplant","a vine",
+               "a stringybark","a spike rush")
+
 # produce the the linkage data from test and 
 link_df <- raw_epbc  %>%
   mutate( 
     report_name = case_when(is.na(Common.Name) ~ Scientific.Name,
-                            Common.Name == "a tree" ~ Scientific.Name,
-                            Common.Name == "a grass" ~ Scientific.Name,
+                            Common.Name %in% gen_names ~ Scientific.Name,
                             TRUE ~ sapply(strsplit(Common.Name,", "), `[`, 1)),
     search_name = case_when(is.na(Common.Name) ~ Scientific.Name,
                             TRUE ~ paste(Common.Name,sep=""))) %>% 
@@ -49,4 +58,5 @@ link_df <- raw_epbc  %>%
   mutate(project_id = ref_data[lookup,'ident'],
          project_name = ref_data[lookup,'name'],
          source_text = ref_data[lookup,'source']) %>% 
-  distinct(Taxon.ID,Scientific.Name,report_name,project_id,project_name,source_text)
+  distinct(Taxon.ID,Scientific.Name,report_name,EPBC.Threat.Status,Taxon.Group,
+           project_id,project_name,source_text)
