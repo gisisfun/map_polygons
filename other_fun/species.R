@@ -28,7 +28,6 @@ ref_data <- test_df %>% mutate(search_text = description,
 # subset the EPBC species 
 raw_epbc <- read_csv(f_name,skip=1) %>% dplyr::rename_all(make.names)  %>%
   filter(!is.na(EPBC.Threat.Status))
-
 # list of generic common names
 # need some code needed to generate this vector in the future
 gen_names <- c("a tree","a land snail","a fern","a daisy","a grass",
@@ -37,6 +36,7 @@ gen_names <- c("a tree","a land snail","a fern","a daisy","a grass",
                "a sedge","a short-tongued bee","a shrub","a bottlebrush",
                "a creeper, Clematis","a triggerplant","a vine",
                "a stringybark","a spike rush")
+
 
 # produce the the linkage data from test and 
 link_df <- raw_epbc  %>%
@@ -60,3 +60,13 @@ link_df <- raw_epbc  %>%
          source_text = ref_data[lookup,'source']) %>% 
   distinct(Taxon.ID,Scientific.Name,report_name,EPBC.Threat.Status,Taxon.Group,
            project_id,project_name,source_text)
+
+# make a summary table
+summary_table <- link_df %>% 
+  group_by(Taxon.Group,EPBC.Threat.Status,project_name) %>%
+  summarise(count=n())
+print(summary_table)
+
+# todo 
+# read input from Excels format
+# save tables to Excel Format
