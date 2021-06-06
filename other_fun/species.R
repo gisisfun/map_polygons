@@ -68,5 +68,5 @@ summary_table <- link_df %>%
 print(summary_table)
 
 # todo 
-# read input from Excels format
-# save tables to Excel Format
+# read input from Excel file format
+# save tables to Excel file Format
