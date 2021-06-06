@@ -5,6 +5,8 @@ f_name <- '05062021-063319-report.csv'
 library(stringr)
 library(tidyverse)
 library(readr)
+library(ggplot2)
+library(forcats)
 url <- 'https://data.gov.au/data/dataset/ae652011-f39e-4c6c-91b8-1dc2d2dfee8f/resource/c478a397-e1e9-4292-950c-e0f9ed9430c8/download/20201012spcs.csv'
 # boa_file <- "Gutenberg eBook of The Birds of Australia vol 1.txt"
 # more nlp fun
@@ -64,17 +66,23 @@ link_df <- raw_epbc  %>%
 # make a summary table
 summary_table <- link_df %>% 
   group_by(Taxon.Group,EPBC.Threat.Status,project_name) %>%
-  summarise(count=n())
+  summarise(project_count=n()) %>%
+  arrange(desc(project_count))
 print(summary_table)
 
-# a column chart 
+# a bar chart 
 link_df %>% 
   group_by(EPBC.Threat.Status,Taxon.Group) %>%
   summarise(project_count=n()) %>%
+  ungroup() %>%
+  mutate(EPBC.Threat.Status = fct_reorder(EPBC.Threat.Status, 
+                                          desc(project_count))) %>%
   ggplot(aes(x=EPBC.Threat.Status, y=project_count)) +
   geom_col(aes(fill = Taxon.Group)) +
   ggtitle("EBPC Threatened Species by Taxonomy Group in test data")
 
+
 # todo 
 # read input from Excel file format
 # save tables to Excel file Format
+# a customised word document with fixed commentary, tables and charts
