@@ -23,7 +23,8 @@ test_df <- data.frame( description =  c("a large fin whale and koala (drop bear)
 # standardise the test data column names for analysis
 ref_data <- test_df %>% mutate(search_text = description,
                                name = project_name,
-                               ident= project_id)
+                               ident= project_id) %>%
+  mutate(source="test data")
 # subset the EPBC species 
 raw_epbc <- read_csv(f_name,skip=1) %>% dplyr::rename_all(make.names)  %>%
   filter(!is.na(EPBC.Threat.Status))
@@ -47,5 +48,6 @@ link_df <- raw_epbc  %>%
       fixed=TRUE,ignore.case=TRUE)) %>% 
   unnest(lookup) %>% 
   mutate(project_id = ref_data[lookup,'ident'],
-         project_name = ref_data[lookup,'name']) %>% 
-  distinct(Taxon.ID,Scientific.Name,report_name,project_id,project_name)
+         project_name = ref_data[lookup,'name'],
+         source_text = ref_data[lookup,'source']) %>% 
+  distinct(Taxon.ID,Scientific.Name,report_name,project_id,project_name,source_text)
