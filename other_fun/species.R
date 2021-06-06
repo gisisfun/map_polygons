@@ -13,18 +13,23 @@ url <- 'https://data.gov.au/data/dataset/ae652011-f39e-4c6c-91b8-1dc2d2dfee8f/re
 #boa_list <- unlist(strsplit(birds_of_australia, "\\.\\s\\D")) 
 #boa_df <- data.frame(line_no = seq(1,length(boa_list)),text = tolower(boa_list))
 
+# some test project data
 test_df <- data.frame( description =  c("a large fin whale and koala (drop bear)","a small fin whale"
                                      ,"a southern right whale"),
-                    project = c("project 1","project 1","project 2"))
+                    project_name = c("project 1","project 1","project 2"),
+                    
+                    project_id = c("p1","p1","p2"))
 
-ref_data <- test_df %>% mutate(search_text = description, 
-                               project = project)
+# standardise the test data column names for analysis
+ref_data <- test_df %>% mutate(search_text = description,
+                               name = project_name,
+                               ident= project_id)
+# subset the EPBC species 
+raw_epbc <- read_csv(f_name,skip=1) %>% dplyr::rename_all(make.names)  %>%
+  filter(!is.na(EPBC.Threat.Status))
 
-raw_epbc <- read_csv(f_name,skip=1) 
-
-link_df <- raw_epbc %>%
-  dplyr::rename_all(make.names) %>%
-  filter(!is.na(EPBC.Threat.Status)) %>%
+# produce the the linkage data from test and 
+link_df <- raw_epbc  %>%
   mutate( 
     report_name = case_when(is.na(Common.Name) ~ Scientific.Name,
                             Common.Name == "a tree" ~ Scientific.Name,
@@ -41,5 +46,6 @@ link_df <- raw_epbc %>%
   mutate(lookup = map(paste(" ",search_name,sep=""),grep,ref_data$search_text,
       fixed=TRUE,ignore.case=TRUE)) %>% 
   unnest(lookup) %>% 
-  mutate( project = ref_data[lookup,'project']) %>% 
-  distinct(report_name,project)
+  mutate(project_id = ref_data[lookup,'ident'],
+         project_name = ref_data[lookup,'name']) %>% 
+  distinct(Taxon.ID,Scientific.Name,report_name,project_id,project_name)
