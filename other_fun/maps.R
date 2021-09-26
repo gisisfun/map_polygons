@@ -6,7 +6,9 @@ require(sp)
 require(leaflet)
 require(ggplot2)
 require(purrr)
-
+require(spdplyr)
+# https://cran.r-project.org/web/packages/spdplyr/vignettes/spdplyr.html
+require(tidyr)
 
 
 
@@ -318,9 +320,6 @@ points_in_polygons <- long_map_of_nrm %over%
   mutate(pol=row.names(.)) %>%
   select(ref,pol) %>%
   drop_na(ref) %>%
-    mutate(name=long_poly_names[pol,'NRM_REGION'],
+  mutate(name=long_poly_names[pol,'NRM_REGION'],
          id=long_poly_names[pol,'NRM_ID'])
-
-
-
 
