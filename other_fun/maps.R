@@ -90,7 +90,7 @@ longer_data <- function(gj_file,poly_names) {
   return(new_df)
 }
 
-longer_shape <- function(gj_file) {
+flat_geojson <- function(gj_file) {
   srs_list = list()
 
   poly_ref <- 1
@@ -119,7 +119,7 @@ longer_shape <- function(gj_file) {
   return(list(type='Polygon',
               geometries=list(coordinates=srs_list,
                               type=rep('Polygon',(poly_ref-1)))))
-} #longer_shape
+} #flat_geojson
 
 
 
@@ -218,7 +218,7 @@ make_map <- function(Data) {
 
 # Use mapshaper.org website to convert shapefile (shp) to geojson format
 gj_file <- jsonlite::fromJSON(txt='shape//NRM_regions_2020.geojson')
-long_gj_file <- longer_shape(gj_file)
+flat_gj_file <- flat_geojson(gj_file)
 
 # read polygon tabular data from dbf file
 poly_names <- read.dbf('shape//NRM_regions_2020.dbf')
@@ -227,13 +227,13 @@ long_poly_names <- longer_data(gj_file,poly_names)
 # making sp layers from geojson source
 
 map_of_nrm <- make_shape(gj_file,poly_names)
-long_map_of_nrm <- make_shape(long_gj_file,long_poly_names)
+flat_map_of_nrm <- make_shape(flat_gj_file,long_poly_names)
 
 make_map(map_of_nrm)
 
 # making maps
-north_nrm <- subset(long_map_of_nrm,NRM_REGION=='North NRM Region') 
-tas <- subset(long_map_of_nrm,STATE=='TAS')
+north_nrm <- subset(flat_map_of_nrm,NRM_REGION=='North NRM Region') 
+tas <- subset(flat_map_of_nrm,STATE=='TAS')
 australia <- spmap %>% filter(NAME=="Australia") 
 plot(australia,col = "red",
      main="North NRM Region",
@@ -252,8 +252,9 @@ points_spdf <- SpatialPointsDataFrame(points_sp,points_df)
 plot(points_sp,col="black",add=TRUE,pch=21)
 text(points_spdf,labels=points_spdf$name,pos=4,offset=0.5)
 
+# Find Hobart on map
 print("where is hobart")
-print(over(points_spdf,long_map_of_nrm))
+print(over(points_spdf,flat_map_of_nrm))
 
 # the data for point in polygon demo
 ref_data <- data.frame(ref=c('a','b','c'),
@@ -268,10 +269,10 @@ ref_data_sp <- SpatialPoints(cbind(ref_data['target_x'],ref_data['target_y']),cr
 ref_data_spdf <- SpatialPointsDataFrame(ref_data_sp,ref_data)
 
 points_in_polygons <- 
-  long_map_of_nrm %over% 
+  flat_map_of_nrm %over% 
   ref_data_spdf %>% 
   mutate(pol=row.names(.)) %>%
   select(ref,pol) %>%
   drop_na(ref) %>%
-  mutate(name=long_poly_names[pol,'NRM_REGION'],
-         id=long_poly_names[pol,'NRM_ID'])
+  mutate(name=flat_poly_names[pol,'NRM_REGION'],
+         id=flat_poly_names[pol,'NRM_ID'])
