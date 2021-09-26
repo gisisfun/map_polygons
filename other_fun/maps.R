@@ -4,13 +4,13 @@ require(foreign)
 require(geosphere)
 require(sp)
 require(leaflet)
-require(ggplot2)
 require(purrr)
 require(spdplyr)
 # https://cran.r-project.org/web/packages/spdplyr/vignettes/spdplyr.html
 require(tidyr)
-
-
+require(maps)
+australia_poi <- filter(world.cities,country.etc=='Australia')
+# ausplotsR - tern
 
 point_in_poly_join <- function(ref_data,gj_file,poly_names) {
   data_set <- data.frame()
@@ -216,51 +216,6 @@ make_map <- function(Data) {
   return(map_with_labels)
 }
 
-
-
-make_map <- function(Data) {
-  base_map <-  leaflet(Data) %>%
-    addTiles() %>% 
-    setView(133, -23, 4) #%>%            )  
-  base_map
-  
-  # Create HTML labels for tooltip
-  tooltip <- sprintf("name: <b>%s</b> <br> id <b>%s</b>"
-                     ,Data$NRM_REGION
-                     ,Data$NRM_ID
-  ) %>% lapply(htmltools::HTML)
-  
-  # Display map
-  map_with_tooltip <- base_map  %>%
-    addPolygons(stroke = TRUE, 
-                color = "black",
-                fillColor = "white",
-                weight="1", 
-                smoothFactor = 0.3, 
-                fillOpacity = 0.7, 
-                #fillColor = ~colorbins(S4SPDF$colname), 
-                highlight = highlightOptions(
-                  weight = 5, 
-                  fillColor = "grey", 
-                  fillOpacity = 0.7, 
-                  bringToFront = TRUE),
-                label = tooltip
-    ) 
-  #map_with_tooltip
-  
-  map_with_labels <- map_with_tooltip %>%
-    addLabelOnlyMarkers(
-      lng = ~cent_lon, lat = ~cent_lat,
-      label = ~NRM_REGION,
-      labelOptions = labelOptions(noHide = T))
-  map_with_labels
-  ###########################
-  ## SAVE OUTPUT HTML FILE ##
-  ###########################
-  # Save output as HTML widget (or incorporate into Shiny / Flexdashboard)
-  #htmlwidgets::saveWidget(map_with_labels, file="output8.html")
-  return(map_with_labels)
-}
 # Use mapshaper.org website to convert shapefile (shp) to geojson format
 gj_file <- jsonlite::fromJSON(txt='shape//NRM_regions_2020.geojson')
 long_gj_file <- longer_shape(gj_file)
@@ -269,57 +224,54 @@ long_gj_file <- longer_shape(gj_file)
 poly_names <- read.dbf('shape//NRM_regions_2020.dbf')
 long_poly_names <- longer_data(gj_file,poly_names)
 
+# making sp layers from geojson source
 
 map_of_nrm <- make_shape(gj_file,poly_names)
 long_map_of_nrm <- make_shape(long_gj_file,long_poly_names)
 
 make_map(map_of_nrm)
-ref_data <- data.frame(ref=c('a','b','c'),
-                       target_x = c(147.9709,145.5,133),
-                       target_y = c(-36.6,-35.6,-23))
 
-data_set <- point_in_poly_join(ref_data,gj_file,poly_names)
-
-
-# leaflet(map_of_nrm) %>% 
-#   addWMSTiles("https://data.gov.au/data/dataset/wa-state-boundary-geoscape-administrative-boundaries/resource/b3bb7d1a-ca1f-40d8-b529-95e7b83e5327/",
-#               layers="51249941-02c0-43ff-9384-1613eb5246a1",
-#               options = WMSTileOptions(format = "image/png", transparent = FALSE),
-#               attribution = "")
 # making maps
-
-ref_data_sp <- SpatialPoints(cbind(ref_data['target_x'],ref_data['target_y']),crdref)
-ref_data_spdf <- SpatialPointsDataFrame(ref_data_sp,ref_data)
-points_df <- data.frame(name='Hobart',lon=147.3257,lat=-42.8826)
-points_sp <- SpatialPoints(cbind(points_df['lon'],points_df['lat']),crdref)
-points_spdf <- SpatialPointsDataFrame(points_sp,points_df)
-
 north_nrm <- subset(long_map_of_nrm,NRM_REGION=='North NRM Region') 
 tas <- subset(long_map_of_nrm,STATE=='TAS')
-
-plot(tas,col = "red",
+australia <- spmap %>% filter(NAME=="Australia") 
+plot(australia,col = "red",
      main="North NRM Region",
      sub="Tasmania", 
      ylim=c(-43.5,-38),
      xlim=c(146,146.5))
 plot(north_nrm, col = "green",add=TRUE)
 
-
+# add maker for Hobart
 crdref <- CRS('+proj=longlat +datum=WGS84')
+points_df <- data.frame(name='Hobart',lon=147.3257,lat=-42.8826)
+points_sp <- SpatialPoints(cbind(points_df['lon'],points_df['lat']),crdref)
+points_spdf <- SpatialPointsDataFrame(points_sp,points_df)
 
-
+# add to map
 plot(points_sp,col="black",add=TRUE,pch=21)
 text(points_spdf,labels=points_spdf$name,pos=4,offset=0.5)
 
 print("where is hobart")
 print(over(points_spdf,long_map_of_nrm))
 
+# the data for point in polygon demo
+ref_data <- data.frame(ref=c('a','b','c'),
+                       target_x = c(147.9709,145.5,133),
+                       target_y = c(-36.6,-35.6,-23))
 
-points_in_polygons <- long_map_of_nrm %over% 
+# point in polygon with geojson/geosphere
+data_set <- point_in_poly_join(ref_data,gj_file,poly_names)
+
+# point in polygon with sp
+ref_data_sp <- SpatialPoints(cbind(ref_data['target_x'],ref_data['target_y']),crdref)
+ref_data_spdf <- SpatialPointsDataFrame(ref_data_sp,ref_data)
+
+points_in_polygons <- 
+  long_map_of_nrm %over% 
   ref_data_spdf %>% 
   mutate(pol=row.names(.)) %>%
   select(ref,pol) %>%
   drop_na(ref) %>%
   mutate(name=long_poly_names[pol,'NRM_REGION'],
          id=long_poly_names[pol,'NRM_ID'])
-
