@@ -16,9 +16,11 @@ ggplot(scaled_df,aes(x=loan_amount,y=annual_income)) +
 data_dist <- dist(data_for_scaling,method="euclidean")
 
 loans <- hclust(data_dist,method="complete")
-loans_k2 <- cutree(loans,k=6)
+loans_k2 <- cutree(loans,h=70000)
 loans_k2_complete <- mutate(scaled_df, cluster = loans_k2)
 count(loans_k2_complete, cluster)
 
 ggplot(loans_k2_complete, aes(x = loan_amount, y = annual_income, color = factor(cluster))) +
   geom_point()
+
+segment_loans <- mutate(loans_df, cluster = loans_k2_complete)
