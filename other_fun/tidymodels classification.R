@@ -55,8 +55,7 @@ loans_dt_wkfl_fit %>%
 
 # Create cross validation folds
 set.seed(290)
-loans_folds <- vfold_cv(loans_training, v = 100,
-                        strata = loan_default)
+loans_folds <- vfold_cv(loans_training, v = 100)
 
 loans_folds
 
@@ -107,14 +106,14 @@ dt_rs_results %>%
             max = max(.estimate))
 
 
-# Detailed cross validation results
-logistic_rs_results <- loans_logistic_rs %>% 
-  collect_metrics(summarize=FALSE)
+# # Detailed cross validation results
+# logistic_rs_results <- loans_logistic_rs %>% 
+#  collect_metrics(summarize=FALSE)
 
 # Explore model performance for logistic regression
-logistic_rs_results %>% 
-  group_by(.metric) %>% 
-  summarize(min = min(.estimate),
+# logistic_rs_results %>% 
+#  group_by(.metric) %>% 
+#  summarize(min = min(.estimate),
             median = median(.estimate),
             max = max(.estimate))
 
