@@ -1142,8 +1142,7 @@ grant_report_species <- function(Data,sheet_name,start_row=3,
            grant_or_procurement='grant',
            meta_line_item_object_class = object_class,
            meta_line_item_property=property,
-           meta_line_item_value=value,
-           across(any_of(report_meta_cols_out),as.character)) %>% 
+           meta_line_item_value=value) %>% 
     mutate(across(starts_with("meta"),as.character))
 }
 
@@ -1177,8 +1176,7 @@ grant_report_species_category <- function(Data,sheet_name,start_row=3,
            grant_or_procurement='grant',
            meta_line_item_object_class = object_class,
            meta_line_item_property=property,
-           meta_line_item_value=value,
-           across(any_of(report_meta_cols_out),as.character)) %>% 
+           meta_line_item_value=value) %>% 
     mutate(across(starts_with("meta"),as.character))
 }
 
