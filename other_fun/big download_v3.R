@@ -646,7 +646,7 @@ all_sub_category_extract_no_context_no_species <- function(Data,worksheet,
     filter(!is.na(category)) %>%
     mutate(context=NA, report_species=NA) %>%
     filter_by_service_target_measures_and_distinct(service,target_measure)
-
+  
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
     reported_text <- as_label(enquo(reported))
@@ -929,12 +929,12 @@ sub_category_extract_no_context_species <- function(Data,worksheet, service,
 }
 
 sub_category_extract_no_context_no_species <- function(Data,worksheet,service,
-                                                   target_measure,measured,
-                                                   reported,invoiced, 
-                                                   category,sub_category, 
-                                                   object_class=NA,property=NA,
-                                                   value=NA,context=NA,
-                                                   species=NA) {
+                                                       target_measure,measured,
+                                                       reported,invoiced, 
+                                                       category,sub_category, 
+                                                       object_class=NA,property=NA,
+                                                       value=NA,context=NA,
+                                                       species=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
@@ -1121,7 +1121,7 @@ RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
 
 Report_Raw <- bind_rows(
   Report_Raw,
-  no_category_extract_context_no_species(
+  no_category_extract_no_context_no_species(
     Data=RLP_Data,
     worksheet = 'RLP - Communicati...tput Report',
     service= "Communication materials",
@@ -1129,7 +1129,6 @@ Report_Raw <- bind_rows(
     measured = number_of_communication_materials_published,
     invoiced = number_of_communication_materials_published,
     reported = number_of_communication_materials_published,
-    context=type_of_communication_material_published,
     object_class='Communication materials',property='Publication',
     value='Total Data Sets'))
 
@@ -1137,7 +1136,7 @@ BR_Data <- load_mult_wbooks(c('M05'), 'Communication mat...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
-  no_category_extract_context_no_species(
+  no_category_extract_no_context_no_species(
     Data=BR_Data,
     worksheet = 'Communication mat...inal Report',
     service= "Communication materials",
@@ -1145,7 +1144,6 @@ Report_Raw <- bind_rows(
     measured = number_of_communication_materials_published,
     invoiced = number_of_communication_materials_published,
     reported = number_of_communication_materials_published,
-    context=type_of_communication_material_published,
     object_class='Communication materials',property='Publication',
     value='Total Published Communication Materials'))  
 
@@ -1155,7 +1153,7 @@ BR_Data <- load_mult_wbooks(c('M05'), 'Community engagem...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
-  sub_category_extract_context_no_species(
+  sub_category_extract_no_context_no_species(
     Data=RLP_Data,
     worksheet = 'RLP - Community e...tput Report',
     service = "Community/stakeholder engagement",
@@ -1163,12 +1161,11 @@ Report_Raw <- bind_rows(
     measured = number_of_community_stakeholder_engagement_type_events,
     invoiced = number_of_community_stakeholder_engagement_type_events,
     reported = number_of_community_stakeholder_engagement_type_events,
-    category = type_of_community_stakeholder_engagement_activity,
     context=purpose_of_engagement,
     sub_category = 'Conferences / seminars',
     object_class='Community Engagement',property='conferences / seminars',
     value='Total Events'),
-  sub_category_extract_context_no_species(
+  sub_category_extract_no_context_no_species(
     Data=BR_Data,
     worksheet = 'Community engagem...inal Report',
     service = "Community/stakeholder engagement",
@@ -1176,12 +1173,11 @@ Report_Raw <- bind_rows(
     measured = number_of_community_stakeholder_engagement_type_events,
     invoiced = number_of_community_stakeholder_engagement_type_events,
     reported = number_of_community_stakeholder_engagement_type_events,
-    category = type_of_community_stakeholder_engagement_activity,
     sub_category = 'Conferences / seminars',
     context=purpose_of_engagement,
     object_class='Community Engagement',property='conferences / seminars',
     value='Total Events'),
-  sub_category_extract_context_no_species(
+  sub_category_extract_no_context_no_species(
     Data=RLP_Data,
     worksheet = 'RLP - Community e...tput Report',
     service = "Community/stakeholder engagement",
@@ -1190,7 +1186,6 @@ Report_Raw <- bind_rows(
     invoiced = number_of_community_stakeholder_engagement_type_events,
     reported = number_of_community_stakeholder_engagement_type_events,
     category=type_of_community_stakeholder_engagement_activity,
-    context=purpose_of_engagement,
     sub_category='Field days',
     object_class='Community Engagement',property='field days',
     value='Total Events'),
@@ -3127,5 +3122,3 @@ dbWriteTable(con, "projects_species", projects_species,overwrite=TRUE)
 dbWriteTable(con, "projects_reports_species", projects_reports_species,
              overwrite=TRUE)
 dbDisconnect(con)
-
-
