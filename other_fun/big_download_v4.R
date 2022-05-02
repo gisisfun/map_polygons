@@ -7,7 +7,7 @@ library(forcats)
 require(janitor)
 require(rlang)
 require(purrr)
-require(jsonlite)
+#require(jsonlite)
 library(DBI)
 library(RSQLite)
 
@@ -1414,7 +1414,8 @@ Report_Raw <- bind_rows(
     reported = area_ha_of_feral_free_enclosures,
     category = newly_established_or_maintained_feral_free_enclosure,
     species = targeted_species_being_protected,
-    object_class='Feral-free Enclosures',property='Establishing and maintaining',
+    object_class='Feral-free Enclosures',
+    property='Establishing and maintaining',
     value='Total Area (Ha)'),
   all_sub_category_extract_no_context_species(
     Data=RLP_Data,
@@ -1426,7 +1427,8 @@ Report_Raw <- bind_rows(
     reported = number_of_days_maintaining_feral_free_enclosures,
     category = newly_established_or_maintained_feral_free_enclosure,
     species = targeted_species_being_protected,
-    object_class='Feral-free Enclosures',property='Establishing and maintaining',
+    object_class='Feral-free Enclosures',
+    property='Establishing and maintaining',
     value='Total Days'),
   all_sub_category_extract_no_context_species(
     Data=RLP_Data,
@@ -1438,7 +1440,8 @@ Report_Raw <- bind_rows(
     reported = number_of_feral_free_enclosures,
     category = newly_established_or_maintained_feral_free_enclosure,
     species = targeted_species_being_protected,
-    object_class='Feral-Free Enclosures',property='Establishing and maintaining',
+    object_class='Feral-Free Enclosures',
+    property='Establishing and maintaining',
     value='Total Enclosures'))
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
@@ -1456,7 +1459,8 @@ Report_Raw <- bind_rows(
     reported = number_of_days_maintaining_monitoring_regimes, 
     category = established_or_maintained,
     sub_category = 'Maintained',
-    object_class='Monitoring Regimes',property='Establishing and maintaining',
+    object_class='Monitoring Regimes',
+    property='Establishing and maintaining',
     value='Total Days'),
   sub_category_extract_no_context_no_species(
     Data=RLP_Data,
@@ -1468,7 +1472,8 @@ Report_Raw <- bind_rows(
     reported = number_of_monitoring_regimes,
     category = established_or_maintained,
     sub_category='Established',
-    object_class='Monitoring Regimes',property='Establishing and maintaining',
+    object_class='Monitoring Regimes',
+    property='Establishing and maintaining',
     value='Total Monitoring Regimes'))
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
@@ -1543,8 +1548,10 @@ Report_Raw <- bind_rows(
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Fire manage...tput Report')
+BR_Data <- load_mult_wbooks(c('M05'),'Fire management S...inal Report')
 
-fire_management_actions_ha <-  
+Report_Raw <- bind_rows(
+  Report_Raw,
   all_sub_category_extract_no_context_no_species(
     Data=RLP_Data,
     worksheet = 'RLP - Fire manage...tput Report',
@@ -1555,11 +1562,7 @@ fire_management_actions_ha <-
     reported = area_ha_treated_by_fire_management_action,
     category = initial_or_follow_up_control,
     object_class='Fire Management',property='Control Measures',
-    value='Total Area (Ha)')
-
-BR_Data <- load_mult_wbooks(c('M05'),'Fire management S...inal Report')
-
-fire_management_actions_ha_br <-
+    value='Total Area (Ha)'),
   all_sub_category_extract_no_context_no_species(
     Data=BR_Data,
     worksheet = 'Fire management S...inal Report',
@@ -1570,7 +1573,7 @@ fire_management_actions_ha_br <-
     reported = area_ha_protected_by_fire_management_action,
     category = initial_or_follow_up_control,
     object_class='Fire Management',property='Control Measures',
-    value='Total Area (Ha)') 
+    value='Total Area (Ha)'))
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Flora surve...tput Report')
