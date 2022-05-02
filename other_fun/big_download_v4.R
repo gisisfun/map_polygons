@@ -439,8 +439,8 @@ character_cols <- c(
 
 extract_date_cols <- c('grant_or_procurement','report_to_date','extract_date')
 
-meri_outcomes_indicator_ref <- c(
-  "natural_cultural_assets_managed",
+meri_outcomes_indicator_ref <- 
+  c("natural_cultural_assets_managed",
   "threatened_species",
   "threatened_ecological_communities" , 
   "migratory_species",
@@ -608,9 +608,9 @@ filter_by_service_target_measures_and_distinct <- function(Data,service,
 }
 
 no_category_extract_no_context_no_species <- function(
-    Data,worksheet,service,target_measure,measured,reported,invoiced,
-    object_class=NA,property=NA,value=NA,category=NA,context=NA,sub_category=NA)
-  {
+  Data,worksheet,service,target_measure,measured,reported,invoiced,
+  object_class=NA,property=NA,value=NA,category=NA,context=NA,sub_category=NA)
+{
   fred <-
     Data %>%
     select(project_id,grant_id,external_id,internal_order_number, work_order_id,
@@ -648,8 +648,8 @@ no_category_extract_no_context_no_species <- function(
 }
 
 all_sub_category_extract_no_context_no_species <- function(
-    Data,worksheet,service,target_measure,measured,reported, invoiced,category,
-    object_class=NA,property=NA,value=NA,context=NA,species=NA,sub_category=NA) {
+  Data,worksheet,service,target_measure,measured,reported, invoiced,category,
+  object_class=NA,property=NA,value=NA,context=NA,species=NA,sub_category=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
@@ -684,8 +684,8 @@ all_sub_category_extract_no_context_no_species <- function(
 }
 
 sub_category_extract_no_context_species <- function(
-    Data,worksheet, service,target_measure, measured,reported,invoiced,category,
-    sub_category,species,object_class=NA, property=NA,value=NA,context=NA) {
+  Data,worksheet, service,target_measure, measured,reported,invoiced,category,
+  sub_category,species,object_class=NA, property=NA,value=NA,context=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
@@ -724,8 +724,8 @@ sub_category_extract_no_context_species <- function(
 }
 
 sub_category_extract_no_context_no_species <- function(
-    Data,worksheet,service,target_measure,measured,reported,invoiced,category,
-    sub_category,object_class=NA,property=NA,value=NA,context=NA,species=NA) {
+  Data,worksheet,service,target_measure,measured,reported,invoiced,category,
+  sub_category,object_class=NA,property=NA,value=NA,context=NA,species=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
@@ -734,7 +734,7 @@ sub_category_extract_no_context_no_species <- function(
            invoiced={{ invoiced }},
            reported={{ reported }}) %>%
     filter(category==sub_category) %>%
-    mutate(context=NA, report_species=NA) %>%
+    mutate(context=NA, report_species=NA,context=NA) %>%
     filter_by_service_target_measures_and_distinct(service,target_measure) %>%
     filter_na()
   
@@ -761,8 +761,8 @@ sub_category_extract_no_context_no_species <- function(
 }
 
 all_sub_category_extract_no_context_species <- function(
-    Data,worksheet,service,target_measure, measured,reported,invoiced,category,
-    species, object_class=NA,property=NA,value=NA,sub_category=NA,context=NA) {
+  Data,worksheet,service,target_measure, measured,reported,invoiced,category,
+  species, object_class=NA,property=NA,value=NA,sub_category=NA,context=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
@@ -775,7 +775,7 @@ all_sub_category_extract_no_context_species <- function(
     filter(!is.na(category)) %>%
     filter_by_service_target_measures_and_distinct(service,target_measure) %>%
     filter_na()
-
+  
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
     reported_text <- as_label(enquo(reported))
@@ -801,8 +801,8 @@ all_sub_category_extract_no_context_species <- function(
 }
 
 grant_report_no_species <- function(
-    Data,sheet_name,start_row=3, measured_col,reported_col,invoiced_col,
-    context_col,object_class=NA,property=NA,value=NA) {
+  Data,sheet_name,start_row=3, measured_col,reported_col,invoiced_col,
+  context_col,object_class=NA,property=NA,value=NA) {
   fred <- Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            contracted_end_date,last_modified_2,measured={{ measured_col }},
@@ -830,8 +830,8 @@ grant_report_no_species <- function(
 }
 
 grant_report_species <- function(
-    Data,sheet_name,start_row=3,measured_col,reported_col,invoiced_col,
-    context_col,species_col, object_class=NA, property=NA,value=NA) {
+  Data,sheet_name,start_row=3,measured_col,reported_col,invoiced_col,
+  context_col,species_col, object_class=NA, property=NA,value=NA) {
   fred <- Data %>%
     filter(!is.na({{ species_col}}) | {{ species_col}}=='NA') %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
@@ -859,9 +859,9 @@ grant_report_species <- function(
 }
 
 grant_report_species_category <- function(
-    Data,sheet_name,start_row=3,category_col,measured_col,reported_col,
-    invoiced_col,context_col,species_col,object_class=NA,property=NA,
-    value=NA,sub_category=NA) {
+  Data,sheet_name,start_row=3,category_col,measured_col,reported_col,
+  invoiced_col,context_col,species_col,object_class=NA,property=NA,
+  value=NA,sub_category=NA) {
   fred <- Data %>%
     filter(!is.na({{ species_col}}) | {{ species_col}}=='NA') %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
@@ -985,7 +985,7 @@ Report_Raw <- bind_rows(
     measured = number_of_community_stakeholder_engagement_type_events,
     invoiced = number_of_community_stakeholder_engagement_type_events,
     reported = number_of_community_stakeholder_engagement_type_events,
-    context=purpose_of_engagement,
+    category=type_of_community_stakeholder_engagement_activity,
     sub_category = 'Conferences / seminars',
     object_class='Community Engagement',property='conferences / seminars',
     value='Total Events'),
@@ -997,8 +997,8 @@ Report_Raw <- bind_rows(
     measured = number_of_community_stakeholder_engagement_type_events,
     invoiced = number_of_community_stakeholder_engagement_type_events,
     reported = number_of_community_stakeholder_engagement_type_events,
+    category=type_of_community_stakeholder_engagement_activity,
     sub_category = 'Conferences / seminars',
-    context=purpose_of_engagement,
     object_class='Community Engagement',property='conferences / seminars',
     value='Total Events'),
   sub_category_extract_no_context_no_species(
@@ -2850,7 +2850,8 @@ writeData(wb=wb,sheet="Projects-Reports-Species",
 load('dataset_metadata.Rdata')
 addWorksheet(wb=wb,sheetName="MetaData")
 writeData(wb=wb,sheet="MetaData",
-          metadata,
+          fred,
+          #metadata,
           withFilter=TRUE,
           headerStyle = headerStyle)
 
