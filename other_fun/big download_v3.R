@@ -402,7 +402,7 @@ report_cols_out <- c('MERIT_Reports_link','report_financial_year',' report_statu
                      'site_id','report_last_modified','category','subcategory','report_species',
                      'total_to_be_delivered','fy_target','measured','invoiced','reported','report_stage', 
                      'report_activity_type','report_from_date','report_to_date','report_duration',
-                     'report_classification','report_interval')
+                     'report_classificaion','report_interval')
 report_meta_cols_out <- c('meta_col_measured','meta_col_reported','meta_col_invoiced',
                           'meta_col_category','meta_text_subcategory','meta_col_report_species',
                           'meta_line_item_object_class',' meta_line_item_property','meta_line_item_value',
