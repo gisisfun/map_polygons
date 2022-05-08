@@ -504,7 +504,7 @@ whats_my_interval <- function(stage, report_from_date, report_to_date){
     str_detect(stage,"^Annual.*") ~ "Annual",
     str_detect(stage,"^Adjustment.*") ~ "Adjustment",
     str_detect(stage,"2018/2019 - 3M Outputs Report 04") ~ "Quarter 4",
-    TRUE ~ "Other")
+    TRUE ~ stage)
 }
 
 
