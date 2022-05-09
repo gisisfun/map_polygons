@@ -401,7 +401,7 @@ report_cols_in <- c('site_id','report_status','status_2','report_financial_year'
 report_cols_out <- c('MERIT_Reports_link','report_financial_year',' report_status','service','target_measure',
                      'site_id','report_last_modified','category','subcategory','report_species',
                      'total_to_be_delivered','fy_target','measured','invoiced','reported','report_stage', 
-                     'report_activity_type','report_from_date','report_to_date','report_duration',
+                     'report_activity_type','report_from_date','report_to_date','report_frequency',
                      'report_classificaion','report_interval')
 report_meta_cols_out <- c('meta_col_measured','meta_col_reported','meta_col_invoiced',
                           'meta_col_category','meta_text_subcategory','meta_col_report_species',
@@ -455,6 +455,58 @@ load("management_units.Rdata")
 load("sprat_lookup.Rdata")
 
 
+
+whats_my_classification <- function(stage) {
+  case_when(
+    !str_detect(stage,"^Adjustment.*") & 
+      str_detect(stage,"Outputs Report$") ~ "Outputs",
+    !str_detect(stage,"^Adjustment.*") & 
+      str_detect(stage,"^Outputs Report.*") ~"Outputs",
+    str_detect(stage,"2018/2019 - 3M Outputs Report 04") ~ "Outputs",
+    str_detect(stage,"^Annual.*") ~ "Annual",
+    str_detect(stage,"^Outcomes Report 1") ~ "Short Term",
+    str_detect(stage,"^Outcomes Report 1.*") ~ "Short Term",
+    str_detect(stage,"^Outcomes Report 2") ~ "Medium Term",
+    str_detect(stage,"^Outcomes Report 2.*") ~ "Medium Term",
+    str_detect(stage,"^Adjustment.*") ~ "Adjustment",
+    TRUE ~ stage)
+}
+
+
+whats_my_frequency <- function(stage, report_from_date, report_to_date) {
+  case_when(
+    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report.*") & 
+      round(as.numeric(difftime(report_to_date, report_from_date, 
+                                units = "days"))/(365.25/12),0) <= 3 ~ "Quarter",
+    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report.*") & 
+      round(as.numeric(difftime(report_to_date, report_from_date, 
+                                units = "days"))/(365.25/12),0) == 6 ~ "Semester",
+    str_detect(stage,"^Outcomes Report 1")  ~ "Short Term",
+    str_detect(stage,"^Outcomes Report 2")  ~ "Medium Term",
+    str_detect(stage,"^Outcomes Report 1.*")  ~ "Short Term",
+    str_detect(stage,"^Outcomes Report 2.*")  ~ "Medium Term",
+    !str_detect(stage,"Adjustment") & 
+      str_detect(stage,"Quarter 1 Outputs Report$")  ~ "Quarter",
+    !str_detect(stage,"Adjustment") & 
+      str_detect(stage,"Quarter 2 Outputs Report$")  ~ "Quarter",
+    !str_detect(stage,"Adjustment") & 
+      str_detect(stage,"Quarter 3 Outputs Report$")  ~ "Quarter",
+    !str_detect(stage,"Adjustment") 
+    & str_detect(stage,"Quarter 4 Outputs Report$")  ~ "Quarter",
+    !str_detect(stage,"Adjustment") & 
+      str_detect(stage,"Semester 1 Outputs Report$")  ~ "Semester",
+    !str_detect(stage,"Adjustment") & 
+      str_detect(stage,"Semester 2 Outputs Report$")  ~ "Semester",
+    str_detect(stage,"^Annual.*")  ~ "Annual",
+    str_detect(stage,"^Adjustment.*")  ~ "Adjustment",
+    str_detect(stage,"2018/2019 - 3M Outputs Report 04")  ~ "Quarter",
+    # round(as.numeric(difftime(report_to_date, report_from_date, 
+    #                           units = "days"))/(365.25/12),0) <= 3 ~ "Quarter",
+    # round(as.numeric(difftime(report_to_date, report_from_date, 
+    #                           units = "days"))/(365.25/12),0) == 6 ~ "Semester",
+    TRUE ~ "Other")
+}
+
 whats_my_interval <- function(stage, report_from_date, report_to_date){
   case_when(
     str_detect(stage,"Progress Report 1.*") ~ "Other",
@@ -464,47 +516,68 @@ whats_my_interval <- function(stage, report_from_date, report_to_date){
     str_detect(stage,"^Outcomes Report 2") ~ "Other",
     str_detect(stage,"^Outcomes Report 2.*") ~ "Other",
     str_detect(stage,"^Outputs Report 1") & round(
-      as.numeric(difftime(report_to_date, 
-                          report_from_date, 
-                          units = "days"))/ (365.25/12),0) <= 3 ~ "Quarter 1",
-    str_detect(stage,"^Outputs Report 1") & round(
-      as.numeric(difftime(report_to_date, 
-                          report_from_date, 
-                          units = "days"))/(365.25/12),0) == 6 ~ "Semester 1",
-    str_detect(stage,"^Outputs Report 2") & round(
-      as.numeric(difftime(report_to_date, 
-                          report_from_date, 
-                          units = "days"))/ (365.25/12),0) <= 3 ~ "Quarter 2",
-    str_detect(stage,"^Outputs Report 2") & round(
-      as.numeric(difftime(report_to_date, 
-                          report_from_date, 
-                          units = "days"))/ (365.25/12),0) == 6 ~ "Semester 2",
-    str_detect(stage,"^Outputs Report 3") & round(
-      as.numeric(difftime(report_to_date, 
-                          report_from_date, 
-                          units = "days"))/ (365.25/12),0) <= 3 ~ "Quarter 3",
-    str_detect(stage,"^Outputs Report 3") & round(
-      as.numeric(difftime(report_to_date, 
-                          report_from_date, 
-                          units = "days"))/ (365.25/12),0) == 6 ~ "Semester 3",
-    str_detect(stage,"^Outputs Report 4") & round(
-      as.numeric(difftime(report_to_date, 
-                          report_from_date, 
-                          units = "days"))/ (365.25/12),0) <= 3 ~ "Quarter 4",
-    str_detect(stage,"^Outputs Report 4") & round(
-      as.numeric(difftime(report_to_date, 
-                          report_from_date, 
-                          units = "days"))/  (365.25/12),0) == 6 ~ "Semester 4",
-    str_detect(stage,"Quarter 1 Outputs Report") ~ "Quarter 1",
-    str_detect(stage,"Quarter 2 Outputs Report") ~ "Quarter 2",
-    str_detect(stage,"Quarter 3 Outputs Report") ~ "Quarter 3",
-    str_detect(stage,"Quarter 4 Outputs Report") ~ "Quarter 4",
-    str_detect(stage,"Semester 1 Outputs Report") ~ "Semester 1",
-    str_detect(stage,"Semester 2 Outputs Report") ~ "Semester 2",
+      as.numeric(difftime(
+        report_to_date, 
+        report_from_date, 
+        units = "days"))/ (365.25/12),0) <= 3 ~ "Quarter 1",
+    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report 1") & 
+      round(
+        as.numeric(difftime(
+          report_to_date, 
+          report_from_date, 
+          units = "days"))/(365.25/12),0) == 6 ~ "Semester 1",
+    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report 2") & 
+      round(
+        as.numeric(difftime(
+          report_to_date, 
+          report_from_date, 
+          units = "days"))/ (365.25/12),0) <= 3 ~ "Quarter 2",
+    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report 2") & 
+      round(
+        as.numeric(difftime(
+          report_to_date, 
+          report_from_date, 
+          units = "days"))/ (365.25/12),0) == 6 ~ "Semester 2",
+    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report 3") & 
+      round(
+        as.numeric(difftime(
+          report_to_date, 
+          report_from_date, 
+          units = "days"))/ (365.25/12),0) <= 3 ~ "Quarter 3",
+    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report 3") & 
+      round(
+        as.numeric(difftime(
+          report_to_date, 
+          report_from_date, 
+          units = "days"))/ (365.25/12),0) == 6 ~ "Semester 3",
+    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report 4") & 
+      round(
+        as.numeric(difftime(
+          report_to_date, 
+          report_from_date, 
+          units = "days"))/ (365.25/12),0) <= 3 ~ "Quarter 4",
+    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report 4") & 
+      round(
+        as.numeric(difftime(
+          report_to_date, 
+          report_from_date, 
+          units = "days"))/  (365.25/12),0) == 6 ~ "Semester 4",
+    !str_detect(stage,"Adjustment") & 
+      str_detect(stage,"Quarter 1 Outputs Report") ~ "Quarter 1",
+    !str_detect(stage,"Adjustment") & 
+      str_detect(stage,"Quarter 2 Outputs Report") ~ "Quarter 2",
+    !str_detect(stage,"Adjustment") & 
+      str_detect(stage,"Quarter 3 Outputs Report") ~ "Quarter 3",
+    !str_detect(stage,"Adjustment") & 
+      str_detect(stage,"Quarter 4 Outputs Report") ~ "Quarter 4",
+    !str_detect(stage,"Adjustment") & 
+      str_detect(stage,"Semester 1 Outputs Report") ~ "Semester 1",
+    !str_detect(stage,"Adjustment") & 
+      str_detect(stage,"Semester 2 Outputs Report") ~ "Semester 2",
     str_detect(stage,"^Annual.*") ~ "Annual",
     str_detect(stage,"^Adjustment.*") ~ "Adjustment",
     str_detect(stage,"2018/2019 - 3M Outputs Report 04") ~ "Quarter 4",
-    TRUE ~ stage)
+    TRUE ~ "Other")
 }
 
 
@@ -2957,32 +3030,27 @@ Report_Raw <- bind_rows(
     object_class='Sites',property='Wildlife rescue',
     value='Species'))
 
-
 report_class <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
                           sheet='Activity Summary') %>% 
   clean_names() %>%   
   select(activity_id,program,sub_program,stage,report_from_date,
          report_to_date)  %>%
-  mutate(dur=interval(as.Date(report_from_date,origin="1899-12-30"),
-                      as.Date(report_to_date,origin="1899-12-30")) %/% 
-           months(1))  %>%
+  # mutate(dur=interval(as.Date(report_from_date,origin="1899-12-30"),
+  #                     as.Date(report_to_date,origin="1899-12-30")) %/% 
+  #          months(1))  %>%
   mutate(
-    report_duration=case_when(
-      dur == 3 ~ 'Quarter',
-      dur >=5 & dur<=6 ~ "Semester",
-      dur >=11 & dur==12 ~ "Annual",
-      dur >= 29 & dur < 40 ~ "Short Term",
-      dur >= 47 ~ "Medium Term",
-      TRUE ~ 'other'),
-    report_classificaion=case_when(
-      report_duration %in% c('Quater','Semester') ~ 'Outputs',
-      TRUE ~ report_duration),
+    report_frequency=whats_my_frequency(
+      stage,
+      as.Date(report_from_date,origin="1899-12-30"),
+      as.Date(report_to_date,origin="1899-12-30")),
+    report_classificaion=whats_my_classification(stage),
     report_interval = 
       whats_my_interval(
         stage,
         as.Date(report_from_date,origin = "1899-12-30"), 
         as.Date(report_to_date,origin = "1899-12-30"))) %>%
-  select(activity_id,report_duration,report_classificaion,report_interval)
+  select(activity_id,report_frequency,report_classificaion,report_interval)
+
 
 projects_reports <- 
   Report_Raw %>%
