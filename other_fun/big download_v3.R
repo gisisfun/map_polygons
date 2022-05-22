@@ -380,51 +380,74 @@ library(RSQLite)
 # > getSheetNames(paste('M13 ',extract_date,'.xlsx',sep=''))
 # [1] "RLP Core Services report"        "RLP Core Services annual report"
 
-extract_date <- '2022-04-11'
+extract_date <- '2022-05-16'
 
-project_cols_in <- c('project_id','grant_id','external_id','internal_order_number','work_order_id',
-                     'program','sub_program','name','description','management_unit',
-                     'organisation','status','report_financial_year','start_date','end_date',
-                     'contracted_start_date','contracted_end_date', 'last_modified_2')
-project_cols_out <- c('grant_id','external_id','internal_order_number','work_order_id','organisation',
-                      'management_unit','mu_id','mu_state','project_name','program','sub_program',
-                      'project_start_date','project_end_date','project_contracted_start_date',
+project_cols_in <- c('project_id','grant_id','external_id',
+                     'internal_order_number','work_order_id',
+                     'program','sub_program','name','description',
+                     'management_unit','organisation','status',
+                     'report_financial_year','start_date','end_date',
+                     'contracted_start_date','contracted_end_date', 
+                     'last_modified_2')
+project_cols_out <- c('grant_id','external_id','internal_order_number',
+                      'work_order_id','organisation',
+                      'management_unit','mu_id','mu_state','project_name',
+                      'program','sub_program','project_start_date',
+                      'project_end_date','project_contracted_start_date',
                       'project_contracted_end_date','project_status')
 
-project_meta_cols_out <- c('meta_source_sheetname','meta_col_project_start_date','meta_col_project_end_date',
-                           'meta_col_project_contracted_start_date','meta_col_project_contracted_end_date',
+project_meta_cols_out <- c('meta_source_sheetname','meta_col_project_start_date',
+                           'meta_col_project_end_date',
+                           'meta_col_project_contracted_start_date',
+                           'meta_col_project_contracted_end_date',
                            'meta_col_project_name')
 
 # Reports
-report_cols_in <- c('site_id','report_status','status_2','report_financial_year','stage',
-                    'activity_id','activity_type','report_from_date','report_to_date')
-report_cols_out <- c('MERIT_Reports_link','report_financial_year',' report_status','service','target_measure',
-                     'site_id','report_last_modified','category','subcategory','report_species',
-                     'total_to_be_delivered','fy_target','measured','invoiced','reported','report_stage', 
-                     'report_activity_type','report_from_date','report_to_date','report_frequency',
-                     'report_classificaion','report_interval')
-report_meta_cols_out <- c('meta_col_measured','meta_col_reported','meta_col_invoiced',
-                          'meta_col_category','meta_text_subcategory','meta_col_report_species',
-                          'meta_line_item_object_class',' meta_line_item_property','meta_line_item_value',
-                          'meta_col_project_status','meta_col_report_last_modified','meta_col_report_stage',
+report_cols_in <- c('site_id','report_status','status_2',
+                    'report_financial_year','stage','activity_id',
+                    'activity_type','report_from_date','report_to_date')
+report_cols_out <- c('MERIT_Reports_link','report_financial_year',
+                     'report_status','service','target_measure',
+                     'site_id','report_last_modified','category','subcategory',
+                     'report_species','total_to_be_delivered','fy_target',
+                     'measured','invoiced','reported','report_stage', 
+                     'report_activity_type','report_from_date','report_to_date')
+report_meta_cols_out <- c('meta_col_measured','meta_col_reported',
+                          'meta_col_invoiced','meta_col_category',
+                          'meta_text_subcategory',
+                          'meta_col_report_species',
+                          'meta_line_item_object_class',
+                          'meta_line_item_property','meta_line_item_value',
+                          'meta_col_project_status',
+                          'meta_col_report_last_modified',
+                          'meta_col_report_stage',
                           'meta_col_report_activity_type')
 
 #Species Etc
-species_etc_cols_out <- c('primary_secondary_outcomes','primary_outcomes','secondary_outcomes',
-                          'primary_secondary_investment_priorities','primary_investment_priority',
+species_etc_cols_out <- c('primary_secondary_outcomes','primary_outcomes',
+                          'secondary_outcomes',
+                          'primary_secondary_investment_priorities',
+                          'primary_investment_priority',
                           'secondary_investment_priority','assets',
-                          'natural_cultural_assets_managed','threatened_species',
-                          'threatened_ecological_communities','migratory_species',
-                          'ramsar_wetland,world_heritage_area','community_awareness_participation_in_nrm',
-                          'indigenous_cultural_values,indigenous_ecological_knowledge','remnant_vegetation',
-                          'aquatic_and_coastal_systems_including_wetlands','epbc','tec','ramsar')
+                          'natural_cultural_assets_managed',
+                          'threatened_species',
+                          'threatened_ecological_communities',
+                          'migratory_species',
+                          'ramsar_wetland,world_heritage_area',
+                          'community_awareness_participation_in_nrm',
+                          'indigenous_cultural_values',
+                          'indigenous_ecological_knowledge',
+                          'remnant_vegetation',
+                          'aquatic_and_coastal_systems_including_wetlands',
+                          'epbc','tec','ramsar')
 
-numeric_cols <- c('measured','invoiced','reported','report_from_date','report_to_date',
-                  'start_date','end_date','contracted_start_date','contracted_end_date',
+numeric_cols <- c('measured','invoiced','reported','report_from_date',
+                  'report_to_date','start_date','end_date',
+                  'contracted_start_date','contracted_end_date',
                   'last_modified_2')
 
-character_cols <- c('management_unit','external_id','site_id','organisation','report_species',
-                    'category','context')
+character_cols <- c('management_unit','external_id','site_id','organisation',
+                    'report_species','category','context')
 
 extract_date_cols <- c('grant_or_procurement','report_to_date','extract_date')
 
@@ -454,133 +477,6 @@ meri_outcomes_indicator_ref <- c("natural_cultural_assets_managed",
 load("management_units.Rdata")
 load("sprat_lookup.Rdata")
 
-
-
-whats_my_classification <- function(stage) {
-  case_when(
-    !str_detect(stage,"^Adjustment.*") & 
-      str_detect(stage,"Outputs Report$") ~ "Outputs",
-    !str_detect(stage,"^Adjustment.*") & 
-      str_detect(stage,"^Outputs Report.*") ~"Outputs",
-    str_detect(stage,"2018/2019 - 3M Outputs Report 04") ~ "Outputs",
-    str_detect(stage,"^Annual.*") ~ "Annual",
-    str_detect(stage,"^Outcomes Report 1") ~ "Short Term",
-    str_detect(stage,"^Outcomes Report 1.*") ~ "Short Term",
-    str_detect(stage,"^Outcomes Report 2") ~ "Medium Term",
-    str_detect(stage,"^Outcomes Report 2.*") ~ "Medium Term",
-    str_detect(stage,"^Adjustment.*") ~ "Adjustment",
-    TRUE ~ stage)
-}
-
-
-whats_my_frequency <- function(stage, report_from_date, report_to_date) {
-  case_when(
-    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report.*") & 
-      round(as.numeric(difftime(report_to_date, report_from_date, 
-                                units = "days"))/(365.25/12),0) <= 3 ~ "Quarter",
-    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report.*") & 
-      round(as.numeric(difftime(report_to_date, report_from_date, 
-                                units = "days"))/(365.25/12),0) == 6 ~ "Semester",
-    str_detect(stage,"^Outcomes Report 1")  ~ "Short Term",
-    str_detect(stage,"^Outcomes Report 2")  ~ "Medium Term",
-    str_detect(stage,"^Outcomes Report 1.*")  ~ "Short Term",
-    str_detect(stage,"^Outcomes Report 2.*")  ~ "Medium Term",
-    !str_detect(stage,"Adjustment") & 
-      str_detect(stage,"Quarter 1 Outputs Report$")  ~ "Quarter",
-    !str_detect(stage,"Adjustment") & 
-      str_detect(stage,"Quarter 2 Outputs Report$")  ~ "Quarter",
-    !str_detect(stage,"Adjustment") & 
-      str_detect(stage,"Quarter 3 Outputs Report$")  ~ "Quarter",
-    !str_detect(stage,"Adjustment") 
-    & str_detect(stage,"Quarter 4 Outputs Report$")  ~ "Quarter",
-    !str_detect(stage,"Adjustment") & 
-      str_detect(stage,"Semester 1 Outputs Report$")  ~ "Semester",
-    !str_detect(stage,"Adjustment") & 
-      str_detect(stage,"Semester 2 Outputs Report$")  ~ "Semester",
-    str_detect(stage,"^Annual.*")  ~ "Annual",
-    str_detect(stage,"^Adjustment.*")  ~ "Adjustment",
-    str_detect(stage,"2018/2019 - 3M Outputs Report 04")  ~ "Quarter",
-    # round(as.numeric(difftime(report_to_date, report_from_date, 
-    #                           units = "days"))/(365.25/12),0) <= 3 ~ "Quarter",
-    # round(as.numeric(difftime(report_to_date, report_from_date, 
-    #                           units = "days"))/(365.25/12),0) == 6 ~ "Semester",
-    TRUE ~ "Other")
-}
-
-whats_my_interval <- function(stage, report_from_date, report_to_date){
-  case_when(
-    str_detect(stage,"Progress Report 1.*") ~ "Other",
-    str_detect(stage,"Progress Report 2.*") ~ "Other",
-    str_detect(stage,"^Outcomes Report 1") ~ "Other",
-    str_detect(stage,"^Outcomes Report 1.*") ~ "Other",
-    str_detect(stage,"^Outcomes Report 2") ~ "Other",
-    str_detect(stage,"^Outcomes Report 2.*") ~ "Other",
-    str_detect(stage,"^Outputs Report 1") & round(
-      as.numeric(difftime(
-        report_to_date, 
-        report_from_date, 
-        units = "days"))/ (365.25/12),0) <= 3 ~ "Quarter 1",
-    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report 1") & 
-      round(
-        as.numeric(difftime(
-          report_to_date, 
-          report_from_date, 
-          units = "days"))/(365.25/12),0) == 6 ~ "Semester 1",
-    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report 2") & 
-      round(
-        as.numeric(difftime(
-          report_to_date, 
-          report_from_date, 
-          units = "days"))/ (365.25/12),0) <= 3 ~ "Quarter 2",
-    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report 2") & 
-      round(
-        as.numeric(difftime(
-          report_to_date, 
-          report_from_date, 
-          units = "days"))/ (365.25/12),0) == 6 ~ "Semester 2",
-    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report 3") & 
-      round(
-        as.numeric(difftime(
-          report_to_date, 
-          report_from_date, 
-          units = "days"))/ (365.25/12),0) <= 3 ~ "Quarter 3",
-    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report 3") & 
-      round(
-        as.numeric(difftime(
-          report_to_date, 
-          report_from_date, 
-          units = "days"))/ (365.25/12),0) == 6 ~ "Semester 3",
-    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report 4") & 
-      round(
-        as.numeric(difftime(
-          report_to_date, 
-          report_from_date, 
-          units = "days"))/ (365.25/12),0) <= 3 ~ "Quarter 4",
-    !str_detect(stage,"Adjustment") & str_detect(stage,"^Outputs Report 4") & 
-      round(
-        as.numeric(difftime(
-          report_to_date, 
-          report_from_date, 
-          units = "days"))/  (365.25/12),0) == 6 ~ "Semester 4",
-    !str_detect(stage,"Adjustment") & 
-      str_detect(stage,"Quarter 1 Outputs Report") ~ "Quarter 1",
-    !str_detect(stage,"Adjustment") & 
-      str_detect(stage,"Quarter 2 Outputs Report") ~ "Quarter 2",
-    !str_detect(stage,"Adjustment") & 
-      str_detect(stage,"Quarter 3 Outputs Report") ~ "Quarter 3",
-    !str_detect(stage,"Adjustment") & 
-      str_detect(stage,"Quarter 4 Outputs Report") ~ "Quarter 4",
-    !str_detect(stage,"Adjustment") & 
-      str_detect(stage,"Semester 1 Outputs Report") ~ "Semester 1",
-    !str_detect(stage,"Adjustment") & 
-      str_detect(stage,"Semester 2 Outputs Report") ~ "Semester 2",
-    str_detect(stage,"^Annual.*") ~ "Annual",
-    str_detect(stage,"^Adjustment.*") ~ "Adjustment",
-    str_detect(stage,"2018/2019 - 3M Outputs Report 04") ~ "Quarter 4",
-    TRUE ~ "Other")
-}
-
-
 str_to_colname <- function(a_col) {
   a_col_name <- rlang::parse_expr(a_col)
 }
@@ -591,8 +487,7 @@ read_sheet <- function(sheet_name,fname,start_row=3) {
                     startRow = start_row) %>%
     clean_names() %>%
     mutate(across(contains("management_unit"),as.character),
-           across(c(grant_id,external_id,internal_order_number, 
-                    work_order_id),as.character))
+           across(c(grant_id,external_id,internal_order_number, work_order_id),as.character))
 }
 
 read_sheet_for_bulk <- function(sheet_name,fname,start_row=3) {
@@ -659,14 +554,16 @@ RAMSAR <- RLP_Outcomes_short_term_indicator %>%
   distinct()
 
 output_targets <- read_sheet(sheet='Project services and targets',
-                                      fname=paste('M01 ',extract_date,'.xlsx',sep=''),
-                                      start_row = 1) %>%
+                             fname=paste('M01 ',extract_date,'.xlsx',sep=''),
+                             start_row = 1) %>%
   mutate(total_to_be_delivered=as.numeric(total_to_be_delivered)) %>%
-  select(program,sub_program,grant_id,service,target_measure,total_to_be_delivered,
+  select(grant_id,service,
+         target_measure,total_to_be_delivered,
          `2018/2019`=x2018_2019,`2019/2020`=x2019_2020,
          `2020/2021`=x2020_2021,`2021/2022`=x2021_2022,
          `2021/2022`=x2021_2022,`2022/2023`=x2022_2023) %>%
-  pivot_longer(cols= starts_with("20"),names_to='report_financial_year',values_to='fy_target') %>%
+  pivot_longer(cols= starts_with("20"),names_to='report_financial_year',
+               values_to='fy_target') %>%
   mutate(fy_target=as.numeric(fy_target)) 
 
 filter_by_service_target_measures_and_distinct <- function(Data,service,
@@ -676,7 +573,8 @@ filter_by_service_target_measures_and_distinct <- function(Data,service,
            across(all_of(character_cols),as.character),
            grant_or_procurement='procurement',
            service=service, target_measure=target_measure) %>%
-    inner_join(output_targets,by=c("grant_id","service","target_measure","report_financial_year")) %>%
+    inner_join(output_targets,by=c("grant_id","service","target_measure",
+                                   "report_financial_year")) %>%
     filter(!is.na(total_to_be_delivered)) %>%
     distinct() 
 }
@@ -3030,31 +2928,9 @@ Report_Raw <- bind_rows(
     object_class='Sites',property='Wildlife rescue',
     value='Species'))
 
-report_class <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
-                          sheet='Activity Summary') %>% 
-  clean_names() %>%   
-  select(activity_id,program,sub_program,stage,report_from_date,
-         report_to_date)  %>%
-  # mutate(dur=interval(as.Date(report_from_date,origin="1899-12-30"),
-  #                     as.Date(report_to_date,origin="1899-12-30")) %/% 
-  #          months(1))  %>%
-  mutate(
-    report_frequency=whats_my_frequency(
-      stage,
-      as.Date(report_from_date,origin="1899-12-30"),
-      as.Date(report_to_date,origin="1899-12-30")),
-    report_classificaion=whats_my_classification(stage),
-    report_interval = 
-      whats_my_interval(
-        stage,
-        as.Date(report_from_date,origin = "1899-12-30"), 
-        as.Date(report_to_date,origin = "1899-12-30"))) %>%
-  select(activity_id,report_frequency,report_classificaion,report_interval)
-
-
 projects_reports <- 
   Report_Raw %>%
-  left_join(report_class,on='activity_id') %>%
+  # filter(!is.na(measured) | !is.na(reported ) | !is.na(invoiced))  %>%
   mutate(total_to_be_delivered = ifelse(!is.na(total_to_be_delivered) ,total_to_be_delivered,0),
          reported = ifelse(is.na(reported),measured,reported),
          across(c('total_to_be_delivered','measured','invoiced','reported'),as.numeric),
@@ -3152,9 +3028,6 @@ meri_outcomes_indicators <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
   group_by(grant_id) %>%
   summarize(across(all_of(meri_outcomes_indicator_ref),last))
 
-
-
-    
 projects_reports_species <- projects_reports %>% 
   left_join(primary_secondary_investment_priorities,by='grant_id') %>%
   left_join(primary_investment_priority,by='grant_id') %>%
