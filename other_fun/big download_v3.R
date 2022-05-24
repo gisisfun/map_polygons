@@ -13,15 +13,15 @@ library(RSQLite)
 
 # Big Download of MERIT
 
-# The rest of the downloads from 2 onwards are a selection of programs and the reports relevant to that 
-# program.  So to reproduce these, you would select the same program/sub-programs, then 
-# tick all of the boxes below "Activity summary" that appear.  From memory I had to 
-# exclude a couple of discontinued forms from biodiversity fund and C4oC as they were 
-# causing download issues.
+# The rest of the downloads from 2 onwards are a selection of programs and the 
+# reports relevant to that program.  So to reproduce these, you would select 
+# the same program/sub-programs, then tick all of the boxes below "Activity 
+# summary" that appear.  From memory I had to exclude a couple of discontinued 
+# forms from biodiversity fund and C4oC as they were causing download issues.
 # The program categories I chose are:
 
-# 1.	All tabs up to and including the "Activity summary" tab.  No filters applied 
-# (so all projects)
+# 1.	All tabs up to and including the "Activity summary" tab.  No filters 
+# applied (so all projects)
 # > getSheetNames(paste('M01 ',extract_date,'.xlsx',sep=''))
 # [1] "Projects"                     "Output Targets"               "Sites"                       
 # [4] "Documents"                    "Activity Summary"             "Risks and Threats"           
@@ -487,7 +487,8 @@ read_sheet <- function(sheet_name,fname,start_row=3) {
                     startRow = start_row) %>%
     clean_names() %>%
     mutate(across(contains("management_unit"),as.character),
-           across(c(grant_id,external_id,internal_order_number, work_order_id),as.character))
+           across(c(grant_id,external_id,internal_order_number, 
+                    work_order_id),as.character))
 }
 
 read_sheet_for_bulk <- function(sheet_name,fname,start_row=3) {
@@ -506,9 +507,24 @@ load_mult_wbooks <- function(files_vec,sheetname) {
   the_file <- map2_dfr(sheets_vec,files_vec,read_sheet_for_bulk) 
 }
 
+conc_species_col <- function(Data) {
+  
+  #,"measured","reported","invoiced"
+  cols_but_species <- 
+  Data_out <- Data %>% 
+    group_by_at(
+      names(Data)[! names(Data) %in% 
+                    c("report_species")]) %>%
+    #distinct() %>%
+    summarise(report_species = str_c(report_species,collapse="|")) %>% 
+    ungroup()  
+}
+
 filter_na <- function(Data) {
   Data <- Data %>%
-    filter(!is.na(measured) | !is.na(reported) | !is.na(invoiced)) 
+    conc_species_col() %>%
+    filter(!is.na(measured) | !is.na(reported) | !is.na(invoiced) | 
+             !is.na(report_species)) 
 }
 
 # load the investment priority data for R data file
