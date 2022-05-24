@@ -508,16 +508,14 @@ load_mult_wbooks <- function(files_vec,sheetname) {
 }
 
 conc_species_col <- function(Data) {
-  
-  #,"measured","reported","invoiced"
-  cols_but_species <- 
   Data_out <- Data %>% 
-    group_by_at(
-      names(Data)[! names(Data) %in% 
-                    c("report_species")]) %>%
-    #distinct() %>%
-    summarise(report_species = str_c(report_species,collapse="|")) %>% 
-    ungroup()  
+    group_by(across(c(-measured,-reported,-invoiced,-report_species))) %>%
+    summarise(report_species = str_c(report_species,collapse="|"),
+              measured = first(measured),
+              reported = first(reported),
+              invoiced = first(invoiced)) %>% 
+    ungroup() %>%
+    mutate(report_species = str_replace_all(report_species,'\n','|'))
 }
 
 filter_na <- function(Data) {
