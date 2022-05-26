@@ -2969,11 +2969,11 @@ projects_reports <-
          meta_col_project_contracted_start_date='contracted_start_date',
          meta_col_project_contracted_end_date='contracted_end_date',
          meta_col_project_name='name') %>%
-  select(-project_id,-activity_id,-context,-meta_col_status,-description)  %>%
+  select(-project_id,-activity_id,-meta_col_status,-description)  %>%
   select(any_of(project_cols_out),any_of(report_cols_out),
          any_of(project_meta_cols_out),any_of(report_meta_cols_out),
-         any_of(extract_date_cols))
-# 193915 > 183066 distinct rows
+         any_of(extract_date_cols)) %>% distinct()
+# 193915 > 183066 distinct rows must some dups in there so distinct it
 RLP_Outcomes <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''), 
                           sheet='RLP Outcomes',
                           startRow = 1) %>%
