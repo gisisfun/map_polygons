@@ -407,14 +407,14 @@ report_cols_in <- c('site_id','report_status','status_2',
                     'report_financial_year','stage','activity_id',
                     'activity_type','report_from_date','report_to_date')
 report_cols_out <- c('MERIT_Reports_link','report_financial_year',
-                     'report_status','service','target_measure',
+                     'report_status','service','target_measure','context',
                      'site_id','report_last_modified','category','subcategory',
                      'report_species','total_to_be_delivered','fy_target',
                      'measured','invoiced','reported','report_stage', 
                      'report_activity_type','report_from_date','report_to_date')
 report_meta_cols_out <- c('meta_col_measured','meta_col_reported',
                           'meta_col_invoiced','meta_col_category',
-                          'meta_text_subcategory',
+                          'meta_text_subcategory','meta_col_context',
                           'meta_col_report_species',
                           'meta_line_item_object_class',
                           'meta_line_item_property','meta_line_item_value',
@@ -509,8 +509,9 @@ load_mult_wbooks <- function(files_vec,sheetname) {
 
 conc_species_col <- function(Data) {
   Data_out <- Data %>% 
-    group_by(across(c(-measured,-reported,-invoiced,-report_species))) %>%
+    group_by(across(c(-measured,-reported,-invoiced,-report_species,-context))) %>%
     summarise(report_species = str_c(report_species,collapse="|"),
+              context = str_c(context,collapse="|"),
               measured = first(measured),
               reported = first(reported),
               invoiced = first(invoiced)) %>% 
@@ -2944,7 +2945,6 @@ Report_Raw <- bind_rows(
 
 projects_reports <- 
   Report_Raw %>%
-  # filter(!is.na(measured) | !is.na(reported ) | !is.na(invoiced))  %>%
   mutate(total_to_be_delivered = ifelse(!is.na(total_to_be_delivered) ,total_to_be_delivered,0),
          reported = ifelse(is.na(reported),measured,reported),
          across(c('total_to_be_delivered','measured','invoiced','reported'),as.numeric),
@@ -2970,9 +2970,10 @@ projects_reports <-
          meta_col_project_contracted_end_date='contracted_end_date',
          meta_col_project_name='name') %>%
   select(-project_id,-activity_id,-context,-meta_col_status,-description)  %>%
-  select(any_of(project_cols_out),any_of(report_cols_out),any_of(project_meta_cols_out),any_of(report_meta_cols_out),
-         any_of(extract_date_cols)) 
-
+  select(any_of(project_cols_out),any_of(report_cols_out),
+         any_of(project_meta_cols_out),any_of(report_meta_cols_out),
+         any_of(extract_date_cols))
+# 193915 > 183066 distinct rows
 RLP_Outcomes <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''), 
                           sheet='RLP Outcomes',
                           startRow = 1) %>%
