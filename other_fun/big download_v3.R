@@ -10,469 +10,613 @@ require(purrr)
 require(jsonlite)
 library(DBI)
 library(RSQLite)
+# The R code transforms data in MERIT (NoSQL) to line item (SQL) by project and 
+# project report views.
 
-# Big Download of MERIT
-
+# projects - reports - species view
+# A grants view of procurement activity report data with grants activities 
+# presented with procurement-like columns (measured,reported and invoiced). 
+# Additional report species content related to each project are recorded.
+# * Will require mapping of balance of report data items to provide complete
+# coverage of availalble data.
+#
+# projects - species view
+# A projects line item view with summarised project assets, investment priorities, 
+# report species and MNES categories against investment priority. 
+#
+# Data Source: The Big Download of MERIT (Spreadsheets)
+#
 # The rest of the downloads from 2 onwards are a selection of programs and the 
 # reports relevant to that program.  So to reproduce these, you would select 
 # the same program/sub-programs, then tick all of the boxes below "Activity 
 # summary" that appear.  From memory I had to exclude a couple of discontinued 
 # forms from biodiversity fund and C4oC as they were causing download issues.
 # The program categories I chose are:
-
+#
 # 1.	All tabs up to and including the "Activity summary" tab.  No filters 
 # applied (so all projects)
 # > getSheetNames(paste('M01 ',extract_date,'.xlsx',sep=''))
-# [1] "Projects"                     "Output Targets"               "Sites"                       
-# [4] "Documents"                    "Activity Summary"             "Risks and Threats"           
-# [7] "MERI_Budget"                  "MERI_Outcomes"                "MERI_Monitoring"             
-# [10] "MERI_Project Partnerships"    "MERI_Project Implementation"  "MERI_Key Evaluation Question"
-# [13] "MERI_Priorities"              "MERI_WHS and Case Study"      "MERI_Baseline"               
-# [16] "MERI_Event"                   "MERI_Approvals"               "RLP Outcomes"                
-# [19] "RLP Project Details"          "RLP Key Threats"              "Project services and targets"
-# [22] "Reports"                      "Report Summary"               "Data_set_Summary"            
-# [25] "Blog"                         "MERI_Attachments"             "MERI_Project Assets" 
-
-
+# [1] "Projects"                     "Output Targets"              
+# [3] "Sites"                        "Documents"                   
+# [5] "Activity Summary"             "Risks and Threats"           
+# [7] "MERI_Budget"                  "MERI_Outcomes"               
+# [9] "MERI_Monitoring"              "MERI_Project Partnerships"   
+# [11] "MERI_Project Implementation"  "MERI_Key Evaluation Question"
+# [13] "MERI_Priorities"              "MERI_WHS and Case Study"     
+# [15] "MERI_Baseline"                "MERI_Event"                  
+# [17] "MERI_Approvals"               "RLP Outcomes"                
+# [19] "RLP Project Details"          "RLP Key Threats"             
+# [21] "Project services and targets" "Reports"                     
+# [23] "Report Summary"               "Data_set_Summary"            
+# [25] "Blog"                         "MERI_Attachments"            
+# [27] "MERI_Project Assets"
+#
 # 2.	Agriculture Stewardship + Future Drought Fund
 # > getSheetNames(paste('M02 ',extract_date,'.xlsx',sep=''))
-# [1] "RLP - Output WHS ...tput Report" "RLP - Baseline da...tput Report" "RLP - Communicati...tput Report"
-# [4] "RLP - Community e...tput Report" "RLP - Controlling...tput Report" "RLP - Pest animal...tput Report"
-# [7] "RLP - Management ...tput Report" "RLP - Debris remo...tput Report" "RLP - Erosion Man...tput Report"
-# [10] "RLP - Maintaining...tput Report" "RLP - Establishin...tput Report" "RLP - Establishin...tput Rep(1)"
-# [13] "RLP - Establishin...tput Rep(2)" "RLP - Farm Manage...tput Report" "RLP - Fauna surve...tput Report"
-# [16] "RLP - Fire manage...tput Report" "RLP - Flora surve...tput Report" "RLP - Habitat aug...tput Report"
-# [19] "RLP - Identifying...tput Report" "RLP - Improving h...tput Report" "RLP - Improving l...tput Report"
-# [22] "RLP - Disease man...tput Report" "RLP - Negotiation...tput Report" "RLP - Obtaining a...tput Report"
-# [25] "RLP - Pest animal...tput Rep(1)" "RLP - Plant survi...tput Report" "RLP - Project pla...tput Report"
-# [28] "RLP - Remediating...tput Report" "RLP - Weed treatm...tput Report" "RLP - Revegetatin...tput Report"
-# [31] "RLP - Site prepar...tput Report" "RLP - Skills and ...tput Report" "RLP - Soil testin...tput Report"
-# [34] "RLP - Emergency I...tput Report" "RLP - Water quali...tput Report" "RLP - Weed distri...tput Report"
-# [37] "RLP - Change Mana...tput Report" "RLP - Adapting to...tput Report" "Seed Collecting -...tput Report"
-# [40] "RLP Annual Report"               "RLP Short term project outcomes"
-
+# [1] "RLP - Output WHS ...tput Report" "RLP - Baseline da...tput Report"
+# [3] "RLP - Communicati...tput Report" "RLP - Community e...tput Report"
+# [5] "RLP - Controlling...tput Report" "RLP - Pest animal...tput Report"
+# [7] "RLP - Management ...tput Report" "RLP - Debris remo...tput Report"
+# [9] "RLP - Erosion Man...tput Report" "RLP - Maintaining...tput Report"
+# [11] "RLP - Establishin...tput Report" "RLP - Establishin...tput Rep(1)"
+# [13] "RLP - Establishin...tput Rep(2)" "RLP - Farm Manage...tput Report"
+# [15] "RLP - Fauna surve...tput Report" "RLP - Fire manage...tput Report"
+# [17] "RLP - Flora surve...tput Report" "RLP - Habitat aug...tput Report"
+# [19] "RLP - Identifying...tput Report" "RLP - Improving h...tput Report"
+# [21] "RLP - Improving l...tput Report" "RLP - Disease man...tput Report"
+# [23] "RLP - Negotiation...tput Report" "RLP - Obtaining a...tput Report"
+# [25] "RLP - Pest animal...tput Rep(1)" "RLP - Plant survi...tput Report"
+# [27] "RLP - Project pla...tput Report" "RLP - Remediating...tput Report"
+# [29] "RLP - Weed treatm...tput Report" "RLP - Revegetatin...tput Report"
+# [31] "RLP - Site prepar...tput Report" "RLP - Skills and ...tput Report"
+# [33] "RLP - Soil testin...tput Report" "RLP - Emergency I...tput Report"
+# [35] "RLP - Water quali...tput Report" "RLP - Weed distri...tput Report"
+# [37] "RLP - Change Mana...tput Report" "RLP - Adapting to...tput Report"
+# [39] "Seed Collecting -...tput Report" "RLP Annual Report"              
+# [41] "RLP Short term project outcomes"
+#
 # 3.	Biodiversity Fund. 
 # > getSheetNames(paste('M03 ',extract_date,'.xlsx',sep=''))
-# [1] "Outcomes Outcomes...inal report" "Evaluation Outcom...inal report" "Lessons Learned O...inal report"
-# [4] "Administration Ac...inistration" "Participant Infor...inistration" "Overview of Proje...tage report"
-# [7] "Environmental, Ec...tage report" "Implementation Up...tage report" "Lessons Learned a...tage report"
-# [10] "Survey Informatio...y - general" "Flora Survey Deta...y - general" "Participant Infor...y - general"
-# [13] "Sampling Site Inf...methodology" "Field Sheet 1 - G...methodology" "Field Sheet 2 - E...methodology"
-# [16] "Field Sheet 3 - O...methodology" "Field Sheet 4 - C...methodology" "Field Sheet 5 - S...methodology"
-# [19] "Event Details Com... Engagement" "Participant Infor... Engagement" "Materials Provide... Engagement"
-# [22] "Fence Details Fencing"           "Participant Information Fencing" "Pest Management D... Management"
-# [25] "Fence Details Pest Management"   "Participant Infor... Management" "Revegetation Deta...evegetation"
-# [28] "Participant Infor...evegetation" "Weed Treatment De...d Treatment" "Participant Infor...d Treatment"
-# [31] "Site Planning Det...ng and Risk" "Threatening Proce...ng and Risk" "Participant Infor...ng and Risk"
-# [34] "Upload of stage 1...orting data" "Seed Collection D... Collection" "Participant Infor... Collection"
-# [37] "Site Preparation ...Preparation" "Weed Treatment De...Preparation" "Participant Infor...Preparation"
-# [40] "Training Details ...Development" "Skills Developmen...Development" "Participant Infor...Development"
-# [43] "Fire Management D... Management" "Participant Infor... Managem(1)" "Water Management"               
-# [46] "Survey Informatio...y - gene(1)" "Fauna Survey Deta...y - general" "Participant Infor...y - gene(1)"
-# [49] "Evidence of Pest ...imal Survey" "Pest Observation ...imal Survey" "Participant Infor...imal Survey"
-# [52] "Evidence of Weed ... Monitoring" "Weed Observation ... Monitoring" "Participant Infor... Monitoring"
-# [55] "Debris Removal De...ris Removal" "Participant Infor...ris Removal" "Conservation Work...Communities"
-# [58] "Participant Infor...Communities" "Vegetation Monito...ival Survey" "Participant Infor...ival Survey"
-# [61] "Plant Propagation...Propagation" "Participant Infor...Propagation" "Plan Development ...Development"
-# [64] "Participant Infor...Developm(1)" "Research Information Research"   "Participant Infor...on Research"
-# [67] "Access Control De...rastructure" "Infrastructure De...rastructure" "Participant Infor...rastructure"
-# [70] "Indigenous Knowledge Transfer"   "Heritage Conserva...onservation" "Expected Heritage...onservation"
-# [73] "Participant Infor...onservation" "Site Monitoring Plan"            "General informati...lity Survey"
-# [76] "Environmental Inf...lity Survey" "Water Quality Mea...lity Survey" "Conservation Grazing Management"
-# [79] "Management Practice Change"      "Erosion Managemen... Management" "Participant Infor... Managem(2)"
-# [82] "Indigenous Employ... Businesses" "Indigenous Busine... Businesses" "Participant Infor... assessment"
-# [85] "Vegetation Assess... assessment" "Site Condition Co... assessment" "Landscape Context... assessment"
-# [88] "Threatening Proce... assessment" "Biodiversity Fund... Monitoring" "Asset Protection ... Management"
-# [91] "Ecological Burn D... Management" "Participant Infor... Managem(3)" "Disease Managemen... Management"
-# [94] "Participant Infor... Managem(4)"
-
+# [1] "Outcomes Outcomes...inal report" "Evaluation Outcom...inal report"
+# [3] "Lessons Learned O...inal report" "Administration Ac...inistration"
+# [5] "Participant Infor...inistration" "Overview of Proje...tage report"
+# [7] "Environmental, Ec...tage report" "Implementation Up...tage report"
+# [9] "Lessons Learned a...tage report" "Survey Informatio...y - general"
+# [11] "Flora Survey Deta...y - general" "Participant Infor...y - general"
+# [13] "Sampling Site Inf...methodology" "Field Sheet 1 - G...methodology"
+# [15] "Field Sheet 2 - E...methodology" "Field Sheet 3 - O...methodology"
+# [17] "Field Sheet 4 - C...methodology" "Field Sheet 5 - S...methodology"
+# [19] "Event Details Com... Engagement" "Participant Infor... Engagement"
+# [21] "Materials Provide... Engagement" "Fence Details Fencing"          
+# [23] "Participant Information Fencing" "Pest Management D... Management"
+# [25] "Fence Details Pest Management"   "Participant Infor... Management"
+# [27] "Revegetation Deta...evegetation" "Participant Infor...evegetation"
+# [29] "Weed Treatment De...d Treatment" "Participant Infor...d Treatment"
+# [31] "Site Planning Det...ng and Risk" "Threatening Proce...ng and Risk"
+# [33] "Participant Infor...ng and Risk" "Upload of stage 1...orting data"
+# [35] "Seed Collection D... Collection" "Participant Infor... Collection"
+# [37] "Site Preparation ...Preparation" "Weed Treatment De...Preparation"
+# [39] "Participant Infor...Preparation" "Training Details ...Development"
+# [41] "Skills Developmen...Development" "Participant Infor...Development"
+# [43] "Fire Management D... Management" "Participant Infor... Managem(1)"
+# [45] "Water Management"                "Survey Informatio...y - gene(1)"
+# [47] "Fauna Survey Deta...y - general" "Participant Infor...y - gene(1)"
+# [49] "Evidence of Pest ...imal Survey" "Pest Observation ...imal Survey"
+# [51] "Participant Infor...imal Survey" "Evidence of Weed ... Monitoring"
+# [53] "Weed Observation ... Monitoring" "Participant Infor... Monitoring"
+# [55] "Debris Removal De...ris Removal" "Participant Infor...ris Removal"
+# [57] "Conservation Work...Communities" "Participant Infor...Communities"
+# [59] "Vegetation Monito...ival Survey" "Participant Infor...ival Survey"
+# [61] "Plant Propagation...Propagation" "Participant Infor...Propagation"
+# [63] "Plan Development ...Development" "Participant Infor...Developm(1)"
+# [65] "Research Information Research"   "Participant Infor...on Research"
+# [67] "Access Control De...rastructure" "Infrastructure De...rastructure"
+# [69] "Participant Infor...rastructure" "Indigenous Knowledge Transfer"  
+# [71] "Heritage Conserva...onservation" "Expected Heritage...onservation"
+# [73] "Participant Infor...onservation" "Site Monitoring Plan"           
+# [75] "General informati...lity Survey" "Environmental Inf...lity Survey"
+# [77] "Water Quality Mea...lity Survey" "Conservation Grazing Management"
+# [79] "Management Practice Change"      "Erosion Managemen... Management"
+# [81] "Participant Infor... Managem(2)" "Indigenous Employ... Businesses"
+# [83] "Indigenous Busine... Businesses" "Participant Infor... assessment"
+# [85] "Vegetation Assess... assessment" "Site Condition Co... assessment"
+# [87] "Landscape Context... assessment" "Threatening Proce... assessment"
+# [89] "Biodiversity Fund... Monitoring" "Asset Protection ... Management"
+# [91] "Ecological Burn D... Management" "Participant Infor... Managem(3)"
+# [93] "Disease Managemen... Management" "Participant Infor... Managem(4)"
+#
 # 4.	Caring for our country 2
 # > getSheetNames(paste('M04 ',extract_date,'.xlsx',sep=''))
-# [1] "Outcomes Outcomes...inal report" "Evaluation Outcom...inal report" "Lessons Learned O...inal report"
-# [4] "Administration Ac...inistration" "Participant Infor...inistration" "Overview of Proje...tage report"
-# [7] "Environmental, Ec...tage report" "Implementation Up...tage report" "Lessons Learned a...tage report"
-# [10] "Event Details Com... Engagement" "Participant Infor... Engagement" "Materials Provide... Engagement"
-# [13] "Management Practice Change"      "Site Planning Det...ng and Risk" "Threatening Proce...ng and Risk"
-# [16] "Participant Infor...ng and Risk" "Training Details ...Development" "Skills Developmen...Development"
-# [19] "Participant Infor...Development" "Plan Development ...Development" "Participant Infor...Developm(1)"
-# [22] "Survey Informatio...y - general" "Flora Survey Deta...y - general" "Participant Infor...y - general"
-# [25] "Conservation Work...Communities" "Participant Infor...Communities" "Pest Management D... Management"
-# [28] "Fence Details Pest Management"   "Participant Infor... Management" "Research Information Research"  
-# [31] "Participant Infor...on Research" "Weed Treatment De...d Treatment" "Participant Infor...d Treatment"
-# [34] "Indigenous Knowledge Transfer"   "Site Monitoring Plan"            "Survey Informatio...y - gene(1)"
-# [37] "Fauna Survey Deta...y - general" "Participant Infor...y - gene(1)" "Evidence of Weed ... Monitoring"
-# [40] "Weed Observation ... Monitoring" "Participant Infor... Monitoring" "Fence Details Fencing"          
-# [43] "Participant Information Fencing" "Conservation Grazing Management" "Fire Management D... Management"
-# [46] "Participant Infor... Managem(1)" "Access Control De...rastructure" "Infrastructure De...rastructure"
-# [49] "Participant Infor...rastructure" "Evidence of Pest ...imal Survey" "Pest Observation ...imal Survey"
-# [52] "Participant Infor...imal Survey" "Vegetation Monito...ival Survey" "Participant Infor...ival Survey"
-# [55] "Erosion Managemen... Management" "Participant Infor... Managem(2)" "Revegetation Deta...evegetation"
-# [58] "Participant Infor...evegetation" "Seed Collection D... Collection" "Participant Infor... Collection"
-# [61] "Indigenous Employ... Businesses" "Indigenous Busine... Businesses" "Water Management"               
-# [64] "Site Preparation ...Preparation" "Weed Treatment De...Preparation" "Participant Infor...Preparation"
-# [67] "Sampling Site Inf...methodology" "Field Sheet 1 - G...methodology" "Field Sheet 2 - E...methodology"
-# [70] "Field Sheet 3 - O...methodology" "Field Sheet 4 - C...methodology" "Field Sheet 5 - S...methodology"
-# [73] "General informati...lity Survey" "Environmental Inf...lity Survey" "Water Quality Mea...lity Survey"
-# [76] "Debris Removal De...ris Removal" "Participant Infor...ris Removal" "Plant Propagation...Propagation"
-# [79] "Participant Infor...Propagation" "Feral Animal Abun... assessment" "Feral Animal Freq... assessment"
-# [82] "Heritage Conserva...onservation" "Expected Heritage...onservation" "Participant Infor...onservation"
-# [85] "Participant Infor... assessment" "Vegetation Assess... assessment" "Site Condition Co... assessment"
-# [88] "Landscape Context... assessment" "Threatening Proce... assessment" "Annual Stage Report"            
-# [91] "Post revegetation... management" "Post revegetation... managem(1)" "Post revegetation... managem(2)"
-# [94] "Post revegetation... managem(3)" "Disease Managemen... Management" "Participant Infor... Managem(3)"
-# [97] "1. Community Gran...nity Grants" "2. Community Gran...nity Grants" "Attachments Community Grants" 
-
+# [1] "Outcomes Outcomes...inal report" "Evaluation Outcom...inal report"
+# [3] "Lessons Learned O...inal report" "Administration Ac...inistration"
+# [5] "Participant Infor...inistration" "Overview of Proje...tage report"
+# [7] "Environmental, Ec...tage report" "Implementation Up...tage report"
+# [9] "Lessons Learned a...tage report" "Event Details Com... Engagement"
+# [11] "Participant Infor... Engagement" "Materials Provide... Engagement"
+# [13] "Management Practice Change"      "Site Planning Det...ng and Risk"
+# [15] "Threatening Proce...ng and Risk" "Participant Infor...ng and Risk"
+# [17] "Training Details ...Development" "Skills Developmen...Development"
+# [19] "Participant Infor...Development" "Plan Development ...Development"
+# [21] "Participant Infor...Developm(1)" "Survey Informatio...y - general"
+# [23] "Flora Survey Deta...y - general" "Participant Infor...y - general"
+# [25] "Conservation Work...Communities" "Participant Infor...Communities"
+# [27] "Pest Management D... Management" "Fence Details Pest Management"  
+# [29] "Participant Infor... Management" "Research Information Research"  
+# [31] "Participant Infor...on Research" "Weed Treatment De...d Treatment"
+# [33] "Participant Infor...d Treatment" "Indigenous Knowledge Transfer"  
+# [35] "Site Monitoring Plan"            "Survey Informatio...y - gene(1)"
+# [37] "Fauna Survey Deta...y - general" "Participant Infor...y - gene(1)"
+# [39] "Evidence of Weed ... Monitoring" "Weed Observation ... Monitoring"
+# [41] "Participant Infor... Monitoring" "Fence Details Fencing"          
+# [43] "Participant Information Fencing" "Conservation Grazing Management"
+# [45] "Fire Management D... Management" "Participant Infor... Managem(1)"
+# [47] "Access Control De...rastructure" "Infrastructure De...rastructure"
+# [49] "Participant Infor...rastructure" "Evidence of Pest ...imal Survey"
+# [51] "Pest Observation ...imal Survey" "Participant Infor...imal Survey"
+# [53] "Vegetation Monito...ival Survey" "Participant Infor...ival Survey"
+# [55] "Erosion Managemen... Management" "Participant Infor... Managem(2)"
+# [57] "Revegetation Deta...evegetation" "Participant Infor...evegetation"
+# [59] "Seed Collection D... Collection" "Participant Infor... Collection"
+# [61] "Indigenous Employ... Businesses" "Indigenous Busine... Businesses"
+# [63] "Water Management"                "Site Preparation ...Preparation"
+# [65] "Weed Treatment De...Preparation" "Participant Infor...Preparation"
+# [67] "Sampling Site Inf...methodology" "Field Sheet 1 - G...methodology"
+# [69] "Field Sheet 2 - E...methodology" "Field Sheet 3 - O...methodology"
+# [71] "Field Sheet 4 - C...methodology" "Field Sheet 5 - S...methodology"
+# [73] "General informati...lity Survey" "Environmental Inf...lity Survey"
+# [75] "Water Quality Mea...lity Survey" "Debris Removal De...ris Removal"
+# [77] "Participant Infor...ris Removal" "Plant Propagation...Propagation"
+# [79] "Participant Infor...Propagation" "Feral Animal Abun... assessment"
+# [81] "Feral Animal Freq... assessment" "Heritage Conserva...onservation"
+# [83] "Expected Heritage...onservation" "Participant Infor...onservation"
+# [85] "Participant Infor... assessment" "Vegetation Assess... assessment"
+# [87] "Site Condition Co... assessment" "Landscape Context... assessment"
+# [89] "Threatening Proce... assessment" "Annual Stage Report"            
+# [91] "Post revegetation... management" "Post revegetation... managem(1)"
+# [93] "Post revegetation... managem(2)" "Post revegetation... managem(3)"
+# [95] "Disease Managemen... Management" "Participant Infor... Managem(3)"
+# [97] "1. Community Gran...nity Grants" "2. Community Gran...nity Grants"
+# [99] "Attachments Community Grants" 
+#
 # 5.	Bushfire+Recovery+for+Species+and+Landscapes+Program, 
 #     Bushfire+Wildlife+and+Habitat+Recovery
 # > getSheetNames(paste('M05 ',extract_date,'.xlsx',sep=''))
-# [1] "State Government ...ress Report" "Baseline data Sta...ress Report" "Communication mat...ress Report"
-# [4] "Community engagem...ress Report" "Controlling acces...ress Report" "Pest animal manag...ress Report"
-# [7] "Management plan d...ress Report" "Debris removal St...ress Report" "Erosion Managemen...ress Report"
-# [10] "Maintaining feral...ress Report" "Establishing ex-s...ress Report" "Establishing Agre...ress Report"
-# [13] "Establishing moni...ress Report" "Farm Management S...ress Report" "Fauna survey Stat...ress Report"
-# [16] "Fire management S...ress Report" "Flora survey Stat...ress Report" "Habitat augmentat...ress Report"
-# [19] "Identifying sites...ress Report" "Improving hydrolo...ress Report" "Improving land ma...ress Report"
-# [22] "Disease managemen...ress Report" "Negotiations Stat...ress Report" "Obtaining approva...ress Report"
-# [25] "Pest animal surve...ress Report" "Plant survival su...ress Report" "Project planning ...ress Report"
-# [28] "Remediating ripar...ress Report" "Revegetating habi...ress Report" "Weed treatment St...ress Report"
-# [31] "Seed Collecting -...ress Report" "Site preparation ...ress Report" "Skills and knowle...ress Report"
-# [34] "Soil testing Stat...ress Report" "Supplementary foo...ress Report" "Emergency Interve...ress Report"
-# [37] "Water quality sur...ress Report" "Weed distribution...ress Report" "State Government ...inal Report"
-# [40] "Baseline data Sta...inal Report" "Communication mat...inal Report" "Community engagem...inal Report"
-# [43] "Controlling acces...inal Report" "Pest animal manag...inal Report" "Management plan d...inal Report"
-# [46] "Debris removal St...inal Report" "Erosion Managemen...inal Report" "Maintaining feral...inal Report"
-# [49] "Establishing ex-s...inal Report" "Establishing Agre...inal Report" "Establishing moni...inal Report"
-# [52] "Farm Management S...inal Report" "Fauna survey Stat...inal Report" "Fire management S...inal Report"
-# [55] "Flora survey Stat...inal Report" "Habitat augmentat...inal Report" "Identifying sites...inal Report"
-# [58] "Improving hydrolo...inal Report" "Improving land ma...inal Report" "Disease managemen...inal Report"
-# [61] "Negotiations Stat...inal Report" "Obtaining approva...inal Report" "Pest animal surve...inal Report"
-# [64] "Plant survival su...inal Report" "Project planning ...inal Report" "Remediating ripar...inal Report"
-# [67] "Revegetating habi...inal Report" "Weed treatment St...inal Report" "Seed Collecting -...inal Report"
-# [70] "Site preparation ...inal Report" "Skills and knowle...inal Report" "Soil testing Stat...inal Report"
-# [73] "Supplementary foo...inal Report" "Emergency Interve...inal Report" "Water quality sur...inal Report"
-# [76] "Weed distribution...inal Report" "State Interventio...inal Report" "Wildlife Recovery...eport - WRR"
-# [79] "Native wildlife r...eport - WRR" "Supplementary foo...eport - WRR" "Emergency interve...eport - WRR"
-# [82] "Wildlife rescue c...eport - WRR" "Wildlife rescue e...eport - WRR" "Wildlife rescue f...eport - WRR"
-# [85] "Training and deve...eport - WRR" "Administration Wi...eport - WRR" "Wildlife Recovery...eport - (1)"
-# [88] "Native wildlife r...eport - (1)" "Supplementary foo...eport - (1)" "Emergency interve...eport - (1)"
-# [91] "Wildlife rescue c...eport - (1)" "Wildlife rescue e...eport - (1)" "Wildlife rescue f...eport - (1)"
-# [94] "Training and deve...eport - (1)" "Administration Wi...eport - (1)" "WRR Final Report ...eport - WRR"
-# [97] "RLP Short term project outcomes" "Bushfires States ...ress Report" "Baseline data Bus...ress Report"
-# [100] "Communication mat...ress Rep(1)" "Community engagem...ress Rep(1)" "Controlling acces...ress Rep(1)"
-# [103] "Pest animal manag...ress Rep(1)" "Management plan d...ress Rep(1)" "Debris removal Bu...ress Report"
-# [106] "Erosion Managemen...ress Rep(1)" "Maintaining feral...ress Rep(1)" "Establishing ex-s...ress Rep(1)"
-# [109] "Establishing Agre...ress Rep(1)" "Establishing moni...ress Rep(1)" "Farm Management S...ress Rep(1)"
-# [112] "Fauna survey Bush...ress Report" "Fire management B...ress Report" "Flora survey Bush...ress Report"
-# [115] "Habitat augmentat...ress Rep(1)" "Identifying sites...ress Rep(1)" "Improving hydrolo...ress Rep(1)"
-# [118] "Improving land ma...ress Rep(1)" "Disease managemen...ress Rep(1)" "Negotiations Bush...ress Report"
-# [121] "Obtaining approva...ress Rep(1)" "Pest animal surve...ress Rep(1)" "Plant survival su...ress Rep(1)"
-# [124] "Project planning ...ress Rep(1)" "Remediating ripar...ress Rep(1)" "Revegetating habi...ress Rep(1)"
-# [127] "Weed treatment Bu...ress Report" "Seed Collecting -...ress Rep(1)" "Site preparation ...ress Rep(1)"
-# [130] "Skills and knowle...ress Rep(1)" "Soil testing Bush...ress Report" "Supplementary foo...ress Rep(1)"
-# [133] "Emergency Interve...ress Rep(1)" "Water quality sur...ress Rep(1)" "Weed distribution...ress Rep(1)"
-# [136] "Cultural value su...ress Report" "Cultural Site Man...ress Report" "On Country Visits...ress Report"
-# [139] "Cultural Practice...ress Report" "Developing-updati...ress Report" "RLP - Output WHS ...tput Report"
-# [142] "RLP - Baseline da...tput Report" "RLP - Communicati...tput Report" "RLP - Community e...tput Report"
-# [145] "RLP - Controlling...tput Report" "RLP - Pest animal...tput Report" "RLP - Management ...tput Report"
-# [148] "RLP - Debris remo...tput Report" "RLP - Erosion Man...tput Report" "RLP - Maintaining...tput Report"
-# [151] "RLP - Establishin...tput Report" "RLP - Establishin...tput Rep(1)" "RLP - Establishin...tput Rep(2)"
-# [154] "RLP - Farm Manage...tput Report" "RLP - Fauna surve...tput Report" "RLP - Fire manage...tput Report"
-# [157] "RLP - Flora surve...tput Report" "RLP - Habitat aug...tput Report" "RLP - Identifying...tput Report"
-# [160] "RLP - Improving h...tput Report" "RLP - Improving l...tput Report" "RLP - Disease man...tput Report"
-# [163] "RLP - Negotiation...tput Report" "RLP - Obtaining a...tput Report" "RLP - Pest animal...tput Rep(1)"
-# [166] "RLP - Plant survi...tput Report" "RLP - Project pla...tput Report" "RLP - Remediating...tput Report"
-# [169] "RLP - Weed treatm...tput Report" "RLP - Revegetatin...tput Report" "RLP - Site prepar...tput Report"
-# [172] "RLP - Skills and ...tput Report" "RLP - Soil testin...tput Report" "RLP - Emergency I...tput Report"
-# [175] "RLP - Water quali...tput Report" "RLP - Weed distri...tput Report" "RLP - Change Mana...tput Report"
-# [178] "RLP - Adapting to...tput Report" "Seed Collecting -...tput Report" "RLP Annual Report"              
-# [181] "Wildlife Recovery...Report - GA" "Native seed suppl...Report - GA" "Native Seed Capac...Report - GA"
-# [184] "Ten Year Native S...Report - GA" "Investigating Flo...Report - GA" "Supporting seed b...Report - GA"
-# [187] "Developing traini...Report - GA" "Fire-ground safet...Report - GA" "Governance arrang...Report - GA"
-# [190] "Final Period Prog...l Reporting" "Flora Survey GA Final Reporting" "Seed Collecting G...l Reporting"
-# [193] "Final Project Rep...l Reporting" "Wildlife Recovery...eport - CVA" "Developing a cent...eport - CVA"
-# [196] "Developing a cent...eport - (1)" "Volunteer Work He...eport - CVA"
-
+# [1] "State Government ...ress Report" "Baseline data Sta...ress Report"
+# [3] "Communication mat...ress Report" "Community engagem...ress Report"
+# [5] "Controlling acces...ress Report" "Pest animal manag...ress Report"
+# [7] "Management plan d...ress Report" "Debris removal St...ress Report"
+# [9] "Erosion Managemen...ress Report" "Maintaining feral...ress Report"
+# [11] "Establishing ex-s...ress Report" "Establishing Agre...ress Report"
+# [13] "Establishing moni...ress Report" "Farm Management S...ress Report"
+# [15] "Fauna survey Stat...ress Report" "Fire management S...ress Report"
+# [17] "Flora survey Stat...ress Report" "Habitat augmentat...ress Report"
+# [19] "Identifying sites...ress Report" "Improving hydrolo...ress Report"
+# [21] "Improving land ma...ress Report" "Disease managemen...ress Report"
+# [23] "Negotiations Stat...ress Report" "Obtaining approva...ress Report"
+# [25] "Pest animal surve...ress Report" "Plant survival su...ress Report"
+# [27] "Project planning ...ress Report" "Remediating ripar...ress Report"
+# [29] "Revegetating habi...ress Report" "Weed treatment St...ress Report"
+# [31] "Seed Collecting -...ress Report" "Site preparation ...ress Report"
+# [33] "Skills and knowle...ress Report" "Soil testing Stat...ress Report"
+# [35] "Supplementary foo...ress Report" "Emergency Interve...ress Report"
+# [37] "Water quality sur...ress Report" "Weed distribution...ress Report"
+# [39] "State Government ...inal Report" "Baseline data Sta...inal Report"
+# [41] "Communication mat...inal Report" "Community engagem...inal Report"
+# [43] "Controlling acces...inal Report" "Pest animal manag...inal Report"
+# [45] "Management plan d...inal Report" "Debris removal St...inal Report"
+# [47] "Erosion Managemen...inal Report" "Maintaining feral...inal Report"
+# [49] "Establishing ex-s...inal Report" "Establishing Agre...inal Report"
+# [51] "Establishing moni...inal Report" "Farm Management S...inal Report"
+# [53] "Fauna survey Stat...inal Report" "Fire management S...inal Report"
+# [55] "Flora survey Stat...inal Report" "Habitat augmentat...inal Report"
+# [57] "Identifying sites...inal Report" "Improving hydrolo...inal Report"
+# [59] "Improving land ma...inal Report" "Disease managemen...inal Report"
+# [61] "Negotiations Stat...inal Report" "Obtaining approva...inal Report"
+# [63] "Pest animal surve...inal Report" "Plant survival su...inal Report"
+# [65] "Project planning ...inal Report" "Remediating ripar...inal Report"
+# [67] "Revegetating habi...inal Report" "Weed treatment St...inal Report"
+# [69] "Seed Collecting -...inal Report" "Site preparation ...inal Report"
+# [71] "Skills and knowle...inal Report" "Soil testing Stat...inal Report"
+# [73] "Supplementary foo...inal Report" "Emergency Interve...inal Report"
+# [75] "Water quality sur...inal Report" "Weed distribution...inal Report"
+# [77] "State Interventio...inal Report" "Wildlife Recovery...eport - WRR"
+# [79] "Native wildlife r...eport - WRR" "Supplementary foo...eport - WRR"
+# [81] "Emergency interve...eport - WRR" "Wildlife rescue c...eport - WRR"
+# [83] "Wildlife rescue e...eport - WRR" "Wildlife rescue f...eport - WRR"
+# [85] "Training and deve...eport - WRR" "Administration Wi...eport - WRR"
+# [87] "Wildlife Recovery...eport - (1)" "Native wildlife r...eport - (1)"
+# [89] "Supplementary foo...eport - (1)" "Emergency interve...eport - (1)"
+# [91] "Wildlife rescue c...eport - (1)" "Wildlife rescue e...eport - (1)"
+# [93] "Wildlife rescue f...eport - (1)" "Training and deve...eport - (1)"
+# [95] "Administration Wi...eport - (1)" "WRR Final Report ...eport - WRR"
+# [97] "RLP Short term project outcomes" "Bushfires States ...ress Report"
+# [99] "Baseline data Bus...ress Report" "Communication mat...ress Rep(1)"
+# [101] "Community engagem...ress Rep(1)" "Controlling acces...ress Rep(1)"
+# [103] "Pest animal manag...ress Rep(1)" "Management plan d...ress Rep(1)"
+# [105] "Debris removal Bu...ress Report" "Erosion Managemen...ress Rep(1)"
+# [107] "Maintaining feral...ress Rep(1)" "Establishing ex-s...ress Rep(1)"
+# [109] "Establishing Agre...ress Rep(1)" "Establishing moni...ress Rep(1)"
+# [111] "Farm Management S...ress Rep(1)" "Fauna survey Bush...ress Report"
+# [113] "Fire management B...ress Report" "Flora survey Bush...ress Report"
+# [115] "Habitat augmentat...ress Rep(1)" "Identifying sites...ress Rep(1)"
+# [117] "Improving hydrolo...ress Rep(1)" "Improving land ma...ress Rep(1)"
+# [119] "Disease managemen...ress Rep(1)" "Negotiations Bush...ress Report"
+# [121] "Obtaining approva...ress Rep(1)" "Pest animal surve...ress Rep(1)"
+# [123] "Plant survival su...ress Rep(1)" "Project planning ...ress Rep(1)"
+# [125] "Remediating ripar...ress Rep(1)" "Revegetating habi...ress Rep(1)"
+# [127] "Weed treatment Bu...ress Report" "Seed Collecting -...ress Rep(1)"
+# [129] "Site preparation ...ress Rep(1)" "Skills and knowle...ress Rep(1)"
+# [131] "Soil testing Bush...ress Report" "Supplementary foo...ress Rep(1)"
+# [133] "Emergency Interve...ress Rep(1)" "Water quality sur...ress Rep(1)"
+# [135] "Weed distribution...ress Rep(1)" "Cultural value su...ress Report"
+# [137] "Cultural Site Man...ress Report" "On Country Visits...ress Report"
+# [139] "Cultural Practice...ress Report" "Developing-updati...ress Report"
+# [141] "RLP - Output WHS ...tput Report" "RLP - Baseline da...tput Report"
+# [143] "RLP - Communicati...tput Report" "RLP - Community e...tput Report"
+# [145] "RLP - Controlling...tput Report" "RLP - Pest animal...tput Report"
+# [147] "RLP - Management ...tput Report" "RLP - Debris remo...tput Report"
+# [149] "RLP - Erosion Man...tput Report" "RLP - Maintaining...tput Report"
+# [151] "RLP - Establishin...tput Report" "RLP - Establishin...tput Rep(1)"
+# [153] "RLP - Establishin...tput Rep(2)" "RLP - Farm Manage...tput Report"
+# [155] "RLP - Fauna surve...tput Report" "RLP - Fire manage...tput Report"
+# [157] "RLP - Flora surve...tput Report" "RLP - Habitat aug...tput Report"
+# [159] "RLP - Identifying...tput Report" "RLP - Improving h...tput Report"
+# [161] "RLP - Improving l...tput Report" "RLP - Disease man...tput Report"
+# [163] "RLP - Negotiation...tput Report" "RLP - Obtaining a...tput Report"
+# [165] "RLP - Pest animal...tput Rep(1)" "RLP - Plant survi...tput Report"
+# [167] "RLP - Project pla...tput Report" "RLP - Remediating...tput Report"
+# [169] "RLP - Weed treatm...tput Report" "RLP - Revegetatin...tput Report"
+# [171] "RLP - Site prepar...tput Report" "RLP - Skills and ...tput Report"
+# [173] "RLP - Soil testin...tput Report" "RLP - Emergency I...tput Report"
+# [175] "RLP - Water quali...tput Report" "RLP - Weed distri...tput Report"
+# [177] "RLP - Change Mana...tput Report" "RLP - Adapting to...tput Report"
+# [179] "Seed Collecting -...tput Report" "RLP Annual Report"              
+# [181] "Wildlife Recovery...Report - GA" "Native seed suppl...Report - GA"
+# [183] "Native Seed Capac...Report - GA" "Ten Year Native S...Report - GA"
+# [185] "Investigating Flo...Report - GA" "Supporting seed b...Report - GA"
+# [187] "Developing traini...Report - GA" "Fire-ground safet...Report - GA"
+# [189] "Governance arrang...Report - GA" "Final Period Prog...l Reporting"
+# [191] "Flora Survey GA Final Reporting" "Seed Collecting G...l Reporting"
+# [193] "Final Project Rep...l Reporting" "Wildlife Recovery...eport - CVA"
+# [195] "Developing a cent...eport - CVA" "Developing a cent...eport - (1)"
+# [197] "Volunteer Work He...eport - CVA"
+#
 # 6.	Green Army
 # > getSheetNames(paste('M06 ',extract_date,'.xlsx',sep=''))
-# [1] "Evidence of Weed ... Monitoring" "Weed Observation ... Monitoring" "Participant Infor... Monitoring"
-# [4] "Event Details Com... Engagement" "Participant Infor... Engagement" "Materials Provide... Engagement"
-# [7] "Debris Removal De...ris Removal" "Participant Infor...ris Removal" "Plant Propagation...Propagation"
-# [10] "Participant Infor...Propagation" "Revegetation Deta...evegetation" "Participant Infor...evegetation"
-# [13] "Weed Treatment De...d Treatment" "Participant Infor...d Treatment" "Erosion Managemen... Management"
-# [16] "Participant Infor... Management" "Survey Informatio...y - general" "Fauna Survey Deta...y - general"
-# [19] "Participant Infor...y - general" "Survey Informatio...y - gene(1)" "Flora Survey Deta...y - general"
-# [22] "Participant Infor...y - gene(1)" "Evidence of Pest ...imal Survey" "Pest Observation ...imal Survey"
-# [25] "Participant Infor...imal Survey" "General informati...lity Survey" "Environmental Inf...lity Survey"
-# [28] "Water Quality Mea...lity Survey" "Sampling Site Inf...methodology" "Field Sheet 1 - G...methodology"
-# [31] "Field Sheet 2 - E...methodology" "Field Sheet 3 - O...methodology" "Field Sheet 4 - C...methodology"
-# [34] "Field Sheet 5 - S...methodology" "Access Control De...rastructure" "Infrastructure De...rastructure"
-# [37] "Participant Infor...rastructure" "Seed Collection D... Collection" "Participant Infor... Collection"
-# [40] "Site Preparation ...Preparation" "Weed Treatment De...Preparation" "Participant Infor...Preparation"
-# [43] "Fence Details Fencing"           "Participant Information Fencing" "Fire Management D... Management"
-# [46] "Participant Infor... Managem(1)" "Pest Management D... Management" "Fence Details Pest Management"  
-# [49] "Participant Infor... Managem(2)" "Site Planning Det...ng and Risk" "Threatening Proce...ng and Risk"
-# [52] "Participant Infor...ng and Risk" "Disease Managemen... Management" "Participant Infor... Managem(3)"
-# [55] "Heritage Conserva...onservation" "Expected Heritage...onservation" "Participant Infor...onservation"
-# [58] "Indigenous Knowledge Transfer"   "Conservation Work...Communities" "Participant Infor...Communities"
-# [61] "Site Monitoring Plan"            "Research Information Research"   "Participant Infor...on Research"
-# [64] "Training Details ...Development" "Skills Developmen...Development" "Participant Infor...Development"
-# [67] "Regional Funding Final Report"   "Administration Ac...inistration" "Participant Infor...inistration"
-# [70] "Annual Stage Report"             "Vegetation Monito...ival Survey" "Participant Infor...ival Survey"
-# [73] "Final Report Deta...inal Report" "Output Details 25...inal Report" "Project Acquittal...inal Report"
-# [76] "Attachments 25th ...inal Report"
-
-# 7.	Cumberland+Plain, Improving+Your+Local+Parks+and+Environment, Reef+2050+Plan, 
-#     Reef+Trust
+# [1] "Evidence of Weed ... Monitoring" "Weed Observation ... Monitoring"
+# [3] "Participant Infor... Monitoring" "Event Details Com... Engagement"
+# [5] "Participant Infor... Engagement" "Materials Provide... Engagement"
+# [7] "Debris Removal De...ris Removal" "Participant Infor...ris Removal"
+# [9] "Plant Propagation...Propagation" "Participant Infor...Propagation"
+# [11] "Revegetation Deta...evegetation" "Participant Infor...evegetation"
+# [13] "Weed Treatment De...d Treatment" "Participant Infor...d Treatment"
+# [15] "Erosion Managemen... Management" "Participant Infor... Management"
+# [17] "Survey Informatio...y - general" "Fauna Survey Deta...y - general"
+# [19] "Participant Infor...y - general" "Survey Informatio...y - gene(1)"
+# [21] "Flora Survey Deta...y - general" "Participant Infor...y - gene(1)"
+# [23] "Evidence of Pest ...imal Survey" "Pest Observation ...imal Survey"
+# [25] "Participant Infor...imal Survey" "General informati...lity Survey"
+# [27] "Environmental Inf...lity Survey" "Water Quality Mea...lity Survey"
+# [29] "Sampling Site Inf...methodology" "Field Sheet 1 - G...methodology"
+# [31] "Field Sheet 2 - E...methodology" "Field Sheet 3 - O...methodology"
+# [33] "Field Sheet 4 - C...methodology" "Field Sheet 5 - S...methodology"
+# [35] "Access Control De...rastructure" "Infrastructure De...rastructure"
+# [37] "Participant Infor...rastructure" "Seed Collection D... Collection"
+# [39] "Participant Infor... Collection" "Site Preparation ...Preparation"
+# [41] "Weed Treatment De...Preparation" "Participant Infor...Preparation"
+# [43] "Fence Details Fencing"           "Participant Information Fencing"
+# [45] "Fire Management D... Management" "Participant Infor... Managem(1)"
+# [47] "Pest Management D... Management" "Fence Details Pest Management"  
+# [49] "Participant Infor... Managem(2)" "Site Planning Det...ng and Risk"
+# [51] "Threatening Proce...ng and Risk" "Participant Infor...ng and Risk"
+# [53] "Disease Managemen... Management" "Participant Infor... Managem(3)"
+# [55] "Heritage Conserva...onservation" "Expected Heritage...onservation"
+# [57] "Participant Infor...onservation" "Indigenous Knowledge Transfer"  
+# [59] "Conservation Work...Communities" "Participant Infor...Communities"
+# [61] "Site Monitoring Plan"            "Research Information Research"  
+# [63] "Participant Infor...on Research" "Training Details ...Development"
+# [65] "Skills Developmen...Development" "Participant Infor...Development"
+# [67] "Regional Funding Final Report"   "Administration Ac...inistration"
+# [69] "Participant Infor...inistration" "Annual Stage Report"            
+# [71] "Vegetation Monito...ival Survey" "Participant Infor...ival Survey"
+# [73] "Final Report Deta...inal Report" "Output Details 25...inal Report"
+# [75] "Project Acquittal...inal Report" "Attachments 25th ...inal Report"
+#
+# 7.	Cumberland+Plain, Improving+Your+Local+Parks+and+Environment, 
+# Reef+2050+Plan,Reef+Trust
 # > getSheetNames(paste('M07 ',extract_date,'.xlsx',sep=''))
-# [1] "Outcomes Outcomes...inal report" "Evaluation Outcom...inal report" "Lessons Learned O...inal report"
-# [4] "Administration Ac...inistration" "Participant Infor...inistration" "Overview of Proje...tage report"
-# [7] "Environmental, Ec...tage report" "Implementation Up...tage report" "Lessons Learned a...tage report"
-# [10] "Survey Informatio...y - general" "Fauna Survey Deta...y - general" "Participant Infor...y - general"
-# [13] "Evidence of Pest ...imal Survey" "Pest Observation ...imal Survey" "Participant Infor...imal Survey"
-# [16] "Event Details Com... Engagement" "Participant Infor... Engagement" "Materials Provide... Engagement"
-# [19] "Pest Management D... Management" "Fence Details Pest Management"   "Participant Infor... Management"
-# [22] "Research Information Research"   "Participant Infor...on Research" "Site Planning Det...ng and Risk"
-# [25] "Threatening Proce...ng and Risk" "Participant Infor...ng and Risk" "Training Details ...Development"
-# [28] "Skills Developmen...Development" "Participant Infor...Development" "Management Practice Change"     
-# [31] "RLP - Output WHS ...tput Report" "RLP - Baseline da...tput Report" "RLP - Communicati...tput Report"
-# [34] "RLP - Community e...tput Report" "RLP - Controlling...tput Report" "RLP - Pest animal...tput Report"
-# [37] "RLP - Management ...tput Report" "RLP - Debris remo...tput Report" "RLP - Erosion Man...tput Report"
-# [40] "RLP - Maintaining...tput Report" "RLP - Establishin...tput Report" "RLP - Establishin...tput Rep(1)"
-# [43] "RLP - Establishin...tput Rep(2)" "RLP - Farm Manage...tput Report" "RLP - Fauna surve...tput Report"
-# [46] "RLP - Fire manage...tput Report" "RLP - Flora surve...tput Report" "RLP - Habitat aug...tput Report"
-# [49] "RLP - Identifying...tput Report" "RLP - Improving h...tput Report" "RLP - Improving l...tput Report"
-# [52] "RLP - Disease man...tput Report" "RLP - Negotiation...tput Report" "RLP - Obtaining a...tput Report"
-# [55] "RLP - Pest animal...tput Rep(1)" "RLP - Plant survi...tput Report" "RLP - Project pla...tput Report"
-# [58] "RLP - Remediating...tput Report" "RLP - Weed treatm...tput Report" "RLP - Revegetatin...tput Report"
-# [61] "RLP - Site prepar...tput Report" "RLP - Skills and ...tput Report" "RLP - Soil testin...tput Report"
-# [64] "RLP - Emergency I...tput Report" "RLP - Water quali...tput Report" "RLP - Weed distri...tput Report"
-# [67] "RLP - Change Mana...tput Report" "RLP - Adapting to...tput Report" "Seed Collecting -...tput Report"
-# [70] "RLP Annual Report"               "RLP Short term project outcomes" "Site Monitoring Plan"           
-# [73] "General informati...lity Survey" "Environmental Inf...lity Survey" "Water Quality Mea...lity Survey"
-# [76] "Sampling Site Inf...methodology" "Field Sheet 1 - G...methodology" "Field Sheet 2 - E...methodology"
-# [79] "Field Sheet 3 - O...methodology" "Field Sheet 4 - C...methodology" "Field Sheet 5 - S...methodology"
-# [82] "Fence Details Fencing"           "Participant Information Fencing" "Plan Development ...Development"
-# [85] "Participant Infor...Developm(1)" "Conservation Work...Communities" "Participant Infor...Communities"
-# [88] "Revegetation Deta...evegetation" "Participant Infor...evegetation" "Water Management"               
-# [91] "Weed Treatment De...d Treatment" "Participant Infor...d Treatment" "Erosion Managemen... Management"
-# [94] "Participant Infor... Managem(1)" "Reef 2050 Plan Ac...orting 2018" "Reef 2050 Plan Action Reporting"
-# [97] "Debris Removal De...ris Removal" "Participant Infor...ris Removal" "Reef Trust Final Report"        
-# [100] "Sediment Savings"                "Vegetation Monito...ival Survey" "Participant Infor...ival Survey"
-# [103] "Evidence of Weed ... Monitoring" "Weed Observation ... Monitoring" "Participant Infor... Monitoring"
-# [106] "Site Preparation ...Preparation" "Weed Treatment De...Preparation" "Participant Infor...Preparation"
-# [109] "Annual Stage Report"             "Access Control De...rastructure" "Infrastructure De...rastructure"
-# [112] "Participant Infor...rastructure" "Seed Collection D... Collection" "Participant Infor... Collection"
-# [115] "Indigenous Employ... Businesses" "Indigenous Busine... Businesses" "Conservation Grazing Management"
-# [118] "Survey Informatio...y - gene(1)" "Flora Survey Deta...y - general" "Participant Infor...y - gene(1)"
-# [121] "Heritage Conserva...onservation" "Expected Heritage...onservation" "Participant Infor...onservation"
-# [124] "Indigenous Knowledge Transfer"   "Plant Propagation...Propagation" "Participant Infor...Propagation"
+# [1] "Outcomes Outcomes...inal report" "Evaluation Outcom...inal report"
+# [3] "Lessons Learned O...inal report" "Administration Ac...inistration"
+# [5] "Participant Infor...inistration" "Overview of Proje...tage report"
+# [7] "Environmental, Ec...tage report" "Implementation Up...tage report"
+# [9] "Lessons Learned a...tage report" "Survey Informatio...y - general"
+# [11] "Fauna Survey Deta...y - general" "Participant Infor...y - general"
+# [13] "Evidence of Pest ...imal Survey" "Pest Observation ...imal Survey"
+# [15] "Participant Infor...imal Survey" "Event Details Com... Engagement"
+# [17] "Participant Infor... Engagement" "Materials Provide... Engagement"
+# [19] "Pest Management D... Management" "Fence Details Pest Management"  
+# [21] "Participant Infor... Management" "Research Information Research"  
+# [23] "Participant Infor...on Research" "Site Planning Det...ng and Risk"
+# [25] "Threatening Proce...ng and Risk" "Participant Infor...ng and Risk"
+# [27] "Training Details ...Development" "Skills Developmen...Development"
+# [29] "Participant Infor...Development" "Management Practice Change"     
+# [31] "RLP - Output WHS ...tput Report" "RLP - Baseline da...tput Report"
+# [33] "RLP - Communicati...tput Report" "RLP - Community e...tput Report"
+# [35] "RLP - Controlling...tput Report" "RLP - Pest animal...tput Report"
+# [37] "RLP - Management ...tput Report" "RLP - Debris remo...tput Report"
+# [39] "RLP - Erosion Man...tput Report" "RLP - Maintaining...tput Report"
+# [41] "RLP - Establishin...tput Report" "RLP - Establishin...tput Rep(1)"
+# [43] "RLP - Establishin...tput Rep(2)" "RLP - Farm Manage...tput Report"
+# [45] "RLP - Fauna surve...tput Report" "RLP - Fire manage...tput Report"
+# [47] "RLP - Flora surve...tput Report" "RLP - Habitat aug...tput Report"
+# [49] "RLP - Identifying...tput Report" "RLP - Improving h...tput Report"
+# [51] "RLP - Improving l...tput Report" "RLP - Disease man...tput Report"
+# [53] "RLP - Negotiation...tput Report" "RLP - Obtaining a...tput Report"
+# [55] "RLP - Pest animal...tput Rep(1)" "RLP - Plant survi...tput Report"
+# [57] "RLP - Project pla...tput Report" "RLP - Remediating...tput Report"
+# [59] "RLP - Weed treatm...tput Report" "RLP - Revegetatin...tput Report"
+# [61] "RLP - Site prepar...tput Report" "RLP - Skills and ...tput Report"
+# [63] "RLP - Soil testin...tput Report" "RLP - Emergency I...tput Report"
+# [65] "RLP - Water quali...tput Report" "RLP - Weed distri...tput Report"
+# [67] "RLP - Change Mana...tput Report" "RLP - Adapting to...tput Report"
+# [69] "Seed Collecting -...tput Report" "RLP Annual Report"              
+# [71] "RLP Short term project outcomes" "Site Monitoring Plan"           
+# [73] "General informati...lity Survey" "Environmental Inf...lity Survey"
+# [75] "Water Quality Mea...lity Survey" "Sampling Site Inf...methodology"
+# [77] "Field Sheet 1 - G...methodology" "Field Sheet 2 - E...methodology"
+# [79] "Field Sheet 3 - O...methodology" "Field Sheet 4 - C...methodology"
+# [81] "Field Sheet 5 - S...methodology" "Fence Details Fencing"          
+# [83] "Participant Information Fencing" "Plan Development ...Development"
+# [85] "Participant Infor...Developm(1)" "Conservation Work...Communities"
+# [87] "Participant Infor...Communities" "Revegetation Deta...evegetation"
+# [89] "Participant Infor...evegetation" "Water Management"               
+# [91] "Weed Treatment De...d Treatment" "Participant Infor...d Treatment"
+# [93] "Erosion Managemen... Management" "Participant Infor... Managem(1)"
+# [95] "Reef 2050 Plan Ac...orting 2018" "Reef 2050 Plan Action Reporting"
+# [97] "Debris Removal De...ris Removal" "Participant Infor...ris Removal"
+# [99] "Reef Trust Final Report"         "Sediment Savings"               
+# [101] "Vegetation Monito...ival Survey" "Participant Infor...ival Survey"
+# [103] "Evidence of Weed ... Monitoring" "Weed Observation ... Monitoring"
+# [105] "Participant Infor... Monitoring" "Site Preparation ...Preparation"
+# [107] "Weed Treatment De...Preparation" "Participant Infor...Preparation"
+# [109] "Annual Stage Report"             "Access Control De...rastructure"
+# [111] "Infrastructure De...rastructure" "Participant Infor...rastructure"
+# [113] "Seed Collection D... Collection" "Participant Infor... Collection"
+# [115] "Indigenous Employ... Businesses" "Indigenous Busine... Businesses"
+# [117] "Conservation Grazing Management" "Survey Informatio...y - gene(1)"
+# [119] "Flora Survey Deta...y - general" "Participant Infor...y - gene(1)"
+# [121] "Heritage Conserva...onservation" "Expected Heritage...onservation"
+# [123] "Participant Infor...onservation" "Indigenous Knowledge Transfer"  
+# [125] "Plant Propagation...Propagation" "Participant Infor...Propagation"
 # [127] "Public Access and... - with map"
-
-# 8.	Complementary+Investment, Environmental+Restoration+Fund, MER+Network+Pilot
+#
+# 8.	Complementary+Investment, Environmental+Restoration+Fund, 
+# MER+Network+Pilot
 # > getSheetNames(paste('M08 ',extract_date,'.xlsx',sep=''))
-# [1] "RLP - Output WHS ...tput Report" "RLP - Baseline da...tput Report" "RLP - Communicati...tput Report"
-# [4] "RLP - Community e...tput Report" "RLP - Controlling...tput Report" "RLP - Pest animal...tput Report"
-# [7] "RLP - Management ...tput Report" "RLP - Debris remo...tput Report" "RLP - Erosion Man...tput Report"
-# [10] "RLP - Maintaining...tput Report" "RLP - Establishin...tput Report" "RLP - Establishin...tput Rep(1)"
-# [13] "RLP - Establishin...tput Rep(2)" "RLP - Farm Manage...tput Report" "RLP - Fauna surve...tput Report"
-# [16] "RLP - Fire manage...tput Report" "RLP - Flora surve...tput Report" "RLP - Habitat aug...tput Report"
-# [19] "RLP - Identifying...tput Report" "RLP - Improving h...tput Report" "RLP - Improving l...tput Report"
-# [22] "RLP - Disease man...tput Report" "RLP - Negotiation...tput Report" "RLP - Obtaining a...tput Report"
-# [25] "RLP - Pest animal...tput Rep(1)" "RLP - Plant survi...tput Report" "RLP - Project pla...tput Report"
-# [28] "RLP - Remediating...tput Report" "RLP - Weed treatm...tput Report" "RLP - Revegetatin...tput Report"
-# [31] "RLP - Site prepar...tput Report" "RLP - Skills and ...tput Report" "RLP - Soil testin...tput Report"
-# [34] "RLP - Emergency I...tput Report" "RLP - Water quali...tput Report" "RLP - Weed distri...tput Report"
-# [37] "RLP - Change Mana...tput Report" "RLP - Adapting to...tput Report" "Seed Collecting -...tput Report"
-# [40] "RLP Annual Report"               "RLP Medium term p...ct outcomes" "RLP Short term project outcomes"
-
-# 9.	National Landcare Programme->Regional Land Partnerships and WA NLP Projects
+# [1] "Sheet 1"                         "RLP - Output WHS ...tput Report"
+# [3] "RLP - Baseline da...tput Report" "RLP - Communicati...tput Report"
+# [5] "RLP - Community e...tput Report" "RLP - Controlling...tput Report"
+# [7] "RLP - Pest animal...tput Report" "RLP - Management ...tput Report"
+# [9] "RLP - Debris remo...tput Report" "RLP - Erosion Man...tput Report"
+# [11] "RLP - Maintaining...tput Report" "RLP - Establishin...tput Report"
+# [13] "RLP - Establishin...tput Rep(1)" "RLP - Establishin...tput Rep(2)"
+# [15] "RLP - Farm Manage...tput Report" "RLP - Fauna surve...tput Report"
+# [17] "RLP - Fire manage...tput Report" "RLP - Flora surve...tput Report"
+# [19] "RLP - Habitat aug...tput Report" "RLP - Identifying...tput Report"
+# [21] "RLP - Improving h...tput Report" "RLP - Improving l...tput Report"
+# [23] "RLP - Disease man...tput Report" "RLP - Negotiation...tput Report"
+# [25] "RLP - Obtaining a...tput Report" "RLP - Pest animal...tput Rep(1)"
+# [27] "RLP - Plant survi...tput Report" "RLP - Project pla...tput Report"
+# [29] "RLP - Remediating...tput Report" "RLP - Weed treatm...tput Report"
+# [31] "RLP - Revegetatin...tput Report" "RLP - Site prepar...tput Report"
+# [33] "RLP - Skills and ...tput Report" "RLP - Soil testin...tput Report"
+# [35] "RLP - Emergency I...tput Report" "RLP - Water quali...tput Report"
+# [37] "RLP - Weed distri...tput Report" "RLP - Change Mana...tput Report"
+# [39] "RLP - Adapting to...tput Report" "Seed Collecting -...tput Report"
+# [41] "RLP Annual Report"               "RLP Short term project outcomes"
+# [43] "RLP Medium term p...ct outcomes"
+#
+# 9.	National Landcare Programme->Regional Land Partnerships and 
+# WA NLP Projects
 # > getSheetNames(paste('M09 ',extract_date,'.xlsx',sep=''))
-# [1] "RLP - Output WHS ...tput Report" "RLP - Baseline da...tput Report" "RLP - Communicati...tput Report"
-# [4] "RLP - Community e...tput Report" "RLP - Controlling...tput Report" "RLP - Pest animal...tput Report"
-# [7] "RLP - Management ...tput Report" "RLP - Debris remo...tput Report" "RLP - Erosion Man...tput Report"
-# [10] "RLP - Maintaining...tput Report" "RLP - Establishin...tput Report" "RLP - Establishin...tput Rep(1)"
-# [13] "RLP - Establishin...tput Rep(2)" "RLP - Farm Manage...tput Report" "RLP - Fauna surve...tput Report"
-# [16] "RLP - Fire manage...tput Report" "RLP - Flora surve...tput Report" "RLP - Habitat aug...tput Report"
-# [19] "RLP - Identifying...tput Report" "RLP - Improving h...tput Report" "RLP - Improving l...tput Report"
-# [22] "RLP - Disease man...tput Report" "RLP - Negotiation...tput Report" "RLP - Obtaining a...tput Report"
-# [25] "RLP - Pest animal...tput Rep(1)" "RLP - Plant survi...tput Report" "RLP - Project pla...tput Report"
-# [28] "RLP - Remediating...tput Report" "RLP - Weed treatm...tput Report" "RLP - Revegetatin...tput Report"
-# [31] "RLP - Site prepar...tput Report" "RLP - Skills and ...tput Report" "RLP - Soil testin...tput Report"
-# [34] "RLP - Emergency I...tput Report" "RLP - Water quali...tput Report" "RLP - Weed distri...tput Report"
-# [37] "RLP - Change Mana...tput Report" "RLP - Adapting to...tput Report" "Seed Collecting -...tput Report"
-# [40] "RLP Annual Report"               "RLP Short term project outcomes" "RLP Medium term p...ct outcomes"
+# [1] "RLP - Output WHS ...tput Report" "RLP - Baseline da...tput Report"
+# [3] "RLP - Communicati...tput Report" "RLP - Community e...tput Report"
+# [5] "RLP - Controlling...tput Report" "RLP - Pest animal...tput Report"
+# [7] "RLP - Management ...tput Report" "RLP - Debris remo...tput Report"
+# [9] "RLP - Erosion Man...tput Report" "RLP - Maintaining...tput Report"
+# [11] "RLP - Establishin...tput Report" "RLP - Establishin...tput Rep(1)"
+# [13] "RLP - Establishin...tput Rep(2)" "RLP - Farm Manage...tput Report"
+# [15] "RLP - Fauna surve...tput Report" "RLP - Fire manage...tput Report"
+# [17] "RLP - Flora surve...tput Report" "RLP - Habitat aug...tput Report"
+# [19] "RLP - Identifying...tput Report" "RLP - Improving h...tput Report"
+# [21] "RLP - Improving l...tput Report" "RLP - Disease man...tput Report"
+# [23] "RLP - Negotiation...tput Report" "RLP - Obtaining a...tput Report"
+# [25] "RLP - Pest animal...tput Rep(1)" "RLP - Plant survi...tput Report"
+# [27] "RLP - Project pla...tput Report" "RLP - Remediating...tput Report"
+# [29] "RLP - Weed treatm...tput Report" "RLP - Revegetatin...tput Report"
+# [31] "RLP - Site prepar...tput Report" "RLP - Skills and ...tput Report"
+# [33] "RLP - Soil testin...tput Report" "RLP - Emergency I...tput Report"
+# [35] "RLP - Water quali...tput Report" "RLP - Weed distri...tput Report"
+# [37] "RLP - Change Mana...tput Report" "RLP - Adapting to...tput Report"
+# [39] "Seed Collecting -...tput Report" "RLP Annual Report"              
+# [41] "RLP Short term project outcomes" "RLP Medium term p...ct outcomes"
 # [43] "RLP Output Report Adjustment"
-
+#
 # 10.	3ANational+Landcare+Programme&fq=associatedSubProgramFacet%3A20+Million+Trees+Cumberland+Conservation+Corridor+Grants&fq=associatedSubProgramFacet%3A20+Million+Trees+Cumberland+Conservation+Corridor+Land+Management&fq=associatedSubProgramFacet%3A20+Million+Trees+Discretionary+Grants&fq=associatedSubProgramFacet%3A20+Million+Trees+Grants+Round+1&fq=associatedSubProgramFacet%3A20+Million+Trees+Grants+Round+2&fq=associatedSubProgramFacet%3A20+Million+Trees+Grants+Round+3&fq=associatedSubProgramFacet%3A20+Million+Trees+Service+Providers&fq=associatedSubProgramFacet%3A20+Million+Trees+Service+Providers+Tranche+2&fq=associatedSubProgramFacet%3A20+Million+Trees+Service+Providers+Tranche+3&fq=associatedSubProgramFacet%3A20+Million+Trees+West+Melbourne
 # > getSheetNames(paste('M10 ',extract_date,'.xlsx',sep=''))
-# [1] "Outcomes Outcomes...inal report" "Evaluation Outcom...inal report" "Lessons Learned O...inal report"
-# [4] "Administration Ac...inistration" "Participant Infor...inistration" "Overview of Proje...tage report"
-# [7] "Environmental, Ec...tage report" "Implementation Up...tage report" "Lessons Learned a...tage report"
-# [10] "Vegetation Monito...ival Survey" "Participant Infor...ival Survey" "Fence Details Fencing"          
-# [13] "Participant Information Fencing" "Plan Development ...Development" "Participant Infor...Development"
-# [16] "Conservation Work...Communities" "Participant Infor...Communities" "Revegetation Deta...evegetation"
-# [19] "Participant Infor...evegetation" "Site Preparation ...Preparation" "Weed Treatment De...Preparation"
-# [22] "Participant Infor...Preparation" "Weed Treatment De...d Treatment" "Participant Infor...d Treatment"
-# [25] "Survey Informatio...y - general" "Flora Survey Deta...y - general" "Participant Infor...y - general"
-# [28] "Event Details Com... Engagement" "Participant Infor... Engagement" "Materials Provide... Engagement"
-# [31] "Indigenous Knowledge Transfer"   "Survey Informatio...y - gene(1)" "Fauna Survey Deta...y - general"
-# [34] "Participant Infor...y - gene(1)" "Debris Removal De...ris Removal" "Participant Infor...ris Removal"
-# [37] "Plant Propagation...Propagation" "Participant Infor...Propagation" "Seed Collection D... Collection"
-# [40] "Participant Infor... Collection" "Post revegetation... management" "Post revegetation... managem(1)"
-# [43] "Post revegetation... managem(2)" "Post revegetation... managem(3)" "Pest Management D... Management"
-# [46] "Fence Details Pest Management"   "Participant Infor... Management" "Site Monitoring Plan"           
-# [49] "Training Details ...Development" "Skills Developmen...Development" "Participant Infor...Developm(1)"
-# [52] "Indigenous Employ... Businesses" "Indigenous Busine... Businesses" "Site Planning Det...ng and Risk"
-# [55] "Threatening Proce...ng and Risk" "Participant Infor...ng and Risk" "Evidence of Weed ... Monitoring"
-# [58] "Weed Observation ... Monitoring" "Participant Infor... Monitoring" "Sampling Site Inf...methodology"
-# [61] "Field Sheet 1 - G...methodology" "Field Sheet 2 - E...methodology" "Field Sheet 3 - O...methodology"
-# [64] "Field Sheet 4 - C...methodology" "Field Sheet 5 - S...methodology" "General informati...lity Survey"
-# [67] "Environmental Inf...lity Survey" "Water Quality Mea...lity Survey" "Management Practice Change"     
-# [70] "Evidence of Pest ...imal Survey" "Pest Observation ...imal Survey" "Participant Infor...imal Survey"
-# [73] "Erosion Managemen... Management" "Participant Infor... Managem(1)" "Research Information Research"  
-# [76] "Participant Infor...on Research" "Access Control De...rastructure" "Infrastructure De...rastructure"
-# [79] "Participant Infor...rastructure" "Fire Management D... Management" "Participant Infor... Managem(2)"
-# [82] "Heritage Conserva...onservation" "Expected Heritage...onservation" "Participant Infor...onservation"
-
+# [1] "Outcomes Outcomes...inal report" "Evaluation Outcom...inal report"
+# [3] "Lessons Learned O...inal report" "Administration Ac...inistration"
+# [5] "Participant Infor...inistration" "Overview of Proje...tage report"
+# [7] "Environmental, Ec...tage report" "Implementation Up...tage report"
+# [9] "Lessons Learned a...tage report" "Vegetation Monito...ival Survey"
+# [11] "Participant Infor...ival Survey" "Fence Details Fencing"          
+# [13] "Participant Information Fencing" "Plan Development ...Development"
+# [15] "Participant Infor...Development" "Conservation Work...Communities"
+# [17] "Participant Infor...Communities" "Revegetation Deta...evegetation"
+# [19] "Participant Infor...evegetation" "Site Preparation ...Preparation"
+# [21] "Weed Treatment De...Preparation" "Participant Infor...Preparation"
+# [23] "Weed Treatment De...d Treatment" "Participant Infor...d Treatment"
+# [25] "Survey Informatio...y - general" "Flora Survey Deta...y - general"
+# [27] "Participant Infor...y - general" "Event Details Com... Engagement"
+# [29] "Participant Infor... Engagement" "Materials Provide... Engagement"
+# [31] "Indigenous Knowledge Transfer"   "Survey Informatio...y - gene(1)"
+# [33] "Fauna Survey Deta...y - general" "Participant Infor...y - gene(1)"
+# [35] "Debris Removal De...ris Removal" "Participant Infor...ris Removal"
+# [37] "Plant Propagation...Propagation" "Participant Infor...Propagation"
+# [39] "Seed Collection D... Collection" "Participant Infor... Collection"
+# [41] "Post revegetation... management" "Post revegetation... managem(1)"
+# [43] "Post revegetation... managem(2)" "Post revegetation... managem(3)"
+# [45] "Pest Management D... Management" "Fence Details Pest Management"  
+# [47] "Participant Infor... Management" "Site Monitoring Plan"           
+# [49] "Training Details ...Development" "Skills Developmen...Development"
+# [51] "Participant Infor...Developm(1)" "Indigenous Employ... Businesses"
+# [53] "Indigenous Busine... Businesses" "Site Planning Det...ng and Risk"
+# [55] "Threatening Proce...ng and Risk" "Participant Infor...ng and Risk"
+# [57] "Evidence of Weed ... Monitoring" "Weed Observation ... Monitoring"
+# [59] "Participant Infor... Monitoring" "Sampling Site Inf...methodology"
+# [61] "Field Sheet 1 - G...methodology" "Field Sheet 2 - E...methodology"
+# [63] "Field Sheet 3 - O...methodology" "Field Sheet 4 - C...methodology"
+# [65] "Field Sheet 5 - S...methodology" "General informati...lity Survey"
+# [67] "Environmental Inf...lity Survey" "Water Quality Mea...lity Survey"
+# [69] "Management Practice Change"      "Evidence of Pest ...imal Survey"
+# [71] "Pest Observation ...imal Survey" "Participant Infor...imal Survey"
+# [73] "Erosion Managemen... Management" "Participant Infor... Managem(1)"
+# [75] "Research Information Research"   "Participant Infor...on Research"
+# [77] "Access Control De...rastructure" "Infrastructure De...rastructure"
+# [79] "Participant Infor...rastructure" "Fire Management D... Management"
+# [81] "Participant Infor... Managem(2)" "Heritage Conserva...onservation"
+# [83] "Expected Heritage...onservation" "Participant Infor...onservation"
+#
 # 11.	fq=associatedProgramFacet%3ANational+Landcare+Programme&fq=associatedSubProgramFacet%3A25th+Anniversary+Landcare+Grants+2014-15&fq=associatedSubProgramFacet%3ALandcare+Network+Grants+2014-16&fq=associatedSubProgramFacet%3ALocal+Programmes&fq=associatedSubProgramFacet%3ARegional+Funding"
 # > getSheetNames(paste('M11 ',extract_date,'.xlsx',sep=''))
-# [1] "Regional Funding Final Report"   "Indigenous Employ... Businesses" "Indigenous Busine... Businesses"
-# [4] "Administration Ac...inistration" "Participant Infor...inistration" "Overview of Proje...tage report"
-# [7] "Environmental, Ec...tage report" "Implementation Up...tage report" "Lessons Learned a...tage report"
-# [10] "Stage Report"                    "1. Community Gran...nity Grants" "2. Community Gran...nity Grants"
-# [13] "Attachments Community Grants"    "Event Details Com... Engagement" "Participant Infor... Engagement"
-# [16] "Materials Provide... Engagement" "Fire Management D... Management" "Participant Infor... Management"
-# [19] "Plan Development ...Development" "Participant Infor...Development" "Management Practice Change"     
-# [22] "Pest Management D... Management" "Fence Details Pest Management"   "Participant Infor... Managem(1)"
-# [25] "Water Management"                "Weed Treatment De...d Treatment" "Participant Infor...d Treatment"
-# [28] "Site Planning Det...ng and Risk" "Threatening Proce...ng and Risk" "Participant Infor...ng and Risk"
-# [31] "Training Details ...Development" "Skills Developmen...Development" "Participant Infor...Developm(1)"
-# [34] "Progress Report D...ress Report" "Attachments 25th ...ress Report" "Final Report Deta...inal Report"
-# [37] "Output Details 25...inal Report" "Project Acquittal...inal Report" "Attachments 25th ...inal Report"
-# [40] "Outcomes Outcomes...inal report" "Evaluation Outcom...inal report" "Lessons Learned O...inal report"
-# [43] "Annual Stage Report"             "Access Control De...rastructure" "Infrastructure De...rastructure"
-# [46] "Participant Infor...rastructure" "Site Preparation ...Preparation" "Weed Treatment De...Preparation"
-# [49] "Participant Infor...Preparation" "Research Information Research"   "Participant Infor...on Research"
-# [52] "Conservation Work...Communities" "Participant Infor...Communities" "Survey Informatio...y - general"
-# [55] "Fauna Survey Deta...y - general" "Participant Infor...y - general" "Survey Informatio...y - gene(1)"
-# [58] "Flora Survey Deta...y - general" "Participant Infor...y - gene(1)" "Evidence of Pest ...imal Survey"
-# [61] "Pest Observation ...imal Survey" "Participant Infor...imal Survey" "Erosion Managemen... Management"
-# [64] "Participant Infor... Managem(2)" "Revegetation Deta...evegetation" "Participant Infor...evegetation"
-# [67] "Seed Collection D... Collection" "Participant Infor... Collection" "Fence Details Fencing"          
-# [70] "Participant Information Fencing" "Site Monitoring Plan"            "Evidence of Weed ... Monitoring"
-# [73] "Weed Observation ... Monitoring" "Participant Infor... Monitoring" "Debris Removal De...ris Removal"
-# [76] "Participant Infor...ris Removal" "Indigenous Knowledge Transfer"   "Vegetation Monito...ival Survey"
-# [79] "Participant Infor...ival Survey" "Plant Propagation...Propagation" "Participant Infor...Propagation"
-# [82] "Heritage Conserva...onservation" "Expected Heritage...onservation" "Participant Infor...onservation"
-# [85] "Conservation Grazing Management" "General informati...lity Survey" "Environmental Inf...lity Survey"
-# [88] "Water Quality Mea...lity Survey" "Sampling Site Inf...methodology" "Field Sheet 1 - G...methodology"
-# [91] "Field Sheet 2 - E...methodology" "Field Sheet 3 - O...methodology" "Field Sheet 4 - C...methodology"
-# [94] "Field Sheet 5 - S...methodology" "Asset Protection ... Management" "Ecological Burn D... Management"
-# [97] "Participant Infor... Managem(3)" "Disease Managemen... Management" "Participant Infor... Managem(4)"
-# [100] "Post revegetation... management" "Post revegetation... managem(1)" "Post revegetation... managem(2)"
+# [1] "Regional Funding Final Report"   "Indigenous Employ... Businesses"
+# [3] "Indigenous Busine... Businesses" "Administration Ac...inistration"
+# [5] "Participant Infor...inistration" "Overview of Proje...tage report"
+# [7] "Environmental, Ec...tage report" "Implementation Up...tage report"
+# [9] "Lessons Learned a...tage report" "Stage Report"                   
+# [11] "1. Community Gran...nity Grants" "2. Community Gran...nity Grants"
+# [13] "Attachments Community Grants"    "Event Details Com... Engagement"
+# [15] "Participant Infor... Engagement" "Materials Provide... Engagement"
+# [17] "Fire Management D... Management" "Participant Infor... Management"
+# [19] "Plan Development ...Development" "Participant Infor...Development"
+# [21] "Management Practice Change"      "Pest Management D... Management"
+# [23] "Fence Details Pest Management"   "Participant Infor... Managem(1)"
+# [25] "Water Management"                "Weed Treatment De...d Treatment"
+# [27] "Participant Infor...d Treatment" "Site Planning Det...ng and Risk"
+# [29] "Threatening Proce...ng and Risk" "Participant Infor...ng and Risk"
+# [31] "Training Details ...Development" "Skills Developmen...Development"
+# [33] "Participant Infor...Developm(1)" "Progress Report D...ress Report"
+# [35] "Attachments 25th ...ress Report" "Final Report Deta...inal Report"
+# [37] "Output Details 25...inal Report" "Project Acquittal...inal Report"
+# [39] "Attachments 25th ...inal Report" "Outcomes Outcomes...inal report"
+# [41] "Evaluation Outcom...inal report" "Lessons Learned O...inal report"
+# [43] "Annual Stage Report"             "Access Control De...rastructure"
+# [45] "Infrastructure De...rastructure" "Participant Infor...rastructure"
+# [47] "Site Preparation ...Preparation" "Weed Treatment De...Preparation"
+# [49] "Participant Infor...Preparation" "Research Information Research"  
+# [51] "Participant Infor...on Research" "Conservation Work...Communities"
+# [53] "Participant Infor...Communities" "Survey Informatio...y - general"
+# [55] "Fauna Survey Deta...y - general" "Participant Infor...y - general"
+# [57] "Survey Informatio...y - gene(1)" "Flora Survey Deta...y - general"
+# [59] "Participant Infor...y - gene(1)" "Evidence of Pest ...imal Survey"
+# [61] "Pest Observation ...imal Survey" "Participant Infor...imal Survey"
+# [63] "Erosion Managemen... Management" "Participant Infor... Managem(2)"
+# [65] "Revegetation Deta...evegetation" "Participant Infor...evegetation"
+# [67] "Seed Collection D... Collection" "Participant Infor... Collection"
+# [69] "Fence Details Fencing"           "Participant Information Fencing"
+# [71] "Site Monitoring Plan"            "Evidence of Weed ... Monitoring"
+# [73] "Weed Observation ... Monitoring" "Participant Infor... Monitoring"
+# [75] "Debris Removal De...ris Removal" "Participant Infor...ris Removal"
+# [77] "Indigenous Knowledge Transfer"   "Vegetation Monito...ival Survey"
+# [79] "Participant Infor...ival Survey" "Plant Propagation...Propagation"
+# [81] "Participant Infor...Propagation" "Heritage Conserva...onservation"
+# [83] "Expected Heritage...onservation" "Participant Infor...onservation"
+# [85] "Conservation Grazing Management" "General informati...lity Survey"
+# [87] "Environmental Inf...lity Survey" "Water Quality Mea...lity Survey"
+# [89] "Sampling Site Inf...methodology" "Field Sheet 1 - G...methodology"
+# [91] "Field Sheet 2 - E...methodology" "Field Sheet 3 - O...methodology"
+# [93] "Field Sheet 4 - C...methodology" "Field Sheet 5 - S...methodology"
+# [95] "Asset Protection ... Management" "Ecological Burn D... Management"
+# [97] "Participant Infor... Managem(3)" "Disease Managemen... Management"
+# [99] "Participant Infor... Managem(4)" "Post revegetation... management"
+# [101] "Post revegetation... managem(1)" "Post revegetation... managem(2)"
 # [103] "Post revegetation... managem(3)"
-
-# without report data
+#
+# 12. without report data
 # > getSheetNames(paste('M12 ',extract_date,'.xlsx',sep=''))
 # [1] "RLP Core Services report"        "RLP Core Services annual report"
-
-# with report data
+#
+# 13. with report data
 # > getSheetNames(paste('M13 ',extract_date,'.xlsx',sep=''))
 # [1] "RLP Core Services report"        "RLP Core Services annual report"
 
-extract_date <- '2022-05-16'
+extract_date <- '2022-06-06'
 
-project_cols_in <- c('project_id','grant_id','external_id',
-                     'internal_order_number','work_order_id',
-                     'program','sub_program','name','description',
-                     'management_unit','organisation','status',
-                     'report_financial_year','start_date','end_date',
-                     'contracted_start_date','contracted_end_date', 
-                     'last_modified_2')
-project_cols_out <- c('grant_id','external_id','internal_order_number',
-                      'work_order_id','organisation',
-                      'management_unit','mu_id','mu_state','project_name',
-                      'program','sub_program','project_start_date',
-                      'project_end_date','project_contracted_start_date',
-                      'project_contracted_end_date','project_status')
+project_cols_in <- c(
+  'project_id','grant_id','external_id','internal_order_number','work_order_id',
+  'program','sub_program','name','description','management_unit','organisation',
+  'status','report_financial_year','start_date','end_date',
+  'contracted_start_date','contracted_end_date','last_modified_2')
+project_cols_out <- c(
+  'project_id','grant_id','external_id','internal_order_number','work_order_id',
+  'organisation','management_unit','mu_id','mu_state','project_name',
+  'program','sub_program','project_start_date', 'project_end_date',
+  'project_contracted_start_date','project_contracted_end_date','project_status')
 
-project_meta_cols_out <- c('meta_source_sheetname','meta_col_project_start_date',
-                           'meta_col_project_end_date',
-                           'meta_col_project_contracted_start_date',
-                           'meta_col_project_contracted_end_date',
-                           'meta_col_project_name')
+project_meta_cols_out <- c(
+  'meta_source_sheetname','meta_col_project_start_date',
+  'meta_col_project_end_date','meta_col_project_contracted_start_date',
+  'meta_col_project_contracted_end_date','meta_col_project_name')
 
 # Reports
-report_cols_in <- c('site_id','report_status','status_2',
-                    'report_financial_year','stage','activity_id',
-                    'activity_type','report_from_date','report_to_date')
-report_cols_out <- c('MERIT_Reports_link','report_financial_year',
-                     'report_status','service','target_measure','context',
-                     'site_id','report_last_modified','category','subcategory',
-                     'report_species','total_to_be_delivered','fy_target',
-                     'measured','invoiced','reported','report_stage', 
-                     'report_activity_type','report_from_date','report_to_date')
-report_meta_cols_out <- c('meta_col_measured','meta_col_reported',
-                          'meta_col_invoiced','meta_col_category',
-                          'meta_text_subcategory','meta_col_context',
-                          'meta_col_report_species',
-                          'meta_line_item_object_class',
-                          'meta_line_item_property','meta_line_item_value',
-                          'meta_col_project_status',
-                          'meta_col_report_last_modified',
-                          'meta_col_report_stage',
-                          'meta_col_report_activity_type')
+report_cols_in <- c(
+  'site_id','report_status','status_2','report_financial_year','stage',
+  'activity_id', 'activity_type','report_from_date','report_to_date')
+report_cols_out <- c(
+  'MERIT_Reports_link','report_financial_year','report_status','service',
+  'target_measure','context','site_id','report_last_modified','category',
+  'subcategory','report_species','total_to_be_delivered','fy_target',
+  'measured','invoiced','reported','report_stage','report_activity_type',
+  'report_from_date','report_to_date')
+report_meta_cols_out <- c(
+  'meta_col_measured','meta_col_reported','meta_col_invoiced','meta_col_category',
+  'meta_text_subcategory','meta_col_context','meta_col_report_species',
+  'meta_line_item_object_class','meta_line_item_property','meta_line_item_value',
+  'meta_col_project_status','meta_col_report_last_modified','meta_col_report_stage',
+  'meta_col_report_activity_type')
 
 #Species Etc
-species_etc_cols_out <- c('primary_secondary_outcomes','primary_outcomes',
-                          'secondary_outcomes',
-                          'primary_secondary_investment_priorities',
-                          'primary_investment_priority',
-                          'secondary_investment_priority','assets',
-                          'natural_cultural_assets_managed',
-                          'threatened_species',
-                          'threatened_ecological_communities',
-                          'migratory_species',
-                          'ramsar_wetland,world_heritage_area',
-                          'community_awareness_participation_in_nrm',
-                          'indigenous_cultural_values',
-                          'indigenous_ecological_knowledge',
-                          'remnant_vegetation',
-                          'aquatic_and_coastal_systems_including_wetlands',
-                          'epbc','tec','ramsar')
+species_etc_cols_out <- c(
+  'primary_secondary_outcomes','primary_outcomes','secondary_outcomes',
+  'primary_secondary_investment_priorities','primary_investment_priority',
+  'secondary_investment_priority','assets','natural_cultural_assets_managed',
+  'threatened_species', 'threatened_ecological_communities','migratory_species',
+  'ramsar_wetland,world_heritage_area','community_awareness_participation_in_nrm',
+  'indigenous_cultural_values','indigenous_ecological_knowledge',
+  'remnant_vegetation','aquatic_and_coastal_systems_including_wetlands',
+  'report_species','epbc','tec','ramsar')
 
-numeric_cols <- c('measured','invoiced','reported','report_from_date',
-                  'report_to_date','start_date','end_date',
-                  'contracted_start_date','contracted_end_date',
-                  'last_modified_2')
+numeric_cols <- c(
+  'measured','invoiced','reported','report_from_date',
+  'report_to_date','start_date','end_date',
+  'contracted_start_date','contracted_end_date',
+  'last_modified_2')
 
-character_cols <- c('management_unit','external_id','site_id','organisation',
-                    'report_species','category','context')
+character_cols <- c(
+  'management_unit','external_id','site_id','organisation','report_species',
+  'category','context')
 
 extract_date_cols <- c('grant_or_procurement','report_to_date','extract_date')
 
-meri_outcomes_indicator_ref <- c("natural_cultural_assets_managed",
-                                 "threatened_species",
-                                 "threatened_ecological_communities" , 
-                                 "migratory_species",
-                                 "ramsar_wetland",
-                                 "natural_cultural_assets_managed", 
-                                 "threatened_species",                           
-                                 "threatened_ecological_communities",           
-                                 "migratory_species",                             
-                                 "ramsar_wetland",                               
-                                 "world_heritage_area",                          
-                                 "community_awareness_participation_in_nrm" ,     
-                                 "indigenous_cultural_values",                  
-                                 "indigenous_ecological_knowledge",            
-                                 "remnant_vegetation",                           
-                                 "aquatic_and_coastal_systems_including_wetlands",
-                                 "world_heritage_area",
-                                 "community_awareness_participation_in_nrm",    
-                                 "indigenous_cultural_values", 
-                                 "indigenous_ecological_knowledge",
-                                 "remnant_vegetation",
-                                 "aquatic_and_coastal_systems_including_wetlands")
+meri_outcomes_indicator_ref <- c(
+  "natural_cultural_assets_managed","threatened_species",
+  "threatened_ecological_communities", "migratory_species","ramsar_wetland",
+  "world_heritage_area","community_awareness_participation_in_nrm",     
+  "indigenous_cultural_values","indigenous_ecological_knowledge",            
+  "remnant_vegetation","aquatic_and_coastal_systems_including_wetlands",
+  "world_heritage_area","community_awareness_participation_in_nrm",    
+  "indigenous_cultural_values","indigenous_ecological_knowledge",
+  "remnant_vegetation","aquatic_and_coastal_systems_including_wetlands")
 
 load("management_units.Rdata")
 load("sprat_lookup.Rdata")
@@ -509,7 +653,8 @@ load_mult_wbooks <- function(files_vec,sheetname) {
 
 conc_species_col <- function(Data) {
   Data_out <- Data %>% 
-    group_by(across(c(-measured,-reported,-invoiced,-report_species,-context))) %>%
+    group_by(across(c(-measured,-reported,-invoiced,-report_species,
+                      -context))) %>%
     summarise(report_species = str_c(report_species,collapse="|"),
               context = str_c(context,collapse="|"),
               measured = first(measured),
@@ -555,7 +700,8 @@ EPBC <- RLP_Outcomes_short_term_indicator %>%
   distinct()
 
 TEC <- RLP_Outcomes_short_term_indicator %>%
-  mutate(tec=ifelse(short_term_indicator=='Threatened Ecological Community','Y','N')) %>%
+  mutate(tec=ifelse(short_term_indicator=='Threatened Ecological Community',
+                    'Y','N')) %>%
   filter(tec=='Y') %>%
   select(grant_id,tec) %>%
   drop_na(tec) %>%
@@ -594,24 +740,14 @@ filter_by_service_target_measures_and_distinct <- function(Data,service,
     distinct() 
 }
 
-no_category_extract_no_context_no_species <- function(Data,worksheet,service,
-                                                      target_measure,measured,
-                                                      reported,invoiced,
-                                                      object_class=NA,
-                                                      property=NA,value=NA,
-                                                      category=NA,context=NA,
-                                                      sub_category=NA) {
+no_category_extract_no_context_no_species <- function(
+    Data, worksheet, service, target_measure, measured, reported, invoiced,
+    object_class=NA, property=NA, value=NA, category=NA, context=NA, 
+    sub_category=NA) {
   fred <-
     Data %>%
-    select(project_id,grant_id,external_id,internal_order_number, work_order_id,
-           program,sub_program,name,description,management_unit,
-           organisation,status,report_financial_year,
-           start_date,end_date,contracted_start_date,contracted_end_date,
-           last_modified_2,
-           site_id,report_status,status_2,report_financial_year,stage,
-           activity_id,activity_type,report_from_date,report_to_date,
-           measured={{ measured }},
-           invoiced={{ invoiced }},
+    select(one_of(project_cols_in),one_of(report_cols_in),
+           measured={{ measured }},invoiced={{ invoiced }},
            reported={{ reported }}) %>%
     mutate(category=NA, context=NA, report_species=NA) %>%
     filter_by_service_target_measures_and_distinct(service,target_measure) %>%
@@ -637,23 +773,15 @@ no_category_extract_no_context_no_species <- function(Data,worksheet,service,
   return(fred)
 }
 
-all_sub_category_extract_no_context_no_species <- function(Data,worksheet,
-                                                           service,
-                                                           target_measure,
-                                                           measured,reported,
-                                                           invoiced,category,
-                                                           object_class=NA,
-                                                           property=NA,value=NA,
-                                                           context=NA,
-                                                           species=NA,
-                                                           sub_category=NA) {
+all_sub_category_extract_no_context_no_species <- function(
+    Data, worksheet, service, target_measure, measured, reported, invoiced,
+    category, object_class=NA, property=NA, value=NA, context=NA, species=NA,
+    sub_category=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
-           category={{ category }},
-           measured= {{ measured }},
-           invoiced={{ invoiced }},
-           reported={{ reported }}) %>%
+           category={{ category }},measured= {{ measured }},
+           invoiced={{ invoiced }},reported={{ reported }}) %>%
     filter(!is.na(category)) %>%
     mutate(context=NA, report_species=NA) %>%
     filter_by_service_target_measures_and_distinct(service,target_measure)
@@ -680,22 +808,16 @@ all_sub_category_extract_no_context_no_species <- function(Data,worksheet,
   return(fred)
 }
 
-all_sub_category_extract_context_species <- function(Data,worksheet,service,
-                                                     target_measure, measured,
-                                                     reported,invoiced,
-                                                     category,context,
-                                                     species,object_class=NA,
-                                                     property=NA,value=NA,
-                                                     sub_category=NA) {
+all_sub_category_extract_context_species <- function(
+    Data, worksheet, service, target_measure, measured, reported, invoiced,
+    category, context, species, object_class=NA, property=NA, value=NA,
+    sub_category=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
-           category={{ category }},
-           measured= {{ measured }},
-           invoiced={{ invoiced }},
-           reported={{ reported }},
-           context= {{ context }},
-           report_species= {{ species }}) %>%
+           category={{ category }},measured= {{ measured }},
+           invoiced={{ invoiced }},reported={{ reported }},
+           context= {{ context }},report_species= {{ species }}) %>%
     filter(!is.na(category)) %>%
     filter_by_service_target_measures_and_distinct(service,target_measure) %>%
     filter_na()
@@ -724,21 +846,15 @@ all_sub_category_extract_context_species <- function(Data,worksheet,service,
   return(fred)
 }
 
-all_sub_category_extract_context_no_species <- function(Data, worksheet,service,
-                                                        target_measure, measured,
-                                                        reported,invoiced,
-                                                        category,context,
-                                                        object_class=NA,
-                                                        property=NA,value=NA,
-                                                        species=NA,
-                                                        sub_category=NA) {
+all_sub_category_extract_context_no_species <- function(
+    Data, worksheet, service, target_measure, measured, reported, invoiced,
+    category, context, object_class=NA, property=NA, value=NA, species=NA,
+    sub_category=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
-           category={{ category }},
-           measured= {{ measured }},
-           invoiced={{ invoiced }},
-           reported={{ reported }},
+           category={{ category }},measured= {{ measured }},
+           invoiced={{ invoiced }}, reported={{ reported }},
            context= {{ context }}) %>%
     filter(!is.na(category)) %>%
     mutate(report_species=NA) %>%
@@ -768,20 +884,15 @@ all_sub_category_extract_context_no_species <- function(Data, worksheet,service,
   return(fred)
 }
 
-no_category_extract_context_no_species <- function(Data,worksheet,service,
-                                                   target_measure, measured,
-                                                   reported,invoiced,
-                                                   context,object_class=NA,
-                                                   property=NA,value=NA,
-                                                   category=NA,species=NA,
-                                                   sub_category=NA) {
+no_category_extract_context_no_species <- function(
+    Data, worksheet, service, target_measure, measured, reported, invoiced,
+    context, object_class=NA, property=NA, value=NA, category=NA, species=NA,
+    sub_category=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
-           measured= {{ measured }},
-           invoiced={{ invoiced }},
-           reported={{ reported }},
-           context= {{ context }}) %>%
+           measured= {{ measured }},invoiced={{ invoiced }},
+           reported={{ reported }}, context= {{ context }}) %>%
     mutate(category=NA, report_species=NA) %>%
     filter_by_service_target_measures_and_distinct(service,target_measure) %>%
     filter_na()
@@ -808,22 +919,16 @@ no_category_extract_context_no_species <- function(Data,worksheet,service,
   return(fred)
 }
 
-sub_category_extract_context_species  <- function(Data,worksheet, service,
-                                                  target_measure, measured,
-                                                  reported,invoiced, 
-                                                  category,sub_category,
-                                                  context,species,
-                                                  object_class=NA,property=NA,
-                                                  value=NA) {
+sub_category_extract_context_species  <- function(
+    Data, worksheet, service, target_measure, measured, reported, invoiced, 
+    category, sub_category, context, species, object_class=NA,property=NA,
+    value=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
-           category={{ category }},
-           measured= {{ measured }},
-           invoiced={{ invoiced }},
-           reported={{ reported }},
-           context = {{ context }},
-           report_species = {{ species }}) %>%
+           category={{ category }},measured= {{ measured }},
+           invoiced={{ invoiced }},reported={{ reported }},
+           context = {{ context }},report_species = {{ species }}) %>%
     filter(category==sub_category) %>%
     filter_by_service_target_measures_and_distinct(service,target_measure) %>%
     filter_na()
@@ -852,20 +957,15 @@ sub_category_extract_context_species  <- function(Data,worksheet, service,
   return(fred)
 }
 
-sub_category_extract_context_no_species  <- function(Data,worksheet, service,
-                                                     target_measure, measured,
-                                                     reported,invoiced, 
-                                                     category,sub_category,
-                                                     context,object_class=NA,
-                                                     property=NA,value=NA,
-                                                     species=NA) {
+sub_category_extract_context_no_species  <- function(
+    Data, worksheet, service, target_measure, measured, reported,invoiced, 
+    category,sub_category, context,object_class=NA, property=NA, value=NA,
+    species=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
-           category={{ category }},
-           measured= {{ measured }},
-           invoiced={{ invoiced }},
-           reported={{ reported }},
+           category={{ category }},measured= {{ measured }},
+           invoiced={{ invoiced }},reported={{ reported }},
            context = {{ context }}) %>%
     filter(category==sub_category) %>%
     mutate(report_species = NA) %>%
@@ -895,22 +995,16 @@ sub_category_extract_context_no_species  <- function(Data,worksheet, service,
   return(fred)
 }
 
-sub_category_extract_no_context_species <- function(Data,worksheet, service,
-                                                    target_measure, measured,
-                                                    reported,invoiced, 
-                                                    category, sub_category,
-                                                    species,object_class=NA,
-                                                    property=NA,value=NA,
-                                                    context=NA) {
+sub_category_extract_no_context_species <- function(
+    Data, worksheet, service, target_measure, measured, reported, invoiced, 
+    category, sub_category, species, object_class=NA, property=NA, value=NA,
+    context=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
-           category={{ category }},
-           measured= {{ measured }},
-           invoiced={{ invoiced }},
-           reported={{ reported }},
-           report_species={{ species }}
-    ) %>%
+           category={{ category }},measured= {{ measured }},
+           invoiced={{ invoiced }},reported={{ reported }},
+           report_species={{ species }}) %>%
     filter(category==sub_category) %>%
     mutate(context=NA) %>%
     filter_by_service_target_measures_and_distinct(service,target_measure) %>%
@@ -940,16 +1034,14 @@ sub_category_extract_no_context_species <- function(Data,worksheet, service,
 }
 
 sub_category_extract_no_context_no_species <- function(
-    Data,worksheet,service,target_measure,measured,reported,invoiced,
-    category,sub_category,object_class=NA,property=NA,value=NA,context=NA,
+    Data, worksheet, service, target_measure, measured, reported, invoiced,
+    category, sub_category, object_class=NA, property=NA, value=NA, context=NA,
     species=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
-           category={{ category }},
-           measured={{ measured }},
-           invoiced={{ invoiced }},
-           reported={{ reported }}) %>%
+           category={{ category }},measured={{ measured }},
+           invoiced={{ invoiced }}, reported={{ reported }}) %>%
     filter(category==sub_category) %>%
     mutate(context=NA, report_species=NA) %>%
     filter_by_service_target_measures_and_distinct(service,target_measure) %>%
@@ -977,11 +1069,9 @@ sub_category_extract_no_context_no_species <- function(
   return(fred)
 }
 
-grant_report_no_species <- function(Data,sheet_name,start_row=3,
-                                    measured_col,reported_col,
-                                    invoiced_col,context_col,
-                                    object_class=NA,property=NA,
-                                    value=NA) {
+grant_report_no_species <- function(
+    Data,sheet_name,start_row=3,measured_col,reported_col,invoiced_col,
+    context_col, object_class=NA,property=NA,value=NA) {
   fred <- Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            contracted_end_date,last_modified_2,measured={{ measured_col }},
@@ -990,8 +1080,8 @@ grant_report_no_species <- function(Data,sheet_name,start_row=3,
     mutate(total_to_be_delivered=NA,fy_target=NA,    
            category=NA,subcategory=NA,
            report_species=NA,
-           meta_col_report_species=NA,meta_text_subcategory=NA,meta_col_category=NA,
-           service=str_c(activity_type,' > ',sheet_name),
+           meta_col_report_species=NA,meta_text_subcategory=NA,
+           meta_col_category=NA,service=str_c(activity_type,' > ',sheet_name),
            target_measure= as_label(enquo(measured_col)),
            meta_source_sheetname=sheet_name,
            across(all_of(numeric_cols),as.numeric),
@@ -1008,13 +1098,9 @@ grant_report_no_species <- function(Data,sheet_name,start_row=3,
     filter_na()
 }
 
-grant_report_species <- function(Data,sheet_name,start_row=3,
-                                 measured_col,
-                                 reported_col,invoiced_col,
-                                 context_col,species_col,
-                                 object_class=NA,
-                                 property=NA,
-                                 value=NA) {
+grant_report_species <- function(
+    Data,sheet_name,start_row=3,measured_col,reported_col,invoiced_col,
+    context_col,species_col, object_class=NA,property=NA,value=NA) {
   fred <- Data %>%
     filter(!is.na({{ species_col}}) | {{ species_col}}=='NA') %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
@@ -1041,17 +1127,16 @@ grant_report_species <- function(Data,sheet_name,start_row=3,
            meta_line_item_value=value)
 }
 
-grant_report_species_category <- function(Data,sheet_name,start_row=3,
-                                          category_col,measured_col,
-                                          reported_col,invoiced_col,
-                                          context_col,species_col,
-                                          object_class=NA,property=NA,
-                                          value=NA,sub_category=NA) {
+grant_report_species_category <- function(
+    Data,sheet_name,start_row=3,category_col,measured_col,
+    reported_col,invoiced_col,context_col,species_col,
+    object_class=NA,property=NA,value=NA,sub_category=NA) {
   fred <- Data %>%
     filter(!is.na({{ species_col}}) | {{ species_col}}=='NA') %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
-           measured={{ measured_col }},category={{ category_col }}, reported={{ reported_col }},
-           invoiced={{ invoiced_col }}, context= {{ context_col }}, report_species= {{ species_col }}) %>%
+           measured={{ measured_col }},category={{ category_col }}, 
+           reported={{ reported_col }},invoiced={{ invoiced_col }}, 
+           context= {{ context_col }}, report_species= {{ species_col }}) %>%
     mutate(total_to_be_delivered=NA,fy_target=NA,       
            subcategory=NA,
            meta_text_subcategory=NA,meta_col_category=NA,
@@ -1072,17 +1157,17 @@ grant_report_species_category <- function(Data,sheet_name,start_row=3,
            meta_line_item_value=value)
 }
 
-grant_report_species_no_metrics <- function(Data,sheet_name,start_row=3,
-                                            context_col,species_col,
-                                            object_class=NA,property=NA,
-                                            value=NA) {
+grant_report_species_no_metrics <- function(
+    Data,sheet_name,start_row=3,context_col,species_col,object_class=NA,
+    property=NA,value=NA) {
   fred <- Data %>%
     filter(!is.na({{ species_col}}) | {{ species_col}}=='NA') %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            context= {{ context_col }},report_species= {{ species_col }}) %>%
-    mutate(measured=NA,reported=NA,invoiced=NA,fy_target=NA,total_to_be_delivered=NA,
-           category=NA,subcategory=NA,
-           meta_col_category=NA,meta_col_measured=NA,meta_col_reported=NA,meta_col_invoiced=NA,meta_text_subcategory=NA,  
+    mutate(measured=NA,reported=NA,invoiced=NA,fy_target=NA,
+           total_to_be_delivered=NA,category=NA,subcategory=NA,
+           meta_col_category=NA,meta_col_measured=NA,meta_col_reported=NA,
+           meta_col_invoiced=NA,meta_text_subcategory=NA,  
            across(all_of(numeric_cols),as.numeric),
            across(all_of(character_cols),as.character),
            meta_source_sheetname=sheet_name,
@@ -1288,7 +1373,8 @@ Report_Raw <- bind_rows(
     category=type_of_community_stakeholder_engagement_activity,
     sub_category='One-on-one technical advice interactions',
     context=purpose_of_engagement,
-    object_class='Community Engagement',property='one-on-one technical advice interactions',
+    object_class='Community Engagement',
+    property='one-on-one technical advice interactions',
     value='Total Events'),
   sub_category_extract_context_no_species(
     Data=RLP_Data,
@@ -2543,18 +2629,19 @@ Report_Raw <- bind_rows(
     species = targeted_species,
     object_class='Species and Habitat',property='Emergency Interventions',
     value='Total Interventions'),
-  all_sub_category_extract_context_species(Data = BR_Data,
-                                           worksheet = 'Emergency Interve...inal Report',
-                                           service = "Undertaking emergency interventions to prevent extinctions",
-                                           target_measure = "Number of interventions",
-                                           measured = number_of_interventions,
-                                           invoiced = number_of_interventions,
-                                           reported = number_of_interventions,
-                                           category = initial_or_follow_up_activity,
-                                           context = type_and_goal_or_intervention,
-                                           species = targeted_species,
-                                           object_class='Species and Habitat',property='Emergency Interventions',
-                                           value='Total Interventions'))
+  all_sub_category_extract_context_species(
+    Data = BR_Data,
+    worksheet = 'Emergency Interve...inal Report',
+    service = "Undertaking emergency interventions to prevent extinctions",
+    target_measure = "Number of interventions",
+    measured = number_of_interventions,
+    invoiced = number_of_interventions,
+    reported = number_of_interventions,
+    category = initial_or_follow_up_activity,
+    context = type_and_goal_or_intervention,
+    species = targeted_species,
+    object_class='Species and Habitat',property='Emergency Interventions',
+    value='Total Interventions'))
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Water quali...tput Report')
@@ -2843,8 +2930,10 @@ Report_Raw <- bind_rows(
   Report_Raw,
   grant_report_no_species(
     Data = Data,sheet_name='Post revegetation... managem(3)',
-    measured_col=total_pest_treatment_area_ha,reported_col=total_pest_treatment_area_ha,
-    invoiced_col=total_pest_treatment_area_ha,context_col= type_of_pest_treatment_event,
+    measured_col=total_pest_treatment_area_ha,
+    reported_col=total_pest_treatment_area_ha,
+    invoiced_col=total_pest_treatment_area_ha,
+    context_col= type_of_pest_treatment_event,
     object_class='Sites',property='Post Revegetation',
     value='Total Area (Ha)'))
 
@@ -2945,14 +3034,19 @@ Report_Raw <- bind_rows(
 
 projects_reports <- 
   Report_Raw %>%
-  mutate(total_to_be_delivered = ifelse(!is.na(total_to_be_delivered) ,total_to_be_delivered,0),
+  mutate(total_to_be_delivered = ifelse(!is.na(total_to_be_delivered),
+                                        total_to_be_delivered,0),
          reported = ifelse(is.na(reported),measured,reported),
-         across(c('total_to_be_delivered','measured','invoiced','reported'),as.numeric),
+         across(c('total_to_be_delivered','measured','invoiced','reported'),
+                as.numeric),
          external_id=as.character(external_id),
          extract_date=extract_date,
-         MERIT_Reports_link = str_c("https://fieldcapture.ala.org.au/project/index/",project_id)) %>%
+         MERIT_Reports_link = 
+           str_c("https://fieldcapture.ala.org.au/project/index/",
+                 project_id)) %>%
   #mutate(proportion = measured/total_to_be_delivered) %>%
-  rename(project_status=status, status=status_2, report_last_modified=last_modified_2,
+  rename(project_status=status, status=status_2, 
+         report_last_modified=last_modified_2,
          report_stage = stage,report_activity_type = activity_type,
          project_start_date=start_date,project_end_date=end_date,
          project_contracted_start_date=contracted_start_date,
@@ -2990,7 +3084,8 @@ primary_secondary_outcomes <- RLP_Outcomes %>%
   ungroup() 
 
 primary_outcomes <- RLP_Outcomes %>% 
-  filter(type_of_outcomes == 'Primary outcome',!is.na(outcome),outcome!='null') %>%
+  filter(type_of_outcomes == 'Primary outcome',!is.na(outcome),
+         outcome!='null') %>%
   select(grant_id,outcome) %>%
   group_by(grant_id) %>%
   distinct() %>%
@@ -2998,7 +3093,8 @@ primary_outcomes <- RLP_Outcomes %>%
   ungroup() 
 
 secondary_outcomes <- RLP_Outcomes %>% 
-  filter(type_of_outcomes == 'Secondary Outcome/s',!is.na(outcome),outcome!='null') %>%
+  filter(type_of_outcomes == 'Secondary Outcome/s',!is.na(outcome),
+         outcome!='null') %>%
   select(grant_id,outcome) %>%
   group_by(grant_id) %>%
   distinct() %>%
@@ -3011,7 +3107,8 @@ primary_secondary_investment_priorities <- RLP_Outcomes %>%
   select(grant_id,investment_priority) %>%
   group_by(grant_id) %>%
   distinct() %>%
-  summarise(primary_secondary_investment_priorities = str_c(investment_priority,collapse="|")) %>% 
+  summarise(primary_secondary_investment_priorities = str_c(investment_priority,
+                                                            collapse="|")) %>% 
   ungroup() 
 
 primary_investment_priority <- RLP_Outcomes %>% 
@@ -3019,11 +3116,13 @@ primary_investment_priority <- RLP_Outcomes %>%
   select(grant_id,primary_investment_priority=investment_priority) 
 
 secondary_investment_priority <- RLP_Outcomes %>% 
-  filter(type_of_outcomes == 'Secondary Outcome/s',investment_priority !='NA') %>% 
+  filter(type_of_outcomes == 'Secondary Outcome/s',
+         investment_priority !='NA') %>% 
   select(grant_id,investment_priority) %>%
   group_by(grant_id) %>%
   distinct() %>%
-  summarise(secondary_investment_priority = str_c(investment_priority,collapse="|")) %>% 
+  summarise(secondary_investment_priority = str_c(investment_priority,
+                                                  collapse="|")) %>% 
   ungroup() 
 
 project_assets <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
@@ -3043,6 +3142,14 @@ meri_outcomes_indicators <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
   group_by(grant_id) %>%
   summarize(across(all_of(meri_outcomes_indicator_ref),last))
 
+report_species <- projects_reports_species %>%
+  filter(!is.na(report_species)) %>%
+  separate_rows(report_species,sep='[,|]') %>%
+  select(grant_id,report_species) %>%
+  group_by(grant_id) %>%
+  summarize(report_species=str_c(str_trim(report_species),collapse="|")) %>%
+  ungroup()
+  
 projects_reports_species <- projects_reports %>% 
   left_join(primary_secondary_investment_priorities,by='grant_id') %>%
   left_join(primary_investment_priority,by='grant_id') %>%
@@ -3056,11 +3163,16 @@ projects_reports_species <- projects_reports %>%
   left_join(primary_outcomes,by='grant_id') %>%
   left_join(secondary_outcomes,by='grant_id') %>%
   left_join(management_units,by='management_unit') %>%
-  mutate(across(any_of(species_etc_cols_out),function(x) {ifelse(x=='NA',NA,x)}),
-         meta_col_project_status='status',meta_col_project_start_date='start_date',
-         meta_col_project_end_date='end_date',meta_col_project_contracted_start_date='contracted_start_date',
-         meta_col_project_contracted_end_date='contracted_end_date',meta_col_project_name='name') %>%
-  select(any_of(project_cols_out),any_of(report_cols_out),any_of(project_meta_cols_out),any_of(report_meta_cols_out),
+  mutate(across(any_of(species_etc_cols_out),function(x) {ifelse(x=='NA',
+                                                                 NA,x)}),
+         meta_col_project_status='status',
+         meta_col_project_start_date='start_date',
+         meta_col_project_end_date='end_date',
+         meta_col_project_contracted_start_date='contracted_start_date',
+         meta_col_project_contracted_end_date='contracted_end_date',
+         meta_col_project_name='name') %>%
+  select(any_of(project_cols_out),any_of(report_cols_out),
+         any_of(project_meta_cols_out),any_of(report_meta_cols_out),
          any_of(species_etc_cols_out),any_of(extract_date_cols))
 
 Projects <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
@@ -3081,6 +3193,7 @@ projects_species <- Projects %>%
   left_join(primary_secondary_outcomes,by='grant_id') %>%
   left_join(primary_outcomes,by='grant_id') %>%
   left_join(secondary_outcomes,by='grant_id') %>%
+  left_join(report_species,by='grant_id') %>%
   left_join(management_units,by='management_unit') %>%
   mutate(extract_date=extract_date) %>%
   rename(project_status=status,project_start_date=start_date,
@@ -3128,5 +3241,7 @@ driver <- dbDriver("SQLite")
 con <- dbConnect(driver, dbname = "database2.db")
 dbWriteTable(con, "projects_species", projects_species,overwrite=TRUE)
 dbWriteTable(con, "projects_reports_species", projects_reports_species,
+             overwrite=TRUE)
+dbWriteTable(con, "projects_finance", projects_finance,
              overwrite=TRUE)
 dbDisconnect(con)
