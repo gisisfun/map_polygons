@@ -550,7 +550,7 @@ library(RSQLite)
 # > getSheetNames(paste('M13 ',extract_date,'.xlsx',sep=''))
 # [1] "RLP Core Services report"        "RLP Core Services annual report"
 
-extract_date <- '2022-06-06'
+extract_date <- '2022-04-11'
 
 project_cols_in <- c(
   'project_id','grant_id','external_id','internal_order_number','work_order_id',
@@ -1081,7 +1081,7 @@ grant_report_no_species <- function(
            category=NA,subcategory=NA,
            report_species=NA,
            meta_col_report_species=NA,meta_text_subcategory=NA,
-           meta_col_category=NA,service=str_c(activity_type,' > ',sheet_name),
+           meta_col_category=NA,service=str_c(activity_type,' > ',stage),
            target_measure= as_label(enquo(measured_col)),
            meta_source_sheetname=sheet_name,
            across(all_of(numeric_cols),as.numeric),
@@ -1112,7 +1112,7 @@ grant_report_species <- function(
            meta_text_subcategory=NA,meta_col_category=NA,
            across(all_of(numeric_cols),as.numeric),
            across(all_of(character_cols),as.character),
-           service=str_c(activity_type,' > ',sheet_name),
+           service=str_c(activity_type,' > ',stage),
            target_measure= as_label(enquo(measured_col)),
            meta_source_sheetname=sheet_name,
            meta_col_measured=as_label(enquo(measured_col)),
@@ -1142,7 +1142,7 @@ grant_report_species_category <- function(
            meta_text_subcategory=NA,meta_col_category=NA,
            across(all_of(numeric_cols),as.numeric),
            across(all_of(character_cols),as.character),
-           service=str_c(activity_type,' > ',sheet_name),
+           service=str_c(activity_type,' > ',stage),
            target_measure= as_label(enquo(measured_col)),
            meta_source_sheetname=sheet_name,
            meta_col_measured=as_label(enquo(measured_col)),
@@ -1171,7 +1171,7 @@ grant_report_species_no_metrics <- function(
            across(all_of(numeric_cols),as.numeric),
            across(all_of(character_cols),as.character),
            meta_source_sheetname=sheet_name,
-           service=str_c(activity_type,' > ',sheet_name),
+           service=str_c(activity_type,' > ',stage),
            target_measure= as_label(enquo(species_col)),
            target_measure=as_label(enquo(species_col)),
            meta_col_context=as_label(enquo(context_col)),
@@ -3149,7 +3149,7 @@ report_species <- projects_reports_species %>%
   group_by(grant_id) %>%
   summarize(report_species=str_c(str_trim(report_species),collapse="|")) %>%
   ungroup()
-  
+
 projects_reports_species <- projects_reports %>% 
   left_join(primary_secondary_investment_priorities,by='grant_id') %>%
   left_join(primary_investment_priority,by='grant_id') %>%
@@ -3241,7 +3241,5 @@ driver <- dbDriver("SQLite")
 con <- dbConnect(driver, dbname = "database2.db")
 dbWriteTable(con, "projects_species", projects_species,overwrite=TRUE)
 dbWriteTable(con, "projects_reports_species", projects_reports_species,
-             overwrite=TRUE)
-dbWriteTable(con, "projects_finance", projects_finance,
              overwrite=TRUE)
 dbDisconnect(con)
