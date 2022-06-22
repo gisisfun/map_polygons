@@ -1,3 +1,5 @@
+
+
 library(openxlsx)
 library(tidyr)
 library(dplyr)
@@ -15,7 +17,7 @@ library(RSQLite)
 
 # projects - reports - species view
 # A grants view of procurement activity report data with grants activities 
-# presented with procurement-like columns (measured,reported and invoiced). 
+# presented with procurement-like columns (measured,actual and invoiced). 
 # Additional report species content related to each project are recorded.
 # * Will require mapping of balance of report data items to provide complete
 # coverage of availalble data.
@@ -550,7 +552,7 @@ library(RSQLite)
 # > getSheetNames(paste('M13 ',extract_date,'.xlsx',sep=''))
 # [1] "RLP Core Services report"        "RLP Core Services annual report"
 
-extract_date <- '2022-04-11'
+extract_date <- '2022-06-20'
 
 project_cols_in <- c(
   'project_id','grant_id','external_id','internal_order_number','work_order_id',
@@ -576,10 +578,10 @@ report_cols_out <- c(
   'MERIT_Reports_link','report_financial_year','report_status','service',
   'target_measure','context','site_id','report_last_modified','category',
   'subcategory','report_species','total_to_be_delivered','fy_target',
-  'measured','invoiced','reported','report_stage','report_activity_type',
+  'measured','invoiced','actual','report_stage','report_activity_type',
   'report_from_date','report_to_date')
 report_meta_cols_out <- c(
-  'meta_col_measured','meta_col_reported','meta_col_invoiced','meta_col_category',
+  'meta_col_measured','meta_col_actual','meta_col_invoiced','meta_col_category',
   'meta_text_subcategory','meta_col_context','meta_col_report_species',
   'meta_line_item_object_class','meta_line_item_property','meta_line_item_value',
   'meta_col_project_status','meta_col_report_last_modified','meta_col_report_stage',
@@ -597,7 +599,7 @@ species_etc_cols_out <- c(
   'report_species','epbc','tec','ramsar')
 
 numeric_cols <- c(
-  'measured','invoiced','reported','report_from_date',
+  'measured','invoiced','actual','report_from_date',
   'report_to_date','start_date','end_date',
   'contracted_start_date','contracted_end_date',
   'last_modified_2')
@@ -653,12 +655,12 @@ load_mult_wbooks <- function(files_vec,sheetname) {
 
 conc_species_col <- function(Data) {
   Data_out <- Data %>% 
-    group_by(across(c(-measured,-reported,-invoiced,-report_species,
+    group_by(across(c(-measured,-actual,-invoiced,-report_species,
                       -context))) %>%
     summarise(report_species = str_c(report_species,collapse="|"),
               context = str_c(context,collapse="|"),
               measured = first(measured),
-              reported = first(reported),
+              actual = first(actual),
               invoiced = first(invoiced)) %>% 
     ungroup() %>%
     mutate(report_species = str_replace_all(report_species,'\n','|'))
@@ -667,7 +669,7 @@ conc_species_col <- function(Data) {
 filter_na <- function(Data) {
   Data <- Data %>%
     conc_species_col() %>%
-    filter(!is.na(measured) | !is.na(reported) | !is.na(invoiced) | 
+    filter(!is.na(measured) | !is.na(actual) | !is.na(invoiced) | 
              !is.na(report_species)) 
 }
 
@@ -741,26 +743,26 @@ filter_by_service_target_measures_and_distinct <- function(Data,service,
 }
 
 no_category_extract_no_context_no_species <- function(
-    Data, worksheet, service, target_measure, measured, reported, invoiced,
+    Data, worksheet, service, target_measure, measured, actual, invoiced,
     object_class=NA, property=NA, value=NA, category=NA, context=NA, 
     sub_category=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            measured={{ measured }},invoiced={{ invoiced }},
-           reported={{ reported }}) %>%
+           actual={{ actual }}) %>%
     mutate(category=NA, context=NA, report_species=NA) %>%
     filter_by_service_target_measures_and_distinct(service,target_measure) %>%
     filter_na()
   
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
-    reported_text <- as_label(enquo(reported))
+    actual_text <- as_label(enquo(actual))
     invoiced_text <- as_label(enquo(invoiced))
     fred <- fred %>%
       mutate(meta_source_sheetname=worksheet, 
              meta_col_measured = measured_text,
-             meta_col_reported = reported_text,
+             meta_col_actual = actual_text,
              meta_col_invoiced = invoiced_text,
              meta_col_category=NA,
              meta_col_context=NA,
@@ -774,27 +776,27 @@ no_category_extract_no_context_no_species <- function(
 }
 
 all_sub_category_extract_no_context_no_species <- function(
-    Data, worksheet, service, target_measure, measured, reported, invoiced,
+    Data, worksheet, service, target_measure, measured, actual, invoiced,
     category, object_class=NA, property=NA, value=NA, context=NA, species=NA,
     sub_category=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            category={{ category }},measured= {{ measured }},
-           invoiced={{ invoiced }},reported={{ reported }}) %>%
+           invoiced={{ invoiced }},actual={{ actual }}) %>%
     filter(!is.na(category)) %>%
     mutate(context=NA, report_species=NA) %>%
     filter_by_service_target_measures_and_distinct(service,target_measure)
   
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
-    reported_text <- as_label(enquo(reported))
+    actual_text <- as_label(enquo(actual))
     invoiced_text <- as_label(enquo(invoiced))
     category_text <- as_label(enquo(category))
     fred <- fred %>%
       mutate(meta_source_sheetname=worksheet,
              meta_col_measured=measured_text,
-             meta_col_reported=reported_text,
+             meta_col_actual=actual_text,
              meta_col_invoiced=invoiced_text,
              meta_col_category=category_text,
              meta_col_context=NA,
@@ -809,14 +811,14 @@ all_sub_category_extract_no_context_no_species <- function(
 }
 
 all_sub_category_extract_context_species <- function(
-    Data, worksheet, service, target_measure, measured, reported, invoiced,
+    Data, worksheet, service, target_measure, measured, actual, invoiced,
     category, context, species, object_class=NA, property=NA, value=NA,
     sub_category=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            category={{ category }},measured= {{ measured }},
-           invoiced={{ invoiced }},reported={{ reported }},
+           invoiced={{ invoiced }},actual={{ actual }},
            context= {{ context }},report_species= {{ species }}) %>%
     filter(!is.na(category)) %>%
     filter_by_service_target_measures_and_distinct(service,target_measure) %>%
@@ -824,7 +826,7 @@ all_sub_category_extract_context_species <- function(
   
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
-    reported_text <- as_label(enquo(reported))
+    actual_text <- as_label(enquo(actual))
     invoiced_text <- as_label(enquo(invoiced))
     category_text <- as_label(enquo(category))
     context_text <- as_label(enquo(context))
@@ -832,7 +834,7 @@ all_sub_category_extract_context_species <- function(
     fred <- fred %>%
       mutate(meta_source_sheetname=worksheet, 
              meta_col_measured = measured_text,
-             meta_col_reported = reported_text,
+             meta_col_actual = actual_text,
              meta_col_invoiced = invoiced_text,
              meta_col_category=category_text,
              meta_col_context=context_text,
@@ -847,14 +849,14 @@ all_sub_category_extract_context_species <- function(
 }
 
 all_sub_category_extract_context_no_species <- function(
-    Data, worksheet, service, target_measure, measured, reported, invoiced,
+    Data, worksheet, service, target_measure, measured, actual, invoiced,
     category, context, object_class=NA, property=NA, value=NA, species=NA,
     sub_category=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            category={{ category }},measured= {{ measured }},
-           invoiced={{ invoiced }}, reported={{ reported }},
+           invoiced={{ invoiced }}, actual={{ actual }},
            context= {{ context }}) %>%
     filter(!is.na(category)) %>%
     mutate(report_species=NA) %>%
@@ -863,14 +865,14 @@ all_sub_category_extract_context_no_species <- function(
   
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
-    reported_text <- as_label(enquo(reported))
+    actual_text <- as_label(enquo(actual))
     invoiced_text <- as_label(enquo(invoiced))
     category_text <- as_label(enquo(category))
     context_text <- as_label(enquo(context))
     fred <- fred %>%
       mutate(meta_source_sheetname=worksheet, 
              meta_col_measured=measured_text,
-             meta_col_reported=reported_text,
+             meta_col_actual=actual_text,
              meta_col_invoiced=invoiced_text,
              meta_col_category=category_text,
              meta_col_context=context_text,
@@ -885,27 +887,27 @@ all_sub_category_extract_context_no_species <- function(
 }
 
 no_category_extract_context_no_species <- function(
-    Data, worksheet, service, target_measure, measured, reported, invoiced,
+    Data, worksheet, service, target_measure, measured, actual, invoiced,
     context, object_class=NA, property=NA, value=NA, category=NA, species=NA,
     sub_category=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            measured= {{ measured }},invoiced={{ invoiced }},
-           reported={{ reported }}, context= {{ context }}) %>%
+           actual={{ actual }}, context= {{ context }}) %>%
     mutate(category=NA, report_species=NA) %>%
     filter_by_service_target_measures_and_distinct(service,target_measure) %>%
     filter_na()
   
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
-    reported_text <- as_label(enquo(reported))
+    actual_text <- as_label(enquo(actual))
     invoiced_text <- as_label(enquo(invoiced))
     context_text <- as_label(enquo(context))
     fred <- fred %>% 
       mutate(meta_source_sheetname=worksheet,
              meta_col_measured = measured_text,
-             meta_col_reported = reported_text,
+             meta_col_actual = actual_text,
              meta_col_invoiced = invoiced_text,
              meta_col_context=context_text,
              meta_col_category=NA,
@@ -920,14 +922,14 @@ no_category_extract_context_no_species <- function(
 }
 
 sub_category_extract_context_species  <- function(
-    Data, worksheet, service, target_measure, measured, reported, invoiced, 
+    Data, worksheet, service, target_measure, measured, actual, invoiced, 
     category, sub_category, context, species, object_class=NA,property=NA,
     value=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            category={{ category }},measured= {{ measured }},
-           invoiced={{ invoiced }},reported={{ reported }},
+           invoiced={{ invoiced }},actual={{ actual }},
            context = {{ context }},report_species = {{ species }}) %>%
     filter(category==sub_category) %>%
     filter_by_service_target_measures_and_distinct(service,target_measure) %>%
@@ -935,7 +937,7 @@ sub_category_extract_context_species  <- function(
   
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
-    reported_text <- as_label(enquo(reported))
+    actual_text <- as_label(enquo(actual))
     invoiced_text <- as_label(enquo(invoiced))
     category_text <- as_label(enquo(category))
     context_text <- as_label(enquo(context))
@@ -943,7 +945,7 @@ sub_category_extract_context_species  <- function(
     fred <- fred %>%
       mutate(meta_source_sheetname=worksheet,
              meta_col_measured=measured_text,
-             meta_col_reported=reported_text,
+             meta_col_actual=actual_text,
              meta_col_invoiced=invoiced_text,
              meta_col_category=category_text,
              meta_col_context=context_text,
@@ -958,14 +960,14 @@ sub_category_extract_context_species  <- function(
 }
 
 sub_category_extract_context_no_species  <- function(
-    Data, worksheet, service, target_measure, measured, reported,invoiced, 
+    Data, worksheet, service, target_measure, measured, actual,invoiced, 
     category,sub_category, context,object_class=NA, property=NA, value=NA,
     species=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            category={{ category }},measured= {{ measured }},
-           invoiced={{ invoiced }},reported={{ reported }},
+           invoiced={{ invoiced }},actual={{ actual }},
            context = {{ context }}) %>%
     filter(category==sub_category) %>%
     mutate(report_species = NA) %>%
@@ -974,14 +976,14 @@ sub_category_extract_context_no_species  <- function(
   
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
-    reported_text <- as_label(enquo(reported))
+    actual_text <- as_label(enquo(actual))
     invoiced_text <- as_label(enquo(invoiced))
     category_text <- as_label(enquo(category))
     context_text <- as_label(enquo(context))
     fred <- fred %>% 
       mutate(meta_source_sheetname=worksheet, 
              meta_col_measured=measured_text,
-             meta_col_reported=reported_text,
+             meta_col_actual=actual_text,
              meta_col_invoiced=invoiced_text,
              meta_col_category=category_text,
              meta_col_context=context_text,
@@ -996,14 +998,14 @@ sub_category_extract_context_no_species  <- function(
 }
 
 sub_category_extract_no_context_species <- function(
-    Data, worksheet, service, target_measure, measured, reported, invoiced, 
+    Data, worksheet, service, target_measure, measured, actual, invoiced, 
     category, sub_category, species, object_class=NA, property=NA, value=NA,
     context=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            category={{ category }},measured= {{ measured }},
-           invoiced={{ invoiced }},reported={{ reported }},
+           invoiced={{ invoiced }},actual={{ actual }},
            report_species={{ species }}) %>%
     filter(category==sub_category) %>%
     mutate(context=NA) %>%
@@ -1012,14 +1014,14 @@ sub_category_extract_no_context_species <- function(
   
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
-    reported_text <- as_label(enquo(reported))
+    actual_text <- as_label(enquo(actual))
     invoiced_text <- as_label(enquo(invoiced))
     category_text <- as_label(enquo(category))
     species_text <- as_label(enquo(species))
     fred <- fred %>%
       mutate(meta_source_sheetname=worksheet,
              meta_col_measured=measured_text,
-             meta_col_reported=reported_text,
+             meta_col_actual=actual_text,
              meta_col_invoiced=invoiced_text,
              meta_col_category=category_text,
              meta_col_report_species=species_text,
@@ -1034,14 +1036,14 @@ sub_category_extract_no_context_species <- function(
 }
 
 sub_category_extract_no_context_no_species <- function(
-    Data, worksheet, service, target_measure, measured, reported, invoiced,
+    Data, worksheet, service, target_measure, measured, actual, invoiced,
     category, sub_category, object_class=NA, property=NA, value=NA, context=NA,
     species=NA) {
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            category={{ category }},measured={{ measured }},
-           invoiced={{ invoiced }}, reported={{ reported }}) %>%
+           invoiced={{ invoiced }}, actual={{ actual }}) %>%
     filter(category==sub_category) %>%
     mutate(context=NA, report_species=NA) %>%
     filter_by_service_target_measures_and_distinct(service,target_measure) %>%
@@ -1049,13 +1051,13 @@ sub_category_extract_no_context_no_species <- function(
   
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
-    reported_text <- as_label(enquo(reported))
+    actual_text <- as_label(enquo(actual))
     invoiced_text <- as_label(enquo(invoiced))
     category_text <- as_label(enquo(category))
     fred <- fred %>% 
       mutate(meta_source_sheetname=worksheet,
              meta_col_measured=measured_text,
-             meta_col_reported=reported_text,
+             meta_col_actual=actual_text,
              meta_col_invoiced=invoiced_text,
              meta_col_category=category_text,
              meta_col_context = NA,
@@ -1070,12 +1072,12 @@ sub_category_extract_no_context_no_species <- function(
 }
 
 grant_report_no_species <- function(
-    Data,sheet_name,start_row=3,measured_col,reported_col,invoiced_col,
+    Data,sheet_name,start_row=3,measured_col,actual_col,invoiced_col,
     context_col, object_class=NA,property=NA,value=NA) {
   fred <- Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            contracted_end_date,last_modified_2,measured={{ measured_col }},
-           reported={{ reported_col }},invoiced={{ invoiced_col }},
+           actual={{ actual_col }},invoiced={{ invoiced_col }},
            context= {{ context_col }}) %>%
     mutate(total_to_be_delivered=NA,fy_target=NA,    
            category=NA,subcategory=NA,
@@ -1087,7 +1089,7 @@ grant_report_no_species <- function(
            across(all_of(numeric_cols),as.numeric),
            across(all_of(character_cols),as.character),
            meta_col_measured=as_label(enquo(measured_col)),
-           meta_col_reported=as_label(enquo(reported_col)),
+           meta_col_actual=as_label(enquo(actual_col)),
            meta_col_invoiced=as_label(enquo(invoiced_col)),
            target_measure=as_label(enquo(measured_col)),
            meta_col_context=as_label(enquo(context_col)),
@@ -1099,13 +1101,13 @@ grant_report_no_species <- function(
 }
 
 grant_report_species <- function(
-    Data,sheet_name,start_row=3,measured_col,reported_col,invoiced_col,
+    Data,sheet_name,start_row=3,measured_col,actual_col,invoiced_col,
     context_col,species_col, object_class=NA,property=NA,value=NA) {
   fred <- Data %>%
     filter(!is.na({{ species_col}}) | {{ species_col}}=='NA') %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            measured={{ measured_col }},
-           reported={{ reported_col }},invoiced={{ invoiced_col }},
+           actual={{ actual_col }},invoiced={{ invoiced_col }},
            context= {{ context_col }},report_species= {{ species_col }}) %>%
     mutate(total_to_be_delivered=NA,fy_target=NA,       
            category=NA,subcategory=NA,
@@ -1116,7 +1118,7 @@ grant_report_species <- function(
            target_measure= as_label(enquo(measured_col)),
            meta_source_sheetname=sheet_name,
            meta_col_measured=as_label(enquo(measured_col)),
-           meta_col_reported=as_label(enquo(reported_col)),
+           meta_col_actual=as_label(enquo(actual_col)),
            meta_col_invoiced=as_label(enquo(invoiced_col)),
            target_measure=as_label(enquo(measured_col)),
            meta_col_context=as_label(enquo(context_col)),
@@ -1129,13 +1131,13 @@ grant_report_species <- function(
 
 grant_report_species_category <- function(
     Data,sheet_name,start_row=3,category_col,measured_col,
-    reported_col,invoiced_col,context_col,species_col,
+    actual_col,invoiced_col,context_col,species_col,
     object_class=NA,property=NA,value=NA,sub_category=NA) {
   fred <- Data %>%
     filter(!is.na({{ species_col}}) | {{ species_col}}=='NA') %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            measured={{ measured_col }},category={{ category_col }}, 
-           reported={{ reported_col }},invoiced={{ invoiced_col }}, 
+           actual={{ actual_col }},invoiced={{ invoiced_col }}, 
            context= {{ context_col }}, report_species= {{ species_col }}) %>%
     mutate(total_to_be_delivered=NA,fy_target=NA,       
            subcategory=NA,
@@ -1146,7 +1148,7 @@ grant_report_species_category <- function(
            target_measure= as_label(enquo(measured_col)),
            meta_source_sheetname=sheet_name,
            meta_col_measured=as_label(enquo(measured_col)),
-           meta_col_reported=as_label(enquo(reported_col)),
+           meta_col_actual=as_label(enquo(actual_col)),
            meta_col_invoiced=as_label(enquo(invoiced_col)),
            target_measure=as_label(enquo(measured_col)),
            meta_col_context=as_label(enquo(context_col)),
@@ -1164,9 +1166,9 @@ grant_report_species_no_metrics <- function(
     filter(!is.na({{ species_col}}) | {{ species_col}}=='NA') %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            context= {{ context_col }},report_species= {{ species_col }}) %>%
-    mutate(measured=NA,reported=NA,invoiced=NA,fy_target=NA,
+    mutate(measured=NA,actual=NA,invoiced=NA,fy_target=NA,
            total_to_be_delivered=NA,category=NA,subcategory=NA,
-           meta_col_category=NA,meta_col_measured=NA,meta_col_reported=NA,
+           meta_col_category=NA,meta_col_measured=NA,meta_col_actual=NA,
            meta_col_invoiced=NA,meta_text_subcategory=NA,  
            across(all_of(numeric_cols),as.numeric),
            across(all_of(character_cols),as.character),
@@ -1195,7 +1197,7 @@ Report_Raw <-
       target_measure = "Number of baseline data sets collected and/or synthesised",
       measured = number_of_baseline_data_sets_collected_and_or_synthesised,
       invoiced = number_of_baseline_data_sets_collected_and_or_synthesised,
-      reported = number_of_baseline_data_sets_collected_and_or_synthesised,
+      actual = number_of_baseline_data_sets_collected_and_or_synthesised,
       object_class='Baseline Data',property='collected and/or synthesised',
       value='Total Data Sets'),
     no_category_extract_no_context_no_species(
@@ -1205,7 +1207,7 @@ Report_Raw <-
       target_measure = "Number of baseline data sets collected and/or synthesised",
       measured = number_of_baseline_data_sets_collected_and_or_synthesised,
       invoiced = number_of_baseline_data_sets_collected_and_or_synthesised,
-      reported = number_of_baseline_data_sets_collected_and_or_synthesised,
+      actual = number_of_baseline_data_sets_collected_and_or_synthesised,
       object_class='Baseline data sets',property='collected and/or synthesised',
       value='Total Data Sets'))
 
@@ -1221,7 +1223,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of communication materials published",
     measured = number_of_communication_materials_published,
     invoiced = number_of_communication_materials_published,
-    reported = number_of_communication_materials_published,
+    actual = number_of_communication_materials_published,
     object_class='Communication materials',property='Publication',
     value='Total Data Sets'))
 
@@ -1236,7 +1238,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of communication materials published",
     measured = number_of_communication_materials_published,
     invoiced = number_of_communication_materials_published,
-    reported = number_of_communication_materials_published,
+    actual = number_of_communication_materials_published,
     object_class='Communication materials',property='Publication',
     value='Total Published Communication Materials'))  
 
@@ -1253,7 +1255,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of conferences / seminars",
     measured = number_of_community_stakeholder_engagement_type_events,
     invoiced = number_of_community_stakeholder_engagement_type_events,
-    reported = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
     context=purpose_of_engagement,
     category=type_of_community_stakeholder_engagement_activity,
     sub_category = 'Conferences / seminars',
@@ -1266,7 +1268,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of conferences / seminars",
     measured = number_of_community_stakeholder_engagement_type_events,
     invoiced = number_of_community_stakeholder_engagement_type_events,
-    reported = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
     category=type_of_community_stakeholder_engagement_activity,
     sub_category = 'Conferences / seminars',
     context=purpose_of_engagement,
@@ -1279,7 +1281,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of field days",
     measured = number_of_community_stakeholder_engagement_type_events,
     invoiced = number_of_community_stakeholder_engagement_type_events,
-    reported = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
     category=type_of_community_stakeholder_engagement_activity,
     sub_category='Field days',
     object_class='Community Engagement',property='field days',
@@ -1291,7 +1293,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of field days",
     measured = number_of_community_stakeholder_engagement_type_events,
     invoiced = number_of_community_stakeholder_engagement_type_events,
-    reported = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
     category=type_of_community_stakeholder_engagement_activity,
     sub_category='Field days',
     context=purpose_of_engagement,
@@ -1304,7 +1306,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of on-ground trials / demonstrations",
     measured = number_of_community_stakeholder_engagement_type_events,
     invoiced = number_of_community_stakeholder_engagement_type_events,
-    reported = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
     category=type_of_community_stakeholder_engagement_activity,
     sub_category='On-ground trials / demonstrations',
     context=purpose_of_engagement,
@@ -1317,7 +1319,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of on-ground trials / demonstrations",
     measured = number_of_community_stakeholder_engagement_type_events,
     invoiced = number_of_community_stakeholder_engagement_type_events,
-    reported = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
     category=type_of_community_stakeholder_engagement_activity,
     sub_category='On-ground trials / demonstrations',
     context=purpose_of_engagement,
@@ -1330,7 +1332,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of on-ground works",
     measured = number_of_community_stakeholder_engagement_type_events,
     invoiced = number_of_community_stakeholder_engagement_type_events,
-    reported = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
     category=type_of_community_stakeholder_engagement_activity,
     context=purpose_of_engagement,
     sub_category='On-ground works',
@@ -1343,7 +1345,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of on-ground works",
     measured = number_of_community_stakeholder_engagement_type_events,
     invoiced = number_of_community_stakeholder_engagement_type_events,
-    reported = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
     category=type_of_community_stakeholder_engagement_activity,
     context=purpose_of_engagement,
     sub_category='On-ground works',
@@ -1356,7 +1358,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of one-on-one technical advice interactions",
     measured = number_of_community_stakeholder_engagement_type_events,
     invoiced = number_of_community_stakeholder_engagement_type_events,
-    reported = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
     context=purpose_of_engagement,
     category=type_of_community_stakeholder_engagement_activity,
     sub_category='One-on-one technical advice interactions',
@@ -1369,7 +1371,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of one-on-one technical advice interactions",
     measured = number_of_community_stakeholder_engagement_type_events,
     invoiced = number_of_community_stakeholder_engagement_type_events,
-    reported = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
     category=type_of_community_stakeholder_engagement_activity,
     sub_category='One-on-one technical advice interactions',
     context=purpose_of_engagement,
@@ -1383,7 +1385,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of training / workshop events",
     measured = number_of_community_stakeholder_engagement_type_events,
     invoiced = number_of_community_stakeholder_engagement_type_events,
-    reported = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
     category=type_of_community_stakeholder_engagement_activity,
     context=purpose_of_engagement,
     sub_category='Training / workshop events',
@@ -1396,7 +1398,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of training / workshop events",
     measured = number_of_community_stakeholder_engagement_type_events,
     invoiced = number_of_community_stakeholder_engagement_type_events,
-    reported = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
     category=type_of_community_stakeholder_engagement_activity,
     sub_category='Training / workshop events',
     context=purpose_of_engagement,
@@ -1416,7 +1418,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) where access has been controlled",
     measured = sites_installed_calculated_area_ha,
     invoiced = area_invoiced_ha,
-    reported = area_ha_where_access_has_been_controlled,
+    actual = area_ha_where_access_has_been_controlled,
     context=control_objective,
     object_class='Sites',property='Access control measures',
     value='Total Area (Ha)'),
@@ -1427,7 +1429,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) where access has been controlled",
     measured = sites_installed_calculated_area_ha,
     invoiced = area_invoiced_ha,
-    reported = sites_installed_calculated_area_ha,
+    actual = sites_installed_calculated_area_ha,
     context=control_objective,
     object_class='Sites',property='Access control measures',
     value='Total Area (Ha)'),
@@ -1439,7 +1441,7 @@ Report_Raw <- bind_rows(
     measured = sites_installed_calculated_length_km,
     invoiced = length_invoiced_km,
     context=control_objective,
-    reported = length_km_installed,
+    actual = length_km_installed,
     object_class='Sites',property='Access control measures',
     value='Total Length (km)'),
   no_category_extract_context_no_species(
@@ -1450,7 +1452,7 @@ Report_Raw <- bind_rows(
     measured = number_of_structures_installed,
     invoiced = number_of_structures_installed,
     context=control_objective,
-    reported = number_of_structures_installed,
+    actual = number_of_structures_installed,
     object_class='Sites',property='Access control measures',
     value='Total Structures'))
 
@@ -1467,7 +1469,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) treated for pest animals - initial",
     measured = site_calculated_area_ha,
     invoiced = area_ha_treated_for_pest_animals,
-    reported = area_ha_treated_for_pest_animals,
+    actual = area_ha_treated_for_pest_animals,
     category = initial_or_follow_up_control,
     context = treatment_objective,
     sub_category = 'Initial',
@@ -1480,7 +1482,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) treated for pest animals - initial",
     measured = site_calculated_area_ha,
     invoiced = area_invoiced_ha,
-    reported = site_calculated_area_ha,
+    actual = site_calculated_area_ha,
     category = initial_or_follow_up_control,
     context = treatment_objective,
     sub_category = 'Initial',
@@ -1493,7 +1495,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) treated for pest animals - initial",
     measured = site_calculated_area_ha,
     invoiced = area_invoiced_ha,
-    reported = site_calculated_area_ha,
+    actual = site_calculated_area_ha,
     category = initial_or_follow_up_control,
     context = treatment_objective,
     sub_category = 'Initial',
@@ -1506,7 +1508,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) treated for pest animals - follow-up",
     measured = site_calculated_area_ha,
     invoiced = area_ha_treated_for_pest_animals,
-    reported = area_ha_treated_for_pest_animals,
+    actual = area_ha_treated_for_pest_animals,
     category = initial_or_follow_up_control,
     context = treatment_objective,
     sub_category = 'Follow-up',
@@ -1520,7 +1522,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) treated for pest animals - follow-up",
     measured = site_calculated_area_ha,
     invoiced = area_invoiced_ha,
-    reported = site_calculated_area_ha,
+    actual = site_calculated_area_ha,
     category = initial_or_follow_up_control,
     context = treatment_objective,
     sub_category = 'Follow-up',
@@ -1540,7 +1542,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) of debris removal",
     measured = calculated_debris_removed_ha,
     invoiced = area_of_removed_debris_invoiced_ha,
-    reported = area_ha_covered_by_debris_removal,
+    actual = area_ha_covered_by_debris_removal,
     context = type_of_debris_removed,
     category = initial_or_follow_up_activity,
     object_class='Debris',property='Removal',
@@ -1558,7 +1560,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) covered by plan",
     measured = calculated_area_ha,
     invoiced = area_invoiced_ha,
-    reported = area_ha_covered_by_plan_s,
+    actual = area_ha_covered_by_plan_s,
     context= type_of_plan,
     category = are_these_plans_new_or_revised,
     species = species_and_or_threatened_ecological_communities_covered_in_plan,
@@ -1571,7 +1573,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of farm/project/site plans developed",
     measured = number_of_plans_developed,
     invoiced = number_of_plans_developed,
-    reported = number_of_plans_developed,
+    actual = number_of_plans_developed,
     context = type_of_plan,
     category = are_these_plans_new_or_revised,
     object_class='Debris',property='Removal',
@@ -1590,7 +1592,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) of erosion control",
     measured = calculated_area_of_erosion_control_ha,
     invoiced = area_of_erosion_control_invoiced_ha,
-    reported = area_ha_benefiting_from_erosion_management,
+    actual = area_ha_benefiting_from_erosion_management,
     context = type_of_treatment_method,
     category = initial_or_follow_up_activity,
     object_class='Debris',property='Removal',
@@ -1602,7 +1604,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) of erosion control",
     measured = calculated_area_of_erosion_control_ha,
     invoiced = area_of_erosion_control_invoiced_ha,
-    reported = area_of_erosion_control_ha,
+    actual = area_of_erosion_control_ha,
     category = initial_or_follow_up_activity,
     context = erosion_management_method,
     object_class='Erosion',property='Treatment',
@@ -1614,7 +1616,7 @@ Report_Raw <- bind_rows(
     target_measure = "Length (km) of stream/coastline treated for erosion",
     measured = calculated_length_of_erosion_control_km,
     invoiced = length_of_erosion_control_invoiced_km,
-    reported = length_km_of_stream_coastline_treated_for_erosion,
+    actual = length_km_of_stream_coastline_treated_for_erosion,
     context = type_of_treatment_method,
     category = initial_or_follow_up_activity,
     object_class='Erosion',property='Treatment',
@@ -1632,7 +1634,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) covered by agreements",
     measured = calculated_area_covered_by_agreements_ha,
     invoiced = area_of_covered_by_agreements_invoiced_ha,
-    reported = area_ha_covered_by_agreements,
+    actual = area_ha_covered_by_agreements,
     context = type_of_agreement_s,
     category = established_or_maintained,
     object_class='Agreements',property='Establishing and maintaining',
@@ -1645,7 +1647,7 @@ Report_Raw <- bind_rows(
     measured = number_of_agreements,
     invoiced = number_of_agreements,
     context = type_of_agreement_s,
-    reported = number_of_agreements,
+    actual = number_of_agreements,
     category = established_or_maintained,
     object_class='Agreements',property='Establishing and maintaining',
     value='Total Agreements'),
@@ -1656,7 +1658,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of days maintaining agreements",
     measured = number_of_days_maintaining_agreements_if_applicable,
     invoiced = number_of_days_maintaining_agreements_if_applicable,
-    reported = number_of_days_maintaining_agreements_if_applicable,
+    actual = number_of_days_maintaining_agreements_if_applicable,
     context = type_of_agreement_s,
     category = established_or_maintained,
     object_class='Agreements',property='Establishing and maintaining',
@@ -1674,7 +1676,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of breeding sites and/or populations",
     measured = number_of_breeding_sites_created,
     invoiced = number_of_breeding_sites_created,
-    reported = number_of_breeding_sites_created,
+    actual = number_of_breeding_sites_created,
     context = technique_of_breeding_program,
     category = ex_situ_in_situ,
     species = targeted_threatened_species,
@@ -1687,7 +1689,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of days maintaining breeding programs",
     measured = number_of_days_maintaining_breeding_program,
     invoiced = number_of_days_maintaining_breeding_program,
-    reported = number_of_days_maintaining_breeding_program,
+    actual = number_of_days_maintaining_breeding_program,
     context = technique_of_breeding_program,
     category = ex_situ_in_situ,
     species = targeted_threatened_species,
@@ -1706,7 +1708,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) of feral-free enclosure",
     measured = calculated_area_of_enclosures_ha,
     invoiced = invoiced_area_ha_of_feral_free_enclosures,
-    reported = area_ha_of_feral_free_enclosures,
+    actual = area_ha_of_feral_free_enclosures,
     context = targeted_feral_species_being_controlled,
     category = newly_established_or_maintained_feral_free_enclosure,
     species = targeted_species_being_protected,
@@ -1719,7 +1721,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of days maintaining feral-free enclosures",
     measured = number_of_days_maintaining_feral_free_enclosures,
     invoiced = number_of_days_maintaining_feral_free_enclosures,
-    reported = number_of_days_maintaining_feral_free_enclosures,                
+    actual = number_of_days_maintaining_feral_free_enclosures,                
     context = targeted_feral_species_being_controlled,
     category = newly_established_or_maintained_feral_free_enclosure,
     species = targeted_species_being_protected,
@@ -1732,7 +1734,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of feral free enclosures",
     measured = number_of_feral_free_enclosures,
     invoiced = number_of_feral_free_enclosures,
-    reported = number_of_feral_free_enclosures,                
+    actual = number_of_feral_free_enclosures,                
     context = targeted_feral_species_being_controlled,
     category = newly_established_or_maintained_feral_free_enclosure,
     species = targeted_species_being_protected,
@@ -1751,7 +1753,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of days maintaining monitoring regimes",
     measured = number_of_days_maintaining_monitoring_regimes,
     invoiced = number_of_days_maintaining_monitoring_regimes,
-    reported = number_of_days_maintaining_monitoring_regimes,
+    actual = number_of_days_maintaining_monitoring_regimes,
     context = monitoring_regimes_objective, 
     category = established_or_maintained,
     sub_category = 'Maintained',
@@ -1764,7 +1766,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of monitoring regimes established",
     measured = number_of_monitoring_regimes,
     invoiced = number_of_monitoring_regimes,
-    reported = number_of_monitoring_regimes,
+    actual = number_of_monitoring_regimes,
     category = established_or_maintained,
     context = monitoring_regimes_objective,
     sub_category='Established',
@@ -1784,7 +1786,7 @@ Report_Raw <- bind_rows(
     measured = number_of_farm_management_surveys_conducted,
     invoiced = number_of_farm_management_surveys_conducted,
     context = survey_purpose,
-    reported = number_of_farm_management_surveys_conducted,
+    actual = number_of_farm_management_surveys_conducted,
     category = baseline_survey_or_indicator_follow_up_survey,
     object_class='Farm Management',property='Surveys',
     value='Total Surveys'))
@@ -1802,7 +1804,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area surveyed (ha) (fauna)",
     measured = site_calculated_area_ha,
     invoiced = invoiced_area_ha_covered_by_fauna_surveys,
-    reported = area_ha_covered_by_fauna_surveys,
+    actual = area_ha_covered_by_fauna_surveys,
     category = baseline_survey_or_indicator_follow_up_survey,
     context = survey_technique,
     object_class='Fauna',property='Surveys',
@@ -1814,7 +1816,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area surveyed (ha) (fauna)",
     measured = site_calculated_area_ha,
     invoiced = area_invoiced_ha,
-    reported = actual_area_ha_covered_by_fauna_surveys,
+    actual = actual_area_ha_covered_by_fauna_surveys,
     context = survey_technique,
     category = baseline_survey_or_indicator_follow_up_survey,
     object_class='Fauna',property='Surveys',
@@ -1826,7 +1828,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of fauna surveys conducted",
     measured = number_of_fauna_surveys_conducted,
     invoiced = number_of_fauna_surveys_conducted,
-    reported = number_of_fauna_surveys_conducted,
+    actual = number_of_fauna_surveys_conducted,
     context = survey_technique,
     category = baseline_survey_or_indicator_follow_up_survey,
     species = target_species_recorded,
@@ -1839,7 +1841,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of fauna surveys conducted",
     measured = number_of_fauna_surveys_conducted,
     invoiced = number_of_fauna_surveys_conducted,
-    reported = number_of_fauna_surveys_conducted,
+    actual = number_of_fauna_surveys_conducted,
     context = survey_technique,
     category = baseline_survey_or_indicator_follow_up_survey,
     species = target_species_recorded,
@@ -1860,7 +1862,7 @@ Report_Raw <- bind_rows(
     measured = calculated_area_treated_ha,
     invoiced = area_invoiced_treated_ha,
     context = type_of_fire_management_action,
-    reported = area_ha_treated_by_fire_management_action,
+    actual = area_ha_treated_by_fire_management_action,
     category = initial_or_follow_up_control,
     object_class='Fire Management',property='Control Measures',
     value='Total Area (Ha)'),
@@ -1871,7 +1873,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) treated by fire management action",
     measured = calculated_area_treated_ha,
     invoiced = area_invoiced_treated_ha,
-    reported = area_ha_protected_by_fire_management_action,
+    actual = area_ha_protected_by_fire_management_action,
     context = fire_management_type,
     category = initial_or_follow_up_control,
     object_class='Fire Management',property='Control Measures',
@@ -1890,7 +1892,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area surveyed (ha) (flora)",
     measured = site_calculated_area_ha,
     invoiced = invoiced_area_ha_covered_by_flora_surveys,
-    reported = area_ha_covered_by_flora_surveys,
+    actual = area_ha_covered_by_flora_surveys,
     category = baseline_survey_or_indicator_follow_up_survey,
     context = survey_technique,
     species = target_species_recorded,
@@ -1903,7 +1905,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area surveyed (ha) (flora)",
     measured = site_calculated_area_ha,
     invoiced = area_invoiced_ha,
-    reported = actual_area_ha_covered_by_flora_surveys,
+    actual = actual_area_ha_covered_by_flora_surveys,
     category = baseline_survey_or_indicator_follow_up_survey,
     context = survey_technique,
     species = target_species_recorded,
@@ -1916,7 +1918,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of flora surveys conducted",
     measured = number_of_flora_surveys_conducted,
     invoiced = number_of_flora_surveys_conducted,
-    reported = number_of_flora_surveys_conducted, 
+    actual = number_of_flora_surveys_conducted, 
     context = survey_technique,
     category = baseline_survey_or_indicator_follow_up_survey,
     species = target_species_recorded,
@@ -1929,7 +1931,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of flora surveys conducted",
     measured = number_of_flora_surveys_conducted,
     invoiced = number_of_flora_surveys_conducted,
-    reported = number_of_flora_surveys_conducted,
+    actual = number_of_flora_surveys_conducted,
     category = baseline_survey_or_indicator_follow_up_survey,
     context = survey_technique,
     species = target_species_recorded,
@@ -1949,7 +1951,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) of augmentation",
     measured = calculated_area_augmented_ha,
     invoiced = area_invoiced_aumentation_ha,
-    reported = area_ha_of_augmentation,
+    actual = area_ha_of_augmentation,
     context = type_of_habitat_augmentation_installed,
     category = initial_or_follow_up_control,
     object_class='Habitat',property='Augmentation',
@@ -1961,7 +1963,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) of augmentation",
     measured = calculated_area_augmented_ha,
     invoiced = area_invoiced_aumentation_ha,
-    reported = area_augmented_ha,
+    actual = area_augmented_ha,
     context = habitat_augmentation_type,
     category = initial_or_follow_up_control,
     object_class='Habitat',property='Augmentation',
@@ -1973,7 +1975,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of structures or installations",
     measured = number_of_structures_installed,
     invoiced = number_of_structures_installed,
-    reported = number_of_structures_installed,
+    actual = number_of_structures_installed,
     context = type_of_habitat_augmentation_installed,
     category = initial_or_follow_up_control,
     object_class='Habitat',property='Augmentation',
@@ -1985,7 +1987,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of structures or installations",
     measured = number_of_structures_installed,
     invoiced = number_of_structures_installed,
-    reported = number_of_structures_installed,
+    actual = number_of_structures_installed,
     context = habitat_augmentation_type,
     category = initial_or_follow_up_control,
     object_class='Habitat',property='Augmentation',
@@ -2005,7 +2007,7 @@ Report_Raw <- bind_rows(
     measured = number_of_potential_sites_identified,
     invoiced = number_of_potential_sites_identified,
     context = what_have_these_sites_been_identified_for,
-    reported = number_of_potential_sites_identified,
+    actual = number_of_potential_sites_identified,
     object_class='Sites',property='Identification',
     value='Total Sites'),
   no_category_extract_context_no_species(
@@ -2015,7 +2017,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of potential sites identified",
     measured = number_of_potential_sites_identified,
     invoiced = number_of_potential_sites_identified,
-    reported = number_of_potential_sites_identified, 
+    actual = number_of_potential_sites_identified, 
     context = what_have_these_sites_been_identified_for,
     object_class='Sites',property='Identification',
     value='Total Sites'))
@@ -2033,7 +2035,7 @@ Report_Raw <- bind_rows(
     measured = number_of_treatments_implemented_to_improve_water_management,
     invoiced = number_of_treatments_implemented_to_improve_water_management,
     context = type_of_treatment_implemented_to_improve_water_management,
-    reported = number_of_treatments_implemented_to_improve_water_management,
+    actual = number_of_treatments_implemented_to_improve_water_management,
     category = installed_or_maintained,
     object_class='Hydrological Regimes',property='Treatments',
     value='Total Treatments'),
@@ -2045,7 +2047,7 @@ Report_Raw <- bind_rows(
     measured = calculated_area_covering_regime_change_ha,
     invoiced = area_invoiced_ha,
     context = type_of_treatment_implemented_to_improve_water_management,
-    reported = area_ha_covering_the_hydrological_regime_change,
+    actual = area_ha_covering_the_hydrological_regime_change,
     category = installed_or_maintained,
     object_class='Hydrological Regimes',property='Treatments',
     value='Total Area (Ha)'))
@@ -2063,7 +2065,7 @@ Report_Raw <- bind_rows(
     measured = calculated_area_implemented_ha,
     invoiced = area_implemented_invoiced_ha,
     context = type_of_action,
-    reported = area_ha_benefitting_from_practice_change,
+    actual = area_ha_benefitting_from_practice_change,
     category = initial_or_follow_up_control,
     object_class='Land',property='Practice Change',
     value='Total Area (Ha)'))
@@ -2082,7 +2084,7 @@ Report_Raw <- bind_rows(
     measured = calculated_area_treated_ha,
     invoiced = area_treated_invoiced_ha,
     context = management_method_treatment_objective,
-    reported = area_ha_treated_for_disease,
+    actual = area_ha_treated_for_disease,
     category = initial_or_follow_up_treatment,
     object_class='Disease',property='Treatment',
     value='Total Area (Ha)'),
@@ -2093,7 +2095,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) treated for disease",
     measured = calculated_area_treated_ha,
     invoiced = area_treated_invoiced_ha,
-    reported = area_treated_ha,
+    actual = area_treated_ha,
     context = management_method,
     category = initial_or_follow_up_treatment,
     object_class='Disease',property='Treatment',
@@ -2113,7 +2115,7 @@ Report_Raw <- bind_rows(
     measured = groups_negotiated_with,
     invoiced = groups_negotiated_with, 
     context = which_sector_does_the_group_belong_to,
-    reported = groups_negotiated_with,
+    actual = groups_negotiated_with,
     object_class='Groups',property='Negotiations',
     value='Total Groups'),
   no_category_extract_context_no_species(
@@ -2123,7 +2125,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of groups negotiated with",
     measured = groups_negotiated_with,
     invoiced = groups_negotiated_with,
-    reported = groups_negotiated_with,
+    actual = groups_negotiated_with,
     context = which_sector_does_the_group_belong_to,
     object_class='Groups',property='Negotiations',
     value='Total Groups'))
@@ -2141,7 +2143,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of relevant approvals obtained",
     measured = number_of_relevant_approvals_obtained,
     invoiced = number_of_relevant_approvals_obtained,
-    reported = number_of_relevant_approvals_obtained,
+    actual = number_of_relevant_approvals_obtained,
     context = what_were_these_approvals_obtained_for,
     object_class='Approvals',property='Processed',
     value='Total Approvals'),
@@ -2152,7 +2154,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of relevant approvals obtained",
     measured = number_of_relevant_approvals_obtained,
     invoiced = number_of_relevant_approvals_obtained,
-    reported = number_of_relevant_approvals_obtained,
+    actual = number_of_relevant_approvals_obtained,
     context = what_were_these_approvals_obtained_for,
     object_class='Approvals',property='Processed',
     value='Total Approvals'))
@@ -2170,7 +2172,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) surveyed for pest animals",
     measured = site_calculated_area_ha,
     invoiced = invoiced_area_ha_surveyed_for_pest_animals,
-    reported = area_ha_surveyed_for_pest_animals,
+    actual = area_ha_surveyed_for_pest_animals,
     context = survey_technique,
     category = baseline_survey_or_indicator_follow_up_survey,
     species = target_species_recorded,
@@ -2183,7 +2185,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) surveyed for pest animals",
     measured = site_calculated_area_ha,
     invoiced = area_invoiced_ha,
-    reported = actual_area_ha_surveyed_for_pest_animals,
+    actual = actual_area_ha_surveyed_for_pest_animals,
     context=survey_technique,
     category = baseline_survey_or_indicator_follow_up_survey,
     species = target_species_recorded,
@@ -2196,7 +2198,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of pest animal surveys conducted",
     measured = number_of_surveys_conducted,
     invoiced = number_of_surveys_conducted,
-    reported = number_of_surveys_conducted,
+    actual = number_of_surveys_conducted,
     context = survey_technique,
     category = baseline_survey_or_indicator_follow_up_survey,
     species = target_species_recorded,
@@ -2209,7 +2211,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of pest animal surveys conducted",
     measured = number_of_surveys_conducted,
     invoiced = number_of_surveys_conducted,
-    reported = number_of_surveys_conducted,
+    actual = number_of_surveys_conducted,
     context = survey_technique,
     category = baseline_survey_or_indicator_follow_up_survey,
     species = target_species_recorded,
@@ -2228,7 +2230,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area surveyed (ha) for plant survival",
     measured = site_calculated_area_ha,
     invoiced = invoiced_area_ha_surveyed_for_plant_survival,
-    reported = area_ha_surveyed_for_plant_survival,
+    actual = area_ha_surveyed_for_plant_survival,
     context = survey_technique,
     category = baseline_survey_or_indicator_follow_up_survey,
     species = species_recorded,
@@ -2241,7 +2243,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of plant survival surveys conducted",
     measured = number_of_plant_survival_surveys_conducted,
     invoiced = number_of_plant_survival_surveys_conducted,
-    reported = number_of_plant_survival_surveys_conducted,
+    actual = number_of_plant_survival_surveys_conducted,
     context = survey_technique,
     category = baseline_survey_or_indicator_follow_up_survey,
     species = species_recorded,
@@ -2261,7 +2263,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of planning and delivery documents for delivery of the project services and monitoring",
     measured = number_of_planning_and_delivery_documents_for_delivery_of_the_project_services_and_monitoring,
     invoiced = number_of_planning_and_delivery_documents_for_delivery_of_the_project_services_and_monitoring,
-    reported = number_of_planning_and_delivery_documents_for_delivery_of_the_project_services_and_monitoring,
+    actual = number_of_planning_and_delivery_documents_for_delivery_of_the_project_services_and_monitoring,
     context = purpose_of_these_documents,
     object_class='Documents',property='Project Planning',
     value='Total Documents'),
@@ -2272,7 +2274,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of days project planning / preparation",
     measured = number_of_days_administering_project_plans_delivery_documents,
     invoiced = number_of_days_administering_project_plans_delivery_documents,
-    reported = number_of_days_administering_project_plans_delivery_documents,
+    actual = number_of_days_administering_project_plans_delivery_documents,
     context = purpose_of_these_documents,
     object_class='Documents',property='Project Planning',
     value='Total Days'),
@@ -2283,7 +2285,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of planning and delivery documents for delivery of the project services and monitoring",
     measured = number_of_planning_and_delivery_documents_for_delivery_of_the_project_and_monitoring,
     invoiced = number_of_planning_and_delivery_documents_for_delivery_of_the_project_and_monitoring,
-    reported = number_of_planning_and_delivery_documents_for_delivery_of_the_project_and_monitoring,
+    actual = number_of_planning_and_delivery_documents_for_delivery_of_the_project_and_monitoring,
     context = purpose_of_these_documents,
     object_class='Documents',property='Project Planning',
     value='Total Documents'),
@@ -2294,7 +2296,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of days project planning / preparation",
     measured = number_of_days_administering_project_plans_delivery_documents,
     invoiced = number_of_days_administering_project_plans_delivery_documents,
-    reported = number_of_days_administering_project_plans_delivery_documents,
+    actual = number_of_days_administering_project_plans_delivery_documents,
     object_class='Documents',property='Project Planning',
     value='Total Days'))
 
@@ -2310,7 +2312,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) remediated",
     measured = calculated_area_remediated_ha,
     invoiced = area_remediated_invoiced_ha,
-    reported = area_ha_being_remediated,
+    actual = area_ha_being_remediated,
     context = type_of_remediation,
     category = initial_followup_control,
     object_class='Riparian and Aquatic Areas',property='Remediation',
@@ -2323,7 +2325,7 @@ Report_Raw <- bind_rows(
     measured = calculated_length_remediated_km,
     invoiced = length_remediated_invoiced_km,
     context = type_of_remediation,
-    reported = length_remediated_invoiced_km,
+    actual = length_remediated_invoiced_km,
     category = initial_followup_control,
     object_class='Riparian and Aquatic Areas',property='Remediation',
     value='Total Length (km)'))
@@ -2341,7 +2343,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) treated for weeds - initial",
     measured = site_calculated_area_ha,
     invoiced = area_ha_treated_for_weed_removal,
-    reported = area_ha_treated_for_weed_removal,
+    actual = area_ha_treated_for_weed_removal,
     category = initial_or_follow_up_treatment,
     sub_category = 'Initial',
     context=treatment_objective,
@@ -2355,7 +2357,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) treated for weeds - follow-up",
     measured = site_calculated_area_ha,
     invoiced = area_ha_treated_for_weed_removal,
-    reported = area_ha_treated_for_weed_removal,
+    actual = area_ha_treated_for_weed_removal,
     category = initial_or_follow_up_treatment,
     sub_category = 'Follow-up',
     context=treatment_objective,
@@ -2369,7 +2371,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) treated for weeds - initial",
     measured = site_calculated_area_ha,
     invoiced = area_invoiced_ha,
-    reported = area_invoiced_ha,
+    actual = area_invoiced_ha,
     category = initial_or_follow_up_treatment,
     sub_category = 'Initial',
     species = target_weed_species,
@@ -2382,7 +2384,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) treated for weeds - follow-up",
     measured = site_calculated_area_ha,
     invoiced = area_invoiced_ha,
-    reported = area_invoiced_ha,
+    actual = area_invoiced_ha,
     category = initial_or_follow_up_treatment,
     sub_category = 'Follow-up',
     species = target_weed_species,
@@ -2401,7 +2403,7 @@ Report_Raw <- bind_rows(
     target_measure = "Length (km) treated for weeds - follow-up",
     measured = site_calculated_length_km,
     invoiced = length_invoiced_km,
-    reported = length_km_treated_for_weed_removal,
+    actual = length_km_treated_for_weed_removal,
     category = initial_or_follow_up_treatment,
     context = type_of_treatment,
     sub_category = 'Follow-up',
@@ -2415,7 +2417,7 @@ Report_Raw <- bind_rows(
     target_measure = "Length (km) treated for weeds - initial",
     measured = site_calculated_length_km,
     invoiced = length_invoiced_km,
-    reported = length_km_treated_for_weed_removal,
+    actual = length_km_treated_for_weed_removal,
     category = initial_or_follow_up_treatment,
     context = type_of_treatment,
     sub_category = 'Initial',
@@ -2429,7 +2431,7 @@ Report_Raw <- bind_rows(
     target_measure = "Length (km) treated for weeds - follow-up",
     measured = site_calculated_length_km,
     invoiced = length_invoiced_km,
-    reported = length_treated_km,
+    actual = length_treated_km,
     category = initial_or_follow_up_treatment,
     context = type_of_treatment,
     sub_category = 'Follow-up',
@@ -2443,7 +2445,7 @@ Report_Raw <- bind_rows(
     target_measure = "Length (km) treated for weeds - initial",
     measured = site_calculated_length_km,
     invoiced = length_invoiced_km,
-    reported = length_treated_km,
+    actual = length_treated_km,
     category = initial_or_follow_up_treatment,
     context = type_of_treatment,
     sub_category = 'Initial',
@@ -2464,7 +2466,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) of revegetated habitat maintained",
     measured = site_calculated_area_ha,
     invoiced = invoiced_area_ha_of_habitat_revegetated,
-    reported = area_ha_of_habitat_revegetated,
+    actual = area_ha_of_habitat_revegetated,
     context = planting_method,
     category = initial_or_maintenance_activity,
     sub_category = 'Maintenance',
@@ -2478,7 +2480,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area of habitat revegetated (ha)",
     measured = site_calculated_area_ha,
     invoiced = invoiced_area_ha_of_habitat_revegetated,
-    reported = area_ha_of_habitat_revegetated,
+    actual = area_ha_of_habitat_revegetated,
     context = planting_method,
     category = initial_or_maintenance_activity,
     sub_category = 'Initial',
@@ -2493,7 +2495,7 @@ Report_Raw <- bind_rows(
     measured = site_calculated_area_ha,
     invoiced = area_invoiced_ha,
     context = planting_method,
-    reported = area_invoiced_ha,
+    actual = area_invoiced_ha,
     category = initial_or_maintenance_activity,
     sub_category = 'Maintenance',
     species = species,
@@ -2506,7 +2508,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area of habitat revegetated (ha)",
     measured = site_calculated_area_ha,
     invoiced = area_invoiced_ha,
-    reported = area_invoiced_ha,
+    actual = area_invoiced_ha,
     context = planting_method,
     category = initial_or_maintenance_activity,
     sub_category = 'Initial',
@@ -2527,7 +2529,7 @@ Report_Raw <- bind_rows(
     measured = number_of_days_collecting_seed,
     invoiced = number_of_days_collecting_seed,
     context = planting_method,
-    reported = number_of_days_collecting_seed,
+    actual = number_of_days_collecting_seed,
     category = initial_or_maintenance_activity,
     species = species,
     object_class='Habitat',property='Seed Collection',
@@ -2539,7 +2541,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of days propagating plants",
     measured = number_of_days_propagating_plants,
     invoiced = number_of_days_propagating_plants,
-    reported = number_of_days_propagating_plants,
+    actual = number_of_days_propagating_plants,
     context = planting_method,
     category = initial_or_maintenance_activity,
     species = species,
@@ -2558,7 +2560,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) covered by plan",
     measured = calculated_area_prepared_ha,
     invoiced = area_prepared_invoiced_ha,
-    reported = area_ha_of_the_site_preparation,
+    actual = area_ha_of_the_site_preparation,
     context=type_of_action,
     object_class='Plans',property='Development',
     value='Total Area (Ha)'),
@@ -2569,7 +2571,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of days preparing site/s",
     measured = number_of_days_in_preparing_site,
     invoiced = number_of_days_in_preparing_site,
-    reported = number_of_days_in_preparing_site,
+    actual = number_of_days_in_preparing_site,
     context=type_of_action,
     object_class='Plans',property='Development',
     value='Total Days'))
@@ -2586,7 +2588,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of skills and knowledge surveys conducted",
     measured = number_of_skills_and_knowledge_surveys_conducted,
     invoiced = number_of_skills_and_knowledge_surveys_conducted,
-    reported = number_of_skills_and_knowledge_surveys_conducted,
+    actual = number_of_skills_and_knowledge_surveys_conducted,
     category = baseline_survey_or_indicator_follow_up_survey,
     context=survey_technique,
     object_class='Skills and knowledge',property='Surveys',
@@ -2604,7 +2606,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of soil tests conducted in targeted areas",
     measured = number_of_soil_tests_conducted_in_targeted_areas,
     invoiced = number_of_soil_tests_conducted_in_targeted_areas,
-    reported = number_of_soil_tests_conducted_in_targeted_areas,
+    actual = number_of_soil_tests_conducted_in_targeted_areas,
     category = initial_or_follow_up_activity,
     context=testing_technique,
     object_class='Soil',property='Testing',
@@ -2623,7 +2625,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of interventions",
     measured = number_of_interventions,
     invoiced = number_of_interventions,
-    reported = number_of_interventions,
+    actual = number_of_interventions,
     category = initial_or_follow_up_activity,
     context = type_and_goal_or_intervention,
     species = targeted_species,
@@ -2636,7 +2638,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of interventions",
     measured = number_of_interventions,
     invoiced = number_of_interventions,
-    reported = number_of_interventions,
+    actual = number_of_interventions,
     category = initial_or_follow_up_activity,
     context = type_and_goal_or_intervention,
     species = targeted_species,
@@ -2655,7 +2657,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) surveyed for water quality",
     measured = site_calculated_area_ha,
     invoiced = invoiced_area_ha_covered_by_water_quality_surveys,
-    reported = area_ha_covered_by_water_quality_surveys,
+    actual = area_ha_covered_by_water_quality_surveys,
     category = baseline_survey_or_indicator_follow_up_survey,
     object_class='Water Quality',property='Surveys',
     value='Total Area (Ha)'),
@@ -2666,7 +2668,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of water quality surveys",
     measured = number_of_water_quality_surveys_conducted,
     invoiced = number_of_water_quality_surveys_conducted,
-    reported = number_of_water_quality_surveys_conducted,
+    actual = number_of_water_quality_surveys_conducted,
     category = baseline_survey_or_indicator_follow_up_survey,
     object_class='Water Quality',property='Surveys',
     value='Total Surveys'))
@@ -2684,7 +2686,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) surveyed for weeds",
     measured = site_calculated_area_ha,
     invoiced = invoiced_area_ha_surveyed_for_weed_distribution,
-    reported = area_ha_surveyed_for_weed_distribution,
+    actual = area_ha_surveyed_for_weed_distribution,
     category = baseline_survey_or_indicator_follow_up_survey,
     context = survey_technique,
     species = target_weed_species_recorded,
@@ -2697,7 +2699,7 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) surveyed for weeds",
     measured = site_calculated_area_ha,
     invoiced = area_invoiced_ha,
-    reported = actual_area_ha_surveyed_for_weed_distribution,
+    actual = actual_area_ha_surveyed_for_weed_distribution,
     category = baseline_survey_or_indicator_follow_up_survey,
     context = survey_technique,
     species = target_weed_species_recorded,
@@ -2710,7 +2712,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of weed distribution surveys conducted",
     measured = number_of_weed_distribution_surveys_conducted,
     invoiced = number_of_weed_distribution_surveys_conducted,
-    reported = number_of_weed_distribution_surveys_conducted,
+    actual = number_of_weed_distribution_surveys_conducted,
     context = survey_technique,
     category = baseline_survey_or_indicator_follow_up_survey,
     species = target_weed_species_recorded,
@@ -2723,7 +2725,7 @@ Report_Raw <- bind_rows(
     target_measure = "Number of weed distribution surveys conducted",
     measured = number_of_weed_distribution_surveys_conducted,
     invoiced = number_of_weed_distribution_surveys_conducted,
-    reported = number_of_weed_distribution_surveys_conducted,
+    actual = number_of_weed_distribution_surveys_conducted,
     context = survey_technique,
     category = baseline_survey_or_indicator_follow_up_survey,
     species = target_weed_species_recorded,
@@ -2740,7 +2742,7 @@ Report_Raw <- bind_rows(
     Data=Data,
     sheet_name='Debris Removal De...ris Removal',
     measured_col=area_covered_by_this_activity_ha,
-    reported_col=area_covered_by_this_activity_ha,
+    actual_col=area_covered_by_this_activity_ha,
     invoiced_col=area_covered_by_this_activity_ha,
     context_col= type_of_material_removed,
     object_class='Debris',property='Removal',
@@ -2755,7 +2757,7 @@ Report_Raw <- bind_rows(
     Data = Data,
     sheet_name='Revegetation Deta...evegetation',
     measured_col=area_of_revegetation_works_ha,
-    reported_col=area_of_revegetation_works_ha,
+    actual_col=area_of_revegetation_works_ha,
     invoiced_col=area_of_revegetation_works_ha,
     context_col= revegetation_method,
     species = species,
@@ -2765,7 +2767,7 @@ Report_Raw <- bind_rows(
     Data = Data,
     sheet_name='Revegetation Deta...evegetation',
     measured_col=no_planted,
-    reported_col=no_planted,
+    actual_col=no_planted,
     invoiced_col=no_planted,
     context_col= mature_height,
     species = species,
@@ -2781,7 +2783,7 @@ Report_Raw <- bind_rows(
     Data=Data,
     sheet_name='Disease Managemen... Management',
     measured_col=area_quarantined_treated_ha,
-    reported_col=area_quarantined_treated_ha,
+    actual_col=area_quarantined_treated_ha,
     invoiced_col=area_quarantined_treated_ha,
     context_col= disease_management_purpose,
     object_class='Disease',property='Treatment',
@@ -2796,7 +2798,7 @@ Report_Raw <- bind_rows(
     Data=Data,
     sheet_name='Erosion Managemen... Management',
     measured_col=area_of_erosion_being_treated,
-    reported_col=area_of_erosion_being_treated,
+    actual_col=area_of_erosion_being_treated,
     invoiced_col=area_of_erosion_being_treated,
     context_col= area_of_erosion_on_this_site_ha,
     object_class='Erosion',property='Treatment',
@@ -2811,7 +2813,7 @@ Report_Raw <- bind_rows(
     Data=Data,
     sheet_name='Conservation Grazing Management',
     measured_col=area_managed_ha,
-    reported_col=area_managed_ha,
+    actual_col=area_managed_ha,
     invoiced_col=area_managed_ha,
     context_col= comments_notes,
     object_class='Conservation Grazing',property='Management',
@@ -2826,7 +2828,7 @@ Report_Raw <- bind_rows(
     Data = Data ,
     sheet_name='Plan Development ...Development',
     measured_col=area_of_plan_coverage_km2,
-    reported_col=area_of_plan_coverage_km2,
+    actual_col=area_of_plan_coverage_km2,
     invoiced_col=area_of_plan_coverage_km2,
     context_col= type_of_planning_being_undertaken,
     object_class='Plans',property='Development',
@@ -2839,7 +2841,7 @@ Report_Raw <- bind_rows(
   Report_Raw,
   grant_report_no_species(
     Data = Data,sheet_name='Fire Management D... Management',
-    measured_col=actual_burnt_area_ha,reported_col=actual_burnt_area_ha,
+    measured_col=actual_burnt_area_ha,actual_col=actual_burnt_area_ha,
     invoiced_col=actual_burnt_area_ha,context_col= type_of_event,
     object_class='Fire Management',property='Control Measures',
     value='Total Area (Ha)'))
@@ -2853,7 +2855,7 @@ Report_Raw <- bind_rows(
     Data = Data,
     sheet_name='Management Practice Change',
     measured_col=area_covered_by_practice_change_ha,
-    reported_col=area_covered_by_practice_change_ha,
+    actual_col=area_covered_by_practice_change_ha,
     invoiced_col=area_covered_by_practice_change_ha,
     context_col= industry,object_class='Land',
     property='Practice Change',value='Total Area (Ha)'))
@@ -2867,7 +2869,7 @@ Report_Raw <- bind_rows(
     Data = Data,
     sheet_name='Pest Management D... Management',
     measured_col=total_treatment_area_ha,
-    reported_col=total_treatment_area_ha,
+    actual_col=total_treatment_area_ha,
     invoiced_col=total_treatment_area_ha,
     context_col= pest_management_method,
     species = target_species, object_class='Pest Animals',
@@ -2882,7 +2884,7 @@ Report_Raw <- bind_rows(
     Data = Data,
     sheet_name='Fence Details Pest Management',
     measured_col=area_protected_by_erected_fence_ha,
-    reported_col=area_protected_by_erected_fence_ha,
+    actual_col=area_protected_by_erected_fence_ha,
     invoiced_col=area_protected_by_erected_fence_ha,
     context_col= fence_type,
     object_class='Fences',property='Access control measures',
@@ -2897,7 +2899,7 @@ Report_Raw <- bind_rows(
     Data = Data,
     sheet_name='Access Control De...rastructure',
     measured_col=area_ha_protected_by_access_management_structure_s,
-    reported_col=area_ha_protected_by_access_management_structure_s,
+    actual_col=area_ha_protected_by_access_management_structure_s,
     invoiced_col=area_ha_protected_by_access_management_structure_s,
     context_col= description_of_issue_s_requiring_access_management,
     object_class='Infrastructure',property='Access control measures',
@@ -2909,7 +2911,7 @@ Report_Raw <- bind_rows(
   Report_Raw,
   grant_report_no_species(
     Data = Data,sheet_name='Post revegetation... management',
-    measured_col=total_area_managed_ha,reported_col=total_area_managed_ha,
+    measured_col=total_area_managed_ha,actual_col=total_area_managed_ha,
     invoiced_col=total_area_managed_ha,context_col= total_area_managed_ha,
     object_class='Sites',property='Revegetation',value='Total Area (Ha)'))
 
@@ -2919,7 +2921,7 @@ Report_Raw <- bind_rows(
   Report_Raw,
   grant_report_no_species(
     Data = Data,sheet_name='Post revegetation... managem(1)',
-    measured_col=area_managed_ha,reported_col=area_managed_ha,
+    measured_col=area_managed_ha,actual_col=area_managed_ha,
     invoiced_col=area_managed_ha,context_col= comments_notes,
     object_class='Sites',property='Post Revegetation',
     value='Area (Ha)'))
@@ -2931,7 +2933,7 @@ Report_Raw <- bind_rows(
   grant_report_no_species(
     Data = Data,sheet_name='Post revegetation... managem(3)',
     measured_col=total_pest_treatment_area_ha,
-    reported_col=total_pest_treatment_area_ha,
+    actual_col=total_pest_treatment_area_ha,
     invoiced_col=total_pest_treatment_area_ha,
     context_col= type_of_pest_treatment_event,
     object_class='Sites',property='Post Revegetation',
@@ -3036,8 +3038,8 @@ projects_reports <-
   Report_Raw %>%
   mutate(total_to_be_delivered = ifelse(!is.na(total_to_be_delivered),
                                         total_to_be_delivered,0),
-         reported = ifelse(is.na(reported),measured,reported),
-         across(c('total_to_be_delivered','measured','invoiced','reported'),
+         actual = ifelse(is.na(actual),measured,actual),
+         across(c('total_to_be_delivered','measured','invoiced','actual'),
                 as.numeric),
          external_id=as.character(external_id),
          extract_date=extract_date,
