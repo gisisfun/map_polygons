@@ -591,8 +591,9 @@ report_meta_cols_out <- c(
 species_etc_cols_out <- c(
   'primary_secondary_outcomes','primary_outcomes','secondary_outcomes',
   'primary_secondary_investment_priorities','primary_investment_priority',
-  'secondary_investment_priority','assets','natural_cultural_assets_managed',
-  'threatened_species', 'threatened_ecological_communities','migratory_species',
+  'secondary_investment_priority','documents_priority','assets',
+  'natural_cultural_assets_managed','threatened_species', 
+  'threatened_ecological_communities','migratory_species',
   'ramsar_wetland,world_heritage_area','community_awareness_participation_in_nrm',
   'indigenous_cultural_values','indigenous_ecological_knowledge',
   'remnant_vegetation','aquatic_and_coastal_systems_including_wetlands',
@@ -3144,6 +3145,20 @@ meri_outcomes_indicators <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
   group_by(grant_id) %>%
   summarize(across(all_of(meri_outcomes_indicator_ref),last))
 
+meri_priorities <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
+                             sheet='MERI_Priorities') %>% 
+  clean_names() %>%
+  mutate(across(ends_with('_date'),as.Date,origin='1899-12-30')) %>%
+  select(grant_id,document_name,relevant_section,explanation_of_strategic_alignment) %>%
+  mutate(documents_priority=str_c("name: ",document_name,' section: ',relevant_section,
+                                  ' alignment: ',explanation_of_strategic_alignment)) %>%
+  select(grant_id,documents_priority) %>%
+  drop_na(documents_priority) %>%
+  distinct() %>%
+  group_by(grant_id) %>%
+  summarize(documents_priority=str_c(documents_priority,collapse="|")) %>%
+  ungroup()
+
 report_species <- projects_reports_species %>%
   filter(!is.na(report_species)) %>%
   separate_rows(report_species,sep='[,|]') %>%
@@ -3151,6 +3166,28 @@ report_species <- projects_reports_species %>%
   group_by(grant_id) %>%
   summarize(report_species=str_c(str_trim(report_species),collapse="|")) %>%
   ungroup()
+
+# load("sprat_lookup.Rdata")
+# col_by_grant_id <- function(Data,col) {
+#   fred <- Data %>% 
+#     filter(!is.na({{ col }})) %>%
+#     separate_rows({{ col }},sep='[,;|//\n]') %>% 
+#     select(grant_id,{{ col}}) %>% 
+#     drop_na() %>% 
+#     mutate(merit_raw=str_trim( {{ col }})) %>% 
+#     distinct() %>%
+#     select(grant_id,merit_raw)
+# }
+# 
+# merit_sprat_clean <- bind_rows(
+#   col_by_grant_id(projects_species,assets),
+#   col_by_grant_id(projects_species,primary_investment_priority),
+#   col_by_grant_id(projects_species,secondary_investment_priority),
+#   col_by_grant_id(projects_reports_species,report_species)) %>%
+#   distinct() %>%
+#   left_join(sprat_lookup,on='merit_raw') %>%
+#   filter(!is.na(sprat_category)) %>%
+#   distinct()
 
 projects_reports_species <- projects_reports %>% 
   left_join(primary_secondary_investment_priorities,by='grant_id') %>%
@@ -3165,6 +3202,7 @@ projects_reports_species <- projects_reports %>%
   left_join(primary_outcomes,by='grant_id') %>%
   left_join(secondary_outcomes,by='grant_id') %>%
   left_join(management_units,by='management_unit') %>%
+  left_join(meri_priorities,by='grant_id') %>%
   mutate(across(any_of(species_etc_cols_out),function(x) {ifelse(x=='NA',
                                                                  NA,x)}),
          meta_col_project_status='status',
@@ -3196,7 +3234,8 @@ projects_species <- Projects %>%
   left_join(primary_outcomes,by='grant_id') %>%
   left_join(secondary_outcomes,by='grant_id') %>%
   left_join(report_species,by='grant_id') %>%
-  left_join(management_units,by='management_unit') %>%
+  left_join(management_units,by='management_unit')%>%
+  left_join(meri_priorities,by='grant_id') %>%
   mutate(extract_date=extract_date) %>%
   rename(project_status=status,project_start_date=start_date,
          project_end_date=end_date,
