@@ -553,7 +553,7 @@ library(RSQLite)
 # [1] "RLP Core Services report"        "RLP Core Services annual report"
 
 extract_date <- '2022-06-20'
-
+version <- '1.0.0'
 project_cols_in <- c(
   'project_id','grant_id','external_id','internal_order_number','work_order_id',
   'program','sub_program','name','description','management_unit','organisation',
@@ -561,7 +561,7 @@ project_cols_in <- c(
   'contracted_start_date','contracted_end_date','last_modified_2')
 project_cols_out <- c(
   'project_id','grant_id','external_id','internal_order_number','work_order_id',
-  'organisation','management_unit','mu_id','mu_state','project_name',
+  'organisation','management_unit','managment_unit_id','managment_unit_state','project_name',
   'program','sub_program','project_start_date', 'project_end_date',
   'project_contracted_start_date','project_contracted_end_date','project_status')
 
@@ -597,7 +597,7 @@ species_etc_cols_out <- c(
   'ramsar_wetland,world_heritage_area','community_awareness_participation_in_nrm',
   'indigenous_cultural_values','indigenous_ecological_knowledge',
   'remnant_vegetation','aquatic_and_coastal_systems_including_wetlands',
-  'report_species','epbc','tec','ramsar')
+  'report_species','epbc','tec','ramsar','version')
 
 numeric_cols <- c(
   'measured','invoiced','actual','report_from_date',
@@ -621,7 +621,9 @@ meri_outcomes_indicator_ref <- c(
   "indigenous_cultural_values","indigenous_ecological_knowledge",
   "remnant_vegetation","aquatic_and_coastal_systems_including_wetlands")
 
-load("management_units.Rdata")
+load("management_units.Rdata") 
+management_units %>% rename(management_unit_id=mu_id,
+                            management_unit_state=mu_state)
 load("sprat_lookup.Rdata")
 
 str_to_colname <- function(a_col) {
@@ -3190,6 +3192,7 @@ report_species <- projects_reports_species %>%
 #   distinct()
 
 projects_reports_species <- projects_reports %>% 
+  mutate(version=version) %>%
   left_join(primary_secondary_investment_priorities,by='grant_id') %>%
   left_join(primary_investment_priority,by='grant_id') %>%
   left_join(secondary_investment_priority,by='grant_id') %>%
@@ -3221,6 +3224,7 @@ Projects <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
   clean_names()
 
 projects_species <- Projects %>%
+  mutate(version=version) %>%
   left_join(primary_secondary_investment_priorities,by='grant_id') %>%
   left_join(primary_investment_priority,by='grant_id') %>%
   left_join(secondary_investment_priority,by='grant_id') %>%
