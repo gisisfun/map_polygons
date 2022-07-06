@@ -553,14 +553,14 @@ library(RSQLite)
 # [1] "RLP Core Services report"        "RLP Core Services annual report"
 
 extract_date <- '2022-06-20'
-version <- '1.0.0'
+version <- '1.0.1'
 project_cols_in <- c(
-  'project_id','grant_id','external_id','internal_order_number','work_order_id',
+  'project_id','merit_project_id','external_id','internal_order_number','work_order_id',
   'program','sub_program','name','description','management_unit','organisation',
   'status','report_financial_year','start_date','end_date',
   'contracted_start_date','contracted_end_date','last_modified_2')
 project_cols_out <- c(
-  'project_id','grant_id','external_id','internal_order_number','work_order_id',
+  'project_id','merit_project_id','external_id','internal_order_number','work_order_id',
   'organisation','management_unit','managment_unit_id','managment_unit_state','project_name',
   'program','sub_program','project_start_date', 'project_end_date',
   'project_contracted_start_date','project_contracted_end_date','project_status')
@@ -637,7 +637,8 @@ read_sheet <- function(sheet_name,fname,start_row=3) {
     clean_names() %>%
     mutate(across(contains("management_unit"),as.character),
            across(c(grant_id,external_id,internal_order_number, 
-                    work_order_id),as.character))
+                    work_order_id),as.character),
+           merit_project_id=grant_id)
 }
 
 read_sheet_for_bulk <- function(sheet_name,fname,start_row=3) {
@@ -645,7 +646,7 @@ read_sheet_for_bulk <- function(sheet_name,fname,start_row=3) {
                     sheet=sheet_name,
                     startRow = start_row) %>%
     clean_names() %>%
-    mutate(across(everything(),as.character))
+    mutate(across(everything(),as.character),merit_project_id='grant_id')
 }
 
 load_mult_wbooks <- function(files_vec,sheetname) {
@@ -687,20 +688,20 @@ RLP_Outcomes <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
                           sheet='RLP Outcomes',
                           startRow = 1) %>%
   clean_names() %>% 
-  select(grant_id,type_of_outcomes,investment_priority) 
+  select(merit_project_id=grant_id,type_of_outcomes,investment_priority) 
 
 RLP_Outcomes_short_term_indicator <- RLP_Outcomes %>%
   filter(type_of_outcomes=='Primary outcome') %>%
   separate_rows(investment_priority,sep=",") %>%
   mutate(investment_priority=str_trim(investment_priority)) %>%
   left_join(investment_priority_themes,by='investment_priority') %>%
-  select(grant_id, type_of_outcomes,
+  select(merit_project_id, type_of_outcomes,
          investment_priority, short_term_indicator)
 
 EPBC <- RLP_Outcomes_short_term_indicator %>%
   mutate(epbc=ifelse(short_term_indicator=='Threatened Species',"Y","N")) %>%
   filter(epbc=='Y') %>%
-  select(grant_id,epbc) %>%
+  select(merit_project_id,epbc) %>%
   drop_na(epbc) %>%
   distinct()
 
@@ -708,14 +709,14 @@ TEC <- RLP_Outcomes_short_term_indicator %>%
   mutate(tec=ifelse(short_term_indicator=='Threatened Ecological Community',
                     'Y','N')) %>%
   filter(tec=='Y') %>%
-  select(grant_id,tec) %>%
+  select(merit_project_id,tec) %>%
   drop_na(tec) %>%
   distinct()
 
 RAMSAR <- RLP_Outcomes_short_term_indicator %>%
   mutate(ramsar=ifelse(short_term_indicator=='Ramsar','Y','N')) %>%
   filter(ramsar=='Y') %>%
-  select(grant_id,ramsar) %>%
+  select(merit_project_id,ramsar) %>%
   drop_na(ramsar) %>%
   distinct()
 
@@ -723,7 +724,7 @@ output_targets <- read_sheet(sheet='Project services and targets',
                              fname=paste('M01 ',extract_date,'.xlsx',sep=''),
                              start_row = 1) %>%
   mutate(total_to_be_delivered=as.numeric(total_to_be_delivered)) %>%
-  select(grant_id,service,
+  select(merit_project_id=grant_id,service,
          target_measure,total_to_be_delivered,
          `2018/2019`=x2018_2019,`2019/2020`=x2019_2020,
          `2020/2021`=x2020_2021,`2021/2022`=x2021_2022,
@@ -732,14 +733,16 @@ output_targets <- read_sheet(sheet='Project services and targets',
                values_to='fy_target') %>%
   mutate(fy_target=as.numeric(fy_target)) 
 
-filter_by_service_target_measures_and_distinct <- function(Data,service,
-                                                           target_measure) {
-  fred <- Data %>%
+filter_by_service_target_measures_and_distinct <- 
+  function(Data,service,
+           target_measure,
+           grant_or_procurement='procurment') {
+    fred <- Data %>%
     mutate(across(all_of(numeric_cols),as.numeric),
            across(all_of(character_cols),as.character),
-           grant_or_procurement='procurement',
+           grant_or_procurement=grant_or_procurement,
            service=service, target_measure=target_measure) %>%
-    inner_join(output_targets,by=c("grant_id","service","target_measure",
+    inner_join(output_targets,by=c("merit_project_id","service","target_measure",
                                    "report_financial_year")) %>%
     filter(!is.na(total_to_be_delivered)) %>%
     distinct() 
@@ -3077,13 +3080,13 @@ RLP_Outcomes <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
                           sheet='RLP Outcomes',
                           startRow = 1) %>%
   clean_names() %>% 
-  select(grant_id,type_of_outcomes,outcome,investment_priority) 
+  select(merit_project_id=grant_id,type_of_outcomes,outcome,investment_priority) 
 
 primary_secondary_outcomes <- RLP_Outcomes %>% 
   filter(type_of_outcomes %in% c('Primary outcome','Secondary Outcome/s'),
          !is.na(outcome),outcome!='null') %>%
-  select(grant_id,outcome) %>%
-  group_by(grant_id) %>%
+  select(merit_project_id,outcome) %>%
+  group_by(merit_project_id) %>%
   distinct() %>%
   summarise(primary_secondary_outcomes = str_c(outcome,collapse="|")) %>% 
   ungroup() 
@@ -3091,8 +3094,8 @@ primary_secondary_outcomes <- RLP_Outcomes %>%
 primary_outcomes <- RLP_Outcomes %>% 
   filter(type_of_outcomes == 'Primary outcome',!is.na(outcome),
          outcome!='null') %>%
-  select(grant_id,outcome) %>%
-  group_by(grant_id) %>%
+  select(merit_project_id,outcome) %>%
+  group_by(merit_project_id) %>%
   distinct() %>%
   summarise(primary_outcomes = str_c(outcome,collapse="|")) %>% 
   ungroup() 
@@ -3100,8 +3103,8 @@ primary_outcomes <- RLP_Outcomes %>%
 secondary_outcomes <- RLP_Outcomes %>% 
   filter(type_of_outcomes == 'Secondary Outcome/s',!is.na(outcome),
          outcome!='null') %>%
-  select(grant_id,outcome) %>%
-  group_by(grant_id) %>%
+  select(merit_project_id,outcome) %>%
+  group_by(merit_project_id) %>%
   distinct() %>%
   summarise(secondary_outcomes = str_c(outcome,collapse="|")) %>% 
   ungroup() 
@@ -3109,8 +3112,8 @@ secondary_outcomes <- RLP_Outcomes %>%
 primary_secondary_investment_priorities <- RLP_Outcomes %>% 
   filter(type_of_outcomes %in% c('Primary outcome','Secondary Outcome/s'),
          investment_priority !='NA') %>% 
-  select(grant_id,investment_priority) %>%
-  group_by(grant_id) %>%
+  select(merit_project_id,investment_priority) %>%
+  group_by(merit_project_id) %>%
   distinct() %>%
   summarise(primary_secondary_investment_priorities = str_c(investment_priority,
                                                             collapse="|")) %>% 
@@ -3118,13 +3121,13 @@ primary_secondary_investment_priorities <- RLP_Outcomes %>%
 
 primary_investment_priority <- RLP_Outcomes %>% 
   filter(type_of_outcomes == 'Primary outcome',investment_priority !='NA') %>% 
-  select(grant_id,primary_investment_priority=investment_priority) 
+  select(merit_project_id,primary_investment_priority=investment_priority) 
 
 secondary_investment_priority <- RLP_Outcomes %>% 
   filter(type_of_outcomes == 'Secondary Outcome/s',
          investment_priority !='NA') %>% 
-  select(grant_id,investment_priority) %>%
-  group_by(grant_id) %>%
+  select(merit_project_id,investment_priority) %>%
+  group_by(merit_project_id) %>%
   distinct() %>%
   summarise(secondary_investment_priority = str_c(investment_priority,
                                                   collapse="|")) %>% 
@@ -3134,58 +3137,58 @@ project_assets <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
                             sheet='MERI_Project Assets',
                             startRow = 1) %>%
   clean_names() %>%
-  select(grant_id,asset) %>%
+  select(merit_project_id=grant_id,asset) %>%
   filter(asset!='NA') %>%
-  group_by(grant_id) %>%
+  group_by(merit_project_id) %>%
   summarise(assets = str_c(asset,collapse = "|")) %>%
   ungroup()
 
 meri_outcomes_indicators <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
                                       sheet='MERI_Outcomes') %>% 
   clean_names() %>% 
-  select(grant_id,all_of(meri_outcomes_indicator_ref)) %>%
-  group_by(grant_id) %>%
+  select(merit_project_id=grant_id,all_of(meri_outcomes_indicator_ref)) %>%
+  group_by(merit_project_id) %>%
   summarize(across(all_of(meri_outcomes_indicator_ref),last))
 
 meri_priorities <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
                              sheet='MERI_Priorities') %>% 
   clean_names() %>%
   mutate(across(ends_with('_date'),as.Date,origin='1899-12-30')) %>%
-  select(grant_id,document_name,relevant_section,explanation_of_strategic_alignment) %>%
+  select(merit_project_id=grant_id,document_name,relevant_section,explanation_of_strategic_alignment) %>%
   mutate(documents_priority=str_c("name: ",document_name,' section: ',relevant_section,
                                   ' alignment: ',explanation_of_strategic_alignment)) %>%
-  select(grant_id,documents_priority) %>%
+  select(merit_project_id,documents_priority) %>%
   drop_na(documents_priority) %>%
   distinct() %>%
-  group_by(grant_id) %>%
+  group_by(merit_project_id) %>%
   summarize(documents_priority=str_c(documents_priority,collapse="|")) %>%
   ungroup()
 
 report_species <- projects_reports_species %>%
   filter(!is.na(report_species)) %>%
   separate_rows(report_species,sep='[,|]') %>%
-  select(grant_id,report_species) %>%
-  group_by(grant_id) %>%
+  select(merit_project_id,report_species) %>%
+  group_by(merit_project_id) %>%
   summarize(report_species=str_c(str_trim(report_species),collapse="|")) %>%
   ungroup()
 
 # load("sprat_lookup.Rdata")
-# col_by_grant_id <- function(Data,col) {
+# col_by_merit_project_id <- function(Data,col) {
 #   fred <- Data %>% 
 #     filter(!is.na({{ col }})) %>%
 #     separate_rows({{ col }},sep='[,;|//\n]') %>% 
-#     select(grant_id,{{ col}}) %>% 
+#     select(merit_project_id,{{ col}}) %>% 
 #     drop_na() %>% 
 #     mutate(merit_raw=str_trim( {{ col }})) %>% 
 #     distinct() %>%
-#     select(grant_id,merit_raw)
+#     select(merit_project_id,merit_raw)
 # }
 # 
 # merit_sprat_clean <- bind_rows(
-#   col_by_grant_id(projects_species,assets),
-#   col_by_grant_id(projects_species,primary_investment_priority),
-#   col_by_grant_id(projects_species,secondary_investment_priority),
-#   col_by_grant_id(projects_reports_species,report_species)) %>%
+#   col_by_merit_project_id(projects_species,assets),
+#   col_by_merit_project_id(projects_species,primary_investment_priority),
+#   col_by_merit_project_id(projects_species,secondary_investment_priority),
+#   col_by_merit_project_id(projects_reports_species,report_species)) %>%
 #   distinct() %>%
 #   left_join(sprat_lookup,on='merit_raw') %>%
 #   filter(!is.na(sprat_category)) %>%
@@ -3193,19 +3196,19 @@ report_species <- projects_reports_species %>%
 
 projects_reports_species <- projects_reports %>% 
   mutate(version=version) %>%
-  left_join(primary_secondary_investment_priorities,by='grant_id') %>%
-  left_join(primary_investment_priority,by='grant_id') %>%
-  left_join(secondary_investment_priority,by='grant_id') %>%
-  left_join(project_assets,by='grant_id') %>%
-  left_join(meri_outcomes_indicators,by='grant_id') %>%
-  left_join(EPBC,by='grant_id') %>%
-  left_join(TEC,by='grant_id') %>%
-  left_join(RAMSAR,by='grant_id') %>%
-  left_join(primary_secondary_outcomes,by='grant_id') %>%
-  left_join(primary_outcomes,by='grant_id') %>%
-  left_join(secondary_outcomes,by='grant_id') %>%
+  left_join(primary_secondary_investment_priorities,by='merit_project_id') %>%
+  left_join(primary_investment_priority,by='merit_project_id') %>%
+  left_join(secondary_investment_priority,by='merit_project_id') %>%
+  left_join(project_assets,by='merit_project_id') %>%
+  left_join(meri_outcomes_indicators,by='merit_project_id') %>%
+  left_join(EPBC,by='merit_project_id') %>%
+  left_join(TEC,by='merit_project_id') %>%
+  left_join(RAMSAR,by='merit_project_id') %>%
+  left_join(primary_secondary_outcomes,by='merit_project_id') %>%
+  left_join(primary_outcomes,by='merit_project_id') %>%
+  left_join(secondary_outcomes,by='merit_project_id') %>%
   left_join(management_units,by='management_unit') %>%
-  left_join(meri_priorities,by='grant_id') %>%
+  left_join(meri_priorities,by='merit_project_id') %>%
   mutate(across(any_of(species_etc_cols_out),function(x) {ifelse(x=='NA',
                                                                  NA,x)}),
          meta_col_project_status='status',
@@ -3221,25 +3224,26 @@ projects_reports_species <- projects_reports %>%
 Projects <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
                       sheet='Projects',
                       startRow = 1) %>%
-  clean_names()
+  clean_names() %>%
+  rename(merit_project_id=grant_id)
 
 projects_species <- Projects %>%
   mutate(version=version) %>%
-  left_join(primary_secondary_investment_priorities,by='grant_id') %>%
-  left_join(primary_investment_priority,by='grant_id') %>%
-  left_join(secondary_investment_priority,by='grant_id') %>%
-  left_join(project_assets,by='grant_id') %>%
+  left_join(primary_secondary_investment_priorities,by='merit_project_id') %>%
+  left_join(primary_investment_priority,by='merit_project_id') %>%
+  left_join(secondary_investment_priority,by='merit_project_id') %>%
+  left_join(project_assets,by='merit_project_id') %>%
   mutate(across(any_of(species_etc_cols_out),as.character)) %>%
-  left_join(meri_outcomes_indicators,by='grant_id') %>%
-  left_join(EPBC,by='grant_id') %>%
-  left_join(TEC,by='grant_id') %>%
-  left_join(RAMSAR,by='grant_id') %>%
-  left_join(primary_secondary_outcomes,by='grant_id') %>%
-  left_join(primary_outcomes,by='grant_id') %>%
-  left_join(secondary_outcomes,by='grant_id') %>%
-  left_join(report_species,by='grant_id') %>%
+  left_join(meri_outcomes_indicators,by='merit_project_id') %>%
+  left_join(EPBC,by='merit_project_id') %>%
+  left_join(TEC,by='merit_project_id') %>%
+  left_join(RAMSAR,by='merit_project_id') %>%
+  left_join(primary_secondary_outcomes,by='merit_project_id') %>%
+  left_join(primary_outcomes,by='merit_project_id') %>%
+  left_join(secondary_outcomes,by='merit_project_id') %>%
+  left_join(report_species,by='merit_project_id') %>%
   left_join(management_units,by='management_unit')%>%
-  left_join(meri_priorities,by='grant_id') %>%
+  left_join(meri_priorities,by='merit_project_id') %>%
   mutate(extract_date=extract_date) %>%
   rename(project_status=status,project_start_date=start_date,
          project_end_date=end_date,
