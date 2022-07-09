@@ -12,6 +12,13 @@ require(purrr)
 require(jsonlite)
 library(DBI)
 library(RSQLite)
+
+# Read me first
+#
+# grant_id has been mapped across to merit_project_id. When this change is the
+# spreadsheets remove the references to merit_project_id=grant_id and replace
+# merit_project_id
+#
 # The R code transforms data in MERIT (NoSQL) to line item (SQL) by project and 
 # project report views.
 
@@ -609,7 +616,7 @@ character_cols <- c(
   'management_unit','external_id','site_id','organisation','report_species',
   'category','context')
 
-extract_date_cols <- c('grant_or_procurement','report_to_date','extract_date')
+extract_date_cols <- c('grant_or_procurement','extract_date')
 
 meri_outcomes_indicator_ref <- c(
   "natural_cultural_assets_managed","threatened_species",
@@ -636,9 +643,9 @@ read_sheet <- function(sheet_name,fname,start_row=3) {
                     startRow = start_row) %>%
     clean_names() %>%
     mutate(across(contains("management_unit"),as.character),
-           across(c(grant_id,external_id,internal_order_number, 
-                    work_order_id),as.character),
-           merit_project_id=grant_id)
+           merit_project_id=grant_id,
+           across(c(merit_project_id,external_id,internal_order_number, 
+                    work_order_id),as.character))
 }
 
 read_sheet_for_bulk <- function(sheet_name,fname,start_row=3) {
