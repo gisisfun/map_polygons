@@ -743,7 +743,7 @@ output_targets <- read_sheet(sheet='Project services and targets',
 filter_by_service_target_measures_and_distinct <- 
   function(Data,service,
            target_measure,
-           grant_or_procurement='procurment') {
+           grant_or_procurement='procurement') {
     fred <- Data %>%
     mutate(across(all_of(numeric_cols),as.numeric),
            across(all_of(character_cols),as.character),
