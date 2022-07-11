@@ -559,18 +559,104 @@ library(RSQLite)
 # > getSheetNames(paste('M13 ',extract_date,'.xlsx',sep=''))
 # [1] "RLP Core Services report"        "RLP Core Services annual report"
 
-extract_date <- '2022-06-20'
+# Metadata
+# |	ID	|	Original Column	|	renamed output column	|	Status	|	Source	|	Description	|	Example	|
+# |	1	|	grant_id	|	merit_project_id	|	As is	|	Project Data	|	This column describes the human readable unique ID assigned to a project	|	RLP-MU46-P2	|
+# |	2	|	external_id	|		|	As is	|	Project Data	|	This column describes the unique ID assigned by an external system such as the Business Grants Hub	|	RTPGSBECH-27	|
+# |	3	|	internal_order_number	|		|	As is	|	Project Data	|		|		|
+# |	4	|	work_order_id	|		|	As is	|	Project Data	|		|		|
+# |	5	|	organisation	|		|	As is	|	Project Data	|	This column describes the name of the organisation that is providing the services by signing the contract or funding agreement	|	Southern Queensland Landscapes	|
+# |	6	|	management_unit	|		|	As is	|	Project Data	|	This column describes the name of the management unit used for the geographic region (NLP 2018), or the organisation unit responsible for activities in the area (but can reach into other geographic regions)  	|	Condamine	|
+# |	7	|	management_unit_id	|		|	MetaData	|		|	Describes the Management Unit reference ID	|	MU44	|
+# |	8	|	management_unit_state	|		|	MetaData	|		|	Describes the Management Unit state or territory	|		|
+# |	9	|	name	|	project_name	|	As is	|	Project Data	|	Name of project	|		|
+# |	10	|	program	|		|	As is	|	Project Data	|	This column describes the program under which the project is being conducted (i.e. source of funding)	|	National Landcare Program	|
+# |	11	|	sub_program	|		|	As is	|	Project Data	|	This column describes the sub-program under which the project is being conducted 	|	Regional Land Partnerships	|
+# |	12	|	start_date	|	project_start_date	|	As is	|	Project Data	|	This column describes the date on which the project commenced	|		|
+# |	13	|	end_date	|	project_end_date	|	As is	|	Project Data	|	This column describes the date on which the project finished	|		|
+# |	14	|	contracted_start_date	|	project_contracted_start_date	|	As is	|	Project Data	|	This column describes the date on which the project contracted to start on. (amended project start date)	|		|
+# |	15	|	contracted_end_date	|	project_contracted_end_date	|	As is	|	Project Data	|	This column describes the date on which the project contracted to end on (amended project end date)	|		|
+# |	16	|	status	|	project status	|	As is	|	Project Data	|	This column describes the status of an individual project	|	Active, Completed, Application	|
+# |	17	|	MERIT_Reports_link	|		|	MetaData	|		|	Describes the URL for an individual project	|	https://fieldcapture.ala.org.au/project/index/975e603f-ad4b-4353-a467-7bd75ed201dc	|
+# |	18	|	report_financial_year	|		|	As is	|	Report	|	This column describes the financial year in which an activity took place and was reported	|	2020/2021	|
+# |	19	|	report_status	|		|	As is	|	Report	|	This column describes the status of each individual report within a project for the project manager	|	Submitted, Approved, Returned, Unpublished (no action - never been submitted)	|
+# |	20	|	service	|		|	Derived	|	Report	|	This column describes the class of service as defined in the Reeady Reckoner.  It is made up of one or more target measures	|	Communication materials	|
+# |	21	|	target_measure	|		|	Derived	|	Report	|	This column describes the metric that is used to report against the target  	|	Number of communication materials published	|
+# |	22	|	context	|		|	Mapped	|	Report	|	Text reponse supporting target measure	|		|
+# |	23	|	site_id	|		|	As is	|	Report	|	The column describes the automatically assigned unique ID by MERIT tha thas two types, reporting and planning 	|	074ac922-442e-4400-9e4d-d3fb5dd592a4	|
+# |	24	|	last_modified	|	report_last_modified	|	As is	|	Report	|	This column describes the timestamp of when the project report was last modified by the SP or the PM	|		|
+# |	25	|	category	|		|	Mapped	|	Report	|	This column describes the controlled list of categories of the stage of the activity for the target measure	|	Initial/Follow up or In-situ/Ex-situ	|
+# |	26	|	subcategory	|		|	MetaData	|		|	Filtering term used against target measure category column	|	Initial	|
+# |	27	|	report_species	|		|	Mapped	|	Report	|	This column describes the species on which an activity is reported against	|	Controlling Pest Animals - target pest species	|
+# |	28	|	total_to_be_delivered	|		|	Linked	|	Report	|	This column describes the total number of a reportable activity to be delivered over the entire project for the target measure	|	50 hectares of pest animal control	|
+# |	29	|	fy_target	|		|	Linked	|	Report	|	This column describes the financial year minimum target of a reportable activity to be delivered in a financial. Multiple f/y targets make up the total to be delivered for the target measure	|		|
+# |	30	|	measured	|		|	Mapped column	|	Report	|	This column describes the self reported metric against the target measure in the MERI plan	|	Number of hectares weeded (calculated from geospatial upload)	|
+# |	31	|	invoiced	|		|	Mapped column	|	Report	|	This column describes the metric value that the service provided is to be paid for	|	Invoiced number of hectares weeded	|
+# |	32	|	actual	|		|	Mapped column /Derived	|	Report	|	This column describes the self reported metric against the target measure in the MERI plan that is used to overwrite automatically calculated values where calculated mapping values do not reflect the works undertaken (e.g. mapping was unable to be completed)	|	Actual Number of hectares weeded (manually overwritten)	|
+# |	33	|	stage	|	report_stage	|	As is	|	Report	|	This column describes the report stage of the project	|	Year 2021/2022 - Quarter 2 Outputs Report	|
+# |	34	|	activity_type	|	report_activity_type	|	As is	|	Report	|	This column describes the activity type	|		|
+# |	35	|	report_from_date	|		|	As is	|	Report	|	This column describes the reporting period start date	|	01 Oct 2021	|
+# |	36	|	report_to_date	|		|	As is	|	Report	|	This column describes the reporting period end date	|	01 Jan 2022	|
+# |	37	|	meta_source_sheetname	|		|	MetaData	|		|	The source system column name for the data source	|		|
+# |	38	|	meta_col_project_start_date	|		|	MetaData	|		|		|		|
+# |	39	|	meta_col_project_end_date	|		|	MetaData	|		|		|		|
+# |	40	|	meta_col_project_contracted_start_date	|		|	MetaData	|		|		|		|
+# |	41	|	meta_col_project_contracted_end_date	|		|	MetaData	|		|		|		|
+# |	42	|	meta_col_project_name	|		|	MetaData	|		|		|		|
+# |	43	|	meta_col_measured	|		|	MetaData	|		|	The source system column name for  target measure 'measured'	|		|
+# |	44	|	meta_col_actual	|		|	MetaData	|		|	The source system column name for target measure  'actual'	|		|
+# |	45	|	meta_col_invoiced	|		|	MetaData	|		|	The source system column name for target measure  'invoiced'	|		|
+# |	46	|	meta_col_category	|		|	MetaData	|		|	The source system column name for target measure 'category'	|		|
+# |	47	|	meta_text_subcategory	|		|	MetaData	|		|	The filter value for the target measure used for target measure - category	|		|
+# |	48	|	meta_col_context	|		|	MetaData	|		|	The Text component of the response	|		|
+# |	49	|	meta_col_report_species	|		|	MetaData	|		|	The source system column name for 'species'	|		|
+# |	50	|	meta_line_item_object_class	|		|	MetaData	|		|	Allows linking of like activities between grants and procurements	|		|
+# |	51	|	meta_line_item_property	|		|	MetaData	|		|	Allows linking of like activities between grants and procurements	|		|
+# |	52	|	meta_line_item_value	|		|	MetaData	|		|	Allows linking of like activities between grants and procurements	|		|
+# |	53	|	meta_col_project_status	|		|	MetaData	|		|		|		|
+# |	54	|	meta_col_report_last_modified	|		|	MetaData	|		|	The source system column name for target measure 'report_last_modified'	|		|
+# |	55	|	meta_col_report_stage	|		|	MetaData	|		|		|		|
+# |	56	|	meta_col_activity_type	|		|	MetaData	|		|		|		|
+# |	57	|	primary_secondary_outcomes	|		|	Derived	|	Project Data	|	Concatenated primary and secondary outcomes	|		|
+# |	58	|	primary_outcomes	|		|	Derived	|	Project Data	|	Concatenated primary outcomes	|		|
+# |	59	|	secondary_outcomes	|		|	Derived	|	Project Data	|	Concatenated secondary outcomes	|		|
+# |	60	|	primary_investment_priority            	|		|	Derived	|	Project Data	|	Concatenated primary investment priorities	|		|
+# |	61	|	secondary_investment_priority	|		|	Derived	|	Project Data	|	Concatenated secondary investment priorities	|		|
+# |	62	|	primary_secondary_investment_priorities	|		|	Derived	|	Project Data	|	Concatenated primary and secondary investment priorities	|		|
+# |	63	|	documents_priority	|		|	Derived	|	Project Data	|	Concatenated document references for investment priorities	|		|
+# |	64	|	assets	|		|	Derived	|	Project Data	|		|		|
+# |	65	|	natural_cultural_assets_managed	|		|	Derived	|	Project Data	|		|		|
+# |	66	|	threatened_species	|		|	Derived	|	Project Data	|		|		|
+# |	67	|	threatened_ecological_communities	|		|	Derived	|	Project Data	|		|		|
+# |	68	|	migratory_species	|		|	Derived	|	Project Data	|		|		|
+# |	69	|	community_awareness_participation_in_nrm	|		|	Derived	|	Project Data	|		|		|
+# |	70	|	indigenous_cultural_values	|		|	Derived	|	Project Data	|		|		|
+# |	71	|	indigenous_ecological_knowledge	|		|	Derived	|	Project Data	|		|		|
+# |	72	|	remnant_vegetation	|		|	Derived	|	Project Data	|		|		|
+# |	73	|	aquatic_and_coastal_systems_including_wetlands	|		|	Derived	|	Project Data	|		|		|
+# |	74	|	epbc	|		|	Derived	|	Project Data	|		|		|
+# |	75	|	tec	|		|	Derived	|	Project Data	|		|		|
+# |	76	|	ramsar	|		|	Derived	|	Project Data	|		|		|
+# |	77	|	version	|		|	Derived	|	Data set	|	Version release number	|		|
+# |	78	|	grant_or_procurement	|		|	labelled	|	Report	|	This column describes the primary use of the report format 	|	1.0.1	|
+# |	79	|	extract_date	|		|	MetaData	|	Data set	|	Describes the point in time when the data was extracted from MERIT	|	Grant/Procurement	|
+
+
+extract_date <- '2022-04-11'
 version <- '1.0.1'
 project_cols_in <- c(
-  'project_id','merit_project_id','external_id','internal_order_number','work_order_id',
-  'program','sub_program','name','description','management_unit','organisation',
-  'status','report_financial_year','start_date','end_date',
-  'contracted_start_date','contracted_end_date','last_modified_2')
+  'project_id','merit_project_id','external_id','internal_order_number',
+  'work_order_id', 'program','sub_program','name','description',
+  'management_unit','organisation','status','report_financial_year',
+  'start_date','end_date','contracted_start_date','contracted_end_date',
+  'last_modified_2')
+
 project_cols_out <- c(
-  'project_id','merit_project_id','external_id','internal_order_number','work_order_id',
-  'organisation','management_unit','managment_unit_id','managment_unit_state','project_name',
-  'program','sub_program','project_start_date', 'project_end_date',
-  'project_contracted_start_date','project_contracted_end_date','project_status')
+  'project_id','merit_project_id','external_id','internal_order_number',
+  'work_order_id','organisation','management_unit','management_unit_id',
+  'management_unit_state','project_name','program','sub_program',
+  'project_start_date', 'project_end_date','project_contracted_start_date',
+  'project_contracted_end_date','project_status')
 
 project_meta_cols_out <- c(
   'meta_source_sheetname','meta_col_project_start_date',
@@ -616,7 +702,7 @@ character_cols <- c(
   'management_unit','external_id','site_id','organisation','report_species',
   'category','context')
 
-extract_date_cols <- c('grant_or_procurement','extract_date')
+extract_date_cols <- c('version','grant_or_procurement','extract_date')
 
 meri_outcomes_indicator_ref <- c(
   "natural_cultural_assets_managed","threatened_species",
@@ -629,8 +715,8 @@ meri_outcomes_indicator_ref <- c(
   "remnant_vegetation","aquatic_and_coastal_systems_including_wetlands")
 
 load("management_units.Rdata") 
-management_units %>% rename(management_unit_id=mu_id,
-                            management_unit_state=mu_state)
+management_units <- management_units %>% rename(management_unit_id=mu_id,
+                                                management_unit_state=mu_state)
 load("sprat_lookup.Rdata")
 
 str_to_colname <- function(a_col) {
@@ -642,22 +728,24 @@ read_sheet <- function(sheet_name,fname,start_row=3) {
                     sheet=sheet_name,
                     startRow = start_row) %>%
     clean_names() %>%
+    rename(merit_project_id=grant_id) %>%
     mutate(across(contains("management_unit"),as.character),
-           merit_project_id=grant_id,
            across(c(merit_project_id,external_id,internal_order_number, 
                     work_order_id),as.character))
 }
 
 read_sheet_for_bulk <- function(sheet_name,fname,start_row=3) {
-  fred <- read.xlsx(fname,
-                    sheet=sheet_name,
-                    startRow = start_row) %>%
-    clean_names() %>%
-    mutate(across(everything(),as.character),merit_project_id='grant_id')
+  #tryCatch({
+    fred <- read.xlsx(fname,
+                      sheet=sheet_name,
+                      startRow = start_row) %>%
+      clean_names() %>%
+      mutate(across(everything(),as.character),merit_project_id='grant_id')
+  #}, error=function(e){cat("\n")})
+  
 }
 
 load_mult_wbooks <- function(files_vec,sheetname) {
-  #files_vec <- c('M02','M05','M07','M08','M09')
   files_vec <- str_c(files_vec," ",extract_date,".xlsx",sep="")
   sheets_vec <- rep(sheetname,length(files_vec))
   
@@ -695,7 +783,8 @@ RLP_Outcomes <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
                           sheet='RLP Outcomes',
                           startRow = 1) %>%
   clean_names() %>% 
-  select(merit_project_id=grant_id,type_of_outcomes,investment_priority) 
+  select(grant_id,type_of_outcomes,investment_priority) %>%
+  rename(merit_project_id=grant_id)
 
 RLP_Outcomes_short_term_indicator <- RLP_Outcomes %>%
   filter(type_of_outcomes=='Primary outcome') %>%
@@ -727,33 +816,34 @@ RAMSAR <- RLP_Outcomes_short_term_indicator %>%
   drop_na(ramsar) %>%
   distinct()
 
-output_targets <- read_sheet(sheet='Project services and targets',
+project_services <- read_sheet(sheet='Project services and targets',
                              fname=paste('M01 ',extract_date,'.xlsx',sep=''),
                              start_row = 1) %>%
+  clean_names() %>%
   mutate(total_to_be_delivered=as.numeric(total_to_be_delivered)) %>%
-  select(merit_project_id=grant_id,service,
+  select(merit_project_id,service,
          target_measure,total_to_be_delivered,
          `2018/2019`=x2018_2019,`2019/2020`=x2019_2020,
          `2020/2021`=x2020_2021,`2021/2022`=x2021_2022,
          `2021/2022`=x2021_2022,`2022/2023`=x2022_2023) %>%
   pivot_longer(cols= starts_with("20"),names_to='report_financial_year',
                values_to='fy_target') %>%
-  mutate(fy_target=as.numeric(fy_target)) 
+  mutate(fy_target=as.numeric(fy_target))
 
 filter_by_service_target_measures_and_distinct <- 
   function(Data,service,
            target_measure,
            grant_or_procurement='procurement') {
     fred <- Data %>%
-    mutate(across(all_of(numeric_cols),as.numeric),
-           across(all_of(character_cols),as.character),
-           grant_or_procurement=grant_or_procurement,
-           service=service, target_measure=target_measure) %>%
-    inner_join(output_targets,by=c("merit_project_id","service","target_measure",
-                                   "report_financial_year")) %>%
-    filter(!is.na(total_to_be_delivered)) %>%
-    distinct() 
-}
+      mutate(across(all_of(numeric_cols),as.numeric),
+             across(all_of(character_cols),as.character),
+             grant_or_procurement=grant_or_procurement,
+             service=service, target_measure=target_measure) %>%
+      inner_join(project_services,by=c("merit_project_id","service","target_measure",
+                                     "report_financial_year")) %>%
+      filter(!is.na(total_to_be_delivered)) %>%
+      distinct() 
+  }
 
 no_category_extract_no_context_no_species <- function(
     Data, worksheet, service, target_measure, measured, actual, invoiced,
@@ -1336,7 +1426,8 @@ Report_Raw <- bind_rows(
     category=type_of_community_stakeholder_engagement_activity,
     sub_category='On-ground trials / demonstrations',
     context=purpose_of_engagement,
-    object_class='Community Engagement',property='On-ground trials / demonstrations',
+    object_class='Community Engagement',
+    property='On-ground trials / demonstrations',
     value='Total Events'),
   sub_category_extract_context_no_species(
     Data=RLP_Data,
@@ -1402,7 +1493,8 @@ Report_Raw <- bind_rows(
     category=type_of_community_stakeholder_engagement_activity,
     context=purpose_of_engagement,
     sub_category='Training / workshop events',
-    object_class='Community Engagement',property='training / workshop events',
+    object_class='Community Engagement',
+    property='training / workshop events',
     value='Total Events'),
   sub_category_extract_context_no_species(
     Data=BR_Data,
@@ -1751,7 +1843,8 @@ Report_Raw <- bind_rows(
     context = targeted_feral_species_being_controlled,
     category = newly_established_or_maintained_feral_free_enclosure,
     species = targeted_species_being_protected,
-    object_class='Feral-Free Enclosures',property='Establishing and maintaining',
+    object_class='Feral-Free Enclosures',
+    property='Establishing and maintaining',
     value='Total Enclosures'))
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
@@ -3087,7 +3180,8 @@ RLP_Outcomes <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
                           sheet='RLP Outcomes',
                           startRow = 1) %>%
   clean_names() %>% 
-  select(merit_project_id=grant_id,type_of_outcomes,outcome,investment_priority) 
+  select(grant_id,type_of_outcomes,outcome,investment_priority) %>%
+  rename(merit_project_id=grant_id)
 
 primary_secondary_outcomes <- RLP_Outcomes %>% 
   filter(type_of_outcomes %in% c('Primary outcome','Secondary Outcome/s'),
@@ -3144,7 +3238,8 @@ project_assets <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
                             sheet='MERI_Project Assets',
                             startRow = 1) %>%
   clean_names() %>%
-  select(merit_project_id=grant_id,asset) %>%
+  select(grant_id,asset) %>%
+  rename(merit_project_id=grant_id) %>%
   filter(asset!='NA') %>%
   group_by(merit_project_id) %>%
   summarise(assets = str_c(asset,collapse = "|")) %>%
@@ -3153,7 +3248,8 @@ project_assets <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
 meri_outcomes_indicators <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
                                       sheet='MERI_Outcomes') %>% 
   clean_names() %>% 
-  select(merit_project_id=grant_id,all_of(meri_outcomes_indicator_ref)) %>%
+  select(grant_id,all_of(meri_outcomes_indicator_ref)) %>%
+  rename(merit_project_id=grant_id) %>%
   group_by(merit_project_id) %>%
   summarize(across(all_of(meri_outcomes_indicator_ref),last))
 
@@ -3161,9 +3257,13 @@ meri_priorities <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
                              sheet='MERI_Priorities') %>% 
   clean_names() %>%
   mutate(across(ends_with('_date'),as.Date,origin='1899-12-30')) %>%
-  select(merit_project_id=grant_id,document_name,relevant_section,explanation_of_strategic_alignment) %>%
-  mutate(documents_priority=str_c("name: ",document_name,' section: ',relevant_section,
-                                  ' alignment: ',explanation_of_strategic_alignment)) %>%
+  select(grant_id,document_name,relevant_section,
+         explanation_of_strategic_alignment) %>%
+  rename(merit_project_id=grant_id) %>%
+  mutate(documents_priority=str_c("name: ",document_name,' section: ',
+                                  relevant_section,
+                                  ' alignment: ',
+                                  explanation_of_strategic_alignment)) %>%
   select(merit_project_id,documents_priority) %>%
   drop_na(documents_priority) %>%
   distinct() %>%
@@ -3171,13 +3271,6 @@ meri_priorities <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
   summarize(documents_priority=str_c(documents_priority,collapse="|")) %>%
   ungroup()
 
-report_species <- projects_reports_species %>%
-  filter(!is.na(report_species)) %>%
-  separate_rows(report_species,sep='[,|]') %>%
-  select(merit_project_id,report_species) %>%
-  group_by(merit_project_id) %>%
-  summarize(report_species=str_c(str_trim(report_species),collapse="|")) %>%
-  ungroup()
 
 # load("sprat_lookup.Rdata")
 # col_by_merit_project_id <- function(Data,col) {
@@ -3200,6 +3293,14 @@ report_species <- projects_reports_species %>%
 #   left_join(sprat_lookup,on='merit_raw') %>%
 #   filter(!is.na(sprat_category)) %>%
 #   distinct()
+
+report_species <- Report_Raw %>%
+  filter(!is.na(report_species)) %>%
+  separate_rows(report_species,sep='[,|]') %>%
+  select(merit_project_id,report_species) %>%
+  group_by(merit_project_id) %>%
+  summarize(report_species=str_c(str_trim(report_species),collapse="|")) %>%
+  ungroup()
 
 projects_reports_species <- projects_reports %>% 
   mutate(version=version) %>%
@@ -3227,6 +3328,10 @@ projects_reports_species <- projects_reports %>%
   select(any_of(project_cols_out),any_of(report_cols_out),
          any_of(project_meta_cols_out),any_of(report_meta_cols_out),
          any_of(species_etc_cols_out),any_of(extract_date_cols))
+
+
+
+
 
 Projects <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
                       sheet='Projects',
