@@ -642,7 +642,7 @@ library(RSQLite)
 # |	79	|	extract_date	|		|	MetaData	|	Data set	|	Describes the point in time when the data was extracted from MERIT	|	Grant/Procurement	|
 
 
-extract_date <- '2022-04-11'
+extract_date <- '2022-06-20'
 version <- '1.0.1'
 project_cols_in <- c(
   'project_id','merit_project_id','external_id','internal_order_number',
@@ -736,11 +736,11 @@ read_sheet <- function(sheet_name,fname,start_row=3) {
 
 read_sheet_for_bulk <- function(sheet_name,fname,start_row=3) {
   #tryCatch({
-    fred <- read.xlsx(fname,
-                      sheet=sheet_name,
-                      startRow = start_row) %>%
-      clean_names() %>%
-      mutate(across(everything(),as.character),merit_project_id='grant_id')
+  fred <- read.xlsx(fname,
+                    sheet=sheet_name,
+                    startRow = start_row) %>%
+    clean_names() %>%
+    mutate(across(everything(),as.character),merit_project_id='grant_id')
   #}, error=function(e){cat("\n")})
   
 }
@@ -758,9 +758,9 @@ conc_species_col <- function(Data) {
                       -context))) %>%
     summarise(report_species = str_c(report_species,collapse="|"),
               context = str_c(context,collapse="|"),
-              measured = first(measured),
-              actual = first(actual),
-              invoiced = first(invoiced)) %>% 
+              measured = sum(measured),
+              actual = sum(actual),
+              invoiced = sum(invoiced)) %>% 
     ungroup() %>%
     mutate(report_species = str_replace_all(report_species,'\n','|'))
 }
@@ -817,8 +817,8 @@ RAMSAR <- RLP_Outcomes_short_term_indicator %>%
   distinct()
 
 project_services <- read_sheet(sheet='Project services and targets',
-                             fname=paste('M01 ',extract_date,'.xlsx',sep=''),
-                             start_row = 1) %>%
+                               fname=paste('M01 ',extract_date,'.xlsx',sep=''),
+                               start_row = 1) %>%
   clean_names() %>%
   mutate(total_to_be_delivered=as.numeric(total_to_be_delivered)) %>%
   select(merit_project_id,service,
@@ -840,7 +840,7 @@ filter_by_service_target_measures_and_distinct <-
              grant_or_procurement=grant_or_procurement,
              service=service, target_measure=target_measure) %>%
       inner_join(project_services,by=c("merit_project_id","service","target_measure",
-                                     "report_financial_year")) %>%
+                                       "report_financial_year")) %>%
       filter(!is.na(total_to_be_delivered)) %>%
       distinct() 
   }
@@ -3328,10 +3328,6 @@ projects_reports_species <- projects_reports %>%
   select(any_of(project_cols_out),any_of(report_cols_out),
          any_of(project_meta_cols_out),any_of(report_meta_cols_out),
          any_of(species_etc_cols_out),any_of(extract_date_cols))
-
-
-
-
 
 Projects <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
                       sheet='Projects',
