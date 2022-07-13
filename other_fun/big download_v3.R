@@ -860,7 +860,8 @@ project_services_SGE <- ids_by_df(SGE_ids,all_project_services) %>%
          fy_target=0)
 
 project_services <- bind_rows(project_services_RLP,
-                              project_services_SGE)
+                              project_services_SGE) %>%
+distinct()
 
 
 
