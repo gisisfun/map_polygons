@@ -816,7 +816,7 @@ RAMSAR <- RLP_Outcomes_short_term_indicator %>%
   drop_na(ramsar) %>%
   distinct()
 
-project_services <- read_sheet(sheet='Project services and targets',
+project_services_RLP <- read_sheet(sheet='Project services and targets',
                                fname=paste('M01 ',extract_date,'.xlsx',sep=''),
                                start_row = 1) %>%
   clean_names() %>%
@@ -830,9 +830,40 @@ project_services <- read_sheet(sheet='Project services and targets',
                values_to='fy_target') %>%
   mutate(fy_target=as.numeric(fy_target))
 
-########################
-# new code starts here #
-########################
+Projects <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
+                      sheet='Projects',
+                      startRow = 1) %>%
+  clean_names() %>%
+  rename(merit_project_id=grant_id)
+
+########################################
+# new code starts here                 #
+# map ids against all project services #
+########################################
+
+load('all_project_services.Rdata')
+
+ids_by_df <- function(ids,Data) {
+  
+Data <- as.data.frame(lapply(Data, rep, length(ids))) %>%
+  bind_cols(sort(rep(ids,nrow(Data)))) %>%
+  rename(merit_project_id='...3') %>%
+  select(merit_project_id,everything())
+}
+
+SGE_ids <- Projects %>% filter(str_detect(sub_program,'Emergency')) %>% 
+  select(merit_project_id) %>% pull()
+
+project_services_SGE <- ids_by_df(SGE_ids,all_project_services) %>%
+  mutate(total_to_be_delivered=0,
+         report_financial_year='2020/2021',
+         fy_target=0)
+
+project_services <- bind_rows(project_services_RLP,
+                              project_services_SGE)
+
+
+
 
 # services_target_measure <- project_services_RLP %>% 
 #   select(service,target_measure) %>% 
@@ -3373,12 +3404,6 @@ projects_reports_species <- projects_reports %>%
   select(any_of(project_cols_out),any_of(report_cols_out),
          any_of(project_meta_cols_out),any_of(report_meta_cols_out),
          any_of(species_etc_cols_out),any_of(extract_date_cols))
-
-Projects <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
-                      sheet='Projects',
-                      startRow = 1) %>%
-  clean_names() %>%
-  rename(merit_project_id=grant_id)
 
 projects_species <- Projects %>%
   mutate(version=version) %>%
