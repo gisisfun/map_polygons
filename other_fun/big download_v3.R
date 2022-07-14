@@ -758,18 +758,18 @@ conc_species_col <- function(Data) {
                       -context))) %>%
     summarise(report_species = str_c(report_species,collapse="|"),
               context = str_c(context,collapse="|"),
-              measured = sum(measured),
-              actual = sum(actual),
-              invoiced = sum(invoiced)) %>% 
+              measured = sum(measured,na.rm=TRUE),
+              actual = sum(actual,na.rm=TRUE),
+              invoiced = sum(invoiced,na.rm=TRUE)) %>% 
     ungroup() %>%
     mutate(report_species = str_replace_all(report_species,'\n','|'))
 }
 
 filter_na <- function(Data) {
-  Data <- Data %>%
-    conc_species_col() %>%
-    filter(!is.na(measured) | !is.na(actual) | !is.na(invoiced) | 
-             !is.na(report_species)) 
+  Data #<- Data %>%
+     #conc_species_col() %>%
+  #   filter(!is.na(measured) | !is.na(actual) | !is.na(invoiced) | 
+  #            !is.na(report_species)) 
 }
 
 # load the investment priority data for R data file
@@ -816,7 +816,7 @@ RAMSAR <- RLP_Outcomes_short_term_indicator %>%
   drop_na(ramsar) %>%
   distinct()
 
-project_services_RLP <- read_sheet(sheet='Project services and targets',
+project_services <- read_sheet(sheet='Project services and targets',
                                fname=paste('M01 ',extract_date,'.xlsx',sep=''),
                                start_row = 1) %>%
   clean_names() %>%
@@ -841,33 +841,34 @@ Projects <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
 # map ids against all project services #
 ########################################
 
-load('all_project_services.Rdata')
+# load('all_project_services.Rdata')
+# # all_project_services <- project_services_RLP %>% 
+# #   select(service,target_measure) %>% 
+# #   distinct()
+# 
+# ids_by_df <- function(ids,Data) {
+# Data <- as.data.frame(lapply(Data, rep, length(ids))) %>%
+#   bind_cols(sort(rep(ids,nrow(Data)))) %>%
+#   rename(merit_project_id='...3') %>%
+#   select(merit_project_id,everything())
+# }
+# 
+# SGE_ids <- Projects %>% filter(str_detect(sub_program,'Emergency')) %>% 
+#   select(merit_project_id) %>% pull()
+# ids_df <- ids_by_df(SGE_ids,all_project_services)
+# project_services_SGE <- bind_rows(
+#   ids_df %>% mutate(report_financial_year='2019/2020'),
+#   ids_df %>% mutate(report_financial_year='2020/2021'),
+#   ids_df %>% mutate(report_financial_year='2021/2022')) %>%
+#   mutate(total_to_be_delivered=0,
+#          fy_target=0)
+# 
+# project_services <- bind_rows(project_services_RLP,
+#                               project_services_SGE) %>%
+#   distinct()
 
-ids_by_df <- function(ids,Data) {
-  
-Data <- as.data.frame(lapply(Data, rep, length(ids))) %>%
-  bind_cols(sort(rep(ids,nrow(Data)))) %>%
-  rename(merit_project_id='...3') %>%
-  select(merit_project_id,everything())
-}
-
-SGE_ids <- Projects %>% filter(str_detect(sub_program,'Emergency')) %>% 
-  select(merit_project_id) %>% pull()
-
-project_services_SGE <- ids_by_df(SGE_ids,all_project_services) %>%
-  mutate(total_to_be_delivered=0,
-         report_financial_year='2020/2021',
-         fy_target=0)
-
-project_services <- bind_rows(project_services_RLP,
-                              project_services_SGE) %>%
-distinct()
-
-
-
-
-# services_target_measure <- project_services_RLP %>% 
-#   select(service,target_measure) %>% 
+# services_target_measure <- project_services_RLP %>%
+#   select(service,target_measure) %>%
 #   distinct()
 # 
 # # 	Bushfire Wildlife and Habitat Recovery
@@ -918,7 +919,7 @@ filter_by_service_target_measures_and_distinct <-
              service=service, target_measure=target_measure) %>%
       inner_join(project_services,by=c("merit_project_id","service","target_measure",
                                        "report_financial_year")) %>%
-      filter(!is.na(total_to_be_delivered)) %>%
+      conc_species_col() %>%
       distinct() 
   }
 
@@ -1112,8 +1113,7 @@ sub_category_extract_context_species  <- function(
            invoiced={{ invoiced }},actual={{ actual }},
            context = {{ context }},report_species = {{ species }}) %>%
     filter(category==sub_category) %>%
-    filter_by_service_target_measures_and_distinct(service,target_measure) %>%
-    filter_na()
+    filter_by_service_target_measures_and_distinct(service,target_measure) 
   
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
@@ -1151,8 +1151,7 @@ sub_category_extract_context_no_species  <- function(
            context = {{ context }}) %>%
     filter(category==sub_category) %>%
     mutate(report_species = NA) %>%
-    filter_by_service_target_measures_and_distinct(service,target_measure) %>%
-    filter_na()
+    filter_by_service_target_measures_and_distinct(service,target_measure) 
   
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
@@ -1189,8 +1188,7 @@ sub_category_extract_no_context_species <- function(
            report_species={{ species }}) %>%
     filter(category==sub_category) %>%
     mutate(context=NA) %>%
-    filter_by_service_target_measures_and_distinct(service,target_measure) %>%
-    filter_na()
+    filter_by_service_target_measures_and_distinct(service,target_measure) 
   
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
@@ -1226,8 +1224,7 @@ sub_category_extract_no_context_no_species <- function(
            invoiced={{ invoiced }}, actual={{ actual }}) %>%
     filter(category==sub_category) %>%
     mutate(context=NA, report_species=NA) %>%
-    filter_by_service_target_measures_and_distinct(service,target_measure) %>%
-    filter_na()
+    filter_by_service_target_measures_and_distinct(service,target_measure) 
   
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
@@ -1393,6 +1390,7 @@ Report_Raw <-
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Communicati...tput Report')
+BR_Data <- load_mult_wbooks(c('M05'),'Communication mat...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -1405,12 +1403,7 @@ Report_Raw <- bind_rows(
     invoiced = number_of_communication_materials_published,
     actual = number_of_communication_materials_published,
     object_class='Communication materials',property='Publication',
-    value='Total Data Sets'))
-
-BR_Data <- load_mult_wbooks(c('M05'), 'Communication mat...inal Report')
-
-Report_Raw <- bind_rows(
-  Report_Raw,
+    value='Total Materials'),
   no_category_extract_no_context_no_species(
     Data=BR_Data,
     worksheet = 'Communication mat...inal Report',
@@ -1420,7 +1413,7 @@ Report_Raw <- bind_rows(
     invoiced = number_of_communication_materials_published,
     actual = number_of_communication_materials_published,
     object_class='Communication materials',property='Publication',
-    value='Total Published Communication Materials'))  
+    value='Total Materials'))
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Community e...tput Report')
@@ -1714,6 +1707,7 @@ Report_Raw <- bind_rows(
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Debris remo...tput Report')
+BR_Data <- load_mult_wbooks(c('M05'),'Debris removal St...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -1728,10 +1722,23 @@ Report_Raw <- bind_rows(
     context = type_of_debris_removed,
     category = initial_or_follow_up_activity,
     object_class='Debris',property='Removal',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Debris removal St...inal Report',
+    service = "Debris removal",
+    target_measure = "Area (ha) of debris removal",
+    measured = calculated_debris_removed_ha,
+    invoiced = area_of_removed_debris_invoiced_ha,
+    actual = debris_removed_ha,
+    context = debris_type,
+    category = initial_or_follow_up_activity,
+    object_class='Debris',property='Removal',
     value='Total Area (Ha)'))
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Management ...tput Report')
+BR_Data <- load_mult_wbooks(c('M05'),'Management plan d...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -1757,6 +1764,18 @@ Report_Raw <- bind_rows(
     invoiced = number_of_plans_developed,
     actual = number_of_plans_developed,
     context = type_of_plan,
+    category = are_these_plans_new_or_revised,
+    object_class='Debris',property='Removal',
+    value='Total Plans'),
+  all_sub_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Management plan d...inal Report',
+    service = "Developing farm/project/site management plan",
+    target_measure = "Number of farm/project/site plans developed",
+    measured = number_of_plans_developed,
+    invoiced = number_of_plans_developed,
+    actual = number_of_plans_developed,
+    context = management_plan_type,
     category = are_these_plans_new_or_revised,
     object_class='Debris',property='Removal',
     value='Total Plans'))
@@ -1806,6 +1825,7 @@ Report_Raw <- bind_rows(
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Establishin...tput Rep(1)')
+BR_Data <- load_mult_wbooks(c('M05'),'Establishing Agre...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -1844,10 +1864,47 @@ Report_Raw <- bind_rows(
     context = type_of_agreement_s,
     category = established_or_maintained,
     object_class='Agreements',property='Establishing and maintaining',
+    value='Total Days'),
+  all_sub_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Establishing Agre...inal Report',
+    service = "Establishing and maintaining agreements",
+    target_measure = "Area (ha) covered by agreements",
+    measured = calculated_area_covered_by_agreements_ha,
+    invoiced = area_of_covered_by_agreements_invoiced_ha,
+    actual = area_covered_by_agreements_ha,
+    context = agreement_type,
+    category = established_or_maintained,
+    object_class='Agreements',property='Establishing and maintaining',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Establishing Agre...inal Report',
+    service = "Establishing and maintaining agreements",
+    target_measure = "Number of agreements",
+    measured = number_of_agreements,
+    invoiced = number_of_agreements,
+    context = agreement_type,
+    actual = number_of_agreements,
+    category = established_or_maintained,
+    object_class='Agreements',property='Establishing and maintaining',
+    value='Total Agreements'),
+  all_sub_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Establishing Agre...inal Report',
+    service = "Establishing and maintaining agreements",
+    target_measure = "Number of days maintaining agreements",
+    measured = number_of_days_maintaining_agreements_if_applicable,
+    invoiced = number_of_days_maintaining_agreements_if_applicable,
+    actual = number_of_days_maintaining_agreements_if_applicable,
+    context = agreement_type,
+    category = established_or_maintained,
+    object_class='Agreements',property='Establishing and maintaining',
     value='Total Days'))
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Establishin...tput Report')
+BR_Data <- load_mult_wbooks(c('M05'),'Establishing ex-s...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -1876,10 +1933,37 @@ Report_Raw <- bind_rows(
     category = ex_situ_in_situ,
     species = targeted_threatened_species,
     object_class='Sites',property='Breeding Programs',
+    value='Total Days'),
+  all_sub_category_extract_context_species(
+    Data=BR_Data,
+    worksheet = 'Establishing ex-s...inal Report',
+    service = "Establishing and maintaining breeding programs",
+    target_measure = "Number of breeding sites and/or populations",
+    measured = number_of_breeding_sites_created,
+    invoiced = number_of_breeding_sites_created,
+    actual = number_of_breeding_sites_created,
+    context = technique_of_breeding_program,
+    category = ex_situ_in_situ,
+    species = targeted_threatened_species,
+    object_class='Sites',property='Breeding Programs',
+    value='Total Sites'),
+  all_sub_category_extract_context_species(
+    Data=BR_Data,
+    worksheet = 'Establishing ex-s...inal Report',
+    service = "Establishing and maintaining breeding programs",
+    target_measure = "Number of days maintaining breeding programs",
+    measured = number_of_days_maintaining_breeding_program,
+    invoiced = number_of_days_maintaining_breeding_program,
+    actual = number_of_days_maintaining_breeding_program,
+    context = technique_of_breeding_program,
+    category = ex_situ_in_situ,
+    species = targeted_threatened_species,
+    object_class='Sites',property='Breeding Programs',
     value='Total Days'))
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Maintaining...tput Report')
+BR_Data <- load_mult_wbooks(c('M05'),'Maintaining feral...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -1922,10 +2006,51 @@ Report_Raw <- bind_rows(
     species = targeted_species_being_protected,
     object_class='Feral-Free Enclosures',
     property='Establishing and maintaining',
+    value='Total Enclosures'),
+  all_sub_category_extract_context_species(
+    Data=BR_Data,
+    worksheet = 'Maintaining feral...inal Report',
+    service = "Establishing and maintaining feral-free enclosures",
+    target_measure = "Area (ha) of feral-free enclosure",
+    measured = calculated_area_of_enclosures_ha,
+    invoiced = area_invoiced_ha,
+    actual = actual_area_ha_of_feral_free_enclosures,
+    context = targeted_feral_species_being_controlled,
+    category = newly_established_or_maintained_feral_free_enclosure,
+    species = targeted_species_being_protected,
+    object_class='Feral-free Enclosures',property='Establishing and maintaining',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_species(
+    Data=BR_Data,
+    worksheet = 'Maintaining feral...inal Report',
+    service = "Establishing and maintaining feral-free enclosures",
+    target_measure = "Number of days maintaining feral-free enclosures",
+    measured = calculated_area_of_enclosures_ha,
+    invoiced = area_invoiced_ha,
+    actual = actual_area_ha_of_feral_free_enclosures,
+    context = targeted_feral_species_being_controlled,
+    category = newly_established_or_maintained_feral_free_enclosure,
+    species = targeted_species_being_protected,
+    object_class='Feral-free Enclosures',property='Establishing and maintaining',
+    value='Total Days'),
+  all_sub_category_extract_context_species(
+    Data=BR_Data,
+    worksheet = 'Maintaining feral...inal Report',
+    service = "Establishing and maintaining feral-free enclosures",
+    target_measure = "Number of feral free enclosures",
+    measured = calculated_area_of_enclosures_ha,
+    invoiced = area_invoiced_ha,
+    actual = actual_area_ha_of_feral_free_enclosures,
+    context = targeted_feral_species_being_controlled,
+    category = newly_established_or_maintained_feral_free_enclosure,
+    species = targeted_species_being_protected,
+    object_class='Feral-Free Enclosures',
+    property='Establishing and maintaining',
     value='Total Enclosures'))
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Establishin...tput Rep(2)')
+BR_Data <- load_mult_wbooks(c('M05'),'Establishing moni...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -1954,10 +2079,37 @@ Report_Raw <- bind_rows(
     context = monitoring_regimes_objective,
     sub_category='Established',
     object_class='Monitoring Regimes',property='Establishing and maintaining',
+    value='Total Monitoring Regimes'),
+  sub_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Establishing moni...inal Report',
+    service = "Establishing and maintaining monitoring regimes",
+    target_measure = "Number of days maintaining monitoring regimes",
+    measured = number_of_days_maintaining_monitoring_regimes,
+    invoiced = number_of_days_maintaining_monitoring_regimes,
+    actual = number_of_days_maintaining_monitoring_regimes,
+    context = monitoring_regimes_objective, 
+    category = established_or_maintained,
+    sub_category = 'Maintained',
+    object_class='Monitoring Regimes',property='Establishing and maintaining',
+    value='Total Days'),
+  sub_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Establishing moni...inal Report',
+    service = "Establishing and maintaining monitoring regimes",
+    target_measure = "Number of monitoring regimes established",
+    measured = number_of_monitoring_regimes,
+    invoiced = number_of_monitoring_regimes,
+    actual = number_of_monitoring_regimes,
+    category = established_or_maintained,
+    context = monitoring_regimes_objective,
+    sub_category='Established',
+    object_class='Monitoring Regimes',property='Establishing and maintaining',
     value='Total Monitoring Regimes'))
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Farm Manage...tput Report')
+BR_Data <- load_mult_wbooks(c('M05'),'Farm Management S...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -1970,6 +2122,18 @@ Report_Raw <- bind_rows(
     invoiced = number_of_farm_management_surveys_conducted,
     context = survey_purpose,
     actual = number_of_farm_management_surveys_conducted,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    object_class='Farm Management',property='Surveys',
+    value='Total Surveys'),
+  all_sub_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Farm Management S...inal Report',
+    service = "Farm management survey",
+    target_measure = "Number of farm management surveys conducted",
+    measured = number_of_farm_management_surveys_conducted,
+    actual = number_of_farm_management_surveys_conducted,
+    invoiced = number_of_farm_management_surveys_conducted,
+    context = survey_purpose,
     category = baseline_survey_or_indicator_follow_up_survey,
     object_class='Farm Management',property='Surveys',
     value='Total Surveys'))
@@ -2207,6 +2371,7 @@ Report_Raw <- bind_rows(
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Improving h...tput Report')
+BR_Data <- load_mult_wbooks(c('M05'),'Improving hydrolo...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2233,10 +2398,35 @@ Report_Raw <- bind_rows(
     actual = area_ha_covering_the_hydrological_regime_change,
     category = installed_or_maintained,
     object_class='Hydrological Regimes',property='Treatments',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Improving hydrolo...inal Report',
+    service = "Improving hydrological regimes",
+    target_measure = "Number of treatments implemented to improve water management",
+    measured = number_of_treatments_implemented_to_improve_water_management,
+    invoiced = number_of_treatments_implemented_to_improve_water_management,
+    context = treatment_type,
+    actual = number_of_treatments_implemented_to_improve_water_management,
+    category = installed_or_maintained,
+    object_class='Hydrological Regimes',property='Treatments',
+    value='Total Treatments'),
+  all_sub_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Improving hydrolo...inal Report',
+    service = "Improving hydrological regimes",
+    target_measure = "Area (ha) of catchment being managed as a result of this management action",
+    measured = calculated_area_covering_regime_change_ha,
+    invoiced = area_invoiced_ha,
+    context = treatment_type,
+    actual = area_covering_regime_change_ha,
+    category = installed_or_maintained,
+    object_class='Hydrological Regimes',property='Treatments',
     value='Total Area (Ha)'))
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Improving l...tput Report')
+BR_Data <- load_mult_wbooks(c('M05'),'Improving land ma...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2249,6 +2439,18 @@ Report_Raw <- bind_rows(
     invoiced = area_implemented_invoiced_ha,
     context = type_of_action,
     actual = area_ha_benefitting_from_practice_change,
+    category = initial_or_follow_up_control,
+    object_class='Land',property='Practice Change',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Improving land ma...inal Report',
+    service = "Improving land management practices",
+    target_measure = "Area (ha) covered by practice change",
+    measured = calculated_area_implemented_ha,
+    invoiced = area_implemented_invoiced_ha,
+    context = practice_change_type,
+    actual = area_implemented_ha,
     category = initial_or_follow_up_control,
     object_class='Land',property='Practice Change',
     value='Total Area (Ha)'))
@@ -2403,6 +2605,7 @@ Report_Raw <- bind_rows(
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Plant survi...tput Report')
+BR_Data <- load_mult_wbooks(c('M05'),'Plant survival su...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2422,6 +2625,32 @@ Report_Raw <- bind_rows(
   all_sub_category_extract_context_species(
     Data=RLP_Data,
     worksheet = 'RLP - Plant survi...tput Report',
+    service = "Plant survival survey",
+    target_measure = "Number of plant survival surveys conducted",
+    measured = number_of_plant_survival_surveys_conducted,
+    invoiced = number_of_plant_survival_surveys_conducted,
+    actual = number_of_plant_survival_surveys_conducted,
+    context = survey_technique,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    species = species_recorded,
+    object_class='Plants',property='Surveys',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_species(
+    Data=BR_Data,
+    worksheet = 'Plant survival su...inal Report',
+    service = "Plant survival survey",
+    target_measure = "Area surveyed (ha) for plant survival",
+    measured = site_calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    actual = actual_area_ha_surveyed_for_plant_survival,
+    context = survey_technique,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    species = species_recorded,
+    object_class='Plants',property='Surveys',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_species(
+    Data=BR_Data,
+    worksheet = 'Plant survival su...inal Report',
     service = "Plant survival survey",
     target_measure = "Number of plant survival surveys conducted",
     measured = number_of_plant_survival_surveys_conducted,
@@ -2485,6 +2714,7 @@ Report_Raw <- bind_rows(
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Remediating...tput Report')
+BR_Data <- load_mult_wbooks(c('M05'),'Remediating ripar...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2508,6 +2738,30 @@ Report_Raw <- bind_rows(
     measured = calculated_length_remediated_km,
     invoiced = length_remediated_invoiced_km,
     context = type_of_remediation,
+    actual = length_remediated_invoiced_km,
+    category = initial_followup_control,
+    object_class='Riparian and Aquatic Areas',property='Remediation',
+    value='Total Length (km)'),
+  all_sub_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Remediating ripar...inal Report',
+    service = "Remediating riparian and aquatic areas",
+    target_measure = "Area (ha) remediated",
+    measured = calculated_area_remediated_ha,
+    invoiced = area_remediated_invoiced_ha,
+    actual = area_remediated_ha,
+    context = remediation_type,
+    category = initial_followup_control,
+    object_class='Riparian and Aquatic Areas',property='Remediation',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Remediating ripar...inal Report',
+    service = "Remediating riparian and aquatic areas",
+    target_measure = "Length (km) remediated",
+    measured = calculated_length_remediated_km,
+    invoiced = length_remediated_invoiced_km,
+    context = remediation_type,
     actual = length_remediated_invoiced_km,
     category = initial_followup_control,
     object_class='Riparian and Aquatic Areas',property='Remediation',
@@ -2575,68 +2829,6 @@ Report_Raw <- bind_rows(
     value='Total Area (Ha)'))
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
-                             'RLP - Weed treatm...tput Report')
-
-Report_Raw <- bind_rows(
-  Report_Raw,
-  sub_category_extract_context_species(
-    Data=RLP_Data,
-    worksheet = 'RLP - Weed treatm...tput Report',
-    service = "Removing weeds",
-    target_measure = "Length (km) treated for weeds - follow-up",
-    measured = site_calculated_length_km,
-    invoiced = length_invoiced_km,
-    actual = length_km_treated_for_weed_removal,
-    category = initial_or_follow_up_treatment,
-    context = type_of_treatment,
-    sub_category = 'Follow-up',
-    species = target_weed_species,
-    object_class='Weeds',property='Treatment - Follow-up',
-    value='Total Length (km)'),
-  sub_category_extract_context_species(
-    Data=RLP_Data,
-    worksheet = 'RLP - Weed treatm...tput Report',
-    service = "Removing weeds",
-    target_measure = "Length (km) treated for weeds - initial",
-    measured = site_calculated_length_km,
-    invoiced = length_invoiced_km,
-    actual = length_km_treated_for_weed_removal,
-    category = initial_or_follow_up_treatment,
-    context = type_of_treatment,
-    sub_category = 'Initial',
-    species = target_weed_species,
-    object_class='Weeds',property='Treatment - Initial',
-    value='Total Length (km)'),
-  sub_category_extract_context_species(
-    Data=BR_Data,
-    worksheet = 'Weed treatment St...inal Report',
-    service = "Removing weeds",
-    target_measure = "Length (km) treated for weeds - follow-up",
-    measured = site_calculated_length_km,
-    invoiced = length_invoiced_km,
-    actual = length_treated_km,
-    category = initial_or_follow_up_treatment,
-    context = type_of_treatment,
-    sub_category = 'Follow-up',
-    species = target_weed_species,
-    object_class='Weeds',property='Treatment - Follow-up',
-    value='Total Length (km)'),
-  sub_category_extract_context_species(
-    Data=BR_Data,
-    worksheet = 'Weed treatment St...inal Report',
-    service = "Removing weeds",
-    target_measure = "Length (km) treated for weeds - initial",
-    measured = site_calculated_length_km,
-    invoiced = length_invoiced_km,
-    actual = length_treated_km,
-    category = initial_or_follow_up_treatment,
-    context = type_of_treatment,
-    sub_category = 'Initial',
-    species = target_weed_species,
-    object_class='Weeds',property='Treatment - Initial',
-    value='Total Length (km)'))
-
-RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Revegetatin...tput Report')
 BR_Data <- load_mult_wbooks(c('M05'),'Revegetating habi...inal Report')
 
@@ -2701,6 +2893,7 @@ Report_Raw <- bind_rows(
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Revegetatin...tput Report')
+BR_Data <- load_mult_wbooks(c('M05'),'Revegetating habi...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2729,10 +2922,98 @@ Report_Raw <- bind_rows(
     category = initial_or_maintenance_activity,
     species = species,
     object_class='Habitat',property='Propagation',
+    value='Total Days'),
+  all_sub_category_extract_context_species(
+    Data=BR_Data,
+    worksheet = 'Revegetating habi...inal Report',
+    service = "Revegetating habitat",
+    target_measure = "Number of days collecting seed",
+    measured = number_of_days_collecting_seed,
+    invoiced = number_of_days_collecting_seed,
+    context = planting_method,
+    actual = number_of_days_collecting_seed,
+    category = initial_or_maintenance_activity,
+    species = species,
+    object_class='Habitat',property='Seed Collection',
+    value='Total Days'),
+  all_sub_category_extract_context_species(
+    Data=BR_Data,
+    worksheet = 'Revegetating habi...inal Report',
+    service = "Revegetating habitat",
+    target_measure = "Number of days propagating plants",
+    measured = number_of_days_propagating_plants,
+    invoiced = number_of_days_propagating_plants,
+    actual = number_of_days_propagating_plants,
+    context = planting_method,
+    category = initial_or_maintenance_activity,
+    species = species,
+    object_class='Habitat',property='Propagation',
     value='Total Days'))
+
+
+BR_Data <- load_mult_wbooks(c('M05'),'Seed Collecting -...inal Report')
+
+Report_Raw <- bind_rows(
+  Report_Raw,
+  no_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Seed Collecting -...inal Report',
+    service = "Seed collection",
+    target_measure = "Number of days collecting seed",
+    measured = number_of_days_collecting_seed,
+    invoiced = number_of_days_collecting_seed,
+    context = storing_facility,
+    actual = number_of_days_collecting_seed,
+    object_class='Habitat',property='Seed Collection',
+    value='Total Days'),
+  no_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Seed Collecting -...inal Report',
+    service = "Seed collection",
+    target_measure = "Amount (kg) seed collected",
+    measured = individuals_kilograms_collected,
+    invoiced = individuals_kilograms_collected,
+    actual = individuals_kilograms_collected,
+    context = storing_facility,
+    object_class='Habitat',property='Seed Collection',
+    value='Total Kg'),
+  no_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Seed Collecting -...inal Report',
+    service = "Seed collection",
+    target_measure = "Number of plants propagated",
+    measured = number_of_plants_propogated,
+    invoiced = number_of_plants_propogated,
+    context = storing_facility,
+    actual = number_of_plants_propogated,
+    object_class='Habitat',property='Seed Propagation',
+    value='Number propagated'),
+  no_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Seed Collecting -...inal Report',
+    service = "Seed collection",
+    target_measure = "Number of seeds collected",
+    measured = total_seed_collected,
+    invoiced = total_seed_collected,
+    actual = total_seed_collected,
+    context = storing_facility,
+    object_class='Habitat',property='Seed Collection',
+    value='Number collected'),
+  no_category_extract_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Seed Collecting -...inal Report',
+    service = "Seed collection",
+    target_measure = "Number of source plants",
+    measured = number_of_source_plants,
+    invoiced = number_of_source_plants,
+    actual = number_of_source_plants,
+    context = storing_facility,
+    object_class='Habitat',property='Seed Collection',
+    value='Number plants'))
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Site prepar...tput Report')
+BR_Data <- load_mult_wbooks(c('M05'),'Site preparation ...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2757,10 +3038,33 @@ Report_Raw <- bind_rows(
     actual = number_of_days_in_preparing_site,
     context=type_of_action,
     object_class='Plans',property='Development',
+    value='Total Days'),
+  no_category_extract_context_no_species(
+    Data = BR_Data,
+    worksheet = 'Site preparation ...inal Report',
+    service = "Developing farm/project/site management plan",
+    target_measure = "Area (ha) covered by plan",
+    measured = calculated_area_prepared_ha,
+    invoiced = area_prepared_invoiced_ha,
+    actual = area_prepared_ha,
+    context=action_type,
+    object_class='Plans',property='Development',
+    value='Total Area (Ha)'),
+  no_category_extract_context_no_species(
+    Data = BR_Data,
+    worksheet = 'Site preparation ...inal Report',
+    service = "Developing farm/project/site management plan",
+    target_measure = "Number of days preparing site/s",
+    measured = number_of_days_in_preparing_site,
+    invoiced = number_of_days_in_preparing_site,
+    actual = number_of_days_in_preparing_site,
+    context=action_type,
+    object_class='Plans',property='Development',
     value='Total Days'))
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Skills and ...tput Report')
+BR_Data <- load_mult_wbooks(c('M05'),'Skills and knowle...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2775,16 +3079,41 @@ Report_Raw <- bind_rows(
     category = baseline_survey_or_indicator_follow_up_survey,
     context=survey_technique,
     object_class='Skills and knowledge',property='Surveys',
+    value='Total Surveys'),
+  all_sub_category_extract_context_no_species(
+    Data = BR_Data,
+    worksheet = 'Skills and knowle...inal Report',
+    service = "Skills and knowledge survey",
+    target_measure = "Number of skills and knowledge surveys conducted",
+    measured = number_of_skills_and_knowledge_surveys_conducted,
+    invoiced = number_of_skills_and_knowledge_surveys_conducted,
+    actual = number_of_skills_and_knowledge_surveys_conducted,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    context=survey_technique,
+    object_class='Skills and knowledge',property='Surveys',
     value='Total Surveys'))
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Soil testin...tput Report')
+BR_Data <- load_mult_wbooks(c('M05'),'Soil testing Stat...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
   all_sub_category_extract_context_no_species(
     Data = RLP_Data,
     worksheet = 'RLP - Soil testin...tput Report',
+    service = "Soil testing",
+    target_measure = "Number of soil tests conducted in targeted areas",
+    measured = number_of_soil_tests_conducted_in_targeted_areas,
+    invoiced = number_of_soil_tests_conducted_in_targeted_areas,
+    actual = number_of_soil_tests_conducted_in_targeted_areas,
+    category = initial_or_follow_up_activity,
+    context=testing_technique,
+    object_class='Soil',property='Testing',
+    value='Total Tests'),
+  all_sub_category_extract_context_no_species(
+    Data = BR_Data,
+    worksheet = 'Soil testing Stat...inal Report',
     service = "Soil testing",
     target_measure = "Number of soil tests conducted in targeted areas",
     measured = number_of_soil_tests_conducted_in_targeted_areas,
@@ -2830,6 +3159,7 @@ Report_Raw <- bind_rows(
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Water quali...tput Report')
+BR_Data <- load_mult_wbooks(c('M05'),'Water quality sur...inal Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2847,6 +3177,28 @@ Report_Raw <- bind_rows(
   all_sub_category_extract_no_context_no_species(
     Data=RLP_Data,
     worksheet = 'RLP - Water quali...tput Report',
+    service = "Water quality survey",
+    target_measure = "Number of water quality surveys",
+    measured = number_of_water_quality_surveys_conducted,
+    invoiced = number_of_water_quality_surveys_conducted,
+    actual = number_of_water_quality_surveys_conducted,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    object_class='Water Quality',property='Surveys',
+    value='Total Surveys'),
+  all_sub_category_extract_no_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Water quality sur...inal Report',
+    service = "Water quality survey",
+    target_measure = "Area (ha) surveyed for water quality",
+    measured = site_calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    actual = actual_area_ha_covered_by_water_quality_surveys,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    object_class='Water Quality',property='Surveys',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_no_context_no_species(
+    Data=BR_Data,
+    worksheet = 'Water quality sur...inal Report',
     service = "Water quality survey",
     target_measure = "Number of water quality surveys",
     measured = number_of_water_quality_surveys_conducted,
