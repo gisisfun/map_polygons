@@ -740,7 +740,8 @@ read_sheet_for_bulk <- function(sheet_name,fname,start_row=3) {
                     sheet=sheet_name,
                     startRow = start_row) %>%
     clean_names() %>%
-    mutate(across(everything(),as.character),merit_project_id='grant_id')
+    mutate(across(everything(),as.character)) %>%
+    rename(merit_project_id=grant_id)
   #}, error=function(e){cat("\n")})
   
 }
@@ -816,7 +817,7 @@ RAMSAR <- RLP_Outcomes_short_term_indicator %>%
   drop_na(ramsar) %>%
   distinct()
 
-project_services <- read_sheet(sheet='Project services and targets',
+project_services_RLP <- read_sheet(sheet='Project services and targets',
                                fname=paste('M01 ',extract_date,'.xlsx',sep=''),
                                start_row = 1) %>%
   clean_names() %>%
@@ -841,31 +842,31 @@ Projects <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
 # map ids against all project services #
 ########################################
 
-# load('all_project_services.Rdata')
-# # all_project_services <- project_services_RLP %>% 
-# #   select(service,target_measure) %>% 
-# #   distinct()
-# 
-# ids_by_df <- function(ids,Data) {
-# Data <- as.data.frame(lapply(Data, rep, length(ids))) %>%
-#   bind_cols(sort(rep(ids,nrow(Data)))) %>%
-#   rename(merit_project_id='...3') %>%
-#   select(merit_project_id,everything())
-# }
-# 
-# SGE_ids <- Projects %>% filter(str_detect(sub_program,'Emergency')) %>% 
-#   select(merit_project_id) %>% pull()
-# ids_df <- ids_by_df(SGE_ids,all_project_services)
-# project_services_SGE <- bind_rows(
-#   ids_df %>% mutate(report_financial_year='2019/2020'),
-#   ids_df %>% mutate(report_financial_year='2020/2021'),
-#   ids_df %>% mutate(report_financial_year='2021/2022')) %>%
-#   mutate(total_to_be_delivered=0,
-#          fy_target=0)
-# 
-# project_services <- bind_rows(project_services_RLP,
-#                               project_services_SGE) %>%
+load('all_project_services.Rdata')
+# all_project_services <- project_services_RLP %>%
+#   select(service,target_measure) %>%
 #   distinct()
+
+ids_by_df <- function(ids,Data) {
+Data <- as.data.frame(lapply(Data, rep, length(ids))) %>%
+  bind_cols(sort(rep(ids,nrow(Data)))) %>%
+  rename(merit_project_id='...3') %>%
+  select(merit_project_id,everything())
+}
+
+SGE_ids <- Projects %>% filter(str_detect(sub_program,'Emergency')) %>%
+  select(merit_project_id) %>% pull()
+ids_df <- ids_by_df(SGE_ids,all_project_services)
+project_services_SGE <- bind_rows(
+  ids_df %>% mutate(report_financial_year='2019/2020'),
+  ids_df %>% mutate(report_financial_year='2020/2021'),
+  ids_df %>% mutate(report_financial_year='2021/2022')) %>%
+  mutate(total_to_be_delivered=0,
+         fy_target=0)
+
+project_services <- bind_rows(project_services_RLP,
+                              project_services_SGE) %>%
+  distinct()
 
 # services_target_measure <- project_services_RLP %>%
 #   select(service,target_measure) %>%
@@ -3611,15 +3612,15 @@ RLP_Outcomes <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
   clean_names() %>% 
   select(grant_id,type_of_outcomes,outcome,investment_priority) %>%
   rename(merit_project_id=grant_id)
-
+#
 primary_secondary_outcomes <- RLP_Outcomes %>% 
-  filter(type_of_outcomes %in% c('Primary outcome','Secondary Outcome/s'),
-         !is.na(outcome),outcome!='null') %>%
+  filter(type_of_outcomes %in% c('Primary outcome','Secondary Outcome/s')) %>%
+        #!is.na(outcome),outcome!='null')# 
   select(merit_project_id,outcome) %>%
   group_by(merit_project_id) %>%
   distinct() %>%
   summarise(primary_secondary_outcomes = str_c(outcome,collapse="|")) %>% 
-  ungroup() 
+  ungroup() %>% filter(primary_secondary_outcomes!='null')
 
 primary_outcomes <- RLP_Outcomes %>% 
   filter(type_of_outcomes == 'Primary outcome',!is.na(outcome),
