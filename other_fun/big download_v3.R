@@ -671,14 +671,15 @@ report_cols_out <- c(
   'MERIT_Reports_link','report_financial_year','report_status','service',
   'target_measure','context','site_id','report_last_modified','category',
   'subcategory','report_species','total_to_be_delivered','fy_target',
-  'measured','invoiced','actual','report_stage','report_activity_type',
-  'report_from_date','report_to_date')
+  'measured','invoiced','actual','report_stage','report_activity_id',
+  'report_activity_type','report_from_date','report_to_date')
 report_meta_cols_out <- c(
-  'meta_col_measured','meta_col_actual','meta_col_invoiced','meta_col_category',
-  'meta_text_subcategory','meta_col_context','meta_col_report_species',
-  'meta_line_item_object_class','meta_line_item_property','meta_line_item_value',
-  'meta_col_project_status','meta_col_report_last_modified','meta_col_report_stage',
-  'meta_col_report_activity_type')
+  'meta_col_measured','meta_col_actual',
+  'meta_col_invoiced','meta_col_category','meta_text_subcategory',
+  'meta_col_context','meta_col_report_species','meta_line_item_object_class',
+  'meta_line_item_property','meta_line_item_value','meta_col_project_status',
+  'meta_col_report_last_modified','meta_col_report_stage',
+  'meta_col_report_activity_id','meta_col_report_activity_type')
 
 #Species Etc
 species_etc_cols_out <- c(
@@ -3595,13 +3596,14 @@ projects_reports <-
          meta_col_status='status_2',
          meta_col_report_last_modified='last_modified_2',
          meta_col_report_stage='stage',
+         meta_col_report_activity_id='activity_id',
          meta_col_report_activity_type='activity_type',
          meta_col_project_start_date='start_date',
          meta_col_project_end_date='end_date',
          meta_col_project_contracted_start_date='contracted_start_date',
          meta_col_project_contracted_end_date='contracted_end_date',
          meta_col_project_name='name') %>%
-  select(-project_id,-activity_id,-meta_col_status,-description)  %>%
+  select(-project_id,-meta_col_status,-description)  %>%
   select(any_of(project_cols_out),any_of(report_cols_out),
          any_of(project_meta_cols_out),any_of(report_meta_cols_out),
          any_of(extract_date_cols)) %>% distinct()
