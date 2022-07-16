@@ -560,86 +560,89 @@ library(RSQLite)
 # [1] "RLP Core Services report"        "RLP Core Services annual report"
 
 # Metadata
-# |ID|Original Column|renamed output column|Status|Source|Description|Example|
-# |1|grant_id|merit_project_id|As is|Project Data|This column describes the human readable unique ID assigned to a project|RLP-MU46-P2|
-# |2|external_id||As is|Project Data|This column describes the unique ID assigned by an external system such as the Business Grants Hub|RTPGSBECH-27|
-# |3|internal_order_number||As is|Project Data|Finance ID||
-# |4|work_order_id||As is|Project Data|Finance ID||
-# |5|organisation||As is|Project Data|This column describes the name of the organisation that is providing the services by signing the contract or funding agreement|Southern Queensland Landscapes|
-# |6|management_unit||As is|Project Data|This column describes the name of the management unit used for the geographic region (NLP 2018), or the organisation unit responsible for activities in the area (but can reach into other geographic regions)  |Condamine|
-# |7|management_unit_id||Derived|Project Data|Describes the Management Unit reference ID|MU44|
-# |8|management_unit_state||Derived|Project Data|Describes the Management Unit state or territory||
-# |9|name|project_name|As is|Project Data|Name of project||
-# |10|program||As is|Project Data|This column describes the program under which the project is being conducted (i.e. source of funding)|National Landcare Program|
-# |11|sub_program||As is|Project Data|This column describes the sub-program under which the project is being conducted |Regional Land Partnerships|
-# |12|start_date|project_start_date|As is|Project Data|This column describes the date on which the project commenced||
-# |13|end_date|project_end_date|As is|Project Data|This column describes the date on which the project finished||
-# |14|contracted_start_date|project_contracted_start_date|As is|Project Data|This column describes the date on which the project contracted to start on. (amended project start date)||
-# |15|contracted_end_date|project_contracted_end_date|As is|Project Data|This column describes the date on which the project contracted to end on (amended project end date)||
-# |16|status|project status|As is|Project Data|This column describes the status of an individual project|Active, Completed, Application|
-# |17|MERIT_Reports_link||Derived|Data set|Describes the URL for an individual project|https://fieldcapture.ala.org.au/project/index/975e603f-ad4b-4353-a467-7bd75ed201dc|
-# |18|report_financial_year||As is|Report|This column describes the financial year in which an activity took place and was reported|2020/2021|
-# |19|report_status||As is|Report|This column describes the status of each individual report within a project for the project manager|Submitted, Approved, Returned, Unpublished (no action - never been submitted)|
-# |20|service||Derived|Report|This column describes the class of service as defined in the Reeady Reckoner.  It is made up of one or more target measures|Communication materials|
-# |21|target_measure||Derived|Report|This column describes the metric that is used to report against the target  |Number of communication materials published|
-# |22|context||Mapped|Report|Text reponse supporting target measure||
-# |23|site_id||As is|Report|The column describes the automatically assigned unique ID by MERIT tha thas two types, reporting and planning |074ac922-442e-4400-9e4d-d3fb5dd592a4|
-# |24|last_modified|report_last_modified|As is|Report|This column describes the timestamp of when the project report was last modified by the SP or the PM||
-# |25|category||Mapped|Report|This column describes the controlled list of categories of the stage of the activity for the target measure|Initial/Follow up or In-situ/Ex-situ|
-# |26|subcategory||Mapped|Report|Filtering term used against target measure category column|Initial|
-# |27|report_species||Mapped|Report|This column describes the species on which an activity is reported against|Controlling Pest Animals - target pest species|
-# |28|total_to_be_delivered||Linked|Report|This column describes the total number of a reportable activity to be delivered over the entire project for the target measure|50 hectares of pest animal control|
-# |29|fy_target||Linked|Report|This column describes the financial year minimum target of a reportable activity to be delivered in a financial. Multiple f/y targets make up the total to be delivered for the target measure||
-# |30|measured||Mapped column|Report|This column describes the self reported metric against the target measure in the MERI plan|Number of hectares weeded (calculated from geospatial upload)|
-# |31|invoiced||Mapped column|Report|This column describes the metric value that the service provided is to be paid for|Invoiced number of hectares weeded|
-# |32|actual||Mapped column /Derived|Report|This column describes the self reported metric against the target measure in the MERI plan that is used to overwrite automatically calculated values where calculated mapping values do not reflect the works undertaken (e.g. mapping was unable to be completed)|Actual Number of hectares weeded (manually overwritten)|
-# |33|stage|report_stage|As is|Report|This column describes the report stage of the project|Year 2021/2022 - Quarter 2 Outputs Report|
-# |34|activity_type|report_activity_type|As is|Report|This column describes the activity type||
-# |35|report_from_date||As is|Report|This column describes the reporting period start date|01 Oct 2021|
-# |36|report_to_date||As is|Report|This column describes the reporting period end date|01 Jan 2022|
-# |37|meta_source_sheetname||MetaData|Data set|The source system column name for the data source worksheet name||
-# |38|meta_col_project_start_date||MetaData|Project Data|The source system column name for 'start_date'||
-# |39|meta_col_project_end_date||MetaData|Project Data|The source system column name for 'end_date'||
-# |40|meta_col_project_contracted_start_date||MetaData|Project Data|The source system column name for 'contracted_start_date'||
-# |41|meta_col_project_contracted_end_date||MetaData|Project Data|The source system column name for 'contracted_end_date'||
-# |42|meta_col_project_name||MetaData|Project Data|The source system column name for 'name'||
-# |43|meta_col_measured||MetaData|Report|The source system column name for  target measure 'measured'||
-# |44|meta_col_actual||MetaData|Report|The source system column name for target measure  'actual'||
-# |45|meta_col_invoiced||MetaData|Report|The source system column name for target measure  'invoiced'||
-# |46|meta_col_category||MetaData|Report|The source system column name for target measure 'category'||
-# |47|meta_text_subcategory||MetaData|Report|The filter value for the target measure used for target measure - category||
-# |48|meta_col_context||MetaData|Report|The Text component of the response||
-# |49|meta_col_report_species||MetaData|Report|The source system column name for 'species'||
-# |50|meta_line_item_object_class||MetaData|Data set|Allows linking of like activities between grants and procurements||
-# |51|meta_line_item_property||MetaData|Data set|Allows linking of like activities between grants and procurements||
-# |52|meta_line_item_value||MetaData|Data set|Allows linking of like activities between grants and procurements||
-# |53|meta_col_project_status||MetaData|Project Data|The source system column name for 'status'||
-# |54|meta_col_report_last_modified||MetaData|Report|The source system column name for 'last_modified'||
-# |55|meta_col_report_stage||MetaData|Report|The source system column name for 'stage'||
-# |56|meta_col_activity_type||MetaData|Report|The source system column name for  'activity_type'||
-# |57|primary_secondary_outcomes||Derived|Project Data|Concatenated primary and secondary outcomes||
-# |58|primary_outcomes||Derived|Project Data|Concatenated primary outcomes||
-# |59|secondary_outcomes||Derived|Project Data|Concatenated secondary outcomes||
-# |60|primary_investment_priority||Derived|Project Data|Concatenated primary investment priorities||
-# |61|secondary_investment_priority||Derived|Project Data|Concatenated secondary investment priorities||
-# |62|primary_secondary_investment_priorities||Derived|Project Data|Concatenated primary and secondary investment priorities||
-# |63|documents_priority||Derived|Project Data|Concatenated document references from MERI priorities associated with identified RLP Outcomes investment priorities||
-# |64|assets||Derived|Project Data|Concatentated MERI Project Assets||
-# |65|natural_cultural_assets_managed||Derived|Project Data|MERI outcomes indicator||
-# |66|threatened_species||Derived|Project Data|MERI outcomes indicator||
-# |67|threatened_ecological_communities||Derived|Project Data|MERI outcomes indicator||
-# |68|migratory_species||Derived|Project Data|MERI outcomes indicator||
-# |69|community_awareness_participation_in_nrm||Derived|Project Data|MERI outcomes indicator||
-# |70|indigenous_cultural_values||Derived|Project Data|MERI outcomes indicator||
-# |71|indigenous_ecological_knowledge||Derived|Project Data|MERI outcomes indicator||
-# |72|remnant_vegetation||Derived|Project Data|MERI outcomes indicator||
-# |73|aquatic_and_coastal_systems_including_wetlands||Derived|Project Data|MERI outcomes indicator||
-# |74|epbc||Derived|Project Data|MERIT reference list with a species listing status||
-# |75|tec||Derived|Project Data|MERIT reference list with a tec listing status||
-# |76|ramsar||Derived|Project Data|MERIT reference list with a ramsar listing status||
-# |77|version||Derived|Data set|Version relase number|1.0.1|
-# |78|grant_or_procurement||labelled|Report|This column describes the primary use of the report format - grant - all rows a re reported using a derived service and target measure - procurement - only rows with matching mert_project_ids according to the MERI project services schedule or an derived project schedule.||
-# |79|extract_date||MetaData|Data set|Describes the point in time when the data was extracted from MERIT|Grant/Procurement|
+# |ID|Original Column|renamed output column|Status|Agg First|Agg Sum|Agg Concatenate|Source|Description|Example|
+# |1|project_id|project_id|As is||||Project Data|MERIT system generated project ID|356e7ff4-8568-4216-873e-066eea3e698d|
+# |2|grant_id|merit_project_id|As is||||Project Data|This column describes the human readable unique ID assigned to a project|RLP-MU46-P2|
+# |3|external_id||As is||||Project Data|This column describes the unique ID assigned by an external system such as the Business Grants Hub|RTPGSBECH-27|
+# |4|internal_order_number||As is||||Project Data|Finance ID|X0000005037G|
+# |5|work_order_id||As is||||Project Data|Finance ID|PRN 1314-0489-2-20|
+# |6|organisation||As is||||Project Data|This column describes the name of the organisation that is providing the services by signing the contract or funding agreement|Southern Queensland Landscapes|
+# |7|management_unit||As is||||Project Data|This column describes the name of the management unit used for the geographic region (NLP 2018), or the organisation unit responsible for activities in the area (but can reach into other geographic regions)  |Condamine|
+# |8|management_unit_id||Derived||||Project Data|Describes the Management Unit reference ID|MU44|
+# |9|management_unit_state||Derived||||Project Data|Describes the Management Unit state or territory|SA|
+# |10|name|project_name|As is||||Project Data|Name of project|NRM Regional Bushfire Recovery in the ACT alpine environment bushfire region- Learning and preparing for the next major bushfire in the ACT and beyond|
+# |11|program||As is||||Project Data|This column describes the program under which the project is being conducted (i.e. source of funding)|National Landcare Program|
+# |12|sub_program||As is||||Project Data|This column describes the sub-program under which the project is being conducted |Regional Land Partnerships|
+# |13|start_date|project_start_date|As is||||Project Data|This column describes the date on which the project commenced|2022-01-01|
+# |14|end_date|project_end_date|As is||||Project Data|This column describes the date on which the project finished|2023-12-31|
+# |15|contracted_start_date|project_contracted_start_date|As is||||Project Data|This column describes the date on which the project contracted to start on. (amended project start date)|2022-01-01|
+# |16|contracted_end_date|project_contracted_end_date|As is||||Project Data|This column describes the date on which the project contracted to end on (amended project end date)|2023-12-31|
+# |17|status|project status|As is||||Project Data|This column describes the status of an individual project|Active, Completed, Application|
+# |18|MERIT_Reports_link||Derived||||Data set|Describes the URL for an individual project|https://fieldcapture.ala.org.au/project/index/975e603f-ad4b-4353-a467-7bd75ed201dc|
+# |19|report_financial_year||As is||||Report|This column describes the financial year in which an activity took place and was reported|2020/2021|
+# |20|report_status||As is||||Report|This column describes the status of each individual report within a project for the project manager|Submitted, Approved, Returned, Unpublished (no action - never been submitted)|
+# |21|service||Derived||||Report|This column describes the class of service as defined in the Ready Reconer.  It is made up of one or more target measures|Communication materials|
+# |22|target_measure||Derived||||Report|This column describes the metric that is used to report against the target  |Number of communication materials published|
+# |23|context||Mapped||||Report|Text response supporting target measure||
+# |24|site_id||As is||||Report|The column describes the automatically assigned unique ID by MERIT that has two types, reporting and planning |074ac922-442e-4400-9e4d-d3fb5dd592a4|
+# |25|report_last_modified|last_modified|As is||||Report|This column describes the timestamp of when the project report was last modified by the SP or the PM|2022-01-01|
+# |26|category||Mapped|Y|||Report|This column describes the controlled list of categories of the stage of the activity for the target measure. Reported as ‘Various’ where category is not specified for project service.|Initial/Follow up or In-situ/Ex-situ|
+# |27|subcategory||Mapped||||Report|Filtering term used against target measure category column|Initial|
+# |28|report_species||Mapped||||Report|This column describes the species on which an activity is reported against|Controlling Pest Animals - target pest species|
+# |29|total_to_be_delivered||Linked||||Report|This column describes the total number of a reportable activity to be delivered over the entire project for the target measure|50 hectares of pest animal control|
+# |30|fy_target||Linked||||Report|This column describes the financial year minimum target of a reportable activity to be delivered in a financial. Multiple f/y targets make up the total to be delivered for the target measure|10|
+# |31|measured||Mapped column||Y||Report|This column describes the self reported metric against the target measure in the MERI plan|Number of hectares weeded (calculated from geospatial upload)|
+# |32|invoiced||Mapped column||Y||Report|This column describes the metric value that the service provided is to be paid for|Invoiced number of hectares weeded|
+# |33|actual||Mapped column /Derived||Y||Report|This column describes the self reported metric against the target measure in the MERI plan that is used to overwrite automatically calculated values where calculated mapping values do not reflect the works undertaken (e.g. mapping was unable to be completed)|Actual Number of hectares weeded (manually overwritten)|
+# |34|stage|report_stage|As is||||Report|This column describes the report stage of the project|Year 2021/2022 - Quarter 2 Outputs Report|
+# |35|activity_id|report_activity_id|As is||||Report|MERIT sustem generated activity ID|5951f352-bd7e-4f73-bdfc-b840901f9097|
+# |36|activity_type|report_activity_type|As is||||Report|This column describes the activity type|Debris Removal|
+# |37|report_from_date||As is||||Report|This column describes the reporting period start date|01 Oct 2021|
+# |38|report_to_date||As is||||Report|This column describes the reporting period end date|01 Jan 2022|
+# |39|meta_source_sheetname||MetaData||||Data set|The source system column name for the data source worksheet name|Debris Removal De...ris Removal|
+# |40|meta_col_project_start_date||MetaData||||Project Data|The source system column name for 'start_date'|start_date|
+# |41|meta_col_project_end_date||MetaData||||Project Data|The source system column name for 'end_date'|end_date|
+# |42|meta_col_project_contracted_start_date||MetaData||||Project Data|The source system column name for 'contracted_start_date'|contracted_start_date|
+# |43|meta_col_project_contracted_end_date||MetaData||||Project Data|The source system column name for 'contracted_end_date'|contracted_end_date|
+# |44|meta_col_project_name||MetaData||||Project Data|The source system column name for 'name'|name|
+# |45|meta_col_measured||MetaData||||Report|The source system column name for  target measure 'measured'|meta_col_measured|
+# |46|meta_col_actual||MetaData||||Report|The source system column name for target measure  'actual'|meta_col_actual|
+# |47|meta_col_invoiced||MetaData||||Report|The source system column name for target measure  'invoiced'|meta_col_invoiced|
+# |48|meta_col_category||MetaData|||Y|Report|The source system column name for target measure 'category'|meta_col_category|
+# |49|meta_text_subcategory||MetaData||||Report|The filter value for the target measure used for target measure - category|area_covered_by_this_activity_ha|
+# |50|meta_col_context||MetaData|||Y|Report|The Text component of the response|type_of_material_removed|
+# |51|meta_col_report_species||MetaData|||Y|Report|The source system column name for 'species'|target_species|
+# |52|meta_line_item_object_class||MetaData||||Data set|Allows linking of like activities between grants and procurements|Debris|
+# |53|meta_line_item_property||MetaData||||Data set|Allows linking of like activities between grants and procurements|Removal|
+# |54|meta_line_item_value||MetaData||||Data set|Allows linking of like activities between grants and procurements|Total Area (Ha)|
+# |55|meta_col_project_status||MetaData||||Project Data|The source system column name for 'status'|status|
+# |56|meta_col_report_last_modified||MetaData||||Report|The source system column name for 'last_modified'|last_modified|
+# |57|meta_col_report_stage||MetaData||||Report|The source system column name for 'stage'|stage|
+# |58|meta_col_activity_id||MetaData||||Report|The source system column name for 'activity_id'|actiivity_id|
+# |59|meta_col_activity_type||MetaData||||Report|The source system column name for  'activity_type'|activity_type|
+# |60|primary_secondary_outcomes||Derived|||Y|Project Data|Concatenated primary and secondary outcomes|2. By 2023, the trajectory of species targeted under the Threatened Species Strategy, and other EPBC Act priority species, is stabilised or improved.| Enhance the recovery and maximise the resilience of fire affected priority species, ecological communities and other natural assets within the seven regions impacted by the 2019-20 bushfires|
+# |61|primary_outcomes||Derived|||Y|Project Data|Concatenated primary outcomes|2. By 2023, the trajectory of species targeted under the Threatened Species Strategy, and other EPBC Act priority species, is stabilised or improved.|
+# |62|secondary_outcomes||Derived|||Y|Project Data|Concatenated secondary outcomes|Enhance the recovery and maximise the resilience of fire affected priority species, ecological communities and other natural assets within the seven regions impacted by the 2019-20 bushfires|
+# |63|primary_investment_priority            ||Derived|||Y|Project Data|Concatenated primary investment priorities|Petauroides Volans (Greater Glider)|
+# |64|secondary_investment_priority||Derived|||Y|Project Data|Concatenated secondary investment priorities|Species and ecological community specific interventions|
+# |65|primary_secondary_investment_priorities||Derived|||Y|Project Data|Concatenated primary and secondary investment priorities|Petauroides Volans (Greater Glider)|Species and ecological community specific interventions|
+# |66|documents_priority||Derived|||Y|Project Data|Concatenated document references from MERI priorities associated with identified RLP Outcomes investment priorities|name:  Australia’s Biodiversity Conservation Strategy 2010-2030 section: Engaging All Australians, and Building Ecosystem Resilience in a Changing Climate. alignment: This project will engage the community through involvement with planting events and working bees and will create ecosystem resilience with the planting of native species in a predominantly cleared area. |name: The Adelaide and Mount Lofty Ranges Natural Resources Management Plan section: The strategic action to support land managers to restore and reinstate grassy ecosystems and protect, improve the condition and increase the extent of riparian zones, coastal areas and estuaries in the Willunga Basin. alignment: This project will contribute to the outcomes of this strategic action by improving the condition of the site which falls within this area. |name: The 30 Year Plan for Greater Adelaide produced by the DPTI in 2010  section: References the creation of linked Urban Forests in the Hills Face Zone. alignment: The project will extend the extent of the current Urban Forest by an additional 20ha which contributes greatly to this goal. |name:  Native Vegetation Action Plan Port Willunga, Urban Biodiversity Unit (Cordingley) DEH 2007 and the updated: Action Plan:Port Willunga Creek, Rural Solutions 2010 section: Entire documents.  alignment: More practical on ground actions will be guided by these documents which will be referred to as necessary.|
+# |67|assets||Derived|||Y|Project Data|Concatentated MERI Project Assets|(Southern Corroboree Frog)|Mastacomys fuscus mordicus (Broad-toothed Rat)|Euastacus crassus. (Alpine crayfish)|Eucalyptus fraxinoides (White Mountain Ash, White Ash)|Caladenia montana (Mountain Spider Orchid)|Alpine Sphagnum Bogs and Associated Fens|
+# |68|natural_cultural_assets_managed||Derived||||Project Data|MERI outcomes indicator|N|
+# |69|threatened_species||Derived||||Project Data|MERI outcomes indicator|N|
+# |70|threatened_ecological_communities||Derived||||Project Data|MERI outcomes indicator|N|
+# |71|migratory_species||Derived||||Project Data|MERI outcomes indicator|N|
+# |72|community_awareness_participation_in_nrm||Derived||||Project Data|MERI outcomes indicator|N|
+# |73|indigenous_cultural_values||Derived||||Project Data|MERI outcomes indicator|N|
+# |74|indigenous_ecological_knowledge||Derived||||Project Data|MERI outcomes indicator|N|
+# |75|remnant_vegetation||Derived||||Project Data|MERI outcomes indicator|N|
+# |76|aquatic_and_coastal_systems_including_wetlands||Derived||||Project Data|MERI outcomes indicator|N|
+# |77|epbc||Derived||||Project Data|MERIT reference list with a species listing status|Y |
+# |78|tec||Derived||||Project Data|MERIT reference list with a tec listing status|Y |
+# |79|ramsar||Derived||||Project Data|MERIT reference list with a ramsar listing status|Y |
+# |80|version||Derived||||Data set|Version release number|1.0.1|
+# |81|grant_or_procurement||Derived||||Report|This column describes the primary use of the report format - grant - all rows a re reported using a derived service and target measure - procurement - only rows with matching mert_project_ids according to the MERI project services schedule or an derived project schedule.|Grant/Procurement|
+# |82|extract_date||MetaData||||Data set|Describes the point in time when the data was extracted from MERIT|2022-06-20|
 #   
 
 extract_date <- '2022-04-11'
