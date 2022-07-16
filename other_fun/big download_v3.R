@@ -642,7 +642,7 @@ library(RSQLite)
 # |79|extract_date||MetaData|Data set|Describes the point in time when the data was extracted from MERIT|Grant/Procurement|
 #   
 
-extract_date <- '2022-06-20'
+extract_date <- '2022-04-11'
 version <- '1.0.1'
 project_cols_in <- c(
   'project_id','merit_project_id','external_id','internal_order_number',
@@ -757,19 +757,19 @@ load_mult_wbooks <- function(files_vec,sheetname) {
 conc_species_col <- function(Data) {
   Data_out <- Data %>% 
     group_by(across(c(-measured,-actual,-invoiced,-report_species,
-                      -context))) %>%
+                      -context,-category))) %>%
     summarise(report_species = str_c(report_species,collapse="|"),
               context = str_c(context,collapse="|"),
+              category = first(category),
               measured = sum(measured,na.rm=TRUE),
               actual = sum(actual,na.rm=TRUE),
-              invoiced = sum(invoiced,na.rm=TRUE)) %>% 
+    invoiced = sum(invoiced,na.rm=TRUE)) %>% 
     ungroup() %>%
-    mutate(report_species = str_replace_all(report_species,'\n','|'))
+  mutate(report_species = str_replace_all(report_species,'\n','|'))
 }
 
 filter_na <- function(Data) {
-  Data #<- Data %>%
-     #conc_species_col() %>%
+  Data #<- Data %>
   #   filter(!is.na(measured) | !is.na(actual) | !is.na(invoiced) | 
   #            !is.na(report_species)) 
 }
@@ -838,15 +838,12 @@ Projects <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
   clean_names() %>%
   rename(merit_project_id=grant_id)
 
-########################################
-# new code starts here                 #
-# map ids against all project services #
-########################################
+############################################
+# new code starts here                     #
+# map ids against all project services 127 #
+############################################
 
 load('all_project_services.Rdata')
-# all_project_services <- project_services_RLP %>%
-#   select(service,target_measure) %>%
-#   distinct()
 
 ids_by_df <- function(ids,Data) {
 Data <- as.data.frame(lapply(Data, rep, length(ids))) %>%
@@ -855,56 +852,20 @@ Data <- as.data.frame(lapply(Data, rep, length(ids))) %>%
   select(merit_project_id,everything())
 }
 
-SGE_ids <- Projects %>% filter(str_detect(sub_program,'Emergency')) %>%
+SGE_ids <- Projects %>% filter(sub_program=='State Government Emergency') %>%
   select(merit_project_id) %>% pull()
 ids_df <- ids_by_df(SGE_ids,all_project_services)
 project_services_SGE <- bind_rows(
   ids_df %>% mutate(report_financial_year='2019/2020'),
   ids_df %>% mutate(report_financial_year='2020/2021'),
-  ids_df %>% mutate(report_financial_year='2021/2022')) %>%
+  ids_df %>% mutate(report_financial_year='2021/2022'),
+  ids_df %>% mutate(report_financial_year='2022/2023')) %>%
   mutate(total_to_be_delivered=0,
          fy_target=0)
 
 project_services <- bind_rows(project_services_RLP,
                               project_services_SGE) %>%
   distinct()
-
-# services_target_measure <- project_services_RLP %>%
-#   select(service,target_measure) %>%
-#   distinct()
-# 
-# # 	Bushfire Wildlife and Habitat Recovery
-# project_services_br_output_targets <- 
-#   read_sheet(fname=paste('M01 ',extract_date,'.xlsx',sep=''),
-#              sheet='Output Targets',start_row=1) %>%
-#   left_join(services_target_measure,
-#             by=c('output_target_measure'='target_measure')) %>%
-#   mutate(report_financial_year='2020/2021',
-#          target=as.numeric(target)) %>%
-#   filter(program %in% c('Bushfire Recovery for Species and Landscapes Program',
-#                         'Bushfire Wildlife and Habitat Recovery')) %>%
-#   select(merit_project_id,service,
-#          target_measure=output_target_measure,report_financial_year, 
-#          total_to_be_delivered=target,fy_target=target)
-# 
-# project_services_br_state_intervention <- 
-#   read_sheet(fname=paste('M05 ',extract_date,'.xlsx',sep=''),
-#              sheet='State Interventio...inal Report',
-#              start_row=3) %>%
-#   clean_names() %>%
-#   filter(!is.na(activity)) %>%
-#   left_join(services_target_measure,by='target_measure') %>%
-#   mutate(report_financial_year='2020/2021',
-#          total_to_be_delivered=as.numeric(total_to_be_delivered)) %>%
-#   select(merit_project_id, service=activity, target_measure,
-#          report_financial_year,total_to_be_delivered=total_to_be_delivered,
-#          fy_target=total_to_be_delivered)
-# 
-# project_services <- 
-#   bind_rows(project_services_RLP,
-#             project_services_br_output_targets,
-#             project_services_br_state_intervention) %>%
-#   distinct()
 
 ########################
 # extra code ends here #
@@ -944,6 +905,7 @@ no_category_extract_no_context_no_species <- function(
     invoiced_text <- as_label(enquo(invoiced))
     fred <- fred %>%
       mutate(meta_source_sheetname=worksheet, 
+             # category='Various',
              meta_col_measured = measured_text,
              meta_col_actual = actual_text,
              meta_col_invoiced = invoiced_text,
@@ -965,19 +927,21 @@ all_sub_category_extract_no_context_no_species <- function(
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
-           category={{ category }},measured= {{ measured }},
+           category={{ category }},
+           measured= {{ measured }},
            invoiced={{ invoiced }},actual={{ actual }}) %>%
     filter(!is.na(category)) %>%
     mutate(context=NA, report_species=NA) %>%
     filter_by_service_target_measures_and_distinct(service,target_measure)
   
-  if (nrow(fred) >0) {
+  if (nrow(fred) > 0) {
     measured_text <- as_label(enquo(measured))
     actual_text <- as_label(enquo(actual))
     invoiced_text <- as_label(enquo(invoiced))
     category_text <- as_label(enquo(category))
     fred <- fred %>%
       mutate(meta_source_sheetname=worksheet,
+             category='Various',
              meta_col_measured=measured_text,
              meta_col_actual=actual_text,
              meta_col_invoiced=invoiced_text,
@@ -1000,7 +964,8 @@ all_sub_category_extract_context_species <- function(
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
-           category={{ category }},measured= {{ measured }},
+           category={{ category }},
+           measured= {{ measured }},
            invoiced={{ invoiced }},actual={{ actual }},
            context= {{ context }},report_species= {{ species }}) %>%
     filter(!is.na(category)) %>%
@@ -1016,6 +981,7 @@ all_sub_category_extract_context_species <- function(
     species_text <- as_label(enquo(species))
     fred <- fred %>%
       mutate(meta_source_sheetname=worksheet, 
+             category='Various',
              meta_col_measured = measured_text,
              meta_col_actual = actual_text,
              meta_col_invoiced = invoiced_text,
@@ -1038,7 +1004,8 @@ all_sub_category_extract_context_no_species <- function(
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
-           category={{ category }},measured= {{ measured }},
+           category={{ category }},
+           measured= {{ measured }},
            invoiced={{ invoiced }}, actual={{ actual }},
            context= {{ context }}) %>%
     filter(!is.na(category)) %>%
@@ -1054,6 +1021,7 @@ all_sub_category_extract_context_no_species <- function(
     context_text <- as_label(enquo(context))
     fred <- fred %>%
       mutate(meta_source_sheetname=worksheet, 
+             category='Various',
              meta_col_measured=measured_text,
              meta_col_actual=actual_text,
              meta_col_invoiced=invoiced_text,
@@ -1089,6 +1057,7 @@ no_category_extract_context_no_species <- function(
     context_text <- as_label(enquo(context))
     fred <- fred %>% 
       mutate(meta_source_sheetname=worksheet,
+             # category='Various',
              meta_col_measured = measured_text,
              meta_col_actual = actual_text,
              meta_col_invoiced = invoiced_text,
@@ -1250,6 +1219,8 @@ sub_category_extract_no_context_no_species <- function(
   return(fred)
 }
 
+# grant edge cases
+
 grant_report_no_species <- function(
     Data,sheet_name,start_row=3,measured_col,actual_col,invoiced_col,
     context_col, object_class=NA,property=NA,value=NA) {
@@ -1276,7 +1247,8 @@ grant_report_no_species <- function(
            meta_line_item_object_class = object_class,
            meta_line_item_property=property,
            meta_line_item_value=value) %>%
-    filter_na()
+    filter_na()  %>%
+    conc_species_col()
 }
 
 grant_report_species <- function(
@@ -1305,7 +1277,8 @@ grant_report_species <- function(
            grant_or_procurement='grant',
            meta_line_item_object_class = object_class,
            meta_line_item_property=property,
-           meta_line_item_value=value)
+           meta_line_item_value=value) %>%
+    conc_species_col()
 }
 
 grant_report_species_category <- function(
@@ -1335,7 +1308,8 @@ grant_report_species_category <- function(
            grant_or_procurement='grant',
            meta_line_item_object_class = object_class,
            meta_line_item_property=property,
-           meta_line_item_value=value)
+           meta_line_item_value=value) %>%
+    conc_species_col()
 }
 
 grant_report_species_no_metrics <- function(
@@ -1360,8 +1334,12 @@ grant_report_species_no_metrics <- function(
            grant_or_procurement='grant',
            meta_line_item_object_class = object_class,
            meta_line_item_property=property,
-           meta_line_item_value=value)
+           meta_line_item_value=value) %>%
+    conc_species_col()
 }
+
+# apply edge cases for procurement against project services and grant activity 
+# report data (alot) 
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Baseline da...tput Report')
@@ -2274,7 +2252,7 @@ Report_Raw <- bind_rows(
     object_class='Flora',property='Survey',
     value='Total Surveys'),
   all_sub_category_extract_context_species(
-    Data=RLP_Data,
+    Data=BR_Data,
     worksheet = 'Flora survey Stat...inal Report',
     service = "Flora survey",
     target_measure = "Number of flora surveys conducted",
@@ -3022,8 +3000,8 @@ Report_Raw <- bind_rows(
   no_category_extract_context_no_species(
     Data = RLP_Data,
     worksheet = 'RLP - Site prepar...tput Report',
-    service = "Developing farm/project/site management plan",
-    target_measure = "Area (ha) covered by plan",
+    service = "Site preparation",
+    target_measure = "Area (ha) of site preparation",
     measured = calculated_area_prepared_ha,
     invoiced = area_prepared_invoiced_ha,
     actual = area_ha_of_the_site_preparation,
@@ -3033,7 +3011,7 @@ Report_Raw <- bind_rows(
   no_category_extract_context_no_species(
     Data = RLP_Data,
     worksheet = 'RLP - Site prepar...tput Report',
-    service = "Developing farm/project/site management plan",
+    service = "Site preparation",
     target_measure = "Number of days preparing site/s",
     measured = number_of_days_in_preparing_site,
     invoiced = number_of_days_in_preparing_site,
@@ -3044,8 +3022,8 @@ Report_Raw <- bind_rows(
   no_category_extract_context_no_species(
     Data = BR_Data,
     worksheet = 'Site preparation ...inal Report',
-    service = "Developing farm/project/site management plan",
-    target_measure = "Area (ha) covered by plan",
+    service = "Site preparation",
+    target_measure = "Area (ha) of site preparation",
     measured = calculated_area_prepared_ha,
     invoiced = area_prepared_invoiced_ha,
     actual = area_prepared_ha,
@@ -3054,8 +3032,7 @@ Report_Raw <- bind_rows(
     value='Total Area (Ha)'),
   no_category_extract_context_no_species(
     Data = BR_Data,
-    worksheet = 'Site preparation ...inal Report',
-    service = "Developing farm/project/site management plan",
+    service = "Site preparation",
     target_measure = "Number of days preparing site/s",
     measured = number_of_days_in_preparing_site,
     invoiced = number_of_days_in_preparing_site,
@@ -3586,7 +3563,9 @@ projects_reports <-
   #mutate(proportion = measured/total_to_be_delivered) %>%
   rename(project_status=status, status=status_2, 
          report_last_modified=last_modified_2,
-         report_stage = stage,report_activity_type = activity_type,
+         report_stage = stage,
+         report_activity_id = activity_id,
+         report_activity_type = activity_type,
          project_start_date=start_date,project_end_date=end_date,
          project_contracted_start_date=contracted_start_date,
          project_contracted_end_date=contracted_end_date,
@@ -3603,7 +3582,7 @@ projects_reports <-
          meta_col_project_contracted_start_date='contracted_start_date',
          meta_col_project_contracted_end_date='contracted_end_date',
          meta_col_project_name='name') %>%
-  select(-project_id,-meta_col_status,-description)  %>%
+  select(-meta_col_status,-description)  %>%
   select(any_of(project_cols_out),any_of(report_cols_out),
          any_of(project_meta_cols_out),any_of(report_meta_cols_out),
          any_of(extract_date_cols)) %>% distinct()
