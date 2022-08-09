@@ -13,22 +13,44 @@ require(jsonlite)
 library(DBI)
 library(RSQLite)
 
-# Removing Weeds - sub_category_extract_context_species#
-# Revegetating Habitat - sub_category_extract_context_species
-# Community/Stakeholder Engagement - sub_category_extract_no_context_no_species
-# Controlling Access - no_category_extract_context_no_species
-# Establishing and maintaining monitoring regimes - sub_category_extract_context_no_species
-
-
 
 # Read me first
+# 
+# MERIT is a  customer relationship  management system (CRM) that manages 
+# services  (products) with target measures (KPIs) and/or outcomes (goals) 
+# with evidence (supporting documents). Some target measures (KPIs) have more 
+# than one unit cost. These data are collected, displayed and exported in a 
+# range of data sets with each having their own data format (model). 
+# The meaning of these data stored in the system is different for 
+# each user and role type 
+
+# The Analytical Data Set extracts and transforms these data into a new 
+# singluar structure (model) that  can function within an API.
 #
-# grant_id has been mapped across to merit_project_id. When this change is the
-# spreadsheets remove the references to merit_project_id=grant_id and replace
-# merit_project_id
+# Methodology
+#
+# - Services (products) and target measures (KPIs) are mapped to 'projects'
+# - Products and KPIs create quarterly semester reporting events with the opportunity to invoice
+#   against generic products and KPIs identified in standard MERI contract or derived for the
+#   purpose of reporting. 
+# - To date, unit cost category data is summed together in the output of to the unit cost level.
+# - A new view of the data set would be required to report at the unit cost catageory level.
+# 
+# The different activity report column names are changed to make them the same.
+# - 'category' data column - the dropdown category reported in the activity reporting shell
+# - 'sub_category' data column - the text value used to 
+# - 'measured' data column - the area (Ha) or length (km) mapped
+# - 'actual' data column - the value representing the non mapped or the measure value 
+# - 'invoiced' data column - the value used with the unit cost category and unit cost rate 
+#   (held outside the MERIT system)
+# - 'context' - the value holding a text reponse, can be a species, comments, or 
+#   sub sub category.
+# - 'report_species' data column - the value holding the contents of the report species column.
+#   this mapped column can hold the unit cost category data - where mapped.
+# - 
 #
 # The R code transforms data in MERIT (NoSQL) to line item (SQL) by project and 
-# project report views.
+# project report views. Everything looks the same but is different
 
 # projects - reports - species view
 # A grants view of procurement activity report data with grants activities 
@@ -568,16 +590,16 @@ library(RSQLite)
 # [1] "RLP Core Services report"        "RLP Core Services annual report"
 
 # Metadata
-# |ID|Original Columnrenamed output columnStatus|Agg First|Agg Sum|Agg Concatenate|Source|Description|Example|
+# |ID|Original Column|renamed output column|Status|Agg First|Agg Sum|Agg Concatenate|Source|Description|Example|
 # |1|project_id|project_id|As is||||Project Data|MERIT system generated project ID|356e7ff4-8568-4216-873e-066eea3e698d|
-# |2|grant_idmerit_project_id|As is||||Project Data|This column describes the human readable unique ID assigned to a project|RLP-MU46-P2|
+# |2|grant_id|merit_project_id|As is||||Project Data|This column describes the human readable unique ID assigned to a project|RLP-MU46-P2|
 # |3|external_id|As is||||Project Data|This column describes the unique ID assigned by an external system such as the Business Grants Hub|RTPGSBECH-27|
-# |4|internal_order_number|As is||||Project Data|Finance ID|X0000005037G|
-# |5|work_order_id|As is||||Project Data|Finance ID|PRN 1314-0489-2-20|
-# |6|organisation|As is||||Project Data|This column describes the name of the organisation that is providing the services by signing the contract or funding agreement|Southern Queensland Landscapes|
-# |7|management_unit|As is||||Project Data|This column describes the name of the management unit used for the geographic region (NLP 2018), or the organisation unit responsible for activities in the area (but can reach into other geographic regions)  |Condamine|
-# |8|management_unit_id|Derived||||Project Data|Describes the Management Unit reference ID|MU44|
-# |9|management_unit_state|Derived||||Project Data|Describes the Management Unit state or territory|SA|
+# |4|internal_order_number||As is||||Project Data|Finance ID|X0000005037G|
+# |5|work_order_id||As is||||Project Data|Finance ID|PRN 1314-0489-2-20|
+# |6|organisation||As is||||Project Data|This column describes the name of the organisation that is providing the services by signing the contract or funding agreement|Southern Queensland Landscapes|
+# |7|management_unit||As is||||Project Data|This column describes the name of the management unit used for the geographic region (NLP 2018), or the organisation unit responsible for activities in the area (but can reach into other geographic regions)  |Condamine|
+# |8|management_unit_short_id||Derived||||Project Data|Describes the Management Unit reference ID|MU44|
+# |9|management_unit_state||Derived||||Project Data|Describes the Management Unit state or territory|SA|
 # |10|name|project_name|As is||||Project Data|Name of project|NRM Regional Bushfire Recovery in the ACT alpine environment bushfire region- Learning and preparing for the next major bushfire in the ACT and beyond|
 # |11|program||As is||||Project Data|This column describes the program under which the project is being conducted (i.e. source of funding)|National Landcare Program|
 # |12|sub_program||As is||||Project Data|This column describes the sub-program under which the project is being conducted |Regional Land Partnerships|
@@ -586,63 +608,63 @@ library(RSQLite)
 # |15|contracted_start_date|project_contracted_start_date|As is||||Project Data|This column describes the date on which the project contracted to start on. (amended project start date)|2022-01-01|
 # |16|contracted_end_date|project_contracted_end_date|As is||||Project Data|This column describes the date on which the project contracted to end on (amended project end date)|2023-12-31|
 # |17|status|project status|As is||||Project Data|This column describes the status of an individual project|Active, Completed, Application|
-# |18|MERIT_Reports_link|Derived||||Data set|Describes the URL for an individual project|https://fieldcapture.ala.org.au/project/index/975e603f-ad4b-4353-a467-7bd75ed201dc|
-# |19|report_financial_year|As is||||Report|This column describes the financial year in which an activity took place and was reported|2020/2021|
-# |20|report_status|As is||||Report|This column describes the status of each individual report within a project for the project manager|Submitted, Approved, Returned, Unpublished (no action - never been submitted)|
+# |18|MERIT_Reports_link||Derived||||Data set|Describes the URL for an individual project|https://fieldcapture.ala.org.au/project/index/975e603f-ad4b-4353-a467-7bd75ed201dc|
+# |19|report_financial_year||As is||||Report|This column describes the financial year in which an activity took place and was reported|2020/2021|
+# |20|report_status||As is||||Report|This column describes the status of each individual report within a project for the project manager|Submitted, Approved, Returned, Unpublished (no action - never been submitted)|
 # |21|service|Derived||||Report|This column describes the class of service as defined in the Ready Reckoner.  It is made up of one or more target measures|Communication materials|
-# |22|target_measure|Derived||||Report|This column describes the metric that is used to report against the target  |Number of communication materials published|
-# |23|context|Mapped|||Y|Report|Text response supporting target measure - pipe concatenated||
-# |24|site_id|As is||||Report|The column describes the automatically assigned unique ID by MERIT that has two types, reporting and planning |074ac922-442e-4400-9e4d-d3fb5dd592a4|
+# |22|target_measure||Derived||||Report|This column describes the metric that is used to report against the target  |Number of communication materials published|
+# |23|context||Mapped|||Y|Report|Text response supporting target measure - pipe concatenated||
+# |24|site_id||As is||||Report|The column describes the automatically assigned unique ID by MERIT that has two types, reporting and planning |074ac922-442e-4400-9e4d-d3fb5dd592a4|
 # |25|report_last_modified|last_modified|As is||||Report|This column describes the timestamp of when the project report was last modified by the SP or the PM|2022-01-01|
-# |26|category|Mapped|Y|||Report|This column describes the controlled list of categories of the stage of the activity for the target measure. Reported as ‘Various’ where category is not specified for project service.|Initial/Follow up or In-situ/Ex-situ|
-# |27|subcategory|Mapped||||Report|Filtering term used against target measure category column|Initial|
-# |28|report_species|Mapped|||Y|Report|This column describes the species on which an activity is reported against|Controlling Pest Animals - target pest species|
-# |29|total_to_be_deliveredLinked||||Report|This column describes the total number of a reportable activity to be delivered over the entire project for the target measure|50 hectares of pest animal control|
+# |26|category||Mapped|Y|||Report|This column describes the controlled list of categories of the stage of the activity for the target measure. Reported as ‘Various’ where category is not specified for project service.|Initial/Follow up or In-situ/Ex-situ|
+# |27|subcategory||Mapped||||Report|Filtering term used against target measure category column|Initial|
+# |28|report_species||Mapped|||Y|Report|This column describes the species on which an activity is reported against|Controlling Pest Animals - target pest species|
+# |29|total_to_be_delivered||Linked||||Report|This column describes the total number of a reportable activity to be delivered over the entire project for the target measure|50 hectares of pest animal control|
 # |30|fy_target|Linked||||Report|This column describes the financial year minimum target of a reportable activity to be delivered in a financial. Multiple f/y targets make up the total to be delivered for the target measure|10|
 # |31|measured|Mapped column||Y||Report|This column describes the self reported metric against the target measure in the MERI plan|Number of hectares weeded (calculated from geospatial upload)|
 # |32|invoiced|Mapped column||Y||Report|This column describes the metric value that the service provided is to be paid for|Invoiced number of hectares weeded|
-# |33|actual|Mapped column|Derived||Y||Report|This column describes the self reported metric against the target measure in the MERI plan that is used to overwrite automatically calculated values where calculated mapping values do not reflect the works undertaken (e.g. mapping was unable to be completed)|Actual Number of hectares weeded (manually overwritten)|
-# |34|stage|report_stage|As is||||Report|This column describes the report stage of the project|Year 2021/2022 - Quarter 2 Outputs Report|
+# |33|actual||Mapped column|Derived||Y||Report|This column describes the self reported metric against the target measure in the MERI plan that is used to overwrite automatically calculated values where calculated mapping values do not reflect the works undertaken (e.g. mapping was unable to be completed)|Actual Number of hectares weeded (manually overwritten)|
+# |34|stage||report_stage|As is||||Report|This column describes the report stage of the project|Year 2021/2022 - Quarter 2 Outputs Report|
 # |35|activity_id|report_activity_id|As is||||Report|MERIT sustem generated activity ID|5951f352-bd7e-4f73-bdfc-b840901f9097|
 # |36|activity_type|report_activity_type|As is||||Report|This column describes the activity type|Debris Removal|
-# |37|report_from_date|As is||||Report|This column describes the reporting period start date|01 Oct 2021|
-# |38|report_to_date|As is||||Report|This column describes the reporting period end date|01 Jan 2022|
-# |39|meta_source_sheetname|MetaData||||Data set|The source system column name for the data source worksheet name|Debris Removal De...ris Removal|
-# |40|meta_col_project_start_date|MetaData||||Project Data|The source system column name for 'start_date'|start_date|
-# |41|meta_col_project_end_date|MetaData||||Project Data|The source system column name for 'end_date'|end_date|
-# |42|meta_col_project_contracted_start_date|MetaData||||Project Data|The source system column name for 'contracted_start_date'|contracted_start_date|
-# |43|meta_col_project_contracted_end_date|MetaData||||Project Data|The source system column name for 'contracted_end_date'|contracted_end_date|
-# |44|meta_col_project_name|MetaData||||Project Data|The source system column name for 'name'|name|
-# |45|meta_col_measured|MetaData||||Report|The source system column name for  target measure 'measured'|meta_col_measured|
-# |46|meta_col_actual|MetaData||||Report|The source system column name for target measure  'actual'|meta_col_actual|
-# |47|meta_col_invoiced|MetaData||||Report|The source system column name for target measure  'invoiced'|meta_col_invoiced|
-# |48|meta_col_category|MetaData||||Report|The source system column name for target measure 'category'|meta_col_category|
-# |49|meta_text_subcategory|MetaData||||Report|The filter value for the target measure used for target measure - category|area_covered_by_this_activity_ha|
-# |50|meta_col_context|MetaData||||Report|The Text component of the response|type_of_material_removed|
-# |51|meta_col_report_species|MetaData||||Report|The source system column name for 'species'|target_species|
-# |52|meta_line_item_object_class|MetaData||||Data set|Allows linking of like activities between grants and procurements|Debris|
-# |53|meta_line_item_property|MetaData||||Data set|Allows linking of like activities between grants and procurements|Removal|
-# |54|meta_line_item_value|MetaData||||Data set|Allows linking of like activities between grants and procurements|Total Area (Ha)|
-# |55|meta_col_project_status|MetaData||||Project Data|The source system column name for 'status'|status|
-# |56|meta_col_report_last_modified|MetaData||||Report|The source system column name for 'last_modified'|last_modified|
-# |57|meta_col_report_stage|MetaData||||Report|The source system column name for 'stage'|stage|
-# |58|meta_col_activity_id|MetaData||||Report|The source system column name for 'activity_id'|actiivity_id|
-# |59|meta_col_activity_type|MetaData||||Report|The source system column name for  'activity_type'|activity_type|
-# |60|primary_secondary_outcomes|Derived|||Y|Project Data|Concatenated primary and secondary outcomes|2. By 2023, the trajectory of species targeted under the Threatened Species Strategy, and other EPBC Act priority species, is stabilised or improved.| Enhance the recovery and maximise the resilience of fire affected priority species, ecological communities and other natural assets within the seven regions impacted by the 2019-20 bushfires|
-# |61|primary_outcomes|Derived|||Y|Project Data|Concatenated primary outcomes|2. By 2023, the trajectory of species targeted under the Threatened Species Strategy, and other EPBC Act priority species, is stabilised or improved.|
-# |62|secondary_outcomes|Derived|||Y|Project Data|Concatenated secondary outcomes|Enhance the recovery and maximise the resilience of fire affected priority species, ecological communities and other natural assets within the seven regions impacted by the 2019-20 bushfires|
-# |63|primary_investment_priority|Derived|||Y|Project Data|Concatenated primary investment priorities|Petauroides Volans (Greater Glider)|
-# |64|secondary_investment_priority|Derived|||Y|Project Data|Concatenated secondary investment priorities|Species and ecological community specific interventions|
-# |65|primary_secondary_investment_priorities|Derived|||Y|Project Data|Concatenated primary and secondary investment priorities|Petauroides Volans (Greater Glider)|Species and ecological community specific interventions|
-# |66|documents_priority|Derived|||Y|Project Data|Concatenated document references from MERI priorities associated with identified RLP Outcomes investment priorities|name:  Australia’s Biodiversity Conservation Strategy 2010-2030 section: Engaging All Australians, and Building Ecosystem Resilience in a Changing Climate. alignment: This project will engage the community through involvement with planting events and working bees and will create ecosystem resilience with the planting of native species in a predominantly cleared area. |name: The Adelaide and Mount Lofty Ranges Natural Resources Management Plan section: The strategic action to support land managers to restore and reinstate grassy ecosystems and protect, improve the condition and increase the extent of riparian zones, coastal areas and estuaries in the Willunga Basin. alignment: This project will contribute to the outcomes of this strategic action by improving the condition of the site which falls within this area. |name: The 30 Year Plan for Greater Adelaide produced by the DPTI in 2010  section: References the creation of linked Urban Forests in the Hills Face Zone. alignment: The project will extend the extent of the current Urban Forest by an additional 20ha which contributes greatly to this goal. |name:  Native Vegetation Action Plan Port Willunga, Urban Biodiversity Unit (Cordingley) DEH 2007 and the updated: Action Plan:Port Willunga Creek, Rural Solutions 2010 section: Entire documents.  alignment: More practical on ground actions will be guided by these documents which will be referred to as necessary.|
-# |67|assets|Derived|||Y|Project Data|Concatentated MERI Project Assets|(Southern Corroboree Frog)|Mastacomys fuscus mordicus (Broad-toothed Rat)|Euastacus crassus. (Alpine crayfish)|Eucalyptus fraxinoides (White Mountain Ash, White Ash)|Caladenia montana (Mountain Spider Orchid)|Alpine Sphagnum Bogs and Associated Fens|
-# |68|natural_cultural_assets_managed|Derived|Y|||Project Data|MERI outcomes indicator|N|
-# |69|threatened_species|Derived|Y|||Project Data|MERI outcomes indicator|N|
-# |70|threatened_ecological_communities|Derived|Y|||Project Data|MERI outcomes indicator|N|
-# |71|migratory_species|Derived|Y|||Project Data|MERI outcomes indicator|N|
-# |72|community_awareness_participation_in_nrm|Derived|Y|||Project Data|MERI outcomes indicator|N|
-# |73|indigenous_cultural_values|Derived|Y|||Project Data|MERI outcomes indicator|N|
-# |74|indigenous_ecological_knowledge|Derived|Y|||Project Data|MERI outcomes indicator|N|
+# |37|report_from_date||As is||||Report|This column describes the reporting period start date|01 Oct 2021|
+# |38|report_to_date||As is||||Report|This column describes the reporting period end date|01 Jan 2022|
+# |39|meta_source_sheetname||MetaData||||Data set|The source system column name for the data source worksheet name|Debris Removal De...ris Removal|
+# |40|meta_col_project_start_date||MetaData||||Project Data|The source system column name for 'start_date'|start_date|
+# |41|meta_col_project_end_date||MetaData||||Project Data|The source system column name for 'end_date'|end_date|
+# |42|meta_col_project_contracted_start_date||MetaData||||Project Data|The source system column name for 'contracted_start_date'|contracted_start_date|
+# |43|meta_col_project_contracted_end_date||MetaData||||Project Data|The source system column name for 'contracted_end_date'|contracted_end_date|
+# |44|meta_col_project_name||MetaData||||Project Data|The source system column name for 'name'|name|
+# |45|meta_col_measured||MetaData||||Report|The source system column name for  target measure 'measured'|meta_col_measured|
+# |46|meta_col_actual||MetaData||||Report|The source system column name for target measure  'actual'|meta_col_actual|
+# |47|meta_col_invoiced||MetaData||||Report|The source system column name for target measure  'invoiced'|meta_col_invoiced|
+# |48|meta_col_category||MetaData||||Report|The source system column name for target measure 'category'|meta_col_category|
+# |49|meta_text_subcategory||MetaData||||Report|The filter value for the target measure used for target measure - category|area_covered_by_this_activity_ha|
+# |50|meta_col_context||MetaData||||Report|The Text component of the response|type_of_material_removed|
+# |51|meta_col_report_species||MetaData||||Report|The source system column name for 'species'|target_species|
+# |52|meta_line_item_object_class||MetaData||||Data set|Allows linking of like activities between grants and procurements|Debris|
+# |53|meta_line_item_property||MetaData||||Data set|Allows linking of like activities between grants and procurements|Removal|
+# |54|meta_line_item_value||MetaData||||Data set|Allows linking of like activities between grants and procurements|Total Area (Ha)|
+# |55|meta_col_project_status||MetaData||||Project Data|The source system column name for 'status'|status|
+# |56|meta_col_report_last_modified||MetaData||||Report|The source system column name for 'last_modified'|last_modified|
+# |57|meta_col_report_stage||MetaData||||Report|The source system column name for 'stage'|stage|
+# |58|meta_col_activity_id||MetaData||||Report|The source system column name for 'activity_id'|actiivity_id|
+# |59|meta_col_activity_type||MetaData||||Report|The source system column name for  'activity_type'|activity_type|
+# |60|primary_secondary_outcomes||Derived|||Y|Project Data|Concatenated primary and secondary outcomes|2. By 2023, the trajectory of species targeted under the Threatened Species Strategy, and other EPBC Act priority species, is stabilised or improved.| Enhance the recovery and maximise the resilience of fire affected priority species, ecological communities and other natural assets within the seven regions impacted by the 2019-20 bushfires|
+# |61|primary_outcomes||Derived|||Y|Project Data|Concatenated primary outcomes|2. By 2023, the trajectory of species targeted under the Threatened Species Strategy, and other EPBC Act priority species, is stabilised or improved.|
+# |62|secondary_outcomes||Derived|||Y|Project Data|Concatenated secondary outcomes|Enhance the recovery and maximise the resilience of fire affected priority species, ecological communities and other natural assets within the seven regions impacted by the 2019-20 bushfires|
+# |63|primary_investment_priority||Derived|||Y|Project Data|Concatenated primary investment priorities|Petauroides Volans (Greater Glider)|
+# |64|secondary_investment_priority||Derived|||Y|Project Data|Concatenated secondary investment priorities|Species and ecological community specific interventions|
+# |65|primary_secondary_investment_priorities||Derived|||Y|Project Data|Concatenated primary and secondary investment priorities|Petauroides Volans (Greater Glider)|Species and ecological community specific interventions|
+# |66|documents_priority||Derived|||Y|Project Data|Concatenated document references from MERI priorities associated with identified RLP Outcomes investment priorities|name:  Australia’s Biodiversity Conservation Strategy 2010-2030 section: Engaging All Australians, and Building Ecosystem Resilience in a Changing Climate. alignment: This project will engage the community through involvement with planting events and working bees and will create ecosystem resilience with the planting of native species in a predominantly cleared area. |name: The Adelaide and Mount Lofty Ranges Natural Resources Management Plan section: The strategic action to support land managers to restore and reinstate grassy ecosystems and protect, improve the condition and increase the extent of riparian zones, coastal areas and estuaries in the Willunga Basin. alignment: This project will contribute to the outcomes of this strategic action by improving the condition of the site which falls within this area. |name: The 30 Year Plan for Greater Adelaide produced by the DPTI in 2010  section: References the creation of linked Urban Forests in the Hills Face Zone. alignment: The project will extend the extent of the current Urban Forest by an additional 20ha which contributes greatly to this goal. |name:  Native Vegetation Action Plan Port Willunga, Urban Biodiversity Unit (Cordingley) DEH 2007 and the updated: Action Plan:Port Willunga Creek, Rural Solutions 2010 section: Entire documents.  alignment: More practical on ground actions will be guided by these documents which will be referred to as necessary.|
+# |67|assets||Derived|||Y|Project Data|Concatentated MERI Project Assets|(Southern Corroboree Frog)|Mastacomys fuscus mordicus (Broad-toothed Rat)|Euastacus crassus. (Alpine crayfish)|Eucalyptus fraxinoides (White Mountain Ash, White Ash)|Caladenia montana (Mountain Spider Orchid)|Alpine Sphagnum Bogs and Associated Fens|
+# |68|natural_cultural_assets_managed||Derived|Y|||Project Data|MERI outcomes indicator|N|
+# |69|threatened_species||Derived|Y|||Project Data|MERI outcomes indicator|N|
+# |70|threatened_ecological_communities||Derived|Y|||Project Data|MERI outcomes indicator|N|
+# |71|migratory_species||Derived|Y|||Project Data|MERI outcomes indicator|N|
+# |72|community_awareness_participation_in_nrm||Derived|Y|||Project Data|MERI outcomes indicator|N|
+# |73|indigenous_cultural_values||Derived|Y|||Project Data|MERI outcomes indicator|N|
+# |74|indigenous_ecological_knowledge||Derived|Y|||Project Data|MERI outcomes indicator|N|
 # |75|remnant_vegetation|Derived|Y|||Project Data|MERI outcomes indicator|N|
 # |76|aquatic_and_coastal_systems_including_wetlands||Derived|Y|||Project Data|MERI outcomes indicator|N|
 # |77|epbc||Derived||||Project Data|MERIT reference list with a species listing status|Y |
@@ -650,26 +672,26 @@ library(RSQLite)
 # |79|ramsar||Derived||||Project Data|MERIT reference list with a ramsar listing status|Y |
 # |80|version||Derived||||Data set|Version release number|1.0.1|
 # |81|grant_or_procurement||labelled||||Report|This column describes the primary use of the report format - grant - all rows a re reported using a derived service and target measure - procurement - only rows with matching merit_project_ids according to the MERI project services schedule or an derived project schedule.|Grant/Procurement|
-# |82|extract_date||MetaData||||Data set|Describes the point in time when the data was extracted from MERIT|2022-06-20|
+# |82|extract_date||MetaData||||Data set|Describes the point in ti18me when the data was extracted from MERIT|2022-06-20|
 #   
 
-
-extract_date <- '2022-07-18'
-version <- '1.0.1'
-# missing fy_target and total to be delivered values
+extract_date <- '2022-08-02'
+version <- '1.0.3'
+measured_missing <- -1
+actual_missing <- -1
+invoiced_missing <- -1
 fy_target_missing <- -1
 total_to_be_delivered_missing <- -1
 project_cols_in <- c(
   'project_id','merit_project_id','external_id','internal_order_number',
-  'work_order_id', 'program','sub_program','name','description',
-  'management_unit','organisation','status','report_financial_year',
-  'start_date','end_date','contracted_start_date','contracted_end_date',
-  'last_modified_2')
+  'work_order_id', 'program','sub_program','name','description','management_unit',
+  'organisation','status','report_financial_year','start_date','end_date',
+  'contracted_start_date','contracted_end_date','last_modified_2')
 
 project_cols_out <- c(
   'project_id','merit_project_id','external_id','internal_order_number',
-  'work_order_id','organisation','management_unit','management_unit_id',
-  'management_unit_state','project_name','program','sub_program',
+  'work_order_id','organisation','management_unit','management_unit_short_id',
+  'management_unit_state','project_name','description','program','sub_program',
   'project_start_date', 'project_end_date','project_contracted_start_date',
   'project_contracted_end_date','project_status')
 
@@ -680,7 +702,7 @@ project_meta_cols_out <- c(
 
 # Reports
 report_cols_in <- c(
-  'site_id','report_status','status_2','report_financial_year','stage',
+  'site_id','report_status','report_financial_year','stage',
   'activity_id', 'activity_type','report_from_date','report_to_date')
 report_cols_out <- c(
   'MERIT_Reports_link','report_financial_year','report_status','service',
@@ -689,12 +711,12 @@ report_cols_out <- c(
   'measured','invoiced','actual','report_stage','report_activity_id',
   'report_activity_type','report_from_date','report_to_date')
 report_meta_cols_out <- c(
-  'meta_col_measured','meta_col_actual',
-  'meta_col_invoiced','meta_col_category','meta_text_subcategory',
-  'meta_col_context','meta_col_report_species','meta_line_item_object_class',
-  'meta_line_item_property','meta_line_item_value','meta_col_project_status',
-  'meta_col_report_last_modified','meta_col_report_stage',
-  'meta_col_report_activity_id','meta_col_report_activity_type')
+  'meta_col_measured','meta_col_actual','meta_col_invoiced','meta_col_category',
+  'meta_text_subcategory','meta_col_context','meta_col_report_species',
+  'meta_line_item_object_class','meta_line_item_property','meta_line_item_value',
+  'meta_col_project_status','meta_col_report_last_modified',
+  'meta_col_report_stage','meta_col_report_activity_id',
+  'meta_col_report_activity_type','meta_transform_func')
 
 #Species Etc
 species_etc_cols_out <- c(
@@ -731,9 +753,9 @@ meri_outcomes_indicator_ref <- c(
   "remnant_vegetation","aquatic_and_coastal_systems_including_wetlands")
 
 load("management_units.Rdata") 
-management_units <- management_units %>% rename(management_unit_id=mu_id,
+management_units <- management_units %>% rename(management_unit_short_id=mu_id,
                                                 management_unit_state=mu_state)
-load("sprat_lookup.Rdata")
+# load("sprat_lookup.Rdata")
 
 str_to_colname <- function(a_col) {
   a_col_name <- rlang::parse_expr(a_col)
@@ -751,14 +773,15 @@ read_sheet <- function(sheet_name,fname,start_row=3) {
 }
 
 read_sheet_for_bulk <- function(sheet_name,fname,start_row=3) {
-
+  #tryCatch({
   fred <- read.xlsx(fname,
                     sheet=sheet_name,
                     startRow = start_row) %>%
     clean_names() %>%
     mutate(across(everything(),as.character)) %>%
     rename(merit_project_id=grant_id)
-
+  #}, error=function(e){cat("\n")})
+  
 }
 
 load_mult_wbooks <- function(files_vec,sheetname) {
@@ -768,21 +791,20 @@ load_mult_wbooks <- function(files_vec,sheetname) {
   the_file <- map2_dfr(sheets_vec,files_vec,read_sheet_for_bulk) 
 }
 
-conc_species_col <- function(Data) {
-  suppressWarnings(
-  Data_out <- Data %>% 
-    group_by(across(c(-measured,-actual,-invoiced,-report_species,
-                      -context,-category))) %>%
-    summarise(report_species = str_c(report_species,collapse="|"),
-              context = str_c(context,collapse="|"),
-              category = first(category),
-              measured = sum(measured,na.rm=TRUE),
-              actual = sum(actual,na.rm=TRUE),
-              invoiced = sum(invoiced,na.rm=TRUE)) %>% 
-    ungroup() %>%
-    mutate(report_species = str_replace_all(report_species,'\n','|'))
-  )
-}
+# conc_species_col <- function(Data) {
+#   Data_out <- Data %>%
+#     mutate(actual = ifelse(is.na(actual),measured,actual)) %>%
+#     group_by(across(c(-measured,-actual,-invoiced,-report_species,
+#                       -context,-category))) %>%
+#     summarise(report_species = str_c(report_species,collapse="|"),
+#               context = str_c(context,collapse="|"),
+#               category = first(category),
+#               measured = sum(measured,na.rm=TRUE),
+#               actual = sum(actual,na.rm=TRUE),
+#               invoiced = sum(invoiced,na.rm=TRUE)) %>% 
+#     ungroup() %>%
+#     mutate(report_species = str_replace_all(report_species,'\n','|'))
+# }
 
 filter_na <- function(Data) {
   Data #<- Data %>
@@ -833,7 +855,7 @@ RAMSAR <- RLP_Outcomes_short_term_indicator %>%
   select(merit_project_id,ramsar) %>%
   drop_na(ramsar) %>%
   distinct()
-suppressWarnings(
+
 project_services_RLP <- read_sheet(sheet='Project services and targets',
                                    fname=paste('M01 ',extract_date,'.xlsx',sep=''),
                                    start_row = 1) %>%
@@ -847,13 +869,12 @@ project_services_RLP <- read_sheet(sheet='Project services and targets',
   pivot_longer(cols= starts_with("20"),names_to='report_financial_year',
                values_to='fy_target') %>%
   mutate(fy_target=as.numeric(fy_target))
-)
+
 Projects <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
                       sheet='Projects',
                       startRow = 1) %>%
   clean_names() %>%
-  rename(merit_project_id=grant_id) 
-
+  rename(merit_project_id=grant_id)
 
 ############################################
 # new code starts here                     #
@@ -879,7 +900,7 @@ project_services_SGE <- bind_rows(
   ids_df %>% mutate(report_financial_year='2022/2023')) %>%
   mutate(total_to_be_delivered=total_to_be_delivered_missing,
          fy_target=fy_target_missing)
-# fy_target >0
+
 project_services <- bind_rows(project_services_RLP,
                               project_services_SGE) %>%
   distinct()
@@ -888,29 +909,31 @@ project_services <- bind_rows(project_services_RLP,
 # extra code ends here #
 ########################
 
+make_it_various <- function(Data) {
+  fred <- Data %>%
+    mutate(category='Various')
+}
+
 join_by_service_target_measures_and_aggregate <- 
   function(Data,service,
            target_measure,
            grant_or_procurement='procurement') {
-    suppressWarnings(
-      fred <- Data %>%
-        mutate(across(all_of(numeric_cols),as.numeric),
-               across(all_of(character_cols),as.character),
-               grant_or_procurement=grant_or_procurement,
-               service=service, target_measure=target_measure) %>%
-        inner_join(project_services,by=c("merit_project_id","service","target_measure",
-                                         "report_financial_year")) %>%
-        conc_species_col() %>%
-        distinct() 
-    )
-    
+    fred <- Data %>%
+      mutate(across(all_of(numeric_cols),as.numeric),
+             across(all_of(character_cols),as.character),
+             grant_or_procurement=grant_or_procurement,
+             service=service, target_measure=target_measure) %>%
+      inner_join(project_services,by=c("merit_project_id","service","target_measure",
+                                       "report_financial_year")) %>%
+      #conc_species_col() %>%
+      distinct() 
   }
 
 no_category_extract_no_context_no_species <- function(
-  Data, worksheet, service, target_measure, measured, actual, invoiced,
-  object_class=NA, property=NA, value=NA, category=NA, context=NA, 
-  sub_category=NA) {
-  suppressWarnings(
+    Data, worksheet, service, target_measure, measured, actual, invoiced,
+    object_class=NA, property=NA, value=NA, category=NA, context=NA, 
+    sub_category=NA) {
+  func_name <- 'no_category_extract_no_context_no_species'
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
@@ -919,16 +942,14 @@ no_category_extract_no_context_no_species <- function(
     mutate(category=NA, context=NA, report_species=NA) %>%
     join_by_service_target_measures_and_aggregate(service,target_measure) %>%
     filter_na()
-  )
   
-  suppressWarnings(
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
     actual_text <- as_label(enquo(actual))
     invoiced_text <- as_label(enquo(invoiced))
     fred <- fred %>%
       mutate(meta_source_sheetname=worksheet, 
-             # category='Various',
+             meta_transform_func = func_name,
              meta_col_measured = measured_text,
              meta_col_actual = actual_text,
              meta_col_invoiced = invoiced_text,
@@ -940,26 +961,25 @@ no_category_extract_no_context_no_species <- function(
              meta_line_item_property=property,
              meta_line_item_value=value) %>%
       mutate(across(starts_with("meta"),as.character))}
-  )
   return(fred)
 }
 
 all_sub_category_extract_no_context_no_species <- function(
-  Data, worksheet, service, target_measure, measured, actual, invoiced,
-  category, object_class=NA, property=NA, value=NA, context=NA, species=NA,
-  sub_category=NA) {
-  suppressWarnings(
+    Data, worksheet, service, target_measure, measured, actual, invoiced,
+    category, object_class=NA, property=NA, value=NA, context=NA, species=NA,
+    sub_category=NA) {
+  func_name <- 'all_sub_category_extract_context_species'
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            category={{ category }},
            measured= {{ measured }},
            invoiced={{ invoiced }},actual={{ actual }}) %>%
+    
     mutate(context=NA, report_species=NA) %>%
+    # make_it_various() %>%
     join_by_service_target_measures_and_aggregate(service,target_measure)
-  )
   
-  suppressWarnings(
   if (nrow(fred) > 0) {
     measured_text <- as_label(enquo(measured))
     actual_text <- as_label(enquo(actual))
@@ -967,7 +987,7 @@ all_sub_category_extract_no_context_no_species <- function(
     category_text <- as_label(enquo(category))
     fred <- fred %>%
       mutate(meta_source_sheetname=worksheet,
-             category='Various',
+             meta_transform_func = func_name,
              meta_col_measured=measured_text,
              meta_col_actual=actual_text,
              meta_col_invoiced=invoiced_text,
@@ -980,15 +1000,14 @@ all_sub_category_extract_no_context_no_species <- function(
              meta_line_item_value=value) %>%
       mutate(across(starts_with("meta"),as.character))
   }
-  )
   return(fred)
 }
 
 all_sub_category_extract_context_species <- function(
-  Data, worksheet, service, target_measure, measured, actual, invoiced,
-  category, context, species, object_class=NA, property=NA, value=NA,
-  sub_category=NA) {
-  suppressWarnings(
+    Data, worksheet, service, target_measure, measured, actual, invoiced,
+    category, context, species, object_class=NA, property=NA, value=NA,
+    sub_category=NA) {
+  func_name <- 'all_sub_category_extract_context_species'
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
@@ -996,10 +1015,10 @@ all_sub_category_extract_context_species <- function(
            measured= {{ measured }},
            invoiced={{ invoiced }},actual={{ actual }},
            context= {{ context }},report_species= {{ species }}) %>%
+    # make_it_various() %>%
     join_by_service_target_measures_and_aggregate(service,target_measure) %>%
     filter_na()
-  )
-  suppressWarnings(
+  
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
     actual_text <- as_label(enquo(actual))
@@ -1009,7 +1028,7 @@ all_sub_category_extract_context_species <- function(
     species_text <- as_label(enquo(species))
     fred <- fred %>%
       mutate(meta_source_sheetname=worksheet, 
-             category='Various',
+             meta_transform_func = func_name,
              meta_col_measured = measured_text,
              meta_col_actual = actual_text,
              meta_col_invoiced = invoiced_text,
@@ -1022,15 +1041,14 @@ all_sub_category_extract_context_species <- function(
              meta_line_item_value=value) %>% 
       mutate(across(starts_with("meta"),as.character))
   }
-  )
   return(fred)
 }
 
 all_sub_category_extract_context_no_species <- function(
-  Data, worksheet, service, target_measure, measured, actual, invoiced,
-  category, context, object_class=NA, property=NA, value=NA, species=NA,
-  sub_category=NA) {
-  suppressWarnings(
+    Data, worksheet, service, target_measure, measured, actual, invoiced,
+    category, context, object_class=NA, property=NA, value=NA, species=NA,
+    sub_category=NA) {
+  func_name <- 'all_sub_category_extract_context_no_species'
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
@@ -1039,10 +1057,10 @@ all_sub_category_extract_context_no_species <- function(
            invoiced={{ invoiced }}, actual={{ actual }},
            context= {{ context }}) %>%
     mutate(report_species=NA) %>%
+    #make_it_various() %>%
     join_by_service_target_measures_and_aggregate(service,target_measure) %>%
     filter_na()
-  )
-  suppressWarnings(
+  
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
     actual_text <- as_label(enquo(actual))
@@ -1051,7 +1069,7 @@ all_sub_category_extract_context_no_species <- function(
     context_text <- as_label(enquo(context))
     fred <- fred %>%
       mutate(meta_source_sheetname=worksheet, 
-             category='Various',
+             meta_transform_func = func_name,
              meta_col_measured=measured_text,
              meta_col_actual=actual_text,
              meta_col_invoiced=invoiced_text,
@@ -1064,25 +1082,24 @@ all_sub_category_extract_context_no_species <- function(
              meta_line_item_value=value) %>% 
       mutate(across(starts_with("meta"),as.character))
   }
-  )
   return(fred)
 }
 
 no_category_extract_context_no_species <- function(
-  Data, worksheet, service, target_measure, measured, actual, invoiced,
-  context, object_class=NA, property=NA, value=NA, category=NA, species=NA,
-  sub_category=NA) {
-  suppressWarnings(
+    Data, worksheet, service, target_measure, measured, actual, invoiced,
+    context, object_class=NA, property=NA, value=NA, category=NA, species=NA,
+    sub_category=NA) {
+  func_name <- 'no_category_extract_context_no_species'
   fred <-
     Data %>%
     select(one_of(project_cols_in), one_of(report_cols_in),
            measured= {{ measured }}, invoiced = {{ invoiced }},
            actual={{ actual }}, context= {{ context }}) %>%
     mutate(category = NA, report_species = NA) %>%
+    #make_it_various() %>%
     join_by_service_target_measures_and_aggregate(service,target_measure) %>%
     filter_na()
-  )
-  suppressWarnings(
+  
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
     actual_text <- as_label(enquo(actual))
@@ -1090,6 +1107,7 @@ no_category_extract_context_no_species <- function(
     context_text <- as_label(enquo(context))
     fred <- fred %>% 
       mutate(meta_source_sheetname=worksheet,
+             meta_transform_func = func_name,
              meta_col_measured = measured_text,
              meta_col_actual = actual_text,
              meta_col_invoiced = invoiced_text,
@@ -1102,15 +1120,14 @@ no_category_extract_context_no_species <- function(
              meta_line_item_value=value) %>% 
       mutate(across(starts_with("meta"),as.character))
   }
-  )
   return(fred)
 }
 
 sub_category_extract_context_species  <- function(
-  Data, worksheet, service, target_measure, measured, actual, invoiced, 
-  category, sub_category, context, species, object_class=NA,property=NA,
-  value=NA) {
-  suppressWarnings(
+    Data, worksheet, service, target_measure, measured, actual, invoiced, 
+    category, sub_category, context, species, object_class=NA,property=NA,
+    value=NA) {
+  func_name <- 'sub_category_extract_context_species'
   fred <-
     Data %>%
     select(one_of(project_cols_in), one_of(report_cols_in),
@@ -1119,8 +1136,7 @@ sub_category_extract_context_species  <- function(
            context = {{ context }}, report_species = {{ species }}) %>%
     join_by_service_target_measures_and_aggregate(service,target_measure) %>%
     filter(category==sub_category)
-  )
-  suppressWarnings(
+  
   if (nrow(fred) > 0) {
     measured_text <- as_label(enquo(measured))
     actual_text <- as_label(enquo(actual))
@@ -1130,6 +1146,7 @@ sub_category_extract_context_species  <- function(
     species_text <- as_label(enquo(species))
     fred <- fred %>%
       mutate(meta_source_sheetname=worksheet,
+             meta_transform_func = func_name,
              meta_col_measured=measured_text,
              meta_col_actual=actual_text,
              meta_col_invoiced=invoiced_text,
@@ -1142,26 +1159,24 @@ sub_category_extract_context_species  <- function(
              meta_line_item_value=value) %>% 
       mutate(across(starts_with("meta"),as.character))
   }
-  )
   return(fred)
 }
 
 sub_category_extract_context_no_species  <- function(
-  Data, worksheet, service, target_measure, measured, actual,invoiced, 
-  category,sub_category, context,object_class=NA, property=NA, value=NA,
-  species=NA) {
-  suppressWarnings(
+    Data, worksheet, service, target_measure, measured, actual,invoiced, 
+    category,sub_category, context,object_class=NA, property=NA, value=NA,
+    species=NA) {
+  func_name <- 'sub_category_extract_context_no_species'
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            category={{ category }},measured= {{ measured }},
            invoiced={{ invoiced }},actual={{ actual }},
            context = {{ context }}) %>%
+    filter(category==sub_category) %>%
     mutate(report_species = NA) %>%
-    join_by_service_target_measures_and_aggregate(service,target_measure) %>%
-    filter(category==sub_category)
-  )
-  suppressWarnings(
+    join_by_service_target_measures_and_aggregate(service,target_measure) 
+  
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
     actual_text <- as_label(enquo(actual))
@@ -1170,6 +1185,7 @@ sub_category_extract_context_no_species  <- function(
     context_text <- as_label(enquo(context))
     fred <- fred %>% 
       mutate(meta_source_sheetname=worksheet, 
+             meta_transform_func = func_name,
              meta_col_measured=measured_text,
              meta_col_actual=actual_text,
              meta_col_invoiced=invoiced_text,
@@ -1182,15 +1198,14 @@ sub_category_extract_context_no_species  <- function(
              meta_line_item_value=value) %>% 
       mutate(across(starts_with("meta"),as.character))
   }
-  )
   return(fred)
 }
 
 sub_category_extract_no_context_species <- function(
-  Data, worksheet, service, target_measure, measured, actual, invoiced, 
-  category, sub_category, species, object_class=NA, property=NA, value=NA,
-  context=NA) {
-  suppressWarnings(
+    Data, worksheet, service, target_measure, measured, actual, invoiced, 
+    category, sub_category, species, object_class=NA, property=NA, value=NA,
+    context=NA) {
+  func_name <- 'sub_category_extract_no_context_species'
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
@@ -1200,8 +1215,7 @@ sub_category_extract_no_context_species <- function(
     mutate(context=NA) %>%
     join_by_service_target_measures_and_aggregate(service,target_measure) %>%
     filter(category==sub_category) 
-  )
-  suppressWarnings(
+  
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
     actual_text <- as_label(enquo(actual))
@@ -1210,6 +1224,7 @@ sub_category_extract_no_context_species <- function(
     species_text <- as_label(enquo(species))
     fred <- fred %>%
       mutate(meta_source_sheetname=worksheet,
+             meta_transform_func = func_name,
              meta_col_measured=measured_text,
              meta_col_actual=actual_text,
              meta_col_invoiced=invoiced_text,
@@ -1222,15 +1237,14 @@ sub_category_extract_no_context_species <- function(
              meta_line_item_value=value) %>% 
       mutate(across(starts_with("meta"),as.character))
   }
-  )
   return(fred)
 }
 
 sub_category_extract_no_context_no_species <- function(
-  Data, worksheet, service, target_measure, measured, actual, invoiced,
-  category, sub_category, object_class=NA, property=NA, value=NA, context=NA,
-  species=NA) {
-  suppressWarnings(
+    Data, worksheet, service, target_measure, measured, actual, invoiced,
+    category, sub_category, object_class=NA, property=NA, value=NA, context=NA,
+    species=NA) {
+  func_name <- 'sub_category_extract_no_context_no_species'
   fred <-
     Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
@@ -1238,9 +1252,9 @@ sub_category_extract_no_context_no_species <- function(
            invoiced={{ invoiced }}, actual={{ actual }}) %>%
     mutate(context=NA, report_species=NA) %>%
     join_by_service_target_measures_and_aggregate(service,target_measure) %>%
-    filter(category==sub_category)
-  )
-  suppressWarnings(
+    filter(category==sub_category) %>%
+    filter_na()
+  
   if (nrow(fred) >0) {
     measured_text <- as_label(enquo(measured))
     actual_text <- as_label(enquo(actual))
@@ -1248,6 +1262,7 @@ sub_category_extract_no_context_no_species <- function(
     category_text <- as_label(enquo(category))
     fred <- fred %>% 
       mutate(meta_source_sheetname=worksheet,
+             meta_transform_func = func_name,
              meta_col_measured=measured_text,
              meta_col_actual=actual_text,
              meta_col_invoiced=invoiced_text,
@@ -1260,29 +1275,28 @@ sub_category_extract_no_context_no_species <- function(
              meta_line_item_value=value) %>% 
       mutate(across(starts_with("meta"),as.character))
   }
-  )
   return(fred)
 }
 
 # grant edge cases
 
 grant_report_no_species <- function(
-  Data,sheet_name,start_row=3,measured_col,actual_col,invoiced_col,
-  context_col, object_class=NA,property=NA,value=NA) {
-  suppressWarnings(
+    Data,sheet_name,start_row=3,measured_col,actual_col,invoiced_col,
+    context_col, object_class=NA,property=NA,value=NA) {
+  func_name <- 'grant_report_no_species'
   fred <- Data %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            contracted_end_date,last_modified_2,measured={{ measured_col }},
            actual={{ actual_col }},invoiced={{ invoiced_col }},
            context= {{ context_col }}) %>%
-    mutate(total_to_be_delivered=total_to_be_delivered_missing,
-           fy_target=fy_target_missing,    
+    mutate(total_to_be_delivered=total_to_be_delivered_missing,fy_target=fy_target_missing,    
            category=NA,subcategory=NA,
            report_species=NA,
            meta_col_report_species=NA,meta_text_subcategory=NA,
            meta_col_category=NA,service=str_c(activity_type,' > ',sheet_name),
            target_measure= as_label(enquo(measured_col)),
            meta_source_sheetname=sheet_name,
+           meta_transform_func = func_name,
            across(all_of(numeric_cols),as.numeric),
            across(all_of(character_cols),as.character),
            meta_col_measured=as_label(enquo(measured_col)),
@@ -1294,23 +1308,21 @@ grant_report_no_species <- function(
            meta_line_item_object_class = object_class,
            meta_line_item_property=property,
            meta_line_item_value=value) %>%
-    filter_na()  %>%
-    conc_species_col()
-  )
+    filter_na()  #%>%
+    #conc_species_col()
 }
 
 grant_report_species <- function(
-  Data,sheet_name,start_row=3,measured_col,actual_col,invoiced_col,
-  context_col,species_col, object_class=NA,property=NA,value=NA) {
-  suppressWarnings(
+    Data,sheet_name,start_row=3,measured_col,actual_col,invoiced_col,
+    context_col,species_col, object_class=NA,property=NA,value=NA) {
+  func_name <- 'grant_report_species'
   fred <- Data %>%
     filter(!is.na({{ species_col}}) | {{ species_col}}=='NA') %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            measured={{ measured_col }},
            actual={{ actual_col }},invoiced={{ invoiced_col }},
            context= {{ context_col }},report_species= {{ species_col }}) %>%
-    mutate(fy_target=fy_target_missing,
-           total_to_be_delivered=total_to_be_delivered_missing,
+    mutate(total_to_be_delivered=total_to_be_delivered_missing,fy_target=fy_target_missing,       
            category=NA,subcategory=NA,
            meta_text_subcategory=NA,meta_col_category=NA,
            across(all_of(numeric_cols),as.numeric),
@@ -1318,6 +1330,7 @@ grant_report_species <- function(
            service=str_c(activity_type,' > ',sheet_name),
            target_measure= as_label(enquo(measured_col)),
            meta_source_sheetname=sheet_name,
+           meta_transform_func = func_name,
            meta_col_measured=as_label(enquo(measured_col)),
            meta_col_actual=as_label(enquo(actual_col)),
            meta_col_invoiced=as_label(enquo(invoiced_col)),
@@ -1327,23 +1340,22 @@ grant_report_species <- function(
            grant_or_procurement='grant',
            meta_line_item_object_class = object_class,
            meta_line_item_property=property,
-           meta_line_item_value=value) %>%
-    conc_species_col()
-  )
+           meta_line_item_value=value) #%>%
+    #conc_species_col()
 }
 
 grant_report_species_category <- function(
-  Data,sheet_name,start_row=3,category_col,measured_col,
-  actual_col,invoiced_col,context_col,species_col,
-  object_class=NA,property=NA,value=NA,sub_category=NA) {
+    Data,sheet_name,start_row=3,category_col,measured_col,
+    actual_col,invoiced_col,context_col,species_col,
+    object_class=NA,property=NA,value=NA,sub_category=NA) {
+  func_name <- 'grant_report_species_category'
   fred <- Data %>%
     filter(!is.na({{ species_col}}) | {{ species_col}}=='NA') %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
-           measured={{ measured_col }},category={{ category_col }}, 
-           actual={{ actual_col }},invoiced={{ invoiced_col }}, 
+           measured={{ measured_col }},category={{ category_col }},
+           actual={{ actual_col }},invoiced={{ invoiced_col }},
            context= {{ context_col }}, report_species= {{ species_col }}) %>%
-    mutate(fy_target=fy_target_missing,
-           total_to_be_delivered=total_to_be_delivered_missing,
+    mutate(total_to_be_delivered=total_to_be_delivered_missing,fy_target=fy_target_missing,
            subcategory=NA,
            meta_text_subcategory=NA,meta_col_category=NA,
            across(all_of(numeric_cols),as.numeric),
@@ -1351,6 +1363,7 @@ grant_report_species_category <- function(
            service=str_c(activity_type,' > ',sheet_name),
            target_measure= as_label(enquo(measured_col)),
            meta_source_sheetname=sheet_name,
+           meta_transform_func = func_name,
            meta_col_measured=as_label(enquo(measured_col)),
            meta_col_actual=as_label(enquo(actual_col)),
            meta_col_invoiced=as_label(enquo(invoiced_col)),
@@ -1360,26 +1373,28 @@ grant_report_species_category <- function(
            grant_or_procurement='grant',
            meta_line_item_object_class = object_class,
            meta_line_item_property=property,
-           meta_line_item_value=value) %>%
-    conc_species_col()
+           meta_line_item_value=value) #%>%
+    #conc_species_col()
 }
 
 grant_report_species_no_metrics <- function(
-  Data,sheet_name,start_row=3,context_col,species_col,object_class=NA,
-  property=NA,value=NA) {
+    Data,sheet_name,start_row=3,context_col,species_col,object_class=NA,
+    property=NA,value=NA) {
+  func_name <- 'grant_report_species_no_metrics'
   fred <- Data %>%
     filter(!is.na({{ species_col}}) | {{ species_col}}=='NA') %>%
     select(one_of(project_cols_in),one_of(report_cols_in),
            context= {{ context_col }},report_species= {{ species_col }}) %>%
-    mutate(measured=NA,actual=NA,invoiced=NA,
+    mutate(measured=measured_missing,actual=actual_missing,invoiced=NA,
            fy_target=fy_target_missing,
            total_to_be_delivered=total_to_be_delivered_missing,
-           category=NA,subcategory=NA,
-           meta_col_category=NA,meta_col_measured=NA,meta_col_actual=NA,
+           category=NA,subcategory=NA,meta_col_category=NA,
+           meta_col_measured=NA,meta_col_actual=NA,
            meta_col_invoiced=NA,meta_text_subcategory=NA,  
            across(all_of(numeric_cols),as.numeric),
            across(all_of(character_cols),as.character),
            meta_source_sheetname=sheet_name,
+           meta_transform_func = func_name,
            service=str_c(activity_type,' > ',sheet_name),
            target_measure= as_label(enquo(species_col)),
            target_measure=as_label(enquo(species_col)),
@@ -1388,8 +1403,8 @@ grant_report_species_no_metrics <- function(
            grant_or_procurement='grant',
            meta_line_item_object_class = object_class,
            meta_line_item_property=property,
-           meta_line_item_value=value) %>%
-    conc_species_col()
+           meta_line_item_value=value) #%>%
+    #conc_species_col()
 }
 
 # apply edge cases for procurement against project services and grant activity 
@@ -3628,7 +3643,6 @@ projects_reports <-
   Report_Raw %>%
   mutate(total_to_be_delivered = ifelse(!is.na(total_to_be_delivered),
                                         total_to_be_delivered,0),
-         actual = ifelse(is.na(actual),measured,actual),
          across(c('total_to_be_delivered','measured','invoiced','actual'),
                 as.numeric),
          external_id=as.character(external_id),
@@ -3636,8 +3650,7 @@ projects_reports <-
          MERIT_Reports_link = 
            str_c("https://fieldcapture.ala.org.au/project/index/",
                  project_id)) %>%
-  #mutate(proportion = measured/total_to_be_delivered) %>%
-  rename(project_status=status, status=status_2, 
+  rename(project_status=status, 
          report_last_modified=last_modified_2,
          report_stage = stage,
          report_activity_id = activity_id,
@@ -3646,9 +3659,8 @@ projects_reports <-
          project_contracted_start_date=contracted_start_date,
          project_contracted_end_date=contracted_end_date,
          project_name=name) %>%
-  filter(report_status=='Approved', status=='finished') %>%
+  filter(report_status=='Approved') %>%
   mutate(meta_col_project_status='status',
-         meta_col_status='status_2',
          meta_col_report_last_modified='last_modified_2',
          meta_col_report_stage='stage',
          meta_col_report_activity_id='activity_id',
@@ -3658,12 +3670,11 @@ projects_reports <-
          meta_col_project_contracted_start_date='contracted_start_date',
          meta_col_project_contracted_end_date='contracted_end_date',
          meta_col_project_name='name') %>%
-  select(-meta_col_status,-description)  %>%
   select(any_of(project_cols_out),any_of(report_cols_out),
          any_of(project_meta_cols_out),any_of(report_meta_cols_out),
-         any_of(extract_date_cols)) %>% distinct()
+         any_of(extract_date_cols)) %>% distinct() %>%
+  filter(measured != 0 & actual != 0 & invoiced != 0)
 
-# 193915 > 183066 distinct rows must some dupes in there so distinct it
 
 RLP_Outcomes <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''), 
                           sheet='RLP Outcomes',
@@ -3674,7 +3685,7 @@ RLP_Outcomes <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
 #
 primary_secondary_outcomes <- RLP_Outcomes %>% 
   filter(type_of_outcomes %in% c('Primary outcome','Secondary Outcome/s')) %>%
-  #!is.na(outcome),outcome!='null')# 
+  drop_na() %>%
   select(merit_project_id,outcome) %>%
   group_by(merit_project_id) %>%
   distinct() %>%
@@ -3682,8 +3693,8 @@ primary_secondary_outcomes <- RLP_Outcomes %>%
   ungroup() %>% filter(primary_secondary_outcomes!='null')
 
 primary_outcomes <- RLP_Outcomes %>% 
-  filter(type_of_outcomes == 'Primary outcome',!is.na(outcome),
-         outcome!='null') %>%
+  filter(type_of_outcomes == 'Primary outcome') %>%
+  drop_na() %>%
   select(merit_project_id,outcome) %>%
   group_by(merit_project_id) %>%
   distinct() %>%
@@ -3691,8 +3702,8 @@ primary_outcomes <- RLP_Outcomes %>%
   ungroup() 
 
 secondary_outcomes <- RLP_Outcomes %>% 
-  filter(type_of_outcomes == 'Secondary Outcome/s',
-         !is.na(outcome), outcome!='null') %>%
+  filter(type_of_outcomes == 'Secondary Outcome/s') %>%
+  drop_na() %>%
   select(merit_project_id,outcome) %>%
   group_by(merit_project_id) %>%
   distinct() %>%
@@ -3700,8 +3711,8 @@ secondary_outcomes <- RLP_Outcomes %>%
   ungroup() 
 
 primary_secondary_investment_priorities <- RLP_Outcomes %>% 
-  filter(type_of_outcomes %in% c('Primary outcome','Secondary Outcome/s'),
-         investment_priority !='NA') %>% 
+  filter(type_of_outcomes %in% c('Primary outcome','Secondary Outcome/s')) %>%
+  drop_na() %>% 
   select(merit_project_id,investment_priority) %>%
   group_by(merit_project_id) %>%
   distinct() %>%
@@ -3710,12 +3721,13 @@ primary_secondary_investment_priorities <- RLP_Outcomes %>%
   ungroup() 
 
 primary_investment_priority <- RLP_Outcomes %>% 
-  filter(type_of_outcomes == 'Primary outcome',investment_priority !='NA') %>% 
+  filter(type_of_outcomes == 'Primary outcome') %>% 
+  drop_na() %>%
   select(merit_project_id,primary_investment_priority=investment_priority) 
 
 secondary_investment_priority <- RLP_Outcomes %>% 
-  filter(type_of_outcomes == 'Secondary Outcome/s',
-         investment_priority !='NA') %>% 
+  filter(type_of_outcomes == 'Secondary Outcome/s') %>% 
+  drop_na() %>%
   select(merit_project_id,investment_priority) %>%
   group_by(merit_project_id) %>%
   distinct() %>%
@@ -3729,7 +3741,7 @@ project_assets <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
   clean_names() %>%
   select(grant_id,asset) %>%
   rename(merit_project_id=grant_id) %>%
-  filter(asset!='NA') %>%
+  drop_na() %>%
   group_by(merit_project_id) %>%
   summarise(assets = str_c(asset,collapse = "|")) %>%
   ungroup()
@@ -3741,6 +3753,7 @@ meri_outcomes_indicators <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
   rename(merit_project_id=grant_id) %>%
   group_by(merit_project_id) %>%
   summarize(across(all_of(meri_outcomes_indicator_ref),last))
+
 
 meri_priorities <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''),
                              sheet='MERI_Priorities') %>% 
@@ -3791,6 +3804,17 @@ report_species <- Report_Raw %>%
   summarize(report_species=str_c(str_trim(report_species),collapse="|")) %>%
   ungroup()
 
+report_project_services <- Report_Raw %>%
+  select(merit_project_id,service,target_measure) %>%
+  distinct() %>%
+  mutate(report_project_services = str_c(service,target_measure,sep=' - ')) %>%
+  select(-service,-target_measure) %>%
+  #filter(!is.na(report_project_services)) %>%
+  group_by(merit_project_id) %>%
+  summarize(report_project_services=str_c(str_trim(report_project_services),
+                                         collapse="|")) %>%
+  ungroup() 
+
 projects_reports_species <- projects_reports %>% 
   mutate(version=version) %>%
   left_join(primary_secondary_investment_priorities,by='merit_project_id') %>%
@@ -3816,7 +3840,8 @@ projects_reports_species <- projects_reports %>%
          meta_col_project_name='name') %>%
   select(any_of(project_cols_out),any_of(report_cols_out),
          any_of(project_meta_cols_out),any_of(report_meta_cols_out),
-         any_of(species_etc_cols_out),any_of(extract_date_cols))
+         any_of(species_etc_cols_out),any_of(extract_date_cols)) %>%
+  select(-description)
 
 projects_species <- Projects %>%
   mutate(version=version) %>%
@@ -3833,6 +3858,7 @@ projects_species <- Projects %>%
   left_join(primary_outcomes,by='merit_project_id') %>%
   left_join(secondary_outcomes,by='merit_project_id') %>%
   left_join(report_species,by='merit_project_id') %>%
+  left_join(report_project_services,by='merit_project_id') %>%
   left_join(management_units,by='management_unit')%>%
   left_join(meri_priorities,by='merit_project_id') %>%
   mutate(extract_date=extract_date) %>%
@@ -3841,7 +3867,7 @@ projects_species <- Projects %>%
          project_contracted_start_date=contracted_start_date,
          project_contracted_end_date=contracted_end_date,
          project_name=name) %>%
-  select(any_of(project_cols_out),service_provider,description,
+  select(any_of(project_cols_out),service_provider,report_project_services,
          any_of(species_etc_cols_out),any_of(extract_date_cols))
 
 # format for spreadsheet output
@@ -3874,12 +3900,12 @@ writeData(wb=wb,sheet="MetaData",
           withFilter=TRUE,
           headerStyle = headerStyle)
 
-saveWorkbook(wb=wb,file=paste0("analytical dataset ",extract_date,".xlsx"),
+saveWorkbook(wb=wb,file=paste0("analytical dataset multi line ",extract_date,".xlsx"),
              overwrite=TRUE)
-
-driver <- dbDriver("SQLite")
-con <- dbConnect(driver, dbname = "database2.db")
-dbWriteTable(con, "projects_species", projects_species,overwrite=TRUE)
-dbWriteTable(con, "projects_reports_species", projects_reports_species,
-             overwrite=TRUE)
-dbDisconnect(con)
+# strsplit( deparse(sys.calls()[[1]]),"\\(")[[1]][1] gets current function name
+# driver <- dbDriver("SQLite")
+# con <- dbConnect(driver, dbname = "database2.db")
+# dbWriteTable(con, "projects_species", projects_species,overwrite=TRUE)
+# dbWriteTable(con, "projects_reports_species", projects_reports_species,
+#              overwrite=TRUE)
+# dbDisconnect(con)
