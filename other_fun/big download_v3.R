@@ -752,6 +752,14 @@ meri_outcomes_indicator_ref <- c(
   "indigenous_cultural_values","indigenous_ecological_knowledge",
   "remnant_vegetation","aquatic_and_coastal_systems_including_wetlands")
 
+adjustment_cols_full <- 
+  c('project_service','output_measure','reported_measure_requiring_adjustment',
+    'correct_value','adjustment','describe_why_the_value_requires_adjustment',
+    'score_id')
+adjustment_cols <- 
+  c('project_service','output_measure','reported_measure_requiring_adjustment',
+    'adjustment')
+
 load("management_units.Rdata") 
 management_units <- management_units %>% rename(management_unit_short_id=mu_id,
                                                 management_unit_state=mu_state)
@@ -924,9 +932,9 @@ join_by_service_target_measures_and_aggregate <-
              grant_or_procurement=grant_or_procurement,
              service=service, target_measure=target_measure) %>%
       inner_join(project_services,by=c("merit_project_id","service","target_measure",
-                                       "report_financial_year")) %>%
+                                       "report_financial_year")) #%>%
       #conc_species_col() %>%
-      distinct() 
+      #distinct() 
   }
 
 no_category_extract_no_context_no_species <- function(
@@ -3639,8 +3647,37 @@ Report_Raw <- bind_rows(
     object_class='Sites',property='Wildlife rescue',
     value='Species'))
 
+# append adjustment data for actual and invoiced
+Report_Raw <- bind_rows(Report_Raw,
+load_mult_wbooks(c('M09'),'RLP Output Report Adjustment') %>% 
+  select(all_of(project_cols_in),all_of(report_cols_in),all_of(adjustment_cols)) %>%
+  rename(service=project_service,
+         target_measure=output_measure) %>%
+  mutate(measured=NA,actual=reported_measure_requiring_adjustment,
+         invoiced=adjustment,report_species=NA,category=NA,context=NA,
+         sub_category=NA) %>%
+  select(-c('reported_measure_requiring_adjustment',
+            'adjustment')) %>%
+  join_by_service_target_measures_and_aggregate() %>% 
+  mutate(meta_source_sheetname='RLP Output Report Adjustment', 
+         meta_transform_func = 'Adjustment Reports',
+         meta_col_measured = NA,
+         meta_col_actual = 'reported_measure_requiring_adjustment',
+         meta_col_invoiced = 'adjustment',
+         meta_col_category=NA,
+         meta_col_context=NA,
+         meta_text_subcategory=NA,
+         meta_col_report_species=NA,
+         meta_line_item_object_class=NA,
+         meta_line_item_property=NA,
+         meta_line_item_value=NA) %>%
+  mutate(across(starts_with("meta"),as.character)))
+
+
+
 projects_reports <- 
   Report_Raw %>%
+  bind_rows(adjustment_reports) %>%
   mutate(total_to_be_delivered = ifelse(!is.na(total_to_be_delivered),
                                         total_to_be_delivered,0),
          across(c('total_to_be_delivered','measured','invoiced','actual'),
@@ -3672,7 +3709,7 @@ projects_reports <-
          meta_col_project_name='name') %>%
   select(any_of(project_cols_out),any_of(report_cols_out),
          any_of(project_meta_cols_out),any_of(report_meta_cols_out),
-         any_of(extract_date_cols)) %>% distinct() %>%
+         any_of(extract_date_cols)) %>%
   filter(measured != 0 & actual != 0 & invoiced != 0)
 
 
