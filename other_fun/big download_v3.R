@@ -675,7 +675,7 @@ library(RSQLite)
 # |82|extract_date||MetaData||||Data set|Describes the point in ti18me when the data was extracted from MERIT|2022-06-20|
 #   
 
-extract_date <- '2022-08-02'
+extract_date <- '2022-08-15'
 version <- '1.0.3'
 measured_missing <- -1
 actual_missing <- -1
@@ -933,8 +933,8 @@ join_by_service_target_measures_and_aggregate <-
              service=service, target_measure=target_measure) %>%
       inner_join(project_services,by=c("merit_project_id","service","target_measure",
                                        "report_financial_year")) #%>%
-      #conc_species_col() %>%
-      #distinct() 
+    #conc_species_col() %>%
+    #distinct() 
   }
 
 no_category_extract_no_context_no_species <- function(
@@ -1317,7 +1317,7 @@ grant_report_no_species <- function(
            meta_line_item_property=property,
            meta_line_item_value=value) %>%
     filter_na()  #%>%
-    #conc_species_col()
+  #conc_species_col()
 }
 
 grant_report_species <- function(
@@ -1330,7 +1330,8 @@ grant_report_species <- function(
            measured={{ measured_col }},
            actual={{ actual_col }},invoiced={{ invoiced_col }},
            context= {{ context_col }},report_species= {{ species_col }}) %>%
-    mutate(total_to_be_delivered=total_to_be_delivered_missing,fy_target=fy_target_missing,       
+    mutate(total_to_be_delivered=total_to_be_delivered_missing,
+           fy_target=fy_target_missing,       
            category=NA,subcategory=NA,
            meta_text_subcategory=NA,meta_col_category=NA,
            across(all_of(numeric_cols),as.numeric),
@@ -1349,7 +1350,7 @@ grant_report_species <- function(
            meta_line_item_object_class = object_class,
            meta_line_item_property=property,
            meta_line_item_value=value) #%>%
-    #conc_species_col()
+  #conc_species_col()
 }
 
 grant_report_species_category <- function(
@@ -1382,7 +1383,7 @@ grant_report_species_category <- function(
            meta_line_item_object_class = object_class,
            meta_line_item_property=property,
            meta_line_item_value=value) #%>%
-    #conc_species_col()
+  #conc_species_col()
 }
 
 grant_report_species_no_metrics <- function(
@@ -1412,15 +1413,43 @@ grant_report_species_no_metrics <- function(
            meta_line_item_object_class = object_class,
            meta_line_item_property=property,
            meta_line_item_value=value) #%>%
-    #conc_species_col()
+  #conc_species_col()
 }
 
 # apply edge cases for procurement against project services and grant activity 
 # report data (alot) 
 
+#
+# The delivery against the target 
+# "Number of baseline data sets collected and/or synthesised" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" 
+# where the field "scoreId" 
+# has the value "f8c42b45-f4b8-4001-8ab7-80d9d945b059"
+# Using the form / service 
+# "RLP Output Report (Collecting, or synthesising baseline data)" 
+# and summing the field 
+#  "Number of baseline data sets collected and/or synthesised"
+# Using the form / service 
+# "State Intervention Progress Report (Collecting or synthesising baseline data)" 
+# and summing the field 
+#  "Number of baseline data sets collected and/or synthesised"
+# Using the form / service 
+# "Bushfires States Progress Report (Collecting or synthesising baseline data)" 
+# and summing the field 
+#  "Number of baseline data sets collected and/or synthesised"
+# Using the form / service 
+# "State Intervention Final Report (Collecting or synthesising baseline data)" 
+# and summing the field 
+#  "Number of baseline data sets collected and/or synthesised"
+
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Baseline da...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'), 'Baseline data Sta...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'), 'Baseline data Sta...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'), 'Baseline data Sta...ress Report')
 
 Report_Raw <- 
   bind_rows(
@@ -1435,8 +1464,18 @@ Report_Raw <-
       object_class='Baseline Data',property='collected and/or synthesised',
       value='Total Data Sets'),
     no_category_extract_no_context_no_species(
-      Data=BR_Data,
+      Data=BRSF_Data,
       worksheet = 'Baseline data Sta...inal Report',
+      service= "Collecting, or synthesising baseline data",
+      target_measure = "Number of baseline data sets collected and/or synthesised",
+      measured = number_of_baseline_data_sets_collected_and_or_synthesised,
+      invoiced = number_of_baseline_data_sets_collected_and_or_synthesised,
+      actual = number_of_baseline_data_sets_collected_and_or_synthesised,
+      object_class='Baseline data sets',property='collected and/or synthesised',
+      value='Total Data Sets'),
+    no_category_extract_no_context_no_species(
+      Data=BRSP_Data,
+      worksheet = 'Baseline data Sta...ress Report',
       service= "Collecting, or synthesising baseline data",
       target_measure = "Number of baseline data sets collected and/or synthesised",
       measured = number_of_baseline_data_sets_collected_and_or_synthesised,
@@ -1445,9 +1484,36 @@ Report_Raw <-
       object_class='Baseline data sets',property='collected and/or synthesised',
       value='Total Data Sets'))
 
+#
+# The delivery against the target 
+# "Number of communication materials published" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field #  "Adjustment" 
+# where the field "scoreId" 
+# has the value "7abd62ba-2e44-4318-800b-b659c73dc12b"
+# Using the form / service 
+# "RLP Output Report (Communication materials)" 
+# and summing the field 
+#  "Number of communication materials published"
+# Using the form / service 
+# "State Intervention Progress Report (Communication Materials)" 
+# and summing the field 
+#  "Number of communication materials published"
+# Using the form / service 
+# "Bushfires States Progress Report (Communication Materials)" 
+# and summing the field 
+#  "Number of communication materials published"
+# Using the form / service 
+# "State Intervention Final Report (Communication Materials)" 
+# and summing the field 
+#  "Number of communication materials published"
+
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Communicati...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Communication mat...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Communication mat...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Communication mat...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -1462,8 +1528,18 @@ Report_Raw <- bind_rows(
     object_class='Communication materials',property='Publication',
     value='Total Materials'),
   no_category_extract_no_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Communication mat...inal Report',
+    service= "Communication materials",
+    target_measure = "Number of communication materials published",
+    measured = number_of_communication_materials_published,
+    invoiced = number_of_communication_materials_published,
+    actual = number_of_communication_materials_published,
+    object_class='Communication materials',property='Publication',
+    value='Total Materials'),
+  no_category_extract_no_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Communication mat...ress Report',
     service= "Communication materials",
     target_measure = "Number of communication materials published",
     measured = number_of_communication_materials_published,
@@ -1472,9 +1548,209 @@ Report_Raw <- bind_rows(
     object_class='Communication materials',property='Publication',
     value='Total Materials'))
 
+#
+# The delivery against the target 
+# "Number of field days" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)"
+# and summing the field #  "Adjustment" 
+# where the field "scoreId" 
+# has the value "06514e13-3aa4-4f3e-805a-16c7b67d3524"
+# Using the form / service 
+# "RLP Output Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "Field days"
+# Using the form / service 
+# "State Intervention Progress Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "Field days"
+# Using the form / service 
+# "Bushfires States Progress Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "Field days"
+# Using the form / service 
+# "State Intervention Final Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "Field days"
+#
+# The delivery against the target 
+# "Number of training / workshop events" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" 
+# where the field "scoreId" 
+# has the value "badfaa17-a2ce-4f40-9007-625084aa5955"
+# Using the form / service 
+# "RLP Output Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "Training / workshop events"
+# Using the form / service 
+# "State Intervention Progress Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "Training / workshop events"
+# Using the form / service 
+# "Bushfires States Progress Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "Training / workshop events"
+# Using the form / service 
+# "State Intervention Final Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "Training / workshop events"
+#
+# The delivery against the target 
+# "Number of conferences / seminars" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" 
+# where the field "scoreId" 
+# has the value "3b88c169-7a48-40e7-9d14-595da9bd1434"
+# Using the form / service 
+# "RLP Output Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "Conferences / seminars"
+# Using the form / service 
+# "State Intervention Progress Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "Conferences / seminars"
+# Using the form / service 
+# "Bushfires States Progress Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "Conferences / seminars"
+# Using the form / service 
+# "State Intervention Final Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "Conferences / seminars"
+#
+# The delivery against the target 
+# "Number of one-on-one technical advice interactions" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" 
+# where the field "scoreId" 
+# has the value "e6fda937-2d13-488e-8be3-200b64c9d2b5"
+# Using the form / service 
+# "RLP Output Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "One-on-one technical advice interactions"
+# Using the form / service 
+# "State Intervention Progress Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "One-on-one technical advice interactions"
+# Using the form / service 
+# "Bushfires States Progress Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "One-on-one technical advice interactions"
+# Using the form / service 
+# "State Intervention Final Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "One-on-one technical advice interactions"
+#
+# The delivery against the target 
+# "Number of on-ground trials / demonstrations" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" 
+# where the field "scoreId" 
+# has the value "e103ec86-7fb2-4e89-bbc5-ddff1703a6fe"
+# Using the form / service 
+# "RLP Output Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "On-ground trials / demonstrations"
+# Using the form / service 
+# "State Intervention Progress Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "On-ground trials / demonstrations"
+# Using the form / service 
+# "Bushfires States Progress Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "On-ground trials / demonstrations"
+# Using the form / service 
+# "State Intervention Final Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "On-ground trials / demonstrations"
+#
+# The delivery against the target 
+# "Number of on-ground works" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" 
+# where the field "scoreId" 
+# has the value "4d9ddce8-9fa1-4918-9355-565aa4d056f9"
+# Using the form / service 
+# "RLP Output Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "On-ground works"
+# Using the form / service 
+# "State Intervention Progress Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "On-ground works"
+# Using the form / service 
+# "Bushfires States Progress Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "On-ground works"
+# Using the form / service 
+# "State Intervention Final Report (Community/stakeholder engagement)" 
+# and summing the field 
+#  "Number of Community / Stakeholder engagement type events" 
+# where the field "Type of Community / Stakeholder engagement activity" 
+# has the value "On-ground works"
+
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Community e...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'), 'Community engagem...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'), 'Community engagem...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'), 'Community engagem...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -1492,8 +1768,21 @@ Report_Raw <- bind_rows(
     object_class='Community Engagement',property='conferences / seminars',
     value='Total Events'),
   sub_category_extract_no_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Community engagem...inal Report',
+    service = "Community/stakeholder engagement",
+    target_measure = "Number of conferences / seminars",
+    measured = number_of_community_stakeholder_engagement_type_events,
+    invoiced = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
+    category=type_of_community_stakeholder_engagement_activity,
+    sub_category = 'Conferences / seminars',
+    context=purpose_of_engagement,
+    object_class='Community Engagement',property='conferences / seminars',
+    value='Total Events'),
+  sub_category_extract_no_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Community engagem...ress Report',
     service = "Community/stakeholder engagement",
     target_measure = "Number of conferences / seminars",
     measured = number_of_community_stakeholder_engagement_type_events,
@@ -1517,8 +1806,21 @@ Report_Raw <- bind_rows(
     object_class='Community Engagement',property='field days',
     value='Total Events'),
   sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Community engagem...inal Report',
+    service = "Community/stakeholder engagement",
+    target_measure = "Number of field days",
+    measured = number_of_community_stakeholder_engagement_type_events,
+    invoiced = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
+    category=type_of_community_stakeholder_engagement_activity,
+    sub_category='Field days',
+    context=purpose_of_engagement,
+    object_class='Community Engagement',property='field days',
+    value='Total Events'),
+  sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Community engagem...ress Report',
     service = "Community/stakeholder engagement",
     target_measure = "Number of field days",
     measured = number_of_community_stakeholder_engagement_type_events,
@@ -1543,8 +1845,22 @@ Report_Raw <- bind_rows(
     object_class='Community Engagement',property='On-ground trials / demonstrations',
     value='Total Events'),
   sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Community engagem...inal Report',
+    service = "Community/stakeholder engagement",
+    target_measure = "Number of on-ground trials / demonstrations",
+    measured = number_of_community_stakeholder_engagement_type_events,
+    invoiced = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
+    category=type_of_community_stakeholder_engagement_activity,
+    sub_category='On-ground trials / demonstrations',
+    context=purpose_of_engagement,
+    object_class='Community Engagement',
+    property='On-ground trials / demonstrations',
+    value='Total Events'),
+  sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Community engagem...ress Report',
     service = "Community/stakeholder engagement",
     target_measure = "Number of on-ground trials / demonstrations",
     measured = number_of_community_stakeholder_engagement_type_events,
@@ -1570,8 +1886,21 @@ Report_Raw <- bind_rows(
     object_class='Community Engagement',property='on-ground works',
     value='Total Events'),
   sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Community engagem...inal Report',
+    service = "Community/stakeholder engagement",
+    target_measure = "Number of on-ground works",
+    measured = number_of_community_stakeholder_engagement_type_events,
+    invoiced = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
+    category=type_of_community_stakeholder_engagement_activity,
+    context=purpose_of_engagement,
+    sub_category='On-ground works',
+    object_class='Community Engagement',property='on-ground works',
+    value='Total Events'),
+  sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Community engagem...ress Report',
     service = "Community/stakeholder engagement",
     target_measure = "Number of on-ground works",
     measured = number_of_community_stakeholder_engagement_type_events,
@@ -1596,8 +1925,22 @@ Report_Raw <- bind_rows(
     object_class='Community Engagement',property='one-on-one technical advice interactions',
     value='Total Events'),
   sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Community engagem...inal Report',
+    service = "Community/stakeholder engagement",
+    target_measure = "Number of one-on-one technical advice interactions",
+    measured = number_of_community_stakeholder_engagement_type_events,
+    invoiced = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
+    category=type_of_community_stakeholder_engagement_activity,
+    sub_category='One-on-one technical advice interactions',
+    context=purpose_of_engagement,
+    object_class='Community Engagement',
+    property='one-on-one technical advice interactions',
+    value='Total Events'),
+  sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Community engagem...ress Report',
     service = "Community/stakeholder engagement",
     target_measure = "Number of one-on-one technical advice interactions",
     measured = number_of_community_stakeholder_engagement_type_events,
@@ -1624,8 +1967,21 @@ Report_Raw <- bind_rows(
     property='training / workshop events',
     value='Total Events'),
   sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Community engagem...inal Report',
+    service = "Community/stakeholder engagement",
+    target_measure = "Number of training / workshop events",
+    measured = number_of_community_stakeholder_engagement_type_events,
+    invoiced = number_of_community_stakeholder_engagement_type_events,
+    actual = number_of_community_stakeholder_engagement_type_events,
+    category=type_of_community_stakeholder_engagement_activity,
+    sub_category='Training / workshop events',
+    context=purpose_of_engagement,
+    object_class='Community Engagement',property='training / workshop events',
+    value='Total Events'),
+  sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Community engagem...ress Report',
     service = "Community/stakeholder engagement",
     target_measure = "Number of training / workshop events",
     measured = number_of_community_stakeholder_engagement_type_events,
@@ -1637,9 +1993,86 @@ Report_Raw <- bind_rows(
     object_class='Community Engagement',property='training / workshop events',
     value='Total Events'))
 
+#
+# The delivery against the target 
+# "Number of structures installed" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" 
+# where the field "scoreId" 
+# has the value "821a8812-32ab-4317-b4ae-6cf46c279981"
+# Using the form / service 
+# "RLP Output Report (Controlling access)" 
+# and summing the field 
+#  "Number of structures installed"
+# Using the form / service 
+# "State Intervention Progress Report (Controlling access)" 
+# and summing the field 
+#  "Number of structures installed"
+# Using the form / service 
+# "Bushfires States Progress Report (Controlling access)" 
+# and summing the field 
+#  "Number of structures installed"
+# Using the form / service 
+# "State Intervention Final Report (Controlling access)" 
+# and summing the field 
+#  "Number of structures installed"
+#
+# The delivery against the target 
+# "Length (km) installed" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" 
+# where the field "scoreId" 
+# has the value "15bce90f-fe07-4f38-99f6-59a8fae1f1a7"
+# Using the form / service 
+# "RLP Output Report (Controlling access)" 
+# and summing the field 
+#  "lengthInstalledKm"
+# Using the form / service 
+# "State Intervention Progress Report (Controlling access)" 
+# and summing the field 
+#  "lengthInstalledKm"
+# Using the form / service 
+# "Bushfires States Progress Report (Controlling access)" 
+# and summing the field 
+#  "lengthInstalledKm"
+# Using the form / service 
+# "State Intervention Final Report (Controlling access)" 
+# and summing the field 
+#  "lengthInstalledKm"
+#
+# The delivery against the target 
+# "Area (ha) where access has been controlled" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" 
+# where the field "scoreId" 
+# has the value "601eeb5a-50a6-4ee1-a0c8-b90d21c2c661"
+# Using the form / service 
+# "RLP Output Report (Controlling access)" 
+# and summing the field 
+#  "areaInstalledHa"
+# Using the form / service 
+# "State Intervention Progress Report (Controlling access)" 
+# and summing the field 
+#  "areaInstalledHa"
+# Using the form / service 
+# "Bushfires States Progress Report (Controlling access)" 
+# and summing the field 
+#  "areaInstalledHa"
+# Using the form / service 
+# "State Intervention Final Report (Controlling access)" 
+# and summing the field 
+#  "areaInstalledHa"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Controlling...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'), 'Controlling acces...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'), 'Controlling acces...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'), 'Controlling acces...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -1655,8 +2088,19 @@ Report_Raw <- bind_rows(
     object_class='Sites',property='Access control measures',
     value='Total Area (Ha)'),
   no_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Controlling acces...inal Report',
+    service = "Controlling access",
+    target_measure = "Area (ha) where access has been controlled",
+    measured = sites_installed_calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    actual = sites_installed_calculated_area_ha,
+    context=control_objective,
+    object_class='Sites',property='Access control measures',
+    value='Total Area (Ha)'),
+  no_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Controlling acces...ress Report',
     service = "Controlling access",
     target_measure = "Area (ha) where access has been controlled",
     measured = sites_installed_calculated_area_ha,
@@ -1677,8 +2121,19 @@ Report_Raw <- bind_rows(
     object_class='Sites',property='Access control measures',
     value='Total Length (km)'),
   no_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Controlling acces...inal Report',
+    service = "Controlling access",
+    target_measure = "Length (km) installed",
+    measured = sites_installed_calculated_length_km,
+    invoiced = length_invoiced_km,
+    context=control_objective,
+    actual = length_installed_km,
+    object_class='Sites',property='Access control measures',
+    value='Total Length (km)'),
+  no_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Controlling acces...ress Report',
     service = "Controlling access",
     target_measure = "Length (km) installed",
     measured = sites_installed_calculated_length_km,
@@ -1699,8 +2154,19 @@ Report_Raw <- bind_rows(
     object_class='Sites',property='Access control measures',
     value='Total Structures'),
   no_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Controlling acces...inal Report',
+    service = "Controlling access",
+    target_measure = "Number of structures installed",
+    measured = number_of_structures_installed,
+    invoiced = number_of_structures_installed,
+    context=control_objective,
+    actual = number_of_structures_installed,
+    object_class='Sites',property='Access control measures',
+    value='Total Structures'),
+  no_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Controlling acces...ress Report',
     service = "Controlling access",
     target_measure = "Number of structures installed",
     measured = number_of_structures_installed,
@@ -1710,9 +2176,75 @@ Report_Raw <- bind_rows(
     object_class='Sites',property='Access control measures',
     value='Total Structures'))
 
+#
+# The delivery against the target 
+# "Area (ha) treated for pest animals - initial" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" 
+# where the field "scoreId" 
+# has the value "e037c2d7-a5e5-4e5c-a173-a2f426d39e95"
+# Using the form / service 
+# "RLP Output Report (Controlling pest animals)" 
+# and summing the field 
+#  "Actual area (ha) / length (km) treated for pest animals" 
+# where the field "Initial or follow-up control?" 
+# has the value "Initial"
+# Using the form / service 
+# "State Intervention Progress Report (Controlling pest animals)" 
+# and  summing the field 
+# "Actual area (ha) treated for pest animals" 
+# where the field "Initial or follow-up control?" 
+# has the value "Initial"
+# Using the form / service 
+# "Bushfires States Progress Report (Controlling pest animals)" 
+# and  summing the field "Actual area (ha) treated for pest animals" 
+# where the field "Initial or follow-up control?" 
+# has the value "Initial"
+# Using the form / service 
+# "State Intervention Final Report (Controlling pest animals)" 
+# and summing the field 
+#  "Actual area (ha) treated for pest animals" 
+# where the field "Initial or follow-up control?" 
+# has the value "Initial"
+#
+# The delivery against the target 
+# "Area (ha) treated for pest animals - follow-up" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)"
+# and  summing the field 
+# "Adjustment" 
+# where the field "scoreId" 
+# has the value "dd4a0ab0-f760-44e9-ae37-5589a06678dd"
+# Using the form / service 
+# "RLP Output Report (Controlling pest animals)" and 
+# summing the field "Actual area (ha) / length (km) treated for pest animals" 
+# where the field "Initial or follow-up control?" 
+# has the value "Follow-up"
+# Using the form / service 
+# "State Intervention Progress Report (Controlling pest animals)" 
+# and summing the field 
+#  "Actual area (ha) treated for pest animals" 
+# where the field "Initial or follow-up control?" 
+# has the value "Follow-up"
+# Using the form / service 
+# "Bushfires States Progress Report (Controlling pest animals)" 
+# and summing the field 
+#  "Actual area (ha) treated for pest animals" 
+# where the field "Initial or follow-up control?" 
+# has the value "Follow-up"
+# Using the form / service 
+# "State Intervention Final Report (Controlling pest animals)" 
+# and summing the field 
+#  "Actual area (ha) treated for pest animals" 
+# where the field "Initial or follow-up control?" 
+# has the value "Follow-up"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Pest animal...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'), 'Pest animal manag...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'), 'Pest animal manag...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'), 'Pest animal manag...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -1730,7 +2262,7 @@ Report_Raw <- bind_rows(
     object_class='Pest Animals',property='Control measures - initial',
     value='Total Area (Ha)'),
   sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Pest animal manag...inal Report',
     service = "Controlling pest animals",
     target_measure = "Area (ha) treated for pest animals - initial",
@@ -1743,8 +2275,34 @@ Report_Raw <- bind_rows(
     object_class='Pest Animals',property='Control measures - initial',
     value='Total Area (Ha)'),
   sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSP_Data,
+    worksheet = 'Pest animal manag...ress Report',
+    service = "Controlling pest animals",
+    target_measure = "Area (ha) treated for pest animals - initial",
+    measured = site_calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    actual = site_calculated_area_ha,
+    category = initial_or_follow_up_control,
+    context = treatment_objective,
+    sub_category = 'Initial',
+    object_class='Pest Animals',property='Control measures - initial',
+    value='Total Area (Ha)'),
+  sub_category_extract_context_no_species(
+    Data=BRSF_Data,
     worksheet = 'Pest animal manag...inal Report',
+    service = "Controlling pest animals",
+    target_measure = "Area (ha) treated for pest animals - initial",
+    measured = site_calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    actual = site_calculated_area_ha,
+    category = initial_or_follow_up_control,
+    context = treatment_objective,
+    sub_category = 'Initial',
+    object_class='Pest Animals',property='Control measures - initial',
+    value='Total Area (Ha)'),
+  sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Pest animal manag...ress Report',
     service = "Controlling pest animals",
     target_measure = "Area (ha) treated for pest animals - initial",
     measured = site_calculated_area_ha,
@@ -1770,8 +2328,22 @@ Report_Raw <- bind_rows(
     object_class='Pest Animals',property='Control measures - follow-up',
     value='Total Area (Ha)'),
   sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Pest animal manag...inal Report',
+    service = "Controlling pest animals",
+    target_measure = "Area (ha) treated for pest animals - follow-up",
+    measured = site_calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    actual = site_calculated_area_ha,
+    category = initial_or_follow_up_control,
+    context = treatment_objective,
+    sub_category = 'Follow-up',
+    species=target_pest_species,
+    object_class='Pest Animals',property='Control measures - follow-up',
+    value='Total Area (Ha)'),
+  sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Pest animal manag...ress Report',
     service = "Controlling pest animals",
     target_measure = "Area (ha) treated for pest animals - follow-up",
     measured = site_calculated_area_ha,
@@ -1784,9 +2356,37 @@ Report_Raw <- bind_rows(
     object_class='Pest Animals',property='Control measures - follow-up',
     value='Total Area (Ha)'))
 
+#
+# The delivery against the target 
+# "Area (ha) of debris removal" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" 
+# where the field "scoreId" 
+# has the value "427158a6-bbc4-46c1-bc36-baaa949d0a58"
+# Using the form / service 
+# "RLP Output Report (Debris removal)" 
+# and summing the field 
+#  "debrisRemovedHa"
+# Using the form / service 
+# "State Intervention Progress Report (Debris removal)" 
+# and summing the field 
+#  "debrisRemovedHa"
+# Using the form / service 
+# "Bushfires States Progress Report (Debris removal)" 
+# and summing the field 
+#  "debrisRemovedHa"
+# Using the form / service 
+# "State Intervention Final Report (Debris removal)" 
+# and summing the field 
+#  "debrisRemovedHa"
+
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Debris remo...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Debris removal St...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Debris removal St...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Debris removal St...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -1803,8 +2403,20 @@ Report_Raw <- bind_rows(
     object_class='Debris',property='Removal',
     value='Total Area (Ha)'),
   all_sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Debris removal St...inal Report',
+    service = "Debris removal",
+    target_measure = "Area (ha) of debris removal",
+    measured = calculated_debris_removed_ha,
+    invoiced = area_of_removed_debris_invoiced_ha,
+    actual = debris_removed_ha,
+    context = debris_type,
+    category = initial_or_follow_up_activity,
+    object_class='Debris',property='Removal',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Debris removal St...ress Report',
     service = "Debris removal",
     target_measure = "Area (ha) of debris removal",
     measured = calculated_debris_removed_ha,
@@ -1815,9 +2427,58 @@ Report_Raw <- bind_rows(
     object_class='Debris',property='Removal',
     value='Total Area (Ha)'))
 
+#
+# The delivery against the target 
+# "Number of farm/project/site plans developed" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Developing farm/project/site management plan)" 
+# and summing the field 
+#  "Number of plans developed"
+# Using the form / service 
+# "State Intervention Progress Report (Developing farm / project / site management plan)" 
+# and summing the field 
+#  "Number of plans developed"
+# Using the form / service 
+# "Bushfires States Progress Report (Developing farm / project / site management plan)" 
+# and summing the field 
+#  "Number of plans developed"
+# Using the form / service 
+# "State Intervention Final Report (Developing farm / project / site management plan)" 
+# and summing the field 
+#  "Number of plans developed"
+#
+# The delivery against the target 
+# "Area (ha) covered by plan" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Developing farm/project/site management plan)" 
+# and summing the field 
+#  "areaCoveredByPlanHa"
+# Using the form / service 
+# "State Intervention Progress Report (Developing farm / project / site management plan)" 
+# and summing the field 
+#  "areaCoveredByPlanHa"
+# Using the form / service 
+# "Bushfires States Progress Report (Developing farm / project / site management plan)" 
+# and summing the field 
+#  "areaCoveredByPlanHa"
+# Using the form / service 
+# "State Intervention Final Report (Developing farm / project / site management plan)" 
+# and summing the field 
+#  "areaCoveredByPlanHa"
+
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Management ...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Management plan d...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Management plan d...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Management plan d...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -1846,9 +2507,47 @@ Report_Raw <- bind_rows(
     category = are_these_plans_new_or_revised,
     object_class='Debris',property='Removal',
     value='Total Plans'),
-  all_sub_category_extract_context_no_species(
-    Data=BR_Data,
+  all_sub_category_extract_context_species(
+    Data=BRSF_Data,
     worksheet = 'Management plan d...inal Report',
+    service = "Developing farm/project/site management plan",
+    target_measure = "Area (ha) covered by plan",
+    measured = calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    actual = area_covered_by_plan_ha,
+    context= management_plan_type,
+    category = are_these_plans_new_or_revised,
+    species = species_and_or_threatened_ecological_communities_covered_in_plan,
+    object_class='Debris',property='Removal',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Management plan d...ress Report',
+    service = "Developing farm/project/site management plan",
+    target_measure = "Area (ha) covered by plan",
+    measured = calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    actual = area_covered_by_plan_ha,
+    context= management_plan_type,
+    category = are_these_plans_new_or_revised,
+    species = species_and_or_threatened_ecological_communities_covered_in_plan,
+    object_class='Debris',property='Removal',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSF_Data,
+    worksheet = 'Management plan d...inal Report',
+    service = "Developing farm/project/site management plan",
+    target_measure = "Number of farm/project/site plans developed",
+    measured = number_of_plans_developed,
+    invoiced = number_of_plans_developed,
+    actual = number_of_plans_developed,
+    context = management_plan_type,
+    category = are_these_plans_new_or_revised,
+    object_class='Debris',property='Removal',
+    value='Total Plans'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Management plan d...ress Report',
     service = "Developing farm/project/site management plan",
     target_measure = "Number of farm/project/site plans developed",
     measured = number_of_plans_developed,
@@ -1859,9 +2558,57 @@ Report_Raw <- bind_rows(
     object_class='Debris',property='Removal',
     value='Total Plans'))
 
+#
+# The delivery against the target 
+# "Area (ha) of erosion control" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Erosion management)" 
+# and summing the field 
+#  "areaOfErosionControlHa"
+# Using the form / service 
+# "State Intervention Progress Report (Erosion management)" 
+# and summing the field 
+#  "areaOfErosionControlHa"
+# Using the form / service 
+# "Bushfires States Progress Report (Erosion management)" 
+# and summing the field 
+#  "areaOfErosionControlHa"
+# Using the form / service 
+# "State Intervention Final Report (Erosion management)" 
+# and summing the field 
+#  "areaOfErosionControlHa"
+#
+# The delivery against the target 
+# "Length (km) of stream/coastline treated for erosion" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Erosion management)" 
+# and summing the field 
+#  "lengthOfErosionControlKm"
+# Using the form / service 
+# "State Intervention Progress Report (Erosion management)"
+# and summing the field 
+#  "lengthOfErosionControlKm"
+# Using the form / service 
+# "Bushfires States Progress Report (Erosion management)" 
+# and summing the field 
+#  "lengthOfErosionControlKm"
+# Using the form / service 
+# "State Intervention Final Report (Erosion management)" 
+# and summing the field 
+#  "lengthOfErosionControlKm"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Erosion Man...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'), 'Erosion Managemen...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'), 'Erosion Managemen...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'), 'Erosion Managemen...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -1872,14 +2619,26 @@ Report_Raw <- bind_rows(
     target_measure = "Area (ha) of erosion control",
     measured = calculated_area_of_erosion_control_ha,
     invoiced = area_of_erosion_control_invoiced_ha,
-    actual = area_ha_benefiting_from_erosion_management,
+    actual = area_ha_of_erosion_control,
     context = type_of_treatment_method,
     category = initial_or_follow_up_activity,
     object_class='Debris',property='Removal',
     value='Total Area (Ha)'),
   all_sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Erosion Managemen...inal Report',
+    service = "Erosion management",
+    target_measure = "Area (ha) of erosion control",
+    measured = calculated_area_of_erosion_control_ha,
+    invoiced = area_of_erosion_control_invoiced_ha,
+    actual = area_of_erosion_control_ha,
+    category = initial_or_follow_up_activity,
+    context = erosion_management_method,
+    object_class='Erosion',property='Treatment',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Erosion Managemen...ress Report',
     service = "Erosion management",
     target_measure = "Area (ha) of erosion control",
     measured = calculated_area_of_erosion_control_ha,
@@ -1900,11 +2659,117 @@ Report_Raw <- bind_rows(
     context = type_of_treatment_method,
     category = initial_or_follow_up_activity,
     object_class='Erosion',property='Treatment',
+    value='Total Length (km)'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSF_Data,
+    worksheet = 'Erosion Managemen...inal Report',
+    service = "Erosion management",
+    target_measure = "Length (km) of stream/coastline treated for erosion",
+    measured = calculated_length_of_erosion_control_km,
+    invoiced = length_of_erosion_control_invoiced_km,
+    actual = length_of_erosion_control_km,
+    context = erosion_management_method,
+    category = initial_or_follow_up_activity,
+    object_class='Erosion',property='Treatment',
+    value='Total Length (km)'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Erosion Managemen...ress Report',
+    service = "Erosion management",
+    target_measure = "Length (km) of stream/coastline treated for erosion",
+    measured = calculated_length_of_erosion_control_km,
+    invoiced = length_of_erosion_control_invoiced_km,
+    actual = length_of_erosion_control_km,
+    context = erosion_management_method,
+    category = initial_or_follow_up_activity,
+    object_class='Erosion',property='Treatment',
     value='Total Length (km)'))
+
+#
+# The delivery against the target 
+# "Number of agreements" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Establishing and maintaining agreements)" 
+# and summing the field 
+#  "Number of agreements" 
+# where the field "Established or maintained?" 
+# has the value "Established"
+# Using the form / service 
+# "State Intervention Progress Report (Establishing and maintaining agreements)" 
+# and summing the field 
+#  "Number of agreements" 
+# where the field "Established or maintained?" 
+# has the value "Established"
+# Using the form / service 
+# "Bushfires States Progress Report (Establishing and maintaining agreements)" 
+# and summing the field 
+#  "Number of agreements" 
+# where the field "Established or maintained?" 
+# has the value "Established"
+# Using the form / service 
+# "State Intervention Final Report (Establishing and maintaining agreements)" 
+# and summing the field 
+#  "Number of agreements" 
+# where the field "Established or maintained?" 
+# has the value "Established"
+#
+# The delivery against the target 
+# "Area (ha) covered by agreements" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" 
+# where the field "scoreId" 
+# has the value "85a143b4-efac-4195-af25-0d499817fb84"
+# Using the form / service 
+# "RLP Output Report (Establishing and maintaining agreements)" 
+# and summing the field 
+#  "areaCoveredByAgreementsHa"
+# Using the form / service 
+# "State Intervention Progress Report (Establishing and maintaining agreements)" 
+# and summing the field 
+#  "areaCoveredByAgreementsHa"
+# Using the form / service 
+# "Bushfires States Progress Report (Establishing and maintaining agreements)" 
+# and summing the field 
+#  "areaCoveredByAgreementsHa"
+# Using the form / service 
+# "State Intervention Final Report (Establishing and maintaining agreements)" 
+# and summing the field 
+#  "areaCoveredByAgreementsHa"
+#
+# The delivery against the target 
+# "Number of days maintaining agreements" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" and the field "scoreId" 
+# has the value "d42c83e1-aba3-47f0-80a1-79ba003fcd49"
+# Using the form / service 
+# "RLP Output Report (Establishing and maintaining agreements)" 
+# and summing the field 
+#  "Number of days maintaining agreements (if applicable)"
+# Using the form / service 
+# "State Intervention Progress Report (Establishing and maintaining agreements)" 
+# and summing the field 
+#  "Number of days maintaining agreements (if applicable)"
+# Using the form / service 
+# "Bushfires States Progress Report (Establishing and maintaining agreements)" 
+# and summing the field 
+#  "Number of days maintaining agreements (if applicable)"
+# Using the form / service 
+# "State Intervention Final Report (Establishing and maintaining agreements)" 
+# and summing the field 
+#  "Number of days maintaining agreements (if applicable)"
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Establishin...tput Rep(1)')
-BR_Data <- load_mult_wbooks(c('M05'),'Establishing Agre...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Establishing Agre...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Establishing Agre...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -1945,7 +2810,7 @@ Report_Raw <- bind_rows(
     object_class='Agreements',property='Establishing and maintaining',
     value='Total Days'),
   all_sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Establishing Agre...inal Report',
     service = "Establishing and maintaining agreements",
     target_measure = "Area (ha) covered by agreements",
@@ -1957,7 +2822,7 @@ Report_Raw <- bind_rows(
     object_class='Agreements',property='Establishing and maintaining',
     value='Total Area (Ha)'),
   all_sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Establishing Agre...inal Report',
     service = "Establishing and maintaining agreements",
     target_measure = "Number of agreements",
@@ -1969,8 +2834,44 @@ Report_Raw <- bind_rows(
     object_class='Agreements',property='Establishing and maintaining',
     value='Total Agreements'),
   all_sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Establishing Agre...inal Report',
+    service = "Establishing and maintaining agreements",
+    target_measure = "Number of days maintaining agreements",
+    measured = number_of_days_maintaining_agreements_if_applicable,
+    invoiced = number_of_days_maintaining_agreements_if_applicable,
+    actual = number_of_days_maintaining_agreements_if_applicable,
+    context = agreement_type,
+    category = established_or_maintained,
+    object_class='Agreements',property='Establishing and maintaining',
+    value='Total Days'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Establishing Agre...ress Report',
+    service = "Establishing and maintaining agreements",
+    target_measure = "Area (ha) covered by agreements",
+    measured = calculated_area_covered_by_agreements_ha,
+    invoiced = area_of_covered_by_agreements_invoiced_ha,
+    actual = area_covered_by_agreements_ha,
+    context = agreement_type,
+    category = established_or_maintained,
+    object_class='Agreements',property='Establishing and maintaining',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Establishing Agre...ress Report',
+    service = "Establishing and maintaining agreements",
+    target_measure = "Number of agreements",
+    measured = number_of_agreements,
+    invoiced = number_of_agreements,
+    context = agreement_type,
+    actual = number_of_agreements,
+    category = established_or_maintained,
+    object_class='Agreements',property='Establishing and maintaining',
+    value='Total Agreements'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Establishing Agre...ress Report',
     service = "Establishing and maintaining agreements",
     target_measure = "Number of days maintaining agreements",
     measured = number_of_days_maintaining_agreements_if_applicable,
@@ -1981,9 +2882,58 @@ Report_Raw <- bind_rows(
     object_class='Agreements',property='Establishing and maintaining',
     value='Total Days'))
 
+#
+# The delivery against the target 
+# "Number of days maintaining breeding programs" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)” 
+# and summing the field 
+#  "Adjustment” 
+# where the field "scoreId" has the value "b2099566-826a-4968-8c17-1e0fe9e793d8"
+# Using the form / service 
+# "RLP Output Report (Establishing ex-situ breeding program)” 
+# and summing the field 
+#  "Number of days maintaining breeding program"
+# Using the form / service 
+# "State Intervention Progress Report (Establishing and maintaining breeding programs)” 
+# and summing the field 
+#  "Number of days maintaining breeding program"
+# Using the form / service 
+# "Bushfires States Progress Report (Establishing and maintaining breeding programs)” 
+# and summing the field 
+#  "Number of days maintaining breeding program"
+# Using the form / service 
+# "State Intervention Final Report (Establishing and maintaining breeding programs)” 
+# and summing the field 
+#  "Number of days maintaining breeding program"
+#
+# The delivery against the target 
+# "Number of breeding sites and/or populations" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)” 
+# and summing the field 
+#  "Adjustment" and the field "scoreId" has the value "20fd50ca-d11c-4423-97a0-3273a017046f"
+# Using the form / service 
+# "RLP Output Report (Establishing ex-situ breeding program)” 
+# and summing the field 
+#  "Number of breeding sites created"
+# Using the form / service 
+# "State Intervention Progress Report (Establishing and maintaining breeding programs)” 
+# and summing the field 
+#  "Number of breeding sites created"
+# Using the form / service 
+# "Bushfires States Progress Report (Establishing and maintaining breeding programs)” 
+# and summing the field 
+#  "Number of breeding sites created"
+# Using the form / service 
+# "State Intervention Final Report (Establishing and maintaining breeding programs)” 
+# and summing the field 
+#  "Number of breeding sites created"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Establishin...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Establishing ex-s...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Establishing ex-s...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Establishing ex-s...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2014,7 +2964,7 @@ Report_Raw <- bind_rows(
     object_class='Sites',property='Breeding Programs',
     value='Total Days'),
   all_sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Establishing ex-s...inal Report',
     service = "Establishing and maintaining breeding programs",
     target_measure = "Number of breeding sites and/or populations",
@@ -2027,7 +2977,7 @@ Report_Raw <- bind_rows(
     object_class='Sites',property='Breeding Programs',
     value='Total Sites'),
   all_sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Establishing ex-s...inal Report',
     service = "Establishing and maintaining breeding programs",
     target_measure = "Number of days maintaining breeding programs",
@@ -2038,11 +2988,86 @@ Report_Raw <- bind_rows(
     category = ex_situ_in_situ,
     species = targeted_threatened_species,
     object_class='Sites',property='Breeding Programs',
-    value='Total Days'))
+    value='Total Days'),  
+  all_sub_category_extract_context_species(
+      Data=BRSP_Data,
+      worksheet = 'Establishing ex-s...ress Report',
+      service = "Establishing and maintaining breeding programs",
+      target_measure = "Number of breeding sites and/or populations",
+      measured = number_of_breeding_sites_created,
+      invoiced = number_of_breeding_sites_created,
+      actual = number_of_breeding_sites_created,
+      context = technique_of_breeding_program,
+      category = ex_situ_in_situ,
+      species = targeted_threatened_species,
+      object_class='Sites',property='Breeding Programs',
+      value='Total Sites'),
+  all_sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Establishing ex-s...ress Report',
+    service = "Establishing and maintaining breeding programs",
+    target_measure = "Number of days maintaining breeding programs",
+    measured = number_of_days_maintaining_breeding_program,
+    invoiced = number_of_days_maintaining_breeding_program,
+    actual = number_of_days_maintaining_breeding_program,
+    context = technique_of_breeding_program,
+    category = ex_situ_in_situ,
+    species = targeted_threatened_species,
+    object_class='Sites',property='Breeding Programs',
+    value='Total Days')
+  )
+
+#
+# The delivery against the target 
+# "Number of feral free enclosures" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Establishing and maintaining feral-free enclosures)" 
+# and summing the field 
+#  "Number of feral free enclosures"
+# Using the form / service 
+# "State Intervention Progress Report (Establishing and maintaining feral-free enclosures)" 
+# and summing the field 
+#  "Number of feral free enclosures"
+# Using the form / service 
+# "Bushfires States Progress Report (Establishing and maintaining feral-free enclosures)" 
+# and summing the field 
+#  "Number of feral free enclosures"
+# Using the form / service 
+# "State Intervention Final Report (Establishing and maintaining feral-free enclosures)" 
+# and summing the field 
+#  "Number of feral free enclosures"
+#
+# The delivery against the target 
+# "Area (ha) of feral-free enclosure" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Establishing and maintaining feral-free enclosures)" 
+# and summing the field 
+#  "Actual area (ha) of feral-free enclosures"
+# Using the form / service 
+# "State Intervention Progress Report (Establishing and maintaining feral-free enclosures)" 
+# and summing the field 
+#  "Actual area (ha) of feral-free enclosures"
+# Using the form / service 
+# "Bushfires States Progress Report (Establishing and maintaining feral-free enclosures)" 
+# and summing the field 
+#  "Actual area (ha) of feral-free enclosures"
+# Using the form / service 
+# "State Intervention Final Report (Establishing and maintaining feral-free enclosures)" 
+# and summing the field 
+#  "Actual area (ha) of feral-free enclosures"
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Maintaining...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Maintaining feral...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Maintaining feral...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Maintaining feral...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2087,7 +3112,7 @@ Report_Raw <- bind_rows(
     property='Establishing and maintaining',
     value='Total Enclosures'),
   all_sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Maintaining feral...inal Report',
     service = "Establishing and maintaining feral-free enclosures",
     target_measure = "Area (ha) of feral-free enclosure",
@@ -2100,7 +3125,7 @@ Report_Raw <- bind_rows(
     object_class='Feral-free Enclosures',property='Establishing and maintaining',
     value='Total Area (Ha)'),
   all_sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Maintaining feral...inal Report',
     service = "Establishing and maintaining feral-free enclosures",
     target_measure = "Number of days maintaining feral-free enclosures",
@@ -2113,8 +3138,48 @@ Report_Raw <- bind_rows(
     object_class='Feral-free Enclosures',property='Establishing and maintaining',
     value='Total Days'),
   all_sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Maintaining feral...inal Report',
+    service = "Establishing and maintaining feral-free enclosures",
+    target_measure = "Number of feral free enclosures",
+    measured = calculated_area_of_enclosures_ha,
+    invoiced = area_invoiced_ha,
+    actual = actual_area_ha_of_feral_free_enclosures,
+    context = targeted_feral_species_being_controlled,
+    category = newly_established_or_maintained_feral_free_enclosure,
+    species = targeted_species_being_protected,
+    object_class='Feral-Free Enclosures',
+    property='Establishing and maintaining',
+    value='Total Enclosures'),
+  all_sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Maintaining feral...ress Report',
+    service = "Establishing and maintaining feral-free enclosures",
+    target_measure = "Area (ha) of feral-free enclosure",
+    measured = calculated_area_of_enclosures_ha,
+    invoiced = area_invoiced_ha,
+    actual = actual_area_ha_of_feral_free_enclosures,
+    context = targeted_feral_species_being_controlled,
+    category = newly_established_or_maintained_feral_free_enclosure,
+    species = targeted_species_being_protected,
+    object_class='Feral-free Enclosures',property='Establishing and maintaining',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Maintaining feral...ress Report',
+    service = "Establishing and maintaining feral-free enclosures",
+    target_measure = "Number of days maintaining feral-free enclosures",
+    measured = calculated_area_of_enclosures_ha,
+    invoiced = area_invoiced_ha,
+    actual = actual_area_ha_of_feral_free_enclosures,
+    context = targeted_feral_species_being_controlled,
+    category = newly_established_or_maintained_feral_free_enclosure,
+    species = targeted_species_being_protected,
+    object_class='Feral-free Enclosures',property='Establishing and maintaining',
+    value='Total Days'),
+  all_sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Maintaining feral...ress Report',
     service = "Establishing and maintaining feral-free enclosures",
     target_measure = "Number of feral free enclosures",
     measured = calculated_area_of_enclosures_ha,
@@ -2127,9 +3192,34 @@ Report_Raw <- bind_rows(
     property='Establishing and maintaining',
     value='Total Enclosures'))
 
+#
+# The delivery against the target 
+# "Number of monitoring regimes established" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Establishing monitoring regimes)" 
+# and summing the field 
+#  "Number of monitoring regimes"
+# Using the form / service 
+# "State Intervention Progress Report (Establishing monitoring regimes)" 
+# and summing the field 
+#  "Number of monitoring regimes"
+# Using the form / service 
+# "Bushfires States Progress Report (Establishing monitoring regimes)" 
+# and summing the field 
+#  "Number of monitoring regimes"
+# Using the form / service 
+# "State Intervention Final Report (Establishing monitoring regimes)" 
+# and summing the field 
+#  "Number of monitoring regimes"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Establishin...tput Rep(2)')
-BR_Data <- load_mult_wbooks(c('M05'),'Establishing moni...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Establishing moni...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Establishing moni...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2160,7 +3250,7 @@ Report_Raw <- bind_rows(
     object_class='Monitoring Regimes',property='Establishing and maintaining',
     value='Total Monitoring Regimes'),
   sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Establishing moni...inal Report',
     service = "Establishing and maintaining monitoring regimes",
     target_measure = "Number of days maintaining monitoring regimes",
@@ -2173,8 +3263,34 @@ Report_Raw <- bind_rows(
     object_class='Monitoring Regimes',property='Establishing and maintaining',
     value='Total Days'),
   sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Establishing moni...inal Report',
+    service = "Establishing and maintaining monitoring regimes",
+    target_measure = "Number of monitoring regimes established",
+    measured = number_of_monitoring_regimes,
+    invoiced = number_of_monitoring_regimes,
+    actual = number_of_monitoring_regimes,
+    category = established_or_maintained,
+    context = monitoring_regimes_objective,
+    sub_category='Established',
+    object_class='Monitoring Regimes',property='Establishing and maintaining',
+    value='Total Monitoring Regimes'),
+  sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Establishing moni...ress Report',
+    service = "Establishing and maintaining monitoring regimes",
+    target_measure = "Number of days maintaining monitoring regimes",
+    measured = number_of_days_maintaining_monitoring_regimes,
+    invoiced = number_of_days_maintaining_monitoring_regimes,
+    actual = number_of_days_maintaining_monitoring_regimes,
+    context = monitoring_regimes_objective, 
+    category = established_or_maintained,
+    sub_category = 'Maintained',
+    object_class='Monitoring Regimes',property='Establishing and maintaining',
+    value='Total Days'),
+  sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Establishing moni...ress Report',
     service = "Establishing and maintaining monitoring regimes",
     target_measure = "Number of monitoring regimes established",
     measured = number_of_monitoring_regimes,
@@ -2186,9 +3302,34 @@ Report_Raw <- bind_rows(
     object_class='Monitoring Regimes',property='Establishing and maintaining',
     value='Total Monitoring Regimes'))
 
+#
+# The delivery against the target 
+# "Number of farm management surveys conducted" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Farm management survey)" 
+# and summing the field 
+#  "Number of farm management surveys conducted"
+# Using the form / service 
+# "State Intervention Progress Report (Farm management surveys)" 
+# and summing the field 
+#  "Number of farm management surveys conducted"
+# Using the form / service 
+# "Bushfires States Progress Report (Farm management surveys)" 
+# and summing the field 
+#  "Number of farm management surveys conducted"
+# Using the form / service 
+# "State Intervention Final Report (Farm management surveys)" 
+# and summing the field 
+#  "Number of farm management surveys conducted"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Farm Manage...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Farm Management S...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Farm Management S...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Farm Management S...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2205,8 +3346,20 @@ Report_Raw <- bind_rows(
     object_class='Farm Management',property='Surveys',
     value='Total Surveys'),
   all_sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Farm Management S...inal Report',
+    service = "Farm management survey",
+    target_measure = "Number of farm management surveys conducted",
+    measured = number_of_farm_management_surveys_conducted,
+    actual = number_of_farm_management_surveys_conducted,
+    invoiced = number_of_farm_management_surveys_conducted,
+    context = survey_purpose,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    object_class='Farm Management',property='Surveys',
+    value='Total Surveys'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Farm Management S...ress Report',
     service = "Farm management survey",
     target_measure = "Number of farm management surveys conducted",
     measured = number_of_farm_management_surveys_conducted,
@@ -2217,9 +3370,57 @@ Report_Raw <- bind_rows(
     object_class='Farm Management',property='Surveys',
     value='Total Surveys'))
 
+#
+# The delivery against the target 
+# "Area surveyed (ha) (fauna)" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Fauna survey)" 
+# and summing the field 
+#  "Actual area (ha) covered by fauna surveys"
+# Using the form / service 
+# "State Intervention Progress Report (Fauna survey)" 
+# and summing the field 
+#  "Actual area (ha) covered by fauna surveys"
+# Using the form / service 
+# "Bushfires States Progress Report (Fauna survey)"
+# and summing the field 
+#  "Actual area (ha) covered by fauna surveys"
+# Using the form / service 
+# "State Intervention Final Report (Fauna survey)" 
+# and summing the field #  "Actual area (ha) covered by fauna surveys"
+#
+# The delivery against the target 
+# "Number of fauna surveys conducted" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Fauna survey)" 
+# and summing the field 
+#  "Number of fauna surveys conducted"
+# Using the form / service 
+# "State Intervention Progress Report (Fauna survey)" 
+# and summing the field 
+#  "Number of fauna surveys conducted"
+# Using the form / service 
+# "Bushfires States Progress Report (Fauna survey)" 
+# and summing the field 
+#  "Number of fauna surveys conducted"
+# Using the form / service 
+# "State Intervention Final Report (Fauna survey)" 
+# and summing the field 
+#  "Number of fauna surveys conducted"
+
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Fauna surve...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Fauna survey Stat...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Fauna survey Stat...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Fauna survey Stat...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2236,8 +3437,20 @@ Report_Raw <- bind_rows(
     object_class='Fauna',property='Surveys',
     value='Total Area (Ha)'),
   all_sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Fauna survey Stat...inal Report',
+    service= "Fauna survey",
+    target_measure = "Area surveyed (ha) (fauna)",
+    measured = site_calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    actual = actual_area_ha_covered_by_fauna_surveys,
+    context = survey_technique,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    object_class='Fauna',property='Surveys',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Fauna survey Stat...ress Report',
     service= "Fauna survey",
     target_measure = "Area surveyed (ha) (fauna)",
     measured = site_calculated_area_ha,
@@ -2261,8 +3474,21 @@ Report_Raw <- bind_rows(
     object_class='Fauna',property='Surveys',
     value='Total Surveys'),
   all_sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Fauna survey Stat...inal Report',
+    service= "Fauna survey",
+    target_measure = "Number of fauna surveys conducted",
+    measured = number_of_fauna_surveys_conducted,
+    invoiced = number_of_fauna_surveys_conducted,
+    actual = number_of_fauna_surveys_conducted,
+    context = survey_technique,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    species = target_species_recorded,
+    object_class='Fauna',property='Surveys',
+    value='Total Surveys'),
+  all_sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Fauna survey Stat...ress Report',
     service= "Fauna survey",
     target_measure = "Number of fauna surveys conducted",
     measured = number_of_fauna_surveys_conducted,
@@ -2274,9 +3500,34 @@ Report_Raw <- bind_rows(
     object_class='Fauna',property='Surveys',
     value='Total Surveys'))
 
+#
+# The delivery against the target 
+# "Area (ha) treated by fire management action" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Fire management actions)" 
+# and summing the field 
+#  "areaTreatedHa"
+# Using the form / service 
+# "State Intervention Progress Report (Implementing fire management actions)" 
+# and summing the field 
+#  "areaTreatedHa"
+# Using the form / service 
+# "Bushfires States Progress Report (Implementing fire management actions)" 
+# and summing the field 
+#  "areaTreatedHa"
+# Using the form / service 
+# "State Intervention Final Report (Implementing fire management actions)" 
+# and summing the field 
+#  "areaTreatedHa"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Fire manage...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Fire management S...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Fire management S...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Fire management S...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,  
@@ -2293,8 +3544,20 @@ Report_Raw <- bind_rows(
     object_class='Fire Management',property='Control Measures',
     value='Total Area (Ha)'),
   all_sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Fire management S...inal Report',
+    service = "Fire management actions",
+    target_measure = "Area (ha) treated by fire management action",
+    measured = calculated_area_treated_ha,
+    invoiced = area_invoiced_treated_ha,
+    actual = area_ha_protected_by_fire_management_action,
+    context = fire_management_type,
+    category = initial_or_follow_up_control,
+    object_class='Fire Management',property='Control Measures',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Fire management S...ress Report',
     service = "Fire management actions",
     target_measure = "Area (ha) treated by fire management action",
     measured = calculated_area_treated_ha,
@@ -2305,9 +3568,57 @@ Report_Raw <- bind_rows(
     object_class='Fire Management',property='Control Measures',
     value='Total Area (Ha)')) 
 
+#
+# The delivery against the target 
+# "Area surveyed (ha) (flora)" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Flora survey)" 
+# and summing the field 
+#  "Actual area (ha) covered by flora surveys"
+# Using the form / service 
+# "State Intervention Progress Report (Flora survey)" 
+# and summing the field 
+#  "Actual area (ha) covered by flora surveys"
+# Using the form / service 
+# "Bushfires States Progress Report (Flora survey)" 
+# and summing the field 
+#  "Actual area (ha) covered by flora surveys"
+# Using the form / service 
+# "State Intervention Final Report (Flora survey)" 
+# and summing the field 
+#  "Actual area (ha) covered by flora surveys"
+#
+# The delivery against the target 
+# "Number of flora surveys conducted" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Flora survey)" 
+# and summing the field 
+#  "Number of flora surveys conducted"
+# Using the form / service 
+# "State Intervention Progress Report (Flora survey)" 
+# and summing the field 
+#  "Number of flora surveys conducted"
+# Using the form / service 
+# "Bushfires States Progress Report (Flora survey)" 
+# and summing the field 
+#  "Number of flora surveys conducted"
+# Using the form / service 
+# "State Intervention Final Report (Flora survey)" 
+# and summing the field 
+#  "Number of flora surveys conducted"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Flora surve...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Flora survey Stat...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Flora survey Stat...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Flora survey Stat...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2325,8 +3636,21 @@ Report_Raw <- bind_rows(
     object_class='Flora',property='Survey',
     value='Total Area (Ha)'),
   all_sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Flora survey Stat...inal Report',
+    service = "Flora survey",
+    target_measure = "Area surveyed (ha) (flora)",
+    measured = site_calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    actual = actual_area_ha_covered_by_flora_surveys,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    context = survey_technique,
+    species = target_species_recorded,
+    object_class='Flora',property='Survey',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Flora survey Stat...ress Report',
     service = "Flora survey",
     target_measure = "Area surveyed (ha) (flora)",
     measured = site_calculated_area_ha,
@@ -2351,8 +3675,21 @@ Report_Raw <- bind_rows(
     object_class='Flora',property='Survey',
     value='Total Surveys'),
   all_sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Flora survey Stat...inal Report',
+    service = "Flora survey",
+    target_measure = "Number of flora surveys conducted",
+    measured = number_of_flora_surveys_conducted,
+    invoiced = number_of_flora_surveys_conducted,
+    actual = number_of_flora_surveys_conducted,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    context = survey_technique,
+    species = target_species_recorded,
+    object_class='Flora',property='Survey',
+    value='Total Surveys'),
+  all_sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Flora survey Stat...ress Report',
     service = "Flora survey",
     target_measure = "Number of flora surveys conducted",
     measured = number_of_flora_surveys_conducted,
@@ -2364,9 +3701,57 @@ Report_Raw <- bind_rows(
     object_class='Flora',property='Survey',
     value='Total Surveys')) 
 
+#
+# The delivery against the target 
+# "Area (ha) of augmentation" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Habitat augmentation)" 
+# and summing the field 
+#  "areaAugmentedHa"
+# Using the form / service 
+# "State Intervention Progress Report (Habitat augmentation)" 
+# and summing the field 
+#  "areaAugmentedHa"
+# Using the form / service 
+# "Bushfires States Progress Report (Habitat augmentation)" 
+# and summing the field 
+#  "areaAugmentedHa"
+# Using the form / service 
+# "State Intervention Final Report (Habitat augmentation)" 
+# and summing the field 
+#  "areaAugmentedHa"
+#
+# The delivery against the target 
+# "Number of structures or installations" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Habitat augmentation)" 
+# and summing the field 
+#  "Number of structures installed"
+# Using the form / service 
+# "State Intervention Progress Report (Habitat augmentation)" 
+# and summing the field 
+#  "Number of structures installed"
+# Using the form / service 
+# "Bushfires States Progress Report (Habitat augmentation)" 
+# and summing the field 
+#  "Number of structures installed"
+# Using the form / service 
+# "State Intervention Final Report (Habitat augmentation)" 
+# and summing the field 
+#  "Number of structures installed"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Habitat aug...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Habitat augmentat...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Habitat augmentat...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Habitat augmentat...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2383,8 +3768,20 @@ Report_Raw <- bind_rows(
     object_class='Habitat',property='Augmentation',
     value='Total Area (Ha)'),
   all_sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Habitat augmentat...inal Report',
+    service = "Habitat augmentation",
+    target_measure = "Area (ha) of augmentation",
+    measured = calculated_area_augmented_ha,
+    invoiced = area_invoiced_aumentation_ha,
+    actual = area_augmented_ha,
+    context = habitat_augmentation_type,
+    category = initial_or_follow_up_control,
+    object_class='Habitat',property='Augmentation',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Habitat augmentat...ress Report',
     service = "Habitat augmentation",
     target_measure = "Area (ha) of augmentation",
     measured = calculated_area_augmented_ha,
@@ -2407,8 +3804,20 @@ Report_Raw <- bind_rows(
     object_class='Habitat',property='Augmentation',
     value='Total Structures'),
   all_sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Habitat augmentat...inal Report',
+    service = "Habitat augmentation",
+    target_measure = "Number of structures or installations",
+    measured = number_of_structures_installed,
+    invoiced = number_of_structures_installed,
+    actual = number_of_structures_installed,
+    context = habitat_augmentation_type,
+    category = initial_or_follow_up_control,
+    object_class='Habitat',property='Augmentation',
+    value='Total Structures'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Habitat augmentat...ress Report',
     service = "Habitat augmentation",
     target_measure = "Number of structures or installations",
     measured = number_of_structures_installed,
@@ -2419,9 +3828,33 @@ Report_Raw <- bind_rows(
     object_class='Habitat',property='Augmentation',
     value='Total Structures'))
 
+#
+# The delivery against the target 
+# "Number of potential sites identified" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field #  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Identifying the location of potential sites)" 
+# and summing the field 
+#  "Number of potential sites identified"
+# Using the form / service 
+# "State Intervention Progress Report (Identifying the location of potential sites)" 
+# and summing the field 
+#  "Number of potential sites identified"
+# Using the form / service 
+# "Bushfires States Progress Report (Identifying the location of potential sites)" 
+# and summing the field 
+#  "Number of potential sites identified"
+# Using the form / service 
+# "State Intervention Final Report (Identifying the location of potential sites)" 
+# and summing the field 
+#  "Number of potential sites identified"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Identifying...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Identifying sites...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Identifying sites...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Identifying sites...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2437,8 +3870,19 @@ Report_Raw <- bind_rows(
     object_class='Sites',property='Identification',
     value='Total Sites'),
   no_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Identifying sites...inal Report',
+    service = "Identifying the location of potential sites",
+    target_measure = "Number of potential sites identified",
+    measured = number_of_potential_sites_identified,
+    invoiced = number_of_potential_sites_identified,
+    actual = number_of_potential_sites_identified, 
+    context = what_have_these_sites_been_identified_for,
+    object_class='Sites',property='Identification',
+    value='Total Sites'),
+  no_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Identifying sites...ress Report',
     service = "Identifying the location of potential sites",
     target_measure = "Number of potential sites identified",
     measured = number_of_potential_sites_identified,
@@ -2448,9 +3892,34 @@ Report_Raw <- bind_rows(
     object_class='Sites',property='Identification',
     value='Total Sites'))
 
+#
+# The delivery against the target 
+# "Number of treatments implemented to improve water management" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Improving hydrological regimes)" 
+# and summing the field 
+#  "Number of treatments implemented to improve water management"
+# Using the form / service 
+# "State Intervention Progress Report (Improving hydrological regimes)" 
+# and summing the field 
+#  "Number of treatments implemented to improve water management"
+# Using the form / service 
+# "Bushfires States Progress Report (Improving hydrological regimes)" 
+# and summing the field 
+#  "Number of treatments implemented to improve water management"
+# Using the form / service 
+# "State Intervention Final Report (Improving hydrological regimes)" 
+# and summing the field 
+#  "Number of treatments implemented to improve water management"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Improving h...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Improving hydrolo...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Improving hydrolo...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Improving hydrolo...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2479,7 +3948,7 @@ Report_Raw <- bind_rows(
     object_class='Hydrological Regimes',property='Treatments',
     value='Total Area (Ha)'),
   all_sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Improving hydrolo...inal Report',
     service = "Improving hydrological regimes",
     target_measure = "Number of treatments implemented to improve water management",
@@ -2491,8 +3960,32 @@ Report_Raw <- bind_rows(
     object_class='Hydrological Regimes',property='Treatments',
     value='Total Treatments'),
   all_sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Improving hydrolo...inal Report',
+    service = "Improving hydrological regimes",
+    target_measure = "Area (ha) of catchment being managed as a result of this management action",
+    measured = calculated_area_covering_regime_change_ha,
+    invoiced = area_invoiced_ha,
+    context = treatment_type,
+    actual = area_covering_regime_change_ha,
+    category = installed_or_maintained,
+    object_class='Hydrological Regimes',property='Treatments',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Improving hydrolo...ress Report',
+    service = "Improving hydrological regimes",
+    target_measure = "Number of treatments implemented to improve water management",
+    measured = number_of_treatments_implemented_to_improve_water_management,
+    invoiced = number_of_treatments_implemented_to_improve_water_management,
+    context = treatment_type,
+    actual = number_of_treatments_implemented_to_improve_water_management,
+    category = installed_or_maintained,
+    object_class='Hydrological Regimes',property='Treatments',
+    value='Total Treatments'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Improving hydrolo...ress Report',
     service = "Improving hydrological regimes",
     target_measure = "Area (ha) of catchment being managed as a result of this management action",
     measured = calculated_area_covering_regime_change_ha,
@@ -2503,9 +3996,35 @@ Report_Raw <- bind_rows(
     object_class='Hydrological Regimes',property='Treatments',
     value='Total Area (Ha)'))
 
+#
+# The delivery against the target 
+# "Area (ha) covered by practice change" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Improving land management practices)" 
+# and summing the field 
+#  "areaImplementedHa"
+# Using the form / service 
+# "State Intervention Progress Report (Improving land management practices)" 
+# and summing the field 
+#  "areaImplementedHa"
+# Using the form / service 
+# "Bushfires States Progress Report (Improving land management practices)" 
+# and summing the field 
+#  "areaImplementedHa"
+# Using the form / service 
+# "State Intervention Final Report (Improving land management practices)" 
+# and summing the field 
+#  "areaImplementedHa"
+
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Improving l...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Improving land ma...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Improving land ma...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Improving land ma...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2517,13 +4036,25 @@ Report_Raw <- bind_rows(
     measured = calculated_area_implemented_ha,
     invoiced = area_implemented_invoiced_ha,
     context = type_of_action,
-    actual = area_ha_benefitting_from_practice_change,
+    actual = area_ha_covered_by_practice_change,
     category = initial_or_follow_up_control,
     object_class='Land',property='Practice Change',
     value='Total Area (Ha)'),
   all_sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Improving land ma...inal Report',
+    service = "Improving land management practices",
+    target_measure = "Area (ha) covered by practice change",
+    measured = calculated_area_implemented_ha,
+    invoiced = area_implemented_invoiced_ha,
+    context = practice_change_type,
+    actual = area_implemented_ha,
+    category = initial_or_follow_up_control,
+    object_class='Land',property='Practice Change',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Improving land ma...ress Report',
     service = "Improving land management practices",
     target_measure = "Area (ha) covered by practice change",
     measured = calculated_area_implemented_ha,
@@ -2534,9 +4065,34 @@ Report_Raw <- bind_rows(
     object_class='Land',property='Practice Change',
     value='Total Area (Ha)'))
 
+#
+# The delivery against the target 
+# "Area (ha) treated for disease" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Managing disease)" 
+# and summing the field 
+#  "areaTreatedHa"
+# Using the form / service 
+# "State Intervention Progress Report (Managing disease)" 
+# and summing the field 
+#  "areaTreatedHa"
+# Using the form / service 
+# "Bushfires States Progress Report (Managing disease)" 
+# and summing the field 
+#  "areaTreatedHa"
+# Using the form / service 
+# "State Intervention Final Report (Managing disease)" 
+# and summing the field 
+#  "areaTreatedHa"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Disease man...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Disease managemen...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Disease managemen...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Disease managemen...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2553,8 +4109,20 @@ Report_Raw <- bind_rows(
     object_class='Disease',property='Treatment',
     value='Total Area (Ha)'),
   all_sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Disease managemen...inal Report',
+    service = "Managing disease",
+    target_measure = "Area (ha) treated for disease",
+    measured = calculated_area_treated_ha,
+    invoiced = area_treated_invoiced_ha,
+    actual = area_treated_ha,
+    context = management_method,
+    category = initial_or_follow_up_treatment,
+    object_class='Disease',property='Treatment',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Disease managemen...ress Report',
     service = "Managing disease",
     target_measure = "Area (ha) treated for disease",
     measured = calculated_area_treated_ha,
@@ -2565,9 +4133,35 @@ Report_Raw <- bind_rows(
     object_class='Disease',property='Treatment',
     value='Total Area (Ha)'))
 
+#
+# The delivery against the target 
+# "Number of groups negotiated with" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Negotiating with the Community, Landholders, Farmers, Traditional Owner groups, Agriculture industry groups etc.)" 
+# and summing the field 
+#  "Groups negotiated with"
+# Using the form / service 
+# "State Intervention Progress Report (Negotiating with the Community, landholders, Traditional Owner groups etc.)" 
+# and summing the field 
+#  "Groups negotiated with"
+# Using the form / service 
+# "Bushfires States Progress Report (Negotiating with the Community, landholders, Traditional Owner groups etc.)" 
+# and summing the field 
+#  "Groups negotiated with"
+# Using the form / service 
+# "State Intervention Final Report (Negotiating with the Community, landholders, Traditional Owner groups etc.)" 
+# and summing the field 
+#  "Groups negotiated with"
+
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Negotiation...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Negotiations Stat...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Negotiations Stat...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Negotiations Stat...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2583,8 +4177,19 @@ Report_Raw <- bind_rows(
     object_class='Groups',property='Negotiations',
     value='Total Groups'),
   no_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Negotiations Stat...inal Report',
+    service = "Negotiating with the Community, Landholders, Farmers, Traditional Owner groups, Agriculture industry groups etc.",
+    target_measure = "Number of groups negotiated with",
+    measured = groups_negotiated_with,
+    invoiced = groups_negotiated_with,
+    actual = groups_negotiated_with,
+    context = which_sector_does_the_group_belong_to,
+    object_class='Groups',property='Negotiations',
+    value='Total Groups'),
+  no_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Negotiations Stat...ress Report',
     service = "Negotiating with the Community, Landholders, Farmers, Traditional Owner groups, Agriculture industry groups etc.",
     target_measure = "Number of groups negotiated with",
     measured = groups_negotiated_with,
@@ -2594,9 +4199,34 @@ Report_Raw <- bind_rows(
     object_class='Groups',property='Negotiations',
     value='Total Groups'))
 
+#
+# The delivery against the target 
+# "Number of relevant approvals obtained" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Obtaining relevant approvals)" 
+# and summing the field 
+#  "Number of relevant approvals obtained"
+# Using the form / service 
+# "State Intervention Progress Report (Obtaining relevant approvals)" 
+# and summing the field 
+#  "Number of relevant approvals obtained"
+# Using the form / service 
+# "Bushfires States Progress Report (Obtaining relevant approvals)" 
+# and summing the field 
+#  "Number of relevant approvals obtained"
+# Using the form / service 
+# "State Intervention Final Report (Obtaining relevant approvals)" 
+# and summing the field 
+#  "Number of relevant approvals obtained"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Obtaining a...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Obtaining approva...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Obtaining approva...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Obtaining approva...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2612,8 +4242,19 @@ Report_Raw <- bind_rows(
     object_class='Approvals',property='Processed',
     value='Total Approvals'),
   no_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Obtaining approva...inal Report',
+    service = "Obtaining relevant approvals",
+    target_measure = "Number of relevant approvals obtained",
+    measured = number_of_relevant_approvals_obtained,
+    invoiced = number_of_relevant_approvals_obtained,
+    actual = number_of_relevant_approvals_obtained,
+    context = what_were_these_approvals_obtained_for,
+    object_class='Approvals',property='Processed',
+    value='Total Approvals'),
+  no_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Obtaining approva...ress Report',
     service = "Obtaining relevant approvals",
     target_measure = "Number of relevant approvals obtained",
     measured = number_of_relevant_approvals_obtained,
@@ -2623,9 +4264,57 @@ Report_Raw <- bind_rows(
     object_class='Approvals',property='Processed',
     value='Total Approvals'))
 
+#
+# The delivery against the target 
+# "Area (ha) surveyed for pest animals" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Pest animal survey)" 
+# and summing the field 
+#  "Actual area (ha) surveyed for pest animals"
+# Using the form / service 
+# "State Intervention Progress Report (Pest animal survey)" 
+# and summing the field 
+#  "Actual area (ha) surveyed for pest animals"
+# Using the form / service 
+# "Bushfires States Progress Report (Pest animal survey)" 
+# and summing the field 
+#  "Actual area (ha) surveyed for pest animals"
+# Using the form / service 
+# "State Intervention Final Report (Pest animal survey)" 
+# and summing the field 
+#  "Actual area (ha) surveyed for pest animals"
+#
+# The delivery against the target 
+# "Number of pest animal surveys conducted" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Pest animal survey)" 
+# and summing the field 
+#  "Number of surveys conducted"
+# Using the form / service 
+# "State Intervention Progress Report (Pest animal survey)" 
+# and summing the field 
+#  "Number of surveys conducted"
+# Using the form / service 
+# "Bushfires States Progress Report (Pest animal survey)" 
+# and summing the field 
+#  "Number of surveys conducted"
+# Using the form / service 
+# "State Intervention Final Report (Pest animal survey)" 
+# and summing the field 
+#  "Number of surveys conducted"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Pest animal...tput Rep(1)')
-BR_Data <- load_mult_wbooks(c('M05'),'Pest animal surve...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Pest animal surve...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Pest animal surve...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2643,8 +4332,21 @@ Report_Raw <- bind_rows(
     object_class='Pests',property='Surveys',
     value='Total Area (Ha)'),
   all_sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Pest animal surve...inal Report',
+    service = "Pest animal survey",
+    target_measure = "Area (ha) surveyed for pest animals",
+    measured = site_calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    actual = actual_area_ha_surveyed_for_pest_animals,
+    context=survey_technique,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    species = target_species_recorded,
+    object_class='Pests',property='Surveys',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Pest animal surve...ress Report',
     service = "Pest animal survey",
     target_measure = "Area (ha) surveyed for pest animals",
     measured = site_calculated_area_ha,
@@ -2669,8 +4371,21 @@ Report_Raw <- bind_rows(
     object_class='Pests',property='Surveys',
     value='Total Surveys'),
   all_sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Pest animal surve...inal Report',
+    service = "Pest animal survey",
+    target_measure = "Number of pest animal surveys conducted",
+    measured = number_of_surveys_conducted,
+    invoiced = number_of_surveys_conducted,
+    actual = number_of_surveys_conducted,
+    context = survey_technique,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    species = target_species_recorded,
+    object_class='Pests',property='Surveys',
+    value='Total Surveys'),
+  all_sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Pest animal surve...ress Report',
     service = "Pest animal survey",
     target_measure = "Number of pest animal surveys conducted",
     measured = number_of_surveys_conducted,
@@ -2682,9 +4397,57 @@ Report_Raw <- bind_rows(
     object_class='Pests',property='Surveys',
     value='Total Surveys'))
 
+#
+# The delivery against the target 
+# "Area (ha) surveyed for pest animals" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Pest animal survey)" 
+# and summing the field 
+#  "Actual area (ha) surveyed for pest animals"
+# Using the form / service 
+# "State Intervention Progress Report (Pest animal survey)" 
+# and summing the field 
+#  "Actual area (ha) surveyed for pest animals"
+# Using the form / service 
+# "Bushfires States Progress Report (Pest animal survey)" 
+# and summing the field 
+#  "Actual area (ha) surveyed for pest animals"
+# Using the form / service 
+# "State Intervention Final Report (Pest animal survey)" 
+# and summing the field 
+#  "Actual area (ha) surveyed for pest animals"
+#
+# The delivery against the target 
+# "Number of pest animal surveys conducted" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Pest animal survey)" 
+# and summing the field 
+#  "Number of surveys conducted"
+# Using the form / service 
+# "State Intervention Progress Report (Pest animal survey)" 
+# and summing the field 
+#  "Number of surveys conducted"
+# Using the form / service 
+# "Bushfires States Progress Report (Pest animal survey)" 
+# and summing the field 
+#  "Number of surveys conducted"
+# Using the form / service 
+# "State Intervention Final Report (Pest animal survey)" 
+# and summing the field 
+#  "Number of surveys conducted"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Plant survi...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Plant survival su...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Plant survival su...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Plant survival su...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2715,7 +4478,7 @@ Report_Raw <- bind_rows(
     object_class='Plants',property='Surveys',
     value='Total Area (Ha)'),
   all_sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Plant survival su...inal Report',
     service = "Plant survival survey",
     target_measure = "Area surveyed (ha) for plant survival",
@@ -2728,8 +4491,34 @@ Report_Raw <- bind_rows(
     object_class='Plants',property='Surveys',
     value='Total Area (Ha)'),
   all_sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Plant survival su...inal Report',
+    service = "Plant survival survey",
+    target_measure = "Number of plant survival surveys conducted",
+    measured = number_of_plant_survival_surveys_conducted,
+    invoiced = number_of_plant_survival_surveys_conducted,
+    actual = number_of_plant_survival_surveys_conducted,
+    context = survey_technique,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    species = species_recorded,
+    object_class='Plants',property='Surveys',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Plant survival su...ress Report',
+    service = "Plant survival survey",
+    target_measure = "Area surveyed (ha) for plant survival",
+    measured = site_calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    actual = actual_area_ha_surveyed_for_plant_survival,
+    context = survey_technique,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    species = species_recorded,
+    object_class='Plants',property='Surveys',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Plant survival su...ress Report',
     service = "Plant survival survey",
     target_measure = "Number of plant survival surveys conducted",
     measured = number_of_plant_survival_surveys_conducted,
@@ -2741,9 +4530,38 @@ Report_Raw <- bind_rows(
     object_class='Plants',property='Surveys',
     value='Total Area (Ha)'))
 
+#
+# The delivery against the target 
+# "Number of planning and delivery documents for delivery of the project services and monitoring" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Project planning and delivery of documents as required for 
+# The delivery of the Project Services and monitoring)" 
+# and summing the field 
+#  "Number of planning and delivery documents for delivery of the project services and monitoring"
+# Using the form / service 
+# "State Intervention Progress Report (Project planning and delivery of documents as required for 
+# The delivery of the Project and monitoring)" 
+# and summing the field 
+#  "Number of planning and delivery documents for delivery of the project and monitoring"
+# Using the form / service 
+# "Bushfires States Progress Report (Project planning and delivery of documents as required for 
+# The delivery of the Project and monitoring)" 
+# and summing the field 
+#  "Number of planning and delivery documents for delivery of the project and monitoring"
+# Using the form / service 
+# "State Intervention Final Report (Project planning and delivery of documents as required for 
+# The delivery of the Project and monitoring)" 
+# and summing the field 
+#  "Number of planning and delivery documents for delivery of the project and monitoring"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Project pla...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Project planning ...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Project planning ...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Project planning ...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2770,7 +4588,7 @@ Report_Raw <- bind_rows(
     object_class='Documents',property='Project Planning',
     value='Total Days'),
   no_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Project planning ...inal Report',
     service = "Project planning and delivery of documents as required for the delivery of the Project Services and monitoring",
     target_measure = "Number of planning and delivery documents for delivery of the project services and monitoring",
@@ -2781,8 +4599,29 @@ Report_Raw <- bind_rows(
     object_class='Documents',property='Project Planning',
     value='Total Documents'),
   no_category_extract_no_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Project planning ...inal Report',
+    service = "Project planning and delivery of documents as required for the delivery of the Project Services and monitoring",
+    target_measure = "Number of days project planning / preparation",
+    measured = number_of_days_administering_project_plans_delivery_documents,
+    invoiced = number_of_days_administering_project_plans_delivery_documents,
+    actual = number_of_days_administering_project_plans_delivery_documents,
+    object_class='Documents',property='Project Planning',
+    value='Total Days'),
+  no_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Project planning ...ress Report',
+    service = "Project planning and delivery of documents as required for the delivery of the Project Services and monitoring",
+    target_measure = "Number of planning and delivery documents for delivery of the project services and monitoring",
+    measured = number_of_planning_and_delivery_documents_for_delivery_of_the_project_and_monitoring,
+    invoiced = number_of_planning_and_delivery_documents_for_delivery_of_the_project_and_monitoring,
+    actual = number_of_planning_and_delivery_documents_for_delivery_of_the_project_and_monitoring,
+    context = purpose_of_these_documents,
+    object_class='Documents',property='Project Planning',
+    value='Total Documents'),
+  no_category_extract_no_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Project planning ...ress Report',
     service = "Project planning and delivery of documents as required for the delivery of the Project Services and monitoring",
     target_measure = "Number of days project planning / preparation",
     measured = number_of_days_administering_project_plans_delivery_documents,
@@ -2791,9 +4630,57 @@ Report_Raw <- bind_rows(
     object_class='Documents',property='Project Planning',
     value='Total Days'))
 
+#
+# The delivery against the target 
+# "Area (ha) remediated" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Remediating riparian and aquatic areas)" 
+# and summing the field 
+#  "areaRemediatedHa"
+# Using the form / service 
+# "State Intervention Progress Report (Remediating riparian and aquatic areas)" 
+# and summing the field 
+#  "areaRemediatedHa"
+# Using the form / service 
+# "Bushfires States Progress Report (Remediating riparian and aquatic areas)" 
+# and summing the field 
+#  "areaRemediatedHa"
+# Using the form / service 
+# "State Intervention Final Report (Remediating riparian and aquatic areas)" 
+# and summing the field 
+#  "areaRemediatedHa"
+#
+# The delivery against the target 
+# "Length (km) remediated" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Remediating riparian and aquatic areas)" 
+# and summing the field 
+#  "lengthRemediatedKm"
+# Using the form / service 
+# "State Intervention Progress Report (Remediating riparian and aquatic areas)" 
+# and summing the field 
+#  "lengthRemediatedKm"
+# Using the form / service 
+# "Bushfires States Progress Report (Remediating riparian and aquatic areas)" 
+# and summing the field 
+#  "lengthRemediatedKm"
+# Using the form / service 
+# "State Intervention Final Report (Remediating riparian and aquatic areas)" 
+# and summing the field 
+#  "lengthRemediatedKm"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Remediating...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Remediating ripar...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Remediating ripar...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Remediating ripar...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2822,7 +4709,7 @@ Report_Raw <- bind_rows(
     object_class='Riparian and Aquatic Areas',property='Remediation',
     value='Total Length (km)'),
   all_sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Remediating ripar...inal Report',
     service = "Remediating riparian and aquatic areas",
     target_measure = "Area (ha) remediated",
@@ -2834,8 +4721,32 @@ Report_Raw <- bind_rows(
     object_class='Riparian and Aquatic Areas',property='Remediation',
     value='Total Area (Ha)'),
   all_sub_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Remediating ripar...inal Report',
+    service = "Remediating riparian and aquatic areas",
+    target_measure = "Length (km) remediated",
+    measured = calculated_length_remediated_km,
+    invoiced = length_remediated_invoiced_km,
+    context = remediation_type,
+    actual = length_remediated_invoiced_km,
+    category = initial_followup_control,
+    object_class='Riparian and Aquatic Areas',property='Remediation',
+    value='Total Length (km)'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Remediating ripar...ress Report',
+    service = "Remediating riparian and aquatic areas",
+    target_measure = "Area (ha) remediated",
+    measured = calculated_area_remediated_ha,
+    invoiced = area_remediated_invoiced_ha,
+    actual = area_remediated_ha,
+    context = remediation_type,
+    category = initial_followup_control,
+    object_class='Riparian and Aquatic Areas',property='Remediation',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Remediating ripar...ress Report',
     service = "Remediating riparian and aquatic areas",
     target_measure = "Length (km) remediated",
     measured = calculated_length_remediated_km,
@@ -2846,9 +4757,73 @@ Report_Raw <- bind_rows(
     object_class='Riparian and Aquatic Areas',property='Remediation',
     value='Total Length (km)'))
 
+#
+# The delivery against the target 
+# "Area (ha) treated for weeds - initial" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Removing weeds)" 
+# and summing the field 
+#  "Actual area (ha) / length (km) treated for weed removal" 
+# where the field "Initial or follow-up treatment" 
+# has the value "Initial"
+# Using the form / service 
+# "State Intervention Progress Report (Removing weeds)" 
+# and summing the field 
+#  "Actual area (ha) / length (km) treated for weed removal" 
+# where the field "Initial or follow-up treatment" 
+# has the value "Initial"
+# Using the form / service 
+# "Bushfires States Progress Report (Removing weeds)" 
+# and summing the field 
+#  "Actual area (ha) / length (km) treated for weed removal" 
+# where the field "Initial or follow-up treatment" 
+# has the value "Initial"
+# Using the form / service 
+# "State Intervention Final Report (Removing weeds)" 
+# and summing the field 
+#  "Actual area (ha) / length (km) treated for weed removal" 
+# where the field "Initial or follow-up treatment" 
+# has the value "Initial"
+#
+# The delivery against the target 
+# "Area (ha) treated for weeds - follow-up" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Removing weeds)" 
+# and summing the field 
+#  "Actual area (ha) / length (km) treated for weed removal" 
+# where the field "Initial or follow-up treatment" 
+# has the value "Follow-up"
+# Using the form / service 
+# "State Intervention Progress Report (Removing weeds)" 
+# and summing the field 
+#  "Actual area (ha) / length (km) treated for weed removal" 
+# where the field "Initial or follow-up treatment" 
+# has the value "Follow-up"
+# Using the form / service 
+# "Bushfires States Progress Report (Removing weeds)" 
+# and summing the field 
+#  "Actual area (ha) / length (km) treated for weed removal" 
+# where the field "Initial or follow-up treatment" 
+# has the value "Follow-up"
+# Using the form / service 
+# "State Intervention Final Report (Removing weeds)" 
+# and summing the field 
+#  "Actual area (ha) / length (km) treated for weed removal" 
+# where the field "Initial or follow-up treatment" 
+# has the value "Follow-up"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Weed treatm...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'), 'Weed treatment St...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'), 'Weed treatment St...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'), 'Weed treatment St...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2881,7 +4856,7 @@ Report_Raw <- bind_rows(
     object_class='Weeds',property='Treatment - Follow-up',
     value='Total Area (Ha)'),
   sub_category_extract_no_context_species(
-    Data = BR_Data,
+    Data = BRSF_Data,
     worksheet = 'Weed treatment St...inal Report',
     service = "Removing weeds",
     target_measure = "Area (ha) treated for weeds - initial",
@@ -2894,8 +4869,34 @@ Report_Raw <- bind_rows(
     object_class='Weeds',property='Treatment - Initial',
     value='Total Area (Ha)'),
   sub_category_extract_no_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Weed treatment St...inal Report',
+    service = "Removing weeds",
+    target_measure = "Area (ha) treated for weeds - follow-up",
+    measured = site_calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    actual = area_invoiced_ha,
+    category = initial_or_follow_up_treatment,
+    sub_category = 'Follow-up',
+    species = target_weed_species,
+    object_class='Weeds',property='Treatment - Follow-up',
+    value='Total Area (Ha)'),
+  sub_category_extract_no_context_species(
+    Data = BRSP_Data,
+    worksheet = 'Weed treatment St...ress Report',
+    service = "Removing weeds",
+    target_measure = "Area (ha) treated for weeds - initial",
+    measured = site_calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    actual = area_invoiced_ha,
+    category = initial_or_follow_up_treatment,
+    sub_category = 'Initial',
+    species = target_weed_species,
+    object_class='Weeds',property='Treatment - Initial',
+    value='Total Area (Ha)'),
+  sub_category_extract_no_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Weed treatment St...ress Report',
     service = "Removing weeds",
     target_measure = "Area (ha) treated for weeds - follow-up",
     measured = site_calculated_area_ha,
@@ -2907,9 +4908,115 @@ Report_Raw <- bind_rows(
     object_class='Weeds',property='Treatment - Follow-up',
     value='Total Area (Ha)'))
 
+#
+# The delivery against the target 
+# "Area (ha) of revegetated habitat maintained" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Revegetating habitat)" 
+# and summing the field 
+#  "Actual area (ha) / length (km) of habitat revegetated" 
+# where the field "Initial or maintenance activity?" 
+# has the value "Maintenance"
+# Using the form / service 
+# "State Intervention Progress Report (Revegetating habitat)" 
+# and summing the field 
+#  "Actual area (ha) / length (km) of habitat revegetated" 
+# where the field "Initial or maintenance activity?" 
+# has the value "Maintenance"
+# Using the form / service 
+# "Bushfires States Progress Report (Revegetating habitat)" 
+# and summing the field "Actual area (ha) / length (km) of habitat revegetated" 
+# where the field "Initial or maintenance activity?" 
+# has the value "Maintenance"
+# Using the form / service 
+# "State Intervention Final Report (Revegetating habitat)" 
+# where summing the field "Actual area (ha) / length (km) of habitat revegetated" 
+# where the field "Initial or maintenance activity?" 
+# has the value "Maintenance"
+#
+# The delivery against the target 
+# "Number of structures or installations" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" 
+# where the field "scoreId" 
+# has the value "6f139746-1a6e-4105-936b-b52ec89c7bec"
+# Using the form / service 
+# "RLP Output Report (Habitat augmentation)" 
+# and summing the field 
+#  "Number of structures installed"
+# Using the form / service 
+# "State Intervention Progress Report (Habitat augmentation)" 
+# and summing the field 
+#  "Number of structures installed"
+# Using the form / service 
+# "Bushfires States Progress Report (Habitat augmentation)" 
+# and summing the field 
+#  "Number of structures installed"
+# Using the form / service 
+# "State Intervention Final Report (Habitat augmentation)" 
+# and summing the field 
+#  "Number of structures installed"
+#
+# The delivery against the target 
+# "Number of days collecting seed" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" 
+# where the field "scoreId" 
+# has the value "ed404db1-749e-4ea2-a444-0f534a16e231"
+# Using the form / service 
+# "RLP Output Report (Revegetating habitat)" 
+# and summing the field 
+#  "Number of days collecting seed"
+# Using the form / service 
+# "State Intervention Progress Report (Revegetating habitat)" 
+# and summing the field 
+#  "Number of days collecting seed"
+# Using the form / service 
+# "Bushfires States Progress Report (Revegetating habitat)" 
+# and summing the field 
+#  "Number of days collecting seed"
+# Using the form / service 
+# "State Intervention Final Report (Revegetating habitat)" 
+# and summing the field 
+#  "Number of days collecting seed"
+#
+# The delivery against the target 
+# "Number of days propagating plants" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" 
+# where the field "scoreId" 
+# has the value "629b86b8-5017-47bc-bb6e-3211594d9d93"
+# Using the form / service 
+# "RLP Output Report (Revegetating habitat)" 
+# and summing the field 
+#  "Number of days propagating plants"
+# Using the form / service 
+# "State Intervention Progress Report (Revegetating habitat)" 
+# and summing the field 
+#  "Number of days propagating plants"
+# Using the form / service 
+# "Bushfires States Progress Report (Revegetating habitat)" 
+# and summing the field 
+#  "Number of days propagating plants"
+# Using the form / service 
+# "State Intervention Final Report (Revegetating habitat)" 
+# and summing the field 
+#  "Number of days propagating plants"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Revegetatin...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Revegetating habi...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Revegetating habi...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Revegetating habi...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -2942,7 +5049,7 @@ Report_Raw <- bind_rows(
     object_class='Habitat',property='Revegetation - Initial',
     value='Total Area (Ha)'),
   sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Revegetating habi...inal Report',
     service = "Revegetating habitat",
     target_measure = "Area (ha) of revegetated habitat maintained",
@@ -2956,7 +5063,7 @@ Report_Raw <- bind_rows(
     object_class='Habitat',property='Revegetation - Maintenance',
     value='Total Area (Ha)'),
   sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Revegetating habi...inal Report',
     service = "Revegetating habitat",
     target_measure = "Area of habitat revegetated (ha)",
@@ -2968,14 +5075,35 @@ Report_Raw <- bind_rows(
     sub_category = 'Initial',
     species = species,
     object_class='Habitat',property='Revegetation - Initial',
-    value='Total Area (Ha)'))
-
-RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
-                             'RLP - Revegetatin...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Revegetating habi...inal Report')
-
-Report_Raw <- bind_rows(
-  Report_Raw,
+    value='Total Area (Ha)'),
+  sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Revegetating habi...ress Report',
+    service = "Revegetating habitat",
+    target_measure = "Area (ha) of revegetated habitat maintained",
+    measured = site_calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    context = planting_method,
+    actual = area_invoiced_ha,
+    category = initial_or_maintenance_activity,
+    sub_category = 'Maintenance',
+    species = species,
+    object_class='Habitat',property='Revegetation - Maintenance',
+    value='Total Area (Ha)'),
+  sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Revegetating habi...ress Report',
+    service = "Revegetating habitat",
+    target_measure = "Area of habitat revegetated (ha)",
+    measured = site_calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    actual = area_invoiced_ha,
+    context = planting_method,
+    category = initial_or_maintenance_activity,
+    sub_category = 'Initial',
+    species = species,
+    object_class='Habitat',property='Revegetation - Initial',
+    value='Total Area (Ha)'),
   all_sub_category_extract_context_species(
     Data=RLP_Data,
     worksheet = 'RLP - Revegetatin...tput Report',
@@ -3003,7 +5131,7 @@ Report_Raw <- bind_rows(
     object_class='Habitat',property='Propagation',
     value='Total Days'),
   all_sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Revegetating habi...inal Report',
     service = "Revegetating habitat",
     target_measure = "Number of days collecting seed",
@@ -3016,8 +5144,34 @@ Report_Raw <- bind_rows(
     object_class='Habitat',property='Seed Collection',
     value='Total Days'),
   all_sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Revegetating habi...inal Report',
+    service = "Revegetating habitat",
+    target_measure = "Number of days propagating plants",
+    measured = number_of_days_propagating_plants,
+    invoiced = number_of_days_propagating_plants,
+    actual = number_of_days_propagating_plants,
+    context = planting_method,
+    category = initial_or_maintenance_activity,
+    species = species,
+    object_class='Habitat',property='Propagation',
+    value='Total Days'),
+  all_sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Revegetating habi...ress Report',
+    service = "Revegetating habitat",
+    target_measure = "Number of days collecting seed",
+    measured = number_of_days_collecting_seed,
+    invoiced = number_of_days_collecting_seed,
+    context = planting_method,
+    actual = number_of_days_collecting_seed,
+    category = initial_or_maintenance_activity,
+    species = species,
+    object_class='Habitat',property='Seed Collection',
+    value='Total Days'),
+  all_sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Revegetating habi...ress Report',
     service = "Revegetating habitat",
     target_measure = "Number of days propagating plants",
     measured = number_of_days_propagating_plants,
@@ -3029,27 +5183,92 @@ Report_Raw <- bind_rows(
     object_class='Habitat',property='Propagation',
     value='Total Days'))
 
+#
+# The delivery against the target 
+# "Amount (kg) seed collected" is calculated by: 
+# Using the form / service 
+# "State Intervention Progress Report (Seed Collecting)" 
+# and summing the field 
+#  "Amount collected" 
+# where the field "Individuals / Kilograms collected" 
+# has the value "Kilograms"
+# Using the form / service 
+# "RLP Output Report (Seed Collecting)" 
+# and summing the field 
+#  "Amount collected" 
+# where the field "Individuals / Kilograms collected" 
+# has the value "Kilograms"
+# Using the form / service 
+# "Bushfires States Progress Report (Seed Collecting)" 
+# and summing the field 
+#  "Amount collected" 
+# where the field "Individuals / Kilograms collected" 
+# has the value "Kilograms"
+# Using the form / service 
+# "State Intervention Final Report (Seed Collecting)" 
+# and summing the field 
+#  "Amount collected" 
+# where the field "Individuals / Kilograms collected" 
+# has the value "Kilograms"
+#
+# The delivery against the target 
+# "Number of plants propagated" is calculated by: 
+# Using the form / service 
+# "State Intervention Progress Report (Seed Collecting)" 
+# and summing the field 
+#  "Number of plants propogated"
+# Using the form / service 
+# "RLP Output Report (Seed Collecting)" 
+# and summing the field 
+#  "Number of plants propogated"
+# Using the form / service 
+# "Bushfires States Progress Report (Seed Collecting)" 
+# and summing the field 
+#  "Number of plants propogated"
+# Using the form / service 
+# "State Intervention Final Report (Seed Collecting)" 
+# and summing the field 
+#  "Number of plants propogated"
+#
+# The delivery against the target 
+# "Number of seeds collected" is calculated by: 
+# Using the form / service 
+# "State Intervention Progress Report (Seed Collecting)" 
+# and summing the field 
+#  "Amount collected" 
+# where the field "Individuals / Kilograms collected" 
+# has the value "Individuals"
+# Using the form / service 
+# "RLP Output Report (Seed Collecting)" 
+# and summing the field 
+#  "Amount collected" 
+# where the field "Individuals / Kilograms collected" 
+# has the value "Individuals"
+# Using the form / service 
+# "Bushfires States Progress Report (Seed Collecting)" 
+# and summing the field 
+#  "Amount collected" 
+# where the field "Individuals / Kilograms collected" 
+# has the value "Individuals"
+# Using the form / service 
+# "State Intervention Final Report (Seed Collecting)" 
+# and summing the field 
+#  "Amount collected" 
+# where the field "Individuals / Kilograms collected" 
+# has the value "Individuals"
 
-BR_Data <- load_mult_wbooks(c('M05'),'Seed Collecting -...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Seed Collecting -...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Seed Collecting -...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
-  no_category_extract_context_no_species(
-    Data=BR_Data,
-    worksheet = 'Seed Collecting -...inal Report',
-    service = "Seed collection",
-    target_measure = "Number of days collecting seed",
-    measured = number_of_days_collecting_seed,
-    invoiced = number_of_days_collecting_seed,
-    context = storing_facility,
-    actual = number_of_days_collecting_seed,
-    object_class='Habitat',property='Seed Collection',
-    value='Total Days'),
-  no_category_extract_context_no_species(
-    Data=BR_Data,
+  sub_category_extract_context_no_species(
+    Data=BRSF_Data,
     worksheet = 'Seed Collecting -...inal Report',
     service = "Seed collection",
     target_measure = "Amount (kg) seed collected",
+    category='individuals_kilograms_collected',
+    sub_category='Kilograms',
     measured = individuals_kilograms_collected,
     invoiced = individuals_kilograms_collected,
     actual = individuals_kilograms_collected,
@@ -3057,7 +5276,7 @@ Report_Raw <- bind_rows(
     object_class='Habitat',property='Seed Collection',
     value='Total Kg'),
   no_category_extract_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Seed Collecting -...inal Report',
     service = "Seed collection",
     target_measure = "Number of plants propagated",
@@ -3067,32 +5286,87 @@ Report_Raw <- bind_rows(
     actual = number_of_plants_propogated,
     object_class='Habitat',property='Seed Propagation',
     value='Number propagated'),
-  no_category_extract_context_no_species(
-    Data=BR_Data,
+  sub_category_extract_context_no_species(
+    Data=BRSF_Data,
     worksheet = 'Seed Collecting -...inal Report',
     service = "Seed collection",
     target_measure = "Number of seeds collected",
+    category='individuals_kilograms_collected',
+    sub_category='Individuals',
     measured = total_seed_collected,
     invoiced = total_seed_collected,
     actual = total_seed_collected,
     context = storing_facility,
     object_class='Habitat',property='Seed Collection',
     value='Number collected'),
-  no_category_extract_context_no_species(
-    Data=BR_Data,
-    worksheet = 'Seed Collecting -...inal Report',
+  sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Seed Collecting -...ress Report',
     service = "Seed collection",
-    target_measure = "Number of source plants",
-    measured = number_of_source_plants,
-    invoiced = number_of_source_plants,
-    actual = number_of_source_plants,
+    target_measure = "Amount (kg) seed collected",
+    category='individuals_kilograms_collected',
+    sub_category='Kilograms',
+    measured = individuals_kilograms_collected,
+    invoiced = individuals_kilograms_collected,
+    actual = individuals_kilograms_collected,
     context = storing_facility,
     object_class='Habitat',property='Seed Collection',
-    value='Number plants'))
+    value='Total Kg'),
+  no_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Seed Collecting -...ress Report',
+    service = "Seed collection",
+    target_measure = "Number of plants propagated",
+    measured = number_of_plants_propogated,
+    invoiced = number_of_plants_propogated,
+    context = storing_facility,
+    actual = number_of_plants_propogated,
+    object_class='Habitat',property='Seed Propagation',
+    value='Number propagated'),
+  sub_category_extract_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Seed Collecting -...ress Report',
+    service = "Seed collection",
+    target_measure = "Number of seeds collected",
+    category='individuals_kilograms_collected',
+    sub_category='Individuals',
+    measured = total_seed_collected,
+    invoiced = total_seed_collected,
+    actual = total_seed_collected,
+    context = storing_facility,
+    object_class='Habitat',property='Seed Collection',
+    value='Number collected'))
+
+#
+# The delivery against the target 
+# "Area (ha) of site preparation" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" 
+# where the field "scoreId" 
+# has the value "332bd6c4-3209-4691-b454-3dbe4f011385"
+# Using the form / service 
+# "RLP Output Report (Site preparation)" 
+# and summing the field 
+#  "areaPreparedHa"
+# Using the form / service 
+# "State Intervention Progress Report (Site preparation)" 
+# and summing the field 
+#  "areaPreparedHa"
+# Using the form / service 
+# "Bushfires States Progress Report (Site preparation)" 
+# and summing the field 
+#  "areaPreparedHa"
+# Using the form / service 
+# "State Intervention Final Report (Site preparation)" 
+# and summing the field 
+#  "areaPreparedHa"
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Site prepar...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Site preparation ...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Site preparation ...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Site preparation ...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -3119,7 +5393,7 @@ Report_Raw <- bind_rows(
     object_class='Plans',property='Development',
     value='Total Days'),
   no_category_extract_context_no_species(
-    Data = BR_Data,
+    Data = BRSF_Data,
     worksheet = 'Site preparation ...inal Report',
     service = "Site preparation",
     target_measure = "Area (ha) of site preparation",
@@ -3130,7 +5404,30 @@ Report_Raw <- bind_rows(
     object_class='Plans',property='Development',
     value='Total Area (Ha)'),
   no_category_extract_context_no_species(
-    Data = BR_Data,
+    Data = BRSF_Data,
+    worksheet = 'Site preparation ...inal Report',
+    service = "Site preparation",
+    target_measure = "Number of days preparing site/s",
+    measured = number_of_days_in_preparing_site,
+    invoiced = number_of_days_in_preparing_site,
+    actual = number_of_days_in_preparing_site,
+    context=action_type,
+    object_class='Plans',property='Development',
+    value='Total Days'),
+  no_category_extract_context_no_species(
+    Data = BRSP_Data,
+    worksheet = 'Site preparation ...ress Report',
+    service = "Site preparation",
+    target_measure = "Area (ha) of site preparation",
+    measured = calculated_area_prepared_ha,
+    invoiced = area_prepared_invoiced_ha,
+    actual = area_prepared_ha,
+    context=action_type,
+    object_class='Plans',property='Development',
+    value='Total Area (Ha)'),
+  no_category_extract_context_no_species(
+    Data = BRSP_Data,
+    worksheet = 'Site preparation ...ress Report',
     service = "Site preparation",
     target_measure = "Number of days preparing site/s",
     measured = number_of_days_in_preparing_site,
@@ -3140,9 +5437,34 @@ Report_Raw <- bind_rows(
     object_class='Plans',property='Development',
     value='Total Days'))
 
+#
+# The delivery against the target 
+# "Number of skills and knowledge surveys conducted" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Skills and knowledge survey)" 
+# and summing the field 
+#  "Number of skills and knowledge surveys conducted"
+# Using the form / service 
+# "State Intervention Progress Report (Skills and knowledge survey)" 
+# and summing the field 
+#  "Number of skills and knowledge surveys conducted"
+# Using the form / service 
+# "Bushfires States Progress Report (Skills and knowledge survey)" 
+# and summing the field 
+#  "Number of skills and knowledge surveys conducted"
+# Using the form / service 
+# "State Intervention Final Report (Skills and knowledge survey)" 
+# and summing the field 
+#  "Number of skills and knowledge surveys conducted"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Skills and ...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Skills and knowle...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Skills and knowle...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Skills and knowle...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -3159,8 +5481,20 @@ Report_Raw <- bind_rows(
     object_class='Skills and knowledge',property='Surveys',
     value='Total Surveys'),
   all_sub_category_extract_context_no_species(
-    Data = BR_Data,
+    Data = BRSF_Data,
     worksheet = 'Skills and knowle...inal Report',
+    service = "Skills and knowledge survey",
+    target_measure = "Number of skills and knowledge surveys conducted",
+    measured = number_of_skills_and_knowledge_surveys_conducted,
+    invoiced = number_of_skills_and_knowledge_surveys_conducted,
+    actual = number_of_skills_and_knowledge_surveys_conducted,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    context=survey_technique,
+    object_class='Skills and knowledge',property='Surveys',
+    value='Total Surveys'),
+  all_sub_category_extract_context_no_species(
+    Data = BRSP_Data,
+    worksheet = 'Skills and knowle...ress Report',
     service = "Skills and knowledge survey",
     target_measure = "Number of skills and knowledge surveys conducted",
     measured = number_of_skills_and_knowledge_surveys_conducted,
@@ -3171,9 +5505,34 @@ Report_Raw <- bind_rows(
     object_class='Skills and knowledge',property='Surveys',
     value='Total Surveys'))
 
+#
+# The delivery against the target 
+# "Number of soil tests conducted in targeted areas" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Soil testing)" 
+# and summing the field 
+#  "Number of soil tests conducted in targeted areas"
+# Using the form / service 
+# "State Intervention Progress Report (Soil testing)" 
+# and summing the field 
+#  "Number of soil tests conducted in targeted areas"
+# Using the form / service 
+# "Bushfires States Progress Report (Soil testing)" 
+# and summing the field 
+#  "Number of soil tests conducted in targeted areas"
+# Using the form / service 
+# "State Intervention Final Report (Soil testing)" 
+# and summing the field 
+#  "Number of soil tests conducted in targeted areas"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Soil testin...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Soil testing Stat...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Soil testing Stat...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Soil testing Stat...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -3190,8 +5549,20 @@ Report_Raw <- bind_rows(
     object_class='Soil',property='Testing',
     value='Total Tests'),
   all_sub_category_extract_context_no_species(
-    Data = BR_Data,
+    Data = BRSF_Data,
     worksheet = 'Soil testing Stat...inal Report',
+    service = "Soil testing",
+    target_measure = "Number of soil tests conducted in targeted areas",
+    measured = number_of_soil_tests_conducted_in_targeted_areas,
+    invoiced = number_of_soil_tests_conducted_in_targeted_areas,
+    actual = number_of_soil_tests_conducted_in_targeted_areas,
+    category = initial_or_follow_up_activity,
+    context=testing_technique,
+    object_class='Soil',property='Testing',
+    value='Total Tests'),
+  all_sub_category_extract_context_no_species(
+    Data = BRSP_Data,
+    worksheet = 'Soil testing Stat...ress Report',
     service = "Soil testing",
     target_measure = "Number of soil tests conducted in targeted areas",
     measured = number_of_soil_tests_conducted_in_targeted_areas,
@@ -3202,9 +5573,34 @@ Report_Raw <- bind_rows(
     object_class='Soil',property='Testing',
     value='Total Tests'))
 
+#
+# The delivery against the target 
+# "Number of interventions" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Undertaking emergency interventions to prevent extinctions)" 
+# and summing the field 
+#  "Number of interventions"
+# Using the form / service 
+# "State Intervention Progress Report (Undertaking emergency interventions to prevent extinctions)" 
+# and summing the field 
+#  "Number of interventions"
+# Using the form / service 
+# "Bushfires States Progress Report (Undertaking emergency interventions to prevent extinctions)" 
+# and summing the field 
+#  "Number of interventions"
+# Using the form / service 
+# "State Intervention Final Report (Undertaking emergency interventions to prevent extinctions)" 
+# and summing the field 
+#  "Number of interventions"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Emergency I...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Emergency Interve...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Emergency Interve...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Emergency Interve...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -3222,8 +5618,21 @@ Report_Raw <- bind_rows(
     object_class='Species and Habitat',property='Emergency Interventions',
     value='Total Interventions'),
   all_sub_category_extract_context_species(
-    Data = BR_Data,
+    Data = BRSF_Data,
     worksheet = 'Emergency Interve...inal Report',
+    service = "Undertaking emergency interventions to prevent extinctions",
+    target_measure = "Number of interventions",
+    measured = number_of_interventions,
+    invoiced = number_of_interventions,
+    actual = number_of_interventions,
+    category = initial_or_follow_up_activity,
+    context = type_and_goal_or_intervention,
+    species = targeted_species,
+    object_class='Species and Habitat',property='Emergency Interventions',
+    value='Total Interventions'),
+  all_sub_category_extract_context_species(
+    Data = BRSP_Data,
+    worksheet = 'Emergency Interve...ress Report',
     service = "Undertaking emergency interventions to prevent extinctions",
     target_measure = "Number of interventions",
     measured = number_of_interventions,
@@ -3235,9 +5644,56 @@ Report_Raw <- bind_rows(
     object_class='Species and Habitat',property='Emergency Interventions',
     value='Total Interventions'))
 
+#
+# The delivery against the target 
+# "Area (ha) surveyed for water quality" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Water quality survey)" 
+# and summing the field 
+#  "Actual area (ha) covered by water quality surveys"
+# Using the form / service 
+# "State Intervention Progress Report (Water quality survey)" 
+# and summing the field 
+#  "Actual area (ha) covered by water quality surveys"
+# Using the form / service 
+# "Bushfires States Progress Report (Water quality survey)" 
+# and summing the field 
+#  "Actual area (ha) covered by water quality surveys"
+# Using the form / service 
+# "State Intervention Final Report (Water quality survey)" 
+# and summing the field 
+#  "Actual area (ha) covered by water quality surveys"
+#
+# The delivery against the target 
+# "Number of water quality surveys" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field #  "Adjustment"
+# Using the form / service 
+# "RLP Output Report (Water quality survey)" 
+# and summing the field 
+#  "Number of water quality surveys conducted"
+# Using the form / service 
+# "State Intervention Progress Report (Water quality survey)" 
+# and summing the field 
+#  "Number of water quality surveys conducted"
+# Using the form / service 
+# "Bushfires States Progress Report (Water quality survey)" 
+# and summing the field 
+#  "Number of water quality surveys conducted"
+# Using the form / service 
+# "State Intervention Final Report (Water quality survey)" 
+# and summing the field 
+#  "Number of water quality surveys conducted"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Water quali...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Water quality sur...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Water quality sur...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Water quality sur...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -3264,7 +5720,7 @@ Report_Raw <- bind_rows(
     object_class='Water Quality',property='Surveys',
     value='Total Surveys'),
   all_sub_category_extract_no_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Water quality sur...inal Report',
     service = "Water quality survey",
     target_measure = "Area (ha) surveyed for water quality",
@@ -3275,8 +5731,30 @@ Report_Raw <- bind_rows(
     object_class='Water Quality',property='Surveys',
     value='Total Area (Ha)'),
   all_sub_category_extract_no_context_no_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Water quality sur...inal Report',
+    service = "Water quality survey",
+    target_measure = "Number of water quality surveys",
+    measured = number_of_water_quality_surveys_conducted,
+    invoiced = number_of_water_quality_surveys_conducted,
+    actual = number_of_water_quality_surveys_conducted,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    object_class='Water Quality',property='Surveys',
+    value='Total Surveys'),
+  all_sub_category_extract_no_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Water quality sur...ress Report',
+    service = "Water quality survey",
+    target_measure = "Area (ha) surveyed for water quality",
+    measured = site_calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    actual = actual_area_ha_covered_by_water_quality_surveys,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    object_class='Water Quality',property='Surveys',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_no_context_no_species(
+    Data=BRSP_Data,
+    worksheet = 'Water quality sur...ress Report',
     service = "Water quality survey",
     target_measure = "Number of water quality surveys",
     measured = number_of_water_quality_surveys_conducted,
@@ -3286,9 +5764,44 @@ Report_Raw <- bind_rows(
     object_class='Water Quality',property='Surveys',
     value='Total Surveys'))
 
+#
+# The delivery against the target 
+# "Area (ha) treated for weeds - follow-up" is calculated by: 
+# Using the form / service 
+# "RLP Output Report Adjustment (Output Report Adjustment)" 
+# and summing the field 
+#  "Adjustment" 
+# where the field "scoreId" 
+# has the value "97afd8a0-aa10-4987-8e9e-4c572f6a80b3"
+# Using the form / service 
+# "RLP Output Report (Removing weeds)" 
+# and summing the field 
+#  "Actual area (ha) / length (km) treated for weed removal" 
+# where the field "Initial or follow-up treatment" 
+# has the value "Follow-up"
+# Using the form / service 
+# "State Intervention Progress Report (Removing weeds)" 
+# and summing the field 
+#  "Actual area (ha) / length (km) treated for weed removal" 
+# where the field "Initial or follow-up treatment" 
+# has the value "Follow-up"
+# Using the form / service 
+# "Bushfires States Progress Report (Removing weeds)" 
+# and summing the field 
+#  "Actual area (ha) / length (km) treated for weed removal" 
+# where the field "Initial or follow-up treatment" 
+# has the value "Follow-up"
+# Using the form / service 
+# "State Intervention Final Report (Removing weeds)" 
+# and summing the field 
+#  "Actual area (ha) / length (km) treated for weed removal" 
+# where the field "Initial or follow-up treatment" 
+# has the value "Follow-up"
+
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Weed distri...tput Report')
-BR_Data <- load_mult_wbooks(c('M05'),'Weed distribution...inal Report')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Weed distribution...inal Report')
+BRSP_Data <- load_mult_wbooks(c('M05'),'Weed distribution...ress Report')
 
 Report_Raw <- bind_rows(
   Report_Raw,
@@ -3306,7 +5819,20 @@ Report_Raw <- bind_rows(
     object_class='Weeds',property='Surveys',
     value='Total Area (Ha)'),
   all_sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
+    worksheet = 'RLP - Weed distri...tput Report',
+    service = "Weed distribution survey",
+    target_measure = "Number of weed distribution surveys conducted",
+    measured = number_of_weed_distribution_surveys_conducted,
+    invoiced = number_of_weed_distribution_surveys_conducted,
+    actual = number_of_weed_distribution_surveys_conducted,
+    context = survey_technique,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    species = target_weed_species_recorded,
+    object_class='Weeds',property='Surveys',
+    value='Total Surveys'),
+  all_sub_category_extract_context_species(
+    Data=BRSF_Data,
     worksheet = 'Weed distribution...inal Report',
     service = "Weed distribution survey",
     target_measure = "Area (ha) surveyed for weeds",
@@ -3319,7 +5845,7 @@ Report_Raw <- bind_rows(
     object_class='Weeds',property='Surveys',
     value='Total Area (Ha)'),
   all_sub_category_extract_context_species(
-    Data=BR_Data,
+    Data=BRSF_Data,
     worksheet = 'Weed distribution...inal Report',
     service = "Weed distribution survey",
     target_measure = "Number of weed distribution surveys conducted",
@@ -3332,8 +5858,21 @@ Report_Raw <- bind_rows(
     object_class='Weeds',property='Surveys',
     value='Total Surveys'),
   all_sub_category_extract_context_species(
-    Data=RLP_Data,
-    worksheet = 'RLP - Weed distri...tput Report',
+    Data=BRSP_Data,
+    worksheet = 'Weed distribution...ress Report',
+    service = "Weed distribution survey",
+    target_measure = "Area (ha) surveyed for weeds",
+    measured = site_calculated_area_ha,
+    invoiced = area_invoiced_ha,
+    actual = actual_area_ha_surveyed_for_weed_distribution,
+    category = baseline_survey_or_indicator_follow_up_survey,
+    context = survey_technique,
+    species = target_weed_species_recorded,
+    object_class='Weeds',property='Surveys',
+    value='Total Area (Ha)'),
+  all_sub_category_extract_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Weed distribution...ress Report',
     service = "Weed distribution survey",
     target_measure = "Number of weed distribution surveys conducted",
     measured = number_of_weed_distribution_surveys_conducted,
@@ -3552,95 +6091,95 @@ Report_Raw <- bind_rows(
     object_class='Sites',property='Post Revegetation',
     value='Total Area (Ha)'))
 
-BR_Data <- load_mult_wbooks(c('M05'),'Wildlife rescue f...eport - (1)')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Wildlife rescue f...eport - (1)')
 
 Report_Raw <- bind_rows(
   Report_Raw,
   grant_report_species_no_metrics(
-    Data=BR_Data,sheet_name='Wildlife rescue f...eport - (1)',
+    Data=BRSF_Data,sheet_name='Wildlife rescue f...eport - (1)',
     species_col= species_benefiting_by_facility_or_equipment,
     context_col= name_of_facility_equipment_type_if_applicable,
     object_class='Sites',property='Wildlife rescue',
     value='Species'))
 
-BR_Data <- load_mult_wbooks(c('M05'),'Emergency interve...eport - (1)')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Emergency interve...eport - (1)')
 
 Report_Raw <- bind_rows(
   Report_Raw,
   grant_report_species_no_metrics(
-    Data=BR_Data,
+    Data=BRSF_Data,
     sheet_name='Emergency interve...eport - (1)',
     species_col= target_species,
     context_col= intervention_activity,
     object_class='Sites',property='Wildlife rescue',
     value='Species'))
 
-BR_Data <- load_mult_wbooks(c('M05'),'Native wildlife r...eport - (1)')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Native wildlife r...eport - (1)')
 
 Report_Raw <- bind_rows(
   Report_Raw,
   grant_report_species_no_metrics(
-    Data=BR_Data,
+    Data=BRSF_Data,
     sheet_name='Native wildlife r...eport - (1)',
     species_col= target_species,
     context_col= rescue_location_s,
     object_class='Sites',property='Wildlife rescue',
     value='Species'))
 
-BR_Data <- load_mult_wbooks(c('M05'),'Supplementary foo...eport - (1)')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Supplementary foo...eport - (1)')
 
 Report_Raw <- bind_rows(
   Report_Raw,
   grant_report_species_no_metrics(
-    Data=BR_Data,
+    Data=BRSF_Data,
     sheet_name='Supplementary foo...eport - (1)',
     species_col= target_species,
     context_col= location_s_of_food_and_water_provisions,
     object_class='Sites',property='Wildlife rescue',
     value='Species'))
 
-BR_Data <- load_mult_wbooks(c('M05'),'Wildlife rescue f...eport - WRR')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Wildlife rescue f...eport - WRR')
 
 Report_Raw <- bind_rows(
   Report_Raw,
   grant_report_species_no_metrics(
-    Data=BR_Data,
+    Data=BRSF_Data,
     sheet_name='Wildlife rescue f...eport - WRR',
     species_col= species_benefiting_by_facility_or_equipment,
     context_col= name_of_facility_equipment_type_if_applicable,
     object_class='Sites',property='Wildlife rescue',
     value='Species'))
 
-BR_Data <- load_mult_wbooks(c('M05'),'Emergency interve...eport - WRR')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Emergency interve...eport - WRR')
 
 Report_Raw <- bind_rows(
   Report_Raw,
   grant_report_species_no_metrics(
-    Data=BR_Data,
+    Data=BRSF_Data,
     sheet_name='Emergency interve...eport - WRR',
     species_col= target_species,
     context_col= location_s_of_intervention_activity,
     object_class='Sites',property='Wildlife rescue',
     value='Species'))
 
-BR_Data <- load_mult_wbooks(c('M05'),'Supplementary foo...eport - WRR')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Supplementary foo...eport - WRR')
 
 Report_Raw <- bind_rows(
   Report_Raw,
   grant_report_species_no_metrics(
-    Data=BR_Data,
+    Data=BRSF_Data,
     sheet_name='Supplementary foo...eport - WRR',
     species_col= target_species,
     context_col= location_s_of_food_and_water_provisions,
     object_class='Sites',property='Wildlife rescue',
     value='Species'))
 
-BR_Data <- load_mult_wbooks(c('M05'),'Native wildlife r...eport - WRR')
+BRSF_Data <- load_mult_wbooks(c('M05'),'Native wildlife r...eport - WRR')
 
 Report_Raw <- bind_rows(
   Report_Raw,
   grant_report_species_no_metrics(
-    Data=BR_Data,
+    Data=BRSF_Data,
     sheet_name='Native wildlife r...eport - WRR',
     species_col= target_species,
     context_col= rescue_location_s,
@@ -3648,36 +6187,37 @@ Report_Raw <- bind_rows(
     value='Species'))
 
 # append adjustment data for actual and invoiced
-Report_Raw <- bind_rows(Report_Raw,
-load_mult_wbooks(c('M09'),'RLP Output Report Adjustment') %>% 
-  select(all_of(project_cols_in),all_of(report_cols_in),all_of(adjustment_cols)) %>%
-  rename(service=project_service,
-         target_measure=output_measure) %>%
-  mutate(measured=NA,actual=reported_measure_requiring_adjustment,
-         invoiced=adjustment,report_species=NA,category=NA,context=NA,
-         sub_category=NA) %>%
-  select(-c('reported_measure_requiring_adjustment',
-            'adjustment')) %>%
-  join_by_service_target_measures_and_aggregate() %>% 
-  mutate(meta_source_sheetname='RLP Output Report Adjustment', 
-         meta_transform_func = 'Adjustment Reports',
-         meta_col_measured = NA,
-         meta_col_actual = 'reported_measure_requiring_adjustment',
-         meta_col_invoiced = 'adjustment',
-         meta_col_category=NA,
-         meta_col_context=NA,
-         meta_text_subcategory=NA,
-         meta_col_report_species=NA,
-         meta_line_item_object_class=NA,
-         meta_line_item_property=NA,
-         meta_line_item_value=NA) %>%
-  mutate(across(starts_with("meta"),as.character)))
+Report_Raw <- 
+  bind_rows(Report_Raw,
+            load_mult_wbooks(c('M09'),'RLP Output Report Adjustment') %>% 
+              select(all_of(project_cols_in),all_of(report_cols_in),
+                     all_of(adjustment_cols)) %>%
+              rename(service=project_service,
+                     target_measure=output_measure) %>%
+              mutate(measured=NA,actual=reported_measure_requiring_adjustment,
+                     invoiced=adjustment,report_species=NA,category=NA,
+                     context=NA,sub_category=NA) %>%
+              select(-c('reported_measure_requiring_adjustment',
+                        'adjustment')) %>%
+              join_by_service_target_measures_and_aggregate() %>% 
+              mutate(meta_source_sheetname='RLP Output Report Adjustment', 
+                     meta_transform_func = 'Adjustment Reports',
+                     meta_col_measured = NA,
+                     meta_col_actual = 'reported_measure_requiring_adjustment',
+                     meta_col_invoiced = 'adjustment',
+                     meta_col_category=NA,
+                     meta_col_context=NA,
+                     meta_text_subcategory=NA,
+                     meta_col_report_species=NA,
+                     meta_line_item_object_class=NA,
+                     meta_line_item_property=NA,
+                     meta_line_item_value=NA) %>%
+              mutate(across(starts_with("meta"),as.character)))
 
 
 
 projects_reports <- 
   Report_Raw %>%
-  bind_rows(adjustment_reports) %>%
   mutate(total_to_be_delivered = ifelse(!is.na(total_to_be_delivered),
                                         total_to_be_delivered,0),
          across(c('total_to_be_delivered','measured','invoiced','actual'),
@@ -3696,7 +6236,6 @@ projects_reports <-
          project_contracted_start_date=contracted_start_date,
          project_contracted_end_date=contracted_end_date,
          project_name=name) %>%
-  filter(report_status=='Approved') %>%
   mutate(meta_col_project_status='status',
          meta_col_report_last_modified='last_modified_2',
          meta_col_report_stage='stage',
@@ -3710,7 +6249,10 @@ projects_reports <-
   select(any_of(project_cols_out),any_of(report_cols_out),
          any_of(project_meta_cols_out),any_of(report_meta_cols_out),
          any_of(extract_date_cols)) %>%
-  filter(measured != 0 & actual != 0 & invoiced != 0)
+  filter(measured != 0 & actual != 0 & invoiced != 0) %>%
+  #filter(report_status=='Approved') %>%
+  mutate(invoiced=ifelse(report_status=='Approved',
+                         invoiced,0))
 
 
 RLP_Outcomes <- read.xlsx(paste('M01 ',extract_date,'.xlsx',sep=''), 
@@ -3849,7 +6391,7 @@ report_project_services <- Report_Raw %>%
   #filter(!is.na(report_project_services)) %>%
   group_by(merit_project_id) %>%
   summarize(report_project_services=str_c(str_trim(report_project_services),
-                                         collapse="|")) %>%
+                                          collapse="|")) %>%
   ungroup() 
 
 projects_reports_species <- projects_reports %>% 
@@ -3937,8 +6479,8 @@ writeData(wb=wb,sheet="MetaData",
           withFilter=TRUE,
           headerStyle = headerStyle)
 
-saveWorkbook(wb=wb,file=paste0("analytical dataset multi line ",extract_date,".xlsx"),
-             overwrite=TRUE)
+saveWorkbook(wb=wb,file=paste0("analytical dataset multi line ",
+                               extract_date,".xlsx"),overwrite=TRUE)
 # strsplit( deparse(sys.calls()[[1]]),"\\(")[[1]][1] gets current function name
 # driver <- dbDriver("SQLite")
 # con <- dbConnect(driver, dbname = "database2.db")
