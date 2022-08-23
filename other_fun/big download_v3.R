@@ -4908,6 +4908,122 @@ Report_Raw <- bind_rows(
     object_class='Weeds',property='Treatment - Follow-up',
     value='Total Area (Ha)'))
 
+# For 
+# Length (km) treated for weeds - follow-up
+# Length (km) treated for weeds - initial
+
+RLP_Data <- RLP_Data %>% 
+  mutate(across(c(area_ha_treated_for_weed_removal,
+                  length_km_treated_for_weed_removal,
+                  invoiced_area_ha_length_km_treated_for_weed_removal),
+                as.numeric),
+         site_measured_custom_km=area_ha_treated_for_weed_removal+
+           length_km_treated_for_weed_removal,
+         site_actual_custom_km=area_ha_treated_for_weed_removal+
+           length_km_treated_for_weed_removal,
+         site_invoiced_custom_km=invoiced_area_ha_length_km_treated_for_weed_removal)
+
+
+BRSF_Data <- BRSF_Data %>% 
+  mutate(across(c(site_calculated_area_ha,site_calculated_length_km,
+                  actual_area_ha_length_km_treated_for_weed_removal,
+                  area_invoiced_ha,length_invoiced_km),as.numeric),
+         site_measured_custom_km=site_calculated_area_ha+site_calculated_length_km,
+         site_actual_custom_km=actual_area_ha_length_km_treated_for_weed_removal,
+         site_invoiced_custom_km=area_invoiced_ha,length_invoiced_km)
+
+BRSP_Data <- BRSP_Data %>% 
+  mutate(across(c(site_calculated_area_ha,site_calculated_length_km,
+                  actual_area_ha_length_km_treated_for_weed_removal,
+                  area_invoiced_ha,length_invoiced_km),as.numeric),
+         site_measured_custom_km=site_calculated_area_ha+site_calculated_length_km,
+         site_actual_custom_km=actual_area_ha_length_km_treated_for_weed_removal,
+         site_invoiced_custom_km=area_invoiced_ha,length_invoiced_km)
+
+
+Report_Raw <- bind_rows(
+  Report_Raw,
+  sub_category_extract_context_species(
+    Data=RLP_Data,
+    worksheet = 'RLP - Weed treatm...tput Report',
+    service = "Removing weeds",
+    target_measure = "Length (km) treated for weeds - initial",
+    measured = site_measured_custom_km,
+    invoiced = site_invoiced_custom_km,
+    actual = site_actual_custom_km,
+    category = initial_or_follow_up_treatment,
+    sub_category = 'Initial',
+    context=treatment_objective,
+    species = target_weed_species,
+    object_class='Weeds',property='Treatment - Initial',
+    value='Total Length (km)'),
+  sub_category_extract_context_species(
+    Data=RLP_Data,
+    worksheet = 'RLP - Weed treatm...tput Report',
+    service = "Removing weeds",
+    target_measure = "Length (km) treated for weeds - follow-up",
+    measured = site_measured_custom_km,
+    invoiced = site_invoiced_custom_km,
+    actual = site_actual_custom_km,
+    category = initial_or_follow_up_treatment,
+    sub_category = 'Follow-up',
+    context=treatment_objective,
+    species = target_weed_species,
+    object_class='Weeds',property='Treatment - Follow-up',
+    value='Total Length (km)'),
+  sub_category_extract_no_context_species(
+    Data = BRSF_Data,
+    worksheet = 'Weed treatment St...inal Report',
+    service = "Removing weeds",
+    target_measure = "Length (km) treated for weeds - initial",
+    measured = site_measured_custom_km,
+    invoiced = site_invoiced_custom_km,
+    actual = site_actual_custom_km,
+    category = initial_or_follow_up_treatment,
+    sub_category = 'Initial',
+    species = target_weed_species,
+    object_class='Weeds',property='Treatment - Initial',
+    value='Total Length (km)'),
+  sub_category_extract_no_context_species(
+    Data=BRSF_Data,
+    worksheet = 'Weed treatment St...inal Report',
+    service = "Removing weeds",
+    target_measure = "Length (km) treated for weeds - follow-up",
+    measured = site_measured_custom_km,
+    invoiced = site_invoiced_custom_km,
+    actual = site_actual_custom_km,
+    category = initial_or_follow_up_treatment,
+    sub_category = 'Follow-up',
+    species = target_weed_species,
+    object_class='Weeds',property='Treatment - Follow-up',
+    value='Total Length (km)'),
+  sub_category_extract_no_context_species(
+    Data = BRSP_Data,
+    worksheet = 'Weed treatment St...ress Report',
+    service = "Removing weeds",
+    target_measure = "Length (km) treated for weeds - initial",
+    measured = site_measured_custom_km,
+    invoiced = site_invoiced_custom_km,
+    actual = site_actual_custom_km,
+    category = initial_or_follow_up_treatment,
+    sub_category = 'Initial',
+    species = target_weed_species,
+    object_class='Weeds',property='Treatment - Initial',
+    value='Total Length (km)'),
+  sub_category_extract_no_context_species(
+    Data=BRSP_Data,
+    worksheet = 'Weed treatment St...ress Report',
+    service = "Removing weeds",
+    target_measure = "Length (km) treated for weeds - follow-up",
+    measured = site_measured_custom_km,
+    invoiced = site_invoiced_custom_km,
+    actual = site_actual_custom_km,
+    category = initial_or_follow_up_treatment,
+    sub_category = 'Follow-up',
+    species = target_weed_species,
+    object_class='Weeds',property='Treatment - Follow-up',
+    value='Total Length (km)'))
+
 #
 # The delivery against the target 
 # "Area (ha) of revegetated habitat maintained" is calculated by: 
@@ -6449,6 +6565,22 @@ projects_species <- Projects %>%
   select(any_of(project_cols_out),service_provider,report_project_services,
          any_of(species_etc_cols_out),any_of(extract_date_cols))
 
+target_cols <- c("merit_project_id","management_unit","program","sub_program",
+"total_to_be_delivered","x2018_2019","x2019_2020","x2020_2021","x2021_2022",
+"x2022_2023")
+
+# One for the road
+projects_services_targets_outcomes <- 
+  read.xlsx('M01 2022-08-15.xlsx',sheet='Project services and targets') %>% 
+  clean_names() %>% 
+  rename(merit_project_id=grant_id) %>%
+  select(any_of(target_cols)) %>%
+  mutate(across(any_of(c("total_to_be_delivered","x2018_2019","x2019_2020","x2020_2021","x2021_2022",
+                         "x2022_2023")),as.numeric)) %>%
+  rename_with( ~ gsub("x", "", .x, fixed = TRUE)) %>%
+  left_join(primary_secondary_outcomes,by="merit_project_id") %>%
+  left_join(management_units,by="management_unit")
+
 # format for spreadsheet output
 headerStyle <- createStyle(
   fontSize = 11, 
@@ -6464,6 +6596,12 @@ wb <- createWorkbook()
 addWorksheet(wb=wb,sheetName="Projects-Species")
 writeData(wb=wb,sheet="Projects-Species",
           projects_species,
+          withFilter=TRUE,
+          headerStyle = headerStyle)
+
+addWorksheet(wb=wb,sheetName="Project Services")
+writeData(wb=wb,sheet="Project Services",
+          projects_services_targets_outcomes,
           withFilter=TRUE,
           headerStyle = headerStyle)
 
