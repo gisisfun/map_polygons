@@ -675,7 +675,7 @@ library(RSQLite)
 # |82|extract_date||MetaData||||Data set|Describes the point in ti18me when the data was extracted from MERIT|2022-06-20|
 #   
 
-extract_date <- '2022-08-15'
+extract_date <- '2022-08-02'
 version <- '1.0.3'
 measured_missing <- -1
 actual_missing <- -1
@@ -2246,6 +2246,44 @@ RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
 BRSF_Data <- load_mult_wbooks(c('M05'), 'Pest animal manag...inal Report')
 BRSP_Data <- load_mult_wbooks(c('M05'), 'Pest animal manag...ress Report')
 
+RLP_Data <- RLP_Data %>% 
+  mutate(across(c(area_ha_treated_for_pest_animals,
+                  length_km_treated_for_pest_animals,
+                  site_calculated_area_ha,site_calculated_length_km,
+                  invoiced_area_ha_length_km_treated_for_pest_animals),
+                as.numeric),
+         site_measured_custom_ha=site_calculated_area_ha+
+           site_calculated_length_km,
+         site_actual_custom_ha=area_ha_treated_for_pest_animals+
+           length_km_treated_for_pest_animals,
+         site_invoiced_custom_ha=invoiced_area_ha_length_km_treated_for_pest_animals)
+
+
+BRSF_Data <- BRSF_Data %>% 
+  mutate(across(c(actual_area_ha_treated_for_pest_animals,
+                  actual_length_km_treated_for_pest_animals,
+                  site_calculated_area_ha,site_calculated_length_km,
+                  length_invoiced_km,area_invoiced_ha),
+                as.numeric),
+         site_measured_custom_ha=site_calculated_area_ha+
+           site_calculated_length_km,
+         site_actual_custom_ha=actual_area_ha_treated_for_pest_animals+
+           actual_length_km_treated_for_pest_animals,
+         site_invoiced_custom_ha=length_invoiced_km+area_invoiced_ha)
+
+BRSP_Data <- BRSP_Data %>% 
+  mutate(across(c(actual_area_ha_treated_for_pest_animals,
+                  actual_length_km_treated_for_pest_animals,
+                  site_calculated_area_ha,site_calculated_length_km,
+                  length_invoiced_km,area_invoiced_ha),
+                as.numeric),
+         site_measured_custom_ha=site_calculated_area_ha+
+           site_calculated_length_km,
+         site_actual_custom_ha=actual_area_ha_treated_for_pest_animals+
+           actual_length_km_treated_for_pest_animals,
+         site_invoiced_custom_ha=length_invoiced_km+area_invoiced_ha)
+
+
 Report_Raw <- bind_rows(
   Report_Raw,
   sub_category_extract_context_no_species(
@@ -2253,9 +2291,9 @@ Report_Raw <- bind_rows(
     worksheet = 'RLP - Pest animal...tput Report',
     service = "Controlling pest animals",
     target_measure = "Area (ha) treated for pest animals - initial",
-    measured = site_calculated_area_ha,
-    invoiced = area_ha_treated_for_pest_animals,
-    actual = area_ha_treated_for_pest_animals,
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_invoiced_custom_ha,
     category = initial_or_follow_up_control,
     context = treatment_objective,
     sub_category = 'Initial',
@@ -2266,9 +2304,9 @@ Report_Raw <- bind_rows(
     worksheet = 'Pest animal manag...inal Report',
     service = "Controlling pest animals",
     target_measure = "Area (ha) treated for pest animals - initial",
-    measured = site_calculated_area_ha,
-    invoiced = area_invoiced_ha,
-    actual = site_calculated_area_ha,
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_invoiced_custom_ha,
     category = initial_or_follow_up_control,
     context = treatment_objective,
     sub_category = 'Initial',
@@ -2279,9 +2317,9 @@ Report_Raw <- bind_rows(
     worksheet = 'Pest animal manag...ress Report',
     service = "Controlling pest animals",
     target_measure = "Area (ha) treated for pest animals - initial",
-    measured = site_calculated_area_ha,
-    invoiced = area_invoiced_ha,
-    actual = site_calculated_area_ha,
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_invoiced_custom_ha,
     category = initial_or_follow_up_control,
     context = treatment_objective,
     sub_category = 'Initial',
@@ -2292,9 +2330,9 @@ Report_Raw <- bind_rows(
     worksheet = 'Pest animal manag...inal Report',
     service = "Controlling pest animals",
     target_measure = "Area (ha) treated for pest animals - initial",
-    measured = site_calculated_area_ha,
-    invoiced = area_invoiced_ha,
-    actual = site_calculated_area_ha,
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_invoiced_custom_ha,
     category = initial_or_follow_up_control,
     context = treatment_objective,
     sub_category = 'Initial',
@@ -2305,9 +2343,9 @@ Report_Raw <- bind_rows(
     worksheet = 'Pest animal manag...ress Report',
     service = "Controlling pest animals",
     target_measure = "Area (ha) treated for pest animals - initial",
-    measured = site_calculated_area_ha,
-    invoiced = area_invoiced_ha,
-    actual = site_calculated_area_ha,
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_invoiced_custom_ha,
     category = initial_or_follow_up_control,
     context = treatment_objective,
     sub_category = 'Initial',
@@ -2318,9 +2356,9 @@ Report_Raw <- bind_rows(
     worksheet = 'RLP - Pest animal...tput Report',
     service = "Controlling pest animals",
     target_measure = "Area (ha) treated for pest animals - follow-up",
-    measured = site_calculated_area_ha,
-    invoiced = area_ha_treated_for_pest_animals,
-    actual = area_ha_treated_for_pest_animals,
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_invoiced_custom_ha,
     category = initial_or_follow_up_control,
     context = treatment_objective,
     sub_category = 'Follow-up',
@@ -2332,9 +2370,9 @@ Report_Raw <- bind_rows(
     worksheet = 'Pest animal manag...inal Report',
     service = "Controlling pest animals",
     target_measure = "Area (ha) treated for pest animals - follow-up",
-    measured = site_calculated_area_ha,
-    invoiced = area_invoiced_ha,
-    actual = site_calculated_area_ha,
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_invoiced_custom_ha,
     category = initial_or_follow_up_control,
     context = treatment_objective,
     sub_category = 'Follow-up',
@@ -2346,9 +2384,9 @@ Report_Raw <- bind_rows(
     worksheet = 'Pest animal manag...ress Report',
     service = "Controlling pest animals",
     target_measure = "Area (ha) treated for pest animals - follow-up",
-    measured = site_calculated_area_ha,
-    invoiced = area_invoiced_ha,
-    actual = site_calculated_area_ha,
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_invoiced_custom_ha,
     category = initial_or_follow_up_control,
     context = treatment_objective,
     sub_category = 'Follow-up',
@@ -4825,88 +4863,88 @@ RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
 BRSF_Data <- load_mult_wbooks(c('M05'), 'Weed treatment St...inal Report')
 BRSP_Data <- load_mult_wbooks(c('M05'), 'Weed treatment St...ress Report')
 
-Report_Raw <- bind_rows(
-  Report_Raw,
-  sub_category_extract_context_species(
-    Data=RLP_Data,
-    worksheet = 'RLP - Weed treatm...tput Report',
-    service = "Removing weeds",
-    target_measure = "Area (ha) treated for weeds - initial",
-    measured = site_calculated_area_ha,
-    invoiced = area_ha_treated_for_weed_removal,
-    actual = area_ha_treated_for_weed_removal,
-    category = initial_or_follow_up_treatment,
-    sub_category = 'Initial',
-    context=treatment_objective,
-    species = target_weed_species,
-    object_class='Weeds',property='Treatment - Initial',
-    value='Total Area (Ha)'),
-  sub_category_extract_context_species(
-    Data=RLP_Data,
-    worksheet = 'RLP - Weed treatm...tput Report',
-    service = "Removing weeds",
-    target_measure = "Area (ha) treated for weeds - follow-up",
-    measured = site_calculated_area_ha,
-    invoiced = area_ha_treated_for_weed_removal,
-    actual = area_ha_treated_for_weed_removal,
-    category = initial_or_follow_up_treatment,
-    sub_category = 'Follow-up',
-    context=treatment_objective,
-    species = target_weed_species,
-    object_class='Weeds',property='Treatment - Follow-up',
-    value='Total Area (Ha)'),
-  sub_category_extract_no_context_species(
-    Data = BRSF_Data,
-    worksheet = 'Weed treatment St...inal Report',
-    service = "Removing weeds",
-    target_measure = "Area (ha) treated for weeds - initial",
-    measured = site_calculated_area_ha,
-    invoiced = area_invoiced_ha,
-    actual = area_invoiced_ha,
-    category = initial_or_follow_up_treatment,
-    sub_category = 'Initial',
-    species = target_weed_species,
-    object_class='Weeds',property='Treatment - Initial',
-    value='Total Area (Ha)'),
-  sub_category_extract_no_context_species(
-    Data=BRSF_Data,
-    worksheet = 'Weed treatment St...inal Report',
-    service = "Removing weeds",
-    target_measure = "Area (ha) treated for weeds - follow-up",
-    measured = site_calculated_area_ha,
-    invoiced = area_invoiced_ha,
-    actual = area_invoiced_ha,
-    category = initial_or_follow_up_treatment,
-    sub_category = 'Follow-up',
-    species = target_weed_species,
-    object_class='Weeds',property='Treatment - Follow-up',
-    value='Total Area (Ha)'),
-  sub_category_extract_no_context_species(
-    Data = BRSP_Data,
-    worksheet = 'Weed treatment St...ress Report',
-    service = "Removing weeds",
-    target_measure = "Area (ha) treated for weeds - initial",
-    measured = site_calculated_area_ha,
-    invoiced = area_invoiced_ha,
-    actual = area_invoiced_ha,
-    category = initial_or_follow_up_treatment,
-    sub_category = 'Initial',
-    species = target_weed_species,
-    object_class='Weeds',property='Treatment - Initial',
-    value='Total Area (Ha)'),
-  sub_category_extract_no_context_species(
-    Data=BRSP_Data,
-    worksheet = 'Weed treatment St...ress Report',
-    service = "Removing weeds",
-    target_measure = "Area (ha) treated for weeds - follow-up",
-    measured = site_calculated_area_ha,
-    invoiced = area_invoiced_ha,
-    actual = area_invoiced_ha,
-    category = initial_or_follow_up_treatment,
-    sub_category = 'Follow-up',
-    species = target_weed_species,
-    object_class='Weeds',property='Treatment - Follow-up',
-    value='Total Area (Ha)'))
+# Report_Raw <- bind_rows(
+#   Report_Raw,
+#   sub_category_extract_context_species(
+#     Data=RLP_Data,
+#     worksheet = 'RLP - Weed treatm...tput Report',
+#     service = "Removing weeds",
+#     target_measure = "Area (ha) treated for weeds - initial",
+#     measured = site_calculated_area_ha,
+#     invoiced = area_ha_treated_for_weed_removal,
+#     actual = area_ha_treated_for_weed_removal,
+#     category = initial_or_follow_up_treatment,
+#     sub_category = 'Initial',
+#     context=treatment_objective,
+#     species = target_weed_species,
+#     object_class='Weeds',property='Treatment - Initial',
+#     value='Total Area (Ha)'),
+#   sub_category_extract_context_species(
+#     Data=RLP_Data,
+#     worksheet = 'RLP - Weed treatm...tput Report',
+#     service = "Removing weeds",
+#     target_measure = "Area (ha) treated for weeds - follow-up",
+#     measured = site_calculated_area_ha,
+#     invoiced = area_ha_treated_for_weed_removal,
+#     actual = area_ha_treated_for_weed_removal,
+#     category = initial_or_follow_up_treatment,
+#     sub_category = 'Follow-up',
+#     context=treatment_objective,
+#     species = target_weed_species,
+#     object_class='Weeds',property='Treatment - Follow-up',
+#     value='Total Area (Ha)'),
+#   sub_category_extract_no_context_species(
+#     Data = BRSF_Data,
+#     worksheet = 'Weed treatment St...inal Report',
+#     service = "Removing weeds",
+#     target_measure = "Area (ha) treated for weeds - initial",
+#     measured = site_calculated_area_ha,
+#     invoiced = area_invoiced_ha,
+#     actual = area_invoiced_ha,
+#     category = initial_or_follow_up_treatment,
+#     sub_category = 'Initial',
+#     species = target_weed_species,
+#     object_class='Weeds',property='Treatment - Initial',
+#     value='Total Area (Ha)'),
+#   sub_category_extract_no_context_species(
+#     Data=BRSF_Data,
+#     worksheet = 'Weed treatment St...inal Report',
+#     service = "Removing weeds",
+#     target_measure = "Area (ha) treated for weeds - follow-up",
+#     measured = site_calculated_area_ha,
+#     invoiced = area_invoiced_ha,
+#     actual = area_invoiced_ha,
+#     category = initial_or_follow_up_treatment,
+#     sub_category = 'Follow-up',
+#     species = target_weed_species,
+#     object_class='Weeds',property='Treatment - Follow-up',
+#     value='Total Area (Ha)'),
+#   sub_category_extract_no_context_species(
+#     Data = BRSP_Data,
+#     worksheet = 'Weed treatment St...ress Report',
+#     service = "Removing weeds",
+#     target_measure = "Area (ha) treated for weeds - initial",
+#     measured = site_calculated_area_ha,
+#     invoiced = area_invoiced_ha,
+#     actual = area_invoiced_ha,
+#     category = initial_or_follow_up_treatment,
+#     sub_category = 'Initial',
+#     species = target_weed_species,
+#     object_class='Weeds',property='Treatment - Initial',
+#     value='Total Area (Ha)'),
+#   sub_category_extract_no_context_species(
+#     Data=BRSP_Data,
+#     worksheet = 'Weed treatment St...ress Report',
+#     service = "Removing weeds",
+#     target_measure = "Area (ha) treated for weeds - follow-up",
+#     measured = site_calculated_area_ha,
+#     invoiced = area_invoiced_ha,
+#     actual = area_invoiced_ha,
+#     category = initial_or_follow_up_treatment,
+#     sub_category = 'Follow-up',
+#     species = target_weed_species,
+#     object_class='Weeds',property='Treatment - Follow-up',
+#     value='Total Area (Ha)'))
 
 # For 
 # Length (km) treated for weeds - follow-up
@@ -4917,28 +4955,28 @@ RLP_Data <- RLP_Data %>%
                   length_km_treated_for_weed_removal,
                   invoiced_area_ha_length_km_treated_for_weed_removal),
                 as.numeric),
-         site_measured_custom_km=area_ha_treated_for_weed_removal+
+         site_measured_custom_ha=area_ha_treated_for_weed_removal+
            length_km_treated_for_weed_removal,
-         site_actual_custom_km=area_ha_treated_for_weed_removal+
+         site_actual_custom_ha=area_ha_treated_for_weed_removal+
            length_km_treated_for_weed_removal,
-         site_invoiced_custom_km=invoiced_area_ha_length_km_treated_for_weed_removal)
+         site_invoiced_custom_ha=invoiced_area_ha_length_km_treated_for_weed_removal)
 
 
 BRSF_Data <- BRSF_Data %>% 
   mutate(across(c(site_calculated_area_ha,site_calculated_length_km,
                   actual_area_ha_length_km_treated_for_weed_removal,
                   area_invoiced_ha,length_invoiced_km),as.numeric),
-         site_measured_custom_km=site_calculated_area_ha+site_calculated_length_km,
-         site_actual_custom_km=actual_area_ha_length_km_treated_for_weed_removal,
-         site_invoiced_custom_km=area_invoiced_ha,length_invoiced_km)
+         site_measured_custom_ha=site_calculated_area_ha+site_calculated_length_km,
+         site_actual_custom_ha=actual_area_ha_length_km_treated_for_weed_removal,
+         site_invoiced_custom_ha=area_invoiced_ha,length_invoiced_km)
 
 BRSP_Data <- BRSP_Data %>% 
   mutate(across(c(site_calculated_area_ha,site_calculated_length_km,
                   actual_area_ha_length_km_treated_for_weed_removal,
                   area_invoiced_ha,length_invoiced_km),as.numeric),
-         site_measured_custom_km=site_calculated_area_ha+site_calculated_length_km,
-         site_actual_custom_km=actual_area_ha_length_km_treated_for_weed_removal,
-         site_invoiced_custom_km=area_invoiced_ha,length_invoiced_km)
+         site_measured_custom_ha=site_calculated_area_ha+site_calculated_length_km,
+         site_actual_custom_ha=actual_area_ha_length_km_treated_for_weed_removal,
+         site_invoiced_custom_ha=area_invoiced_ha,length_invoiced_km)
 
 
 Report_Raw <- bind_rows(
@@ -4947,82 +4985,82 @@ Report_Raw <- bind_rows(
     Data=RLP_Data,
     worksheet = 'RLP - Weed treatm...tput Report',
     service = "Removing weeds",
-    target_measure = "Length (km) treated for weeds - initial",
-    measured = site_measured_custom_km,
-    invoiced = site_invoiced_custom_km,
-    actual = site_actual_custom_km,
+    target_measure = "Area (ha) treated for weeds - initial",
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_actual_custom_ha,
     category = initial_or_follow_up_treatment,
     sub_category = 'Initial',
     context=treatment_objective,
     species = target_weed_species,
     object_class='Weeds',property='Treatment - Initial',
-    value='Total Length (km)'),
+    value='Total Area (ha)'),
   sub_category_extract_context_species(
     Data=RLP_Data,
     worksheet = 'RLP - Weed treatm...tput Report',
     service = "Removing weeds",
-    target_measure = "Length (km) treated for weeds - follow-up",
-    measured = site_measured_custom_km,
-    invoiced = site_invoiced_custom_km,
-    actual = site_actual_custom_km,
+    target_measure = "Area (ha) treated for weeds - initial",
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_actual_custom_ha,
     category = initial_or_follow_up_treatment,
     sub_category = 'Follow-up',
     context=treatment_objective,
     species = target_weed_species,
     object_class='Weeds',property='Treatment - Follow-up',
-    value='Total Length (km)'),
+    value='Total Area (ha)'),
   sub_category_extract_no_context_species(
     Data = BRSF_Data,
     worksheet = 'Weed treatment St...inal Report',
     service = "Removing weeds",
-    target_measure = "Length (km) treated for weeds - initial",
-    measured = site_measured_custom_km,
-    invoiced = site_invoiced_custom_km,
-    actual = site_actual_custom_km,
+    target_measure = "Area (ha) treated for weeds - initial",
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_actual_custom_ha,
     category = initial_or_follow_up_treatment,
     sub_category = 'Initial',
     species = target_weed_species,
     object_class='Weeds',property='Treatment - Initial',
-    value='Total Length (km)'),
+    value='Total Area (ha)'),
   sub_category_extract_no_context_species(
     Data=BRSF_Data,
     worksheet = 'Weed treatment St...inal Report',
     service = "Removing weeds",
-    target_measure = "Length (km) treated for weeds - follow-up",
-    measured = site_measured_custom_km,
-    invoiced = site_invoiced_custom_km,
-    actual = site_actual_custom_km,
+    target_measure = "Area (ha) treated for weeds - initial",
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_actual_custom_ha,
     category = initial_or_follow_up_treatment,
     sub_category = 'Follow-up',
     species = target_weed_species,
     object_class='Weeds',property='Treatment - Follow-up',
-    value='Total Length (km)'),
+    value='Total Area (ha)'),
   sub_category_extract_no_context_species(
     Data = BRSP_Data,
     worksheet = 'Weed treatment St...ress Report',
     service = "Removing weeds",
-    target_measure = "Length (km) treated for weeds - initial",
-    measured = site_measured_custom_km,
-    invoiced = site_invoiced_custom_km,
-    actual = site_actual_custom_km,
+    target_measure = "Area (ha) treated for weeds - initial",
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_actual_custom_ha,
     category = initial_or_follow_up_treatment,
     sub_category = 'Initial',
     species = target_weed_species,
     object_class='Weeds',property='Treatment - Initial',
-    value='Total Length (km)'),
+    value='Total Area (ha'),
   sub_category_extract_no_context_species(
     Data=BRSP_Data,
     worksheet = 'Weed treatment St...ress Report',
     service = "Removing weeds",
-    target_measure = "Length (km) treated for weeds - follow-up",
-    measured = site_measured_custom_km,
-    invoiced = site_invoiced_custom_km,
-    actual = site_actual_custom_km,
+    target_measure = "Area (ha) treated for weeds - initial",
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_actual_custom_ha,
     category = initial_or_follow_up_treatment,
     sub_category = 'Follow-up',
     species = target_weed_species,
     object_class='Weeds',property='Treatment - Follow-up',
-    value='Total Length (km)'))
+    value='Total Area (ha)'))
 
 #
 # The delivery against the target 
@@ -5134,6 +5172,37 @@ RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
 BRSF_Data <- load_mult_wbooks(c('M05'),'Revegetating habi...inal Report')
 BRSP_Data <- load_mult_wbooks(c('M05'),'Revegetating habi...ress Report')
 
+RLP_Data <- RLP_Data %>% 
+  mutate(across(c(site_calculated_area_ha,site_calculated_length_km,
+                  area_ha_of_habitat_revegetated,
+                  length_km_of_habitat_revegetated,
+                  invoiced_area_ha_of_habitat_revegetated),
+                as.numeric),
+         site_measured_custom_ha=site_calculated_area_ha+
+           site_calculated_length_km,
+         site_actual_custom_ha=area_ha_of_habitat_revegetated+
+         length_km_of_habitat_revegetated,
+         site_invoiced_custom_ha=invoiced_area_ha_of_habitat_revegetated)
+
+
+BRSF_Data <- BRSF_Data %>% 
+  mutate(across(c(site_calculated_area_ha,site_calculated_length_km,
+                  actual_area_ha_length_km_of_habitat_revegetated,area_invoiced_ha),
+                as.numeric),
+         site_measured_custom_ha=site_calculated_area_ha+
+           site_calculated_length_km,
+         site_actual_custom_ha=actual_area_ha_length_km_of_habitat_revegetated,
+         site_invoiced_custom_ha=area_invoiced_ha)
+
+BRSP_Data <- BRSP_Data %>% 
+  mutate(across(c(site_calculated_area_ha,site_calculated_length_km,
+                  actual_area_ha_length_km_of_habitat_revegetated,area_invoiced_ha),
+                as.numeric),
+         site_measured_custom_ha=site_calculated_area_ha+
+           site_calculated_length_km,
+         site_actual_custom_ha=actual_area_ha_length_km_of_habitat_revegetated,
+         site_invoiced_custom_ha=area_invoiced_ha)
+
 Report_Raw <- bind_rows(
   Report_Raw,
   sub_category_extract_context_species(
@@ -5141,9 +5210,9 @@ Report_Raw <- bind_rows(
     worksheet = 'RLP - Revegetatin...tput Report',
     service = "Revegetating habitat",
     target_measure = "Area (ha) of revegetated habitat maintained",
-    measured = site_calculated_area_ha,
-    invoiced = invoiced_area_ha_of_habitat_revegetated,
-    actual = area_ha_of_habitat_revegetated,
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_actual_custom_ha,
     context = planting_method,
     category = initial_or_maintenance_activity,
     sub_category = 'Maintenance',
@@ -5155,9 +5224,9 @@ Report_Raw <- bind_rows(
     worksheet = 'RLP - Revegetatin...tput Report',
     service = "Revegetating habitat",
     target_measure = "Area of habitat revegetated (ha)",
-    measured = site_calculated_area_ha,
-    invoiced = invoiced_area_ha_of_habitat_revegetated,
-    actual = area_ha_of_habitat_revegetated,
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_actual_custom_ha,
     context = planting_method,
     category = initial_or_maintenance_activity,
     sub_category = 'Initial',
@@ -5169,10 +5238,10 @@ Report_Raw <- bind_rows(
     worksheet = 'Revegetating habi...inal Report',
     service = "Revegetating habitat",
     target_measure = "Area (ha) of revegetated habitat maintained",
-    measured = site_calculated_area_ha,
-    invoiced = area_invoiced_ha,
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_actual_custom_ha,
     context = planting_method,
-    actual = area_invoiced_ha,
     category = initial_or_maintenance_activity,
     sub_category = 'Maintenance',
     species = species,
@@ -5183,9 +5252,9 @@ Report_Raw <- bind_rows(
     worksheet = 'Revegetating habi...inal Report',
     service = "Revegetating habitat",
     target_measure = "Area of habitat revegetated (ha)",
-    measured = site_calculated_area_ha,
-    invoiced = area_invoiced_ha,
-    actual = area_invoiced_ha,
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_actual_custom_ha,
     context = planting_method,
     category = initial_or_maintenance_activity,
     sub_category = 'Initial',
@@ -5197,10 +5266,10 @@ Report_Raw <- bind_rows(
     worksheet = 'Revegetating habi...ress Report',
     service = "Revegetating habitat",
     target_measure = "Area (ha) of revegetated habitat maintained",
-    measured = site_calculated_area_ha,
-    invoiced = area_invoiced_ha,
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_actual_custom_ha,
     context = planting_method,
-    actual = area_invoiced_ha,
     category = initial_or_maintenance_activity,
     sub_category = 'Maintenance',
     species = species,
@@ -5211,9 +5280,9 @@ Report_Raw <- bind_rows(
     worksheet = 'Revegetating habi...ress Report',
     service = "Revegetating habitat",
     target_measure = "Area of habitat revegetated (ha)",
-    measured = site_calculated_area_ha,
-    invoiced = area_invoiced_ha,
-    actual = area_invoiced_ha,
+    measured = site_measured_custom_ha,
+    invoiced = site_invoiced_custom_ha,
+    actual = site_actual_custom_ha,
     context = planting_method,
     category = initial_or_maintenance_activity,
     sub_category = 'Initial',
@@ -5880,44 +5949,13 @@ Report_Raw <- bind_rows(
     object_class='Water Quality',property='Surveys',
     value='Total Surveys'))
 
-#
-# The delivery against the target 
-# "Area (ha) treated for weeds - follow-up" is calculated by: 
-# Using the form / service 
-# "RLP Output Report Adjustment (Output Report Adjustment)" 
-# and summing the field 
-#  "Adjustment" 
-# where the field "scoreId" 
-# has the value "97afd8a0-aa10-4987-8e9e-4c572f6a80b3"
-# Using the form / service 
-# "RLP Output Report (Removing weeds)" 
-# and summing the field 
-#  "Actual area (ha) / length (km) treated for weed removal" 
-# where the field "Initial or follow-up treatment" 
-# has the value "Follow-up"
-# Using the form / service 
-# "State Intervention Progress Report (Removing weeds)" 
-# and summing the field 
-#  "Actual area (ha) / length (km) treated for weed removal" 
-# where the field "Initial or follow-up treatment" 
-# has the value "Follow-up"
-# Using the form / service 
-# "Bushfires States Progress Report (Removing weeds)" 
-# and summing the field 
-#  "Actual area (ha) / length (km) treated for weed removal" 
-# where the field "Initial or follow-up treatment" 
-# has the value "Follow-up"
-# Using the form / service 
-# "State Intervention Final Report (Removing weeds)" 
-# and summing the field 
-#  "Actual area (ha) / length (km) treated for weed removal" 
-# where the field "Initial or follow-up treatment" 
-# has the value "Follow-up"
+
 
 RLP_Data <- load_mult_wbooks(c('M02','M05','M07','M08','M09'),
                              'RLP - Weed distri...tput Report')
 BRSF_Data <- load_mult_wbooks(c('M05'),'Weed distribution...inal Report')
 BRSP_Data <- load_mult_wbooks(c('M05'),'Weed distribution...ress Report')
+
 
 Report_Raw <- bind_rows(
   Report_Raw,
